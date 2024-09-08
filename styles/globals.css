@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.input {
+  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext;
+}
+.radio-check {
+  @apply h-6 w-6 appearance-none ring-[2.4px] ring-inset ring-white border-[3.5px] border-primary rounded-full checked:bg-primary checked:border-primary;
+}
+
+/* Sidenav */
+.sidebar-nav {
+  @apply relative flex flex-col w-[88px] h-full bg-light text-subtext/60 shadow-[0_.4rem_.7rem_rgba(0,0,0,0.2)] py-[.3rem] transition-all ease-in-out duration-500 opacity-90 pb-6;
+}
+
+.sidebar-nav.active {
+  @apply w-52 opacity-100;
+}
+
+.sidebar-nav #btn-bars {
+  @apply absolute text-subtext/60 left-[45%] top-4 w-7 h-7 leading-[4rem] -translate-x-1/2;
+}
+
+.sidebar-nav.active #btn-bars {
+  @apply left-[85%] top-4;
+}
+
+.sidebar-nav ul {
+  @apply !my-24;
+}
+
+.sidebar-nav.active ul {
+  @apply !mt-12;
+}
+
+.sidebar-nav ul li {
+  @apply relative w-full h-12 m-0 list-none;
+}
+
+.sidebar-nav.active ul li {
+  @apply my-0;
+}
+
+.sidebar-nav ul li .toolkit {
+  @apply absolute h-10 md:h-12 w-28 md:w-48 left-28 top-0 -translate-x-1/2 -translate-y-1/2 rounded-lg leading-[4rem] bg-primary text-light my-auto shadow-[0_.4rem_.7rem_rgba(0,0,0,0.2)] opacity-0 transition-none pointer-events-none !flex justify-center text-xs sm:text-sm md:text-base;
+}
+
+.sidebar-nav ul li:hover .toolkit {
+  @apply top-[50%] transition duration-500 ease-linear pointer-events-none opacity-100 left-32 flex items-center;
+}
+
+.sidebar-nav.active ul li:hover .toolkit {
+  @apply block left-60;
+}
+
+.sidebar-nav ul li a {
+  @apply opacity-100 text-subtext/60;
+}
+
+.sidebar-nav.active ~ div > .container-filler {
+  @apply w-[700px];
+}
+
+
+.sidebar-nav.active ul li a {
+  @apply text-subtext/60 font-medium font-roboto text-xl flex items-center mr-4 no-underline opacity-100;
+}
+
+.sidebar-nav ul li a {
+  @apply text-subtext/60 font-normal font-roboto flex items-center no-underline opacity-100 transition-all duration-500 ease-linear;
+}
+
+.sidebar-nav ul li a span {
+  @apply opacity-0 text-base transition-all ease-in-out duration-300;
+}
+
+.sidebar-nav.active ul li a span {
+  @apply opacity-100 transition-all ease-in-out duration-300;
+}
+
+.sidebar-nav ul li a:hover {
+  @apply opacity-100;
+}
+
+.sidebar-nav.active ul li a:hover {
+  @apply opacity-100 pointer-events-auto bg-none leading-none;
+}
+
+.sidebar-nav.active ul li i {
+  @apply pr-[unset] transition-all duration-300 ease-linear;
+}
+.sidebar-nav ul li i {
+  @apply h-16 mr-4 min-w-[2rem] leading-[4rem] rounded-2xl text-center text-[1rem] transition-all duration-300 ease-linear;
+}
+
+sidebar-nav ul li a .links_name {
+  @apply opacity-0 pointer-events-none transition-all duration-300 ease-linear;
+}
+
+sidebar-nav.active ul li a .links_name {
+  @apply opacity-100 pointer-events-auto transition-all duration-300 ease-linear;
+}
+
+sidebar-nav.active ul li a span {
+  @apply opacity-100 pointer-events-auto transition-all duration-300 ease-linear;
+}
+
+.dashboard_logout {
+  @apply flex items-center justify-center w-full transition-all duration-500 ease-in cursor-pointer mb-auto;
+}
+
+.dashboard_logout .btn-logout {
+  @apply relative space-x-2;
+}
+
+
+.dashboard_logout .sign-out {
+  @apply text-subtext text-[1.5rem] bg-transparent rounded-[0.6rem];
+}
+
+.sidebar-nav.active .dashboard_logout {
+  @apply text-center transition-all duration-500 ease-linear;
+}
+
+.sidebar-nav .btn-logout span {
+  @apply text-center transition-all duration-300 ease-linear opacity-0 text-base whitespace-nowrap
+}
+
+.sidebar-nav.active .btn-logout span {
+  @apply text-center transition-all duration-300 ease-linear opacity-100 text-sm
+}
+
+.quill {
+  @apply border-2 border-dark/30 rounded-lg overflow-hidden;
+}
+
+.ql-editor {
+  @apply !text-dark/80 placeholder:!text-dark/80
+}
+
+.ql-container.ql-snow {
+  border: none !important;
+}
+
+.hide > .ql-toolbar {
+  display: none !important;
+}
+.ql-toolbar.ql-snow {
+  @apply !border-x-0 !border-t-0 !border-b !border-dark font-roboto !sticky top-0 !bg-white left-0 !z-20;
+}
+
+.ql-snow .ql-fill,
+.ql-snow .ql-stroke.ql-fill,
+.ql-snow .ql-picker-label {
+  @apply !fill-[rgb(0,0,0)]/[0.5] text-dark/[0.5]
+}
+
+.ql-snow .ql-stroke {
+  fill: rgb(0 0 0 / 0.5);
+  stroke: rgb(0 0 0 / 0.5) !important;
+}
+
+.hide .ql-editor.ql-blank::before {
+  color: rgb(1 1 1 / 0.4) !important;
+  fill: rgb(1 1 1 / 0.4) !important;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 15px;
+  padding: 0 !important;
+}
+.hide .ql-editor.ql-blank::after {
+  color: rgb(1 1 1 / 0.4) !important;
+  fill: rgb(1 1 1 / 0.4) !important;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 15px;
+  padding: 0 !important;
+}
+.ql-editor.ql-blank::before {
+  color: rgb(0 0 0 / 0.5) !important;
+  fill: rgb(0 0 0 / 0.5) !important;
+  color: rgba(0, 0, 0, 0.6);
+}
+
