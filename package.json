@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev:local": "docker run -v ${pwd}:/app -w /app -p 3000:3000 -it --rm --name olive-groove node:18-alpine npm run dev",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
