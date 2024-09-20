@@ -122,7 +122,7 @@ const Subject: FC<{ course: TSubject }> = ({ course }) => {
           src={course.image_url}
           width={266}
           height={225}
-          className="w-full h-full object-fill"
+          className="w-full h-full object-cover"
           alt={course.course_name}
         />
       </div>
@@ -192,7 +192,7 @@ const Students = () => {
           </div>
 
           <div className='space-y-8 !my-12'>
-            <div className='flex items-start justify-start gap-4 flex-col xl:justify-between xl:flex-row xl:gap-0 xl:items-center'>
+            <div className='flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center'>
               <div className='flex justify-start items-center gap-4 w-full md:w-auto'>
                 <Select
                   options={["jss 1", "jss 2", "jss 3", "ss 1", "ss 2", "ss 3"]}
@@ -206,7 +206,7 @@ const Students = () => {
                 />
               </div>
 
-              <div className='w-full'>
+              <div className='w-full md:w-[400px]'>
                 <SearchInput
                   shape='rounded-lg'
                   placeholder='Search for Subjects'
@@ -217,7 +217,7 @@ const Students = () => {
               </div>
             </div>
             {/* <TableReuse data={searchResults} columns={columns} action={false} /> */}
-            <div className='grid xl:grid-cols-4 2xl:grid-cols-5 gap-6 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 xl:gap-5 2xl:gap-7'>
               {subjects.map((course, i) => (
                 <>
                   <Subject course={course} key={i} />

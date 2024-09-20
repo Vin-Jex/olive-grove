@@ -16,10 +16,9 @@ interface AdminNavType {
 const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
   return (
     <div className='flex items-center justify-between w-full h-fit py-2 md:py-3 bg-light border-b space-x-2'>
-      <Menu
-        className='!text-2xl cursor-pointer flex lg:hidden'
-        onClick={toggleSidenav}
-      />
+      <div className='flex md:!hidden'>
+        <Menu className='!text-2xl cursor-pointer' onClick={toggleSidenav} />
+      </div>
       <div className='flex flex-col md:flex-row items-end md:justify-between w-fit md:w-full'>
         <span className='leading-4 font-roboto font-medium text-sm md:text-xl text-dark order-2 md:order-1 w-full my-auto'>
           {title}

@@ -91,7 +91,7 @@ const ClassCard: React.FC<ClassCardType> = ({
         >
           <span>No {title === "class" ? "class" : "assignment"} created.</span>
           <Link
-            className=''
+            className='link'
             href={
               title === "class" ? "/teachers/classes" : "/teachers/assessments"
             }
