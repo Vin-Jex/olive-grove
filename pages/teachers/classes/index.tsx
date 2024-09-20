@@ -6,6 +6,7 @@ import TeacherSubjectCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import EditClassModal from "@/components/Molecules/Modal/EditClassModal";
 import Button from "@/components/Atoms/Button";
 import CreateClassModal from "@/components/Molecules/Modal/CreateClassModal";
+import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 
 interface SubjectData {
   [key: string]: {
@@ -25,6 +26,22 @@ export const subjectData: SubjectData = {
       role: "Teacher",
       time: "09:00AM - 10:30AM",
       topic: "Calculus",
+      name: "Dr. Ayodeji Emmanuel",
+      btnLink1: "#",
+    },
+    {
+      subject: "Chemistry",
+      role: "Teacher",
+      time: "09:00AM - 10:30AM",
+      topic: "Organic Chemistry",
+      name: "Dr. Ayodeji Emmanuel",
+      btnLink1: "#",
+    },
+    {
+      subject: "Chemistry",
+      role: "Teacher",
+      time: "09:00AM - 10:30AM",
+      topic: "Organic Chemistry",
       name: "Dr. Ayodeji Emmanuel",
       btnLink1: "#",
     },
@@ -100,11 +117,11 @@ const Classes = () => {
         handleModalClose={handleModalCreate}
         modalOpen={openModalCreate}
       />
-      <StudentWrapper title='Classes' metaTitle='Olive Groove ~ Classes'>
-        <div className='p-12 space-y-5'>
+      <TeachersWrapper title='Classes' metaTitle='Olive Groove ~ Classes'>
+        <div className='space-y-5'>
           {/* Title */}
-          <div className='flex items-center justify-between'>
-            <div className='flex flex-col'>
+          <div className='flex flex-row items-center justify-between gap-4'>
+            <div className="flex flex-col">
               <span className='text-lg font-medium text-dark font-roboto'>
                 Explore your classes
               </span>
@@ -112,7 +129,7 @@ const Classes = () => {
                 Manage, edit and create classes.
               </span>
             </div>
-            <Button size='md' width='fit' onClick={handleModalCreate}>
+            <Button size='sm' width='fit' onClick={handleModalCreate}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 width='20'
@@ -125,7 +142,7 @@ const Classes = () => {
                   fill='#FDFDFD'
                 />
               </svg>
-              <span className=''>Create Class</span>
+              <span>Create Class</span>
             </Button>
           </div>
 
@@ -138,11 +155,11 @@ const Classes = () => {
           <>
             {activeItem === "all courses"
               ? Object.keys(subjectData).map((week, index) => (
-                  <div key={index} className='!my-8'>
+                  <div key={index} className='mt-8'>
                     <span className='text-dark text-xl font-medium capitalize'>
                       {week}
                     </span>
-                    <div className='grid grid-cols-3 gap-8 mt-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8 mt-4'>
                       {subjectData[week].map((subject, sIndex) => (
                         <TeacherSubjectCard
                           key={sIndex}
@@ -159,7 +176,10 @@ const Classes = () => {
                   </div>
                 ))
               : Object.keys(subjectData).map((week, index) => (
-                  <div key={index} className='grid grid-cols-3 gap-8 !my-14'>
+                  <div
+                    key={index}
+                    className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8 mt-8'
+                  >
                     {subjectData[week].map((subject, sIndex) => (
                       <TeacherSubjectCard
                         key={sIndex}
@@ -176,7 +196,7 @@ const Classes = () => {
                 ))}
           </>
         </div>
-      </StudentWrapper>
+      </TeachersWrapper>
     </>
   );
 };

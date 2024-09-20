@@ -23,11 +23,16 @@ const SearchInput: React.FC<SearchInputProps> = ({
     setSearchValue(inputValue);
 
     // Perform filtering based on input value
-    const filteredResults = initialData.filter(
-      (result) =>
-        result.student.name.toLowerCase().includes(inputValue) ||
-        result.submissionDate.toLowerCase().includes(inputValue)
-    );
+    const filteredResults = initialData.filter((result) => {
+      // Add checks to prevent null or undefined access errors
+      const studentName = result?.student?.name?.toLowerCase() || "";
+      const submissionDate = result?.submissionDate?.toLowerCase() || "";
+
+      return (
+        studentName.includes(inputValue) || submissionDate.includes(inputValue)
+      );
+    });
+
     setSearchResults(filteredResults);
   };
 

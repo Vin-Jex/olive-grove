@@ -24,7 +24,7 @@ const Dashboard = () => {
     video: "",
   });
 
-  const options = ["JSS 1", "JSS 2", "JSS 3", "SS 1", "SS 2", "SS 3"];
+  const options = ["JS 1", "JS 2", "JS 3", "SS 1", "SS 2", "SS 3"];
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
@@ -55,56 +55,62 @@ const Dashboard = () => {
         modalOpen={openModalAss}
       />
       <TeachersWrapper title='Dashboard' metaTitle='Olive Groove ~ Dashboard'>
-        <div className='p-12 space-y-5'>
-          <div className='flex items-center justify-between bg-primary w-full rounded-3xl font-roboto relative'>
-            <div className='flex flex-col px-9 py-11'>
-              <h3 className='font-roboto font-medium text-[3.125rem] text-light leading-[3.75rem] mb-4'>
+        <div className='space-y-5'>
+          <div className='bg-primary w-full rounded-3xl font-roboto relative overflow-hidden max-h-[200px]'>
+            <div className='flex flex-col px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
+              <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
                 Welcome back, John
               </h3>
-              <span className='text-base text-light/80 font-roboto'>
+              <span className='text-sm sm:text-base text-light/80 font-roboto'>
                 You have 3 classes and 2 assignments to attend to.
               </span>
-              <span className='text-base text-light/80 font-roboto'>
+              <span className='text-sm sm:text-base text-light/80 font-roboto mt-1'>
                 &quot;To teacher is to learn twice over&quot; learning to become
                 the best!
               </span>
             </div>
-            <div className='w-[200px] absolute right-0 bottom-0'>
+            <div className='w-[80px] sm:w-[130px] md:w-[160px] lg:w-[200px] absolute right-0 bottom-0'>
               <Image
                 src={Img}
                 alt={`${Img} Pics`}
-                className='w-full h-full object-scale-down'
+                className='w-full h-full object-contain sm:object-scale-down'
+                width={200}
+                height={200}
               />
             </div>
           </div>
-          <div className='flex flex-col px-10 py-7 border-2 w-full rounded-3xl font-roboto gap-6'>
+          <div className='flex flex-col px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 md:py-6 lg:py-7 border-2 w-full rounded-3xl font-roboto gap-4 sm:gap-5 md:gap-6'>
             {/* Title */}
-            <span className='font-semibold text-2xl text-dark'>Overview</span>
+            <span className='font-semibold text-xl sm:text-2xl text-dark'>
+              Overview
+            </span>
             {/* Section */}
             <div className='flex justify-evenly items-center'>
-              <div className='flex flex-col w-full'>
-                <h3 className='font-roboto font-medium text-base text-secondary'>
+              <div className='flex flex-col justify-start text-start w-full'>
+                <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
                   Current Session
                 </h3>
-                <span className='text-dark font-semibold text-3xl'>
+                <span className='text-dark font-semibold text-xl md:text-2xl'>
                   2022/2023
                 </span>
               </div>
 
               <div className='flex flex-col w-full'>
-                <h3 className='font-roboto font-medium text-base text-secondary'>
+                <h3 className='font-roboto font-medium text-sm sm:text-base text-secondary w-full'>
                   Grade
                 </h3>
                 <div
                   className='flex items-center space-x-2 relative'
                   onClick={() => setIsOpen(!isOpen)}
                 >
-                  <span className='text-dark font-semibold text-3xl'>
-                    {selectedOption ?? "Class"}
-                  </span>
-                  <ArrowBackIos className='-rotate-90 -translate-y-[30%]' />
+                  <div className='flex items-center justify-center space-x-2 cursor-pointer'>
+                    <span className='text-dark font-semibold text-xl md:text-2xl'>
+                      {selectedOption ?? "Class"}
+                    </span>
+                    <ArrowBackIos className='!text-lg md:!text-xl -rotate-90 -translate-y-[30%] mt-1' />
+                  </div>
                   {isOpen && (
-                    <div className='absolute top-10 -left-8 z-50 min-w-[200px] h-fit py-4 px-4 rounded-md shadow-lg bg-white border flex flex-col space-y-4'>
+                    <div className='absolute top-8 -left-8 z-50 min-w-[200px] h-fit py-4 px-4 rounded-md shadow-lg bg-white border flex flex-col space-y-4'>
                       {options.map((option) => (
                         <span
                           key={option}
@@ -119,26 +125,32 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className='flex flex-col w-full'>
-                <h3 className='font-roboto font-medium text-base text-secondary'>
+              <div className='flex flex-col w-full items-center'>
+                <h3 className='font-roboto font-medium text-sm sm:text-base text-secondary w-full'>
                   No. of Classes
                 </h3>
-                <span className='text-dark font-semibold text-3xl'>8</span>
+                <span className='text-dark font-semibold text-xl md:text-2xl w-full'>
+                  8
+                </span>
               </div>
             </div>
           </div>
 
-          <div className='flex h-fit w-full gap-8 !mt-8'>
-            <ClassCard
-              handleEdit={handleModal}
-              editable={true}
-              title="Today's Class"
-            />
-            <ClassCard
-              editable={true}
-              title='Assignments'
-              handleEdit={handleModalAssignment}
-            />
+          <div className='flex flex-col md:flex-row w-full gap-2 md:gap-4 lg:gap-8 mt-4 sm:mt-6 md:mt-8'>
+            <div className='w-full md:w-1/2'>
+              <ClassCard
+                handleEdit={handleModal}
+                editable={true}
+                title="class"
+              />
+            </div>
+            <div className='w-full md:w-1/2 mt-4 sm:mt-0'>
+              <ClassCard
+                editable={true}
+                title='assignment'
+                handleEdit={handleModalAssignment}
+              />
+            </div>
           </div>
         </div>
       </TeachersWrapper>

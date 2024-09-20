@@ -90,10 +90,10 @@ const StudentWrapper = ({
         >
           <div
             className={`${
-              active ? "w-0 md:w-[15rem]" : "w-0 lg:w-[98px]"
+              active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
-          <nav className={`w-full md:px-8 lg:px-12`}>
+          <nav className={`w-full bg-white px-4`}>
             <AdminNav toggleSidenav={toggleSidenav} title={title} />
           </nav>
         </div>

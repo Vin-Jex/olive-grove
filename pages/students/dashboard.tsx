@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import Img from "@/public/image/celebrate.png";
 import Image from "next/image";
 import ClassCard from "@/components/Molecules/Card/ClassCard";
-import withAuth from "@/components/Molecules/WithAuth";
 import ClassModal from "@/components/Molecules/Modal/ClassModal";
 import { useRouter } from "next/router";
+import withAuth from "@/components/Molecules/WithAuth";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -65,7 +65,7 @@ const Dashboard = () => {
                 <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
                   Current Session
                 </h3>
-                <span className='text-dark font-semibold text-xl md:text-2xl lg:text-3xl'>
+                <span className='text-dark font-semibold text-xl md:text-2xl'>
                   2022/2023
                 </span>
               </div>
@@ -74,7 +74,7 @@ const Dashboard = () => {
                 <h3 className='font-roboto font-medium text-sm sm:text-base text-secondary w-full'>
                   Grade
                 </h3>
-                <span className='text-dark font-semibold text-xl md:text-2xl lg:text-3xl w-full'>
+                <span className='text-dark font-semibold text-xl md:text-2xl w-full'>
                   SSS 2
                 </span>
               </div>
@@ -83,7 +83,7 @@ const Dashboard = () => {
                 <h3 className='font-roboto font-medium text-sm sm:text-base text-secondary w-full'>
                   Section
                 </h3>
-                <span className='text-dark font-semibold text-xl md:text-2xl lg:text-3xl w-full'>
+                <span className='text-dark font-semibold text-xl md:text-2xl w-full'>
                   B
                 </span>
               </div>
@@ -110,13 +110,10 @@ const Dashboard = () => {
 
           <div className='flex flex-col sm:flex-row w-full gap-4 sm:gap-6 md:gap-8 mt-4 sm:mt-6 md:mt-8'>
             <div className='w-full sm:w-1/2'>
-              <ClassCard modalOpen={handleModal} title="Today's Class" />
+              <ClassCard modalOpen={handleModal} title="class" />
             </div>
             <div className='w-full sm:w-1/2 mt-4 sm:mt-0'>
-              <ClassCard
-                modalOpen={handleModalAssignment}
-                title='Assignments'
-              />
+              <ClassCard modalOpen={handleModalAssignment} title='assignment' />
             </div>
           </div>
         </div>
