@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer components {
-  a {
+  a.link {
     @apply text-primary underline underline-offset-2
   }
 }
