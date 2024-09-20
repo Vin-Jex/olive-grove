@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Search } from "@mui/icons-material";
+import { THandleSearchChange } from "../utils/types";
 
 interface SearchInputProps {
   placeholder?: string;
@@ -7,6 +8,7 @@ interface SearchInputProps {
   setSearchResults: React.Dispatch<React.SetStateAction<any[]>>;
   initialData: any[];
   shape: string;
+  handleInputChange?: THandleSearchChange<any>;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
@@ -15,10 +17,11 @@ const SearchInput: React.FC<SearchInputProps> = ({
   shape,
   setSearchResults,
   initialData,
+  handleInputChange,
 }) => {
   const [searchValue, setSearchValue] = useState("");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const customHandleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value.toLowerCase();
     setSearchValue(inputValue);
 
@@ -40,14 +43,23 @@ const SearchInput: React.FC<SearchInputProps> = ({
     <div
       className={`flex items-center justify-between bg-white border-[1.5px] !border-subtext/20 ${shape} px-3 py-2.5`}
     >
-      <div className='flex items-center'>
-        <Search className='h-5 w-5 text-subtext/60' />
+      <div className="flex items-center">
+        <Search className="h-5 w-5 text-subtext/60" />
         <input
-          type='search'
+          type="search"
           placeholder={placeholder || "Search"}
-          className='ml-2 outline-none bg-transparent border-none focus:outline-none text-subtext placeholder:text-subtext min-w-[400px]'
+          className="ml-2 outline-none bg-transparent border-none focus:outline-none text-subtext placeholder:text-subtext min-w-[400px]"
           value={searchValue}
-          onChange={handleInputChange}
+          onChange={
+            handleInputChange
+              ? (e) =>
+                  handleInputChange(e, {
+                    setSearchResults,
+                    setSearchValue,
+                    initialData,
+                  })
+              : customHandleInputChange
+          }
         />
       </div>
     </div>

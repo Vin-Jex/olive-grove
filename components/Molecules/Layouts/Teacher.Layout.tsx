@@ -59,7 +59,7 @@ const TeachersWrapper = ({
   };
 
   return (
-    <div className='w-full h-full'>
+    <div className="w-full h-full">
       <Meta title={metaTitle || "Dashboard"} description={description} />
       <WarningModal
         handleModalClose={handleWarning}
@@ -76,7 +76,7 @@ const TeachersWrapper = ({
       >
         <SideNav handleOpen={handleWarning} />
       </aside>
-      <div className='w-full'>
+      <div className="w-full">
         <div
           className={`${
             active ? "" : ""
@@ -91,13 +91,15 @@ const TeachersWrapper = ({
             <AdminNav toggleSidenav={toggleSidenav} title={title} />
           </nav>
         </div>
-        <main className='w-full h-full flex mt-16'>
+        <main className="w-full h-full flex mt-16 overflow-x-hidden">
           <div
             className={`${
               active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
-          <div className='min-h-screen w-full z-10 px-4 py-4 lg:py-6'>{children}</div>
+          <div className="min-h-screen w-full z-10 px-4 py-4 lg:py-6">
+            {children}
+          </div>
         </main>
       </div>
     </div>
