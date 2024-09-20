@@ -18,8 +18,11 @@ const Header = () => {
   }, []);
 
   return (
-    <header className='relative w-full h-fit flex items-center justify-between py-1 px-2 sm:px-3.5 md:px-5 lg:px-8 bg-white z-50 bg-gradient-to-br from-[rgba(224,_224,_224,_0.45)] via-[rgba(224,_224,_224,_0.45)] to-[rgba(224,_224,_224,_0.45)] '>
-      <Link href='/' className='w-[3.8rem] h-[2.8rem] md:h-[3.2rem] md:w-[4rem]'>
+    <header className='relative w-full h-fit flex items-center justify-between py-3 px-2 sm:px-3.5 md:px-5 lg:px-8 bg-white z-50 bg-gradient-to-br from-[rgba(224,_224,_224,_0.45)] via-[rgba(224,_224,_224,_0.45)] to-[rgba(224,_224,_224,_0.45)] '>
+      <Link
+        href='/'
+        className='w-[3.8rem] h-[2.8rem] md:h-[3.2rem] md:w-[4rem]'
+      >
         <Image
           src={logo}
           alt='Olive_grove_logo'
@@ -86,7 +89,7 @@ const Header = () => {
             <div className='w-full flex flex-col space-y-4'>
               <Button
                 width='full'
-                size='sm'
+                size='xs'
                 color='outline'
                 onClick={() => {
                   router.push("/auth/path");
@@ -97,7 +100,7 @@ const Header = () => {
               </Button>
               <Button
                 width='full'
-                size='sm'
+                size='xs'
                 color='blue'
                 onClick={() => {
                   router.push("/auth/path");
@@ -111,7 +114,7 @@ const Header = () => {
             <div className='w-full flex flex-col gap-y-5'>
               <Button
                 width='full'
-                size='sm'
+                size='xs'
                 color='blue'
                 onClick={() => setToggleNav(false)}
               >
@@ -153,7 +156,7 @@ const Header = () => {
           <div className='flex w-full max-w-[270px] h-fit gap-4'>
             <Button
               width='full'
-              size='sm'
+              size='xs'
               color='outline'
               onClick={() => {
                 router.push("/auth/path");
@@ -163,7 +166,7 @@ const Header = () => {
             </Button>
             <Button
               width='full'
-              size='sm'
+              size='xs'
               color='blue'
               onClick={() => {
                 router.push("/auth/path");

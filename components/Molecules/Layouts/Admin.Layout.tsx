@@ -68,26 +68,32 @@ const AdminsWrapper = ({
         modalOpen={warningModal}
       />
 
-      <aside className='fixed left-0 top-0 h-screen w-fit z-30'>
+      <aside
+        className={`fixed left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
+          isSidenavOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
+      >
         <SideNav handleOpen={handleWarning} />
       </aside>
       <div className='w-full'>
         <div
-          className={`${active ? "" : ""} fixed right-0 top-0 w-full flex z-20`}
+          className={`${
+            active ? "" : ""
+          } fixed right-0 top-0 w-full flex z-30 lg:z-20`}
         >
           <div
             className={`${
-              active ? "w-[15rem]" : "w-[98px]"
+              active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
-          <nav className={`w-full px-12`}>
+          <nav className={`w-full md:px-4 lg:px-12`}>
             <AdminNav toggleSidenav={toggleSidenav} title={title} />
           </nav>
         </div>
         <main className='w-full h-full flex mt-20'>
           <div
             className={`${
-              active ? "w-[15rem]" : "w-[98px]"
+              active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
           <div className='min-h-screen w-full z-10'>{children}</div>

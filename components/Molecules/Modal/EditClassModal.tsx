@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent } from "react";
 import Modal from "./Modal";
 import Button from "@/components/Atoms/Button";
 import Input from "@/components/Atoms/Input";
@@ -54,11 +54,11 @@ export default function EditClassModal({
         onClose={handleModalClose}
         className='w-[80%] sm:w-[70%] md:w-[751px] bg-white backdrop-blur-[10px] rounded-3xl'
       >
-        <div className='flex justify-between items-center px-7 py-2 mt-7'>
+        <div className='flex justify-between items-center px-7 py-2 mt-4'>
           <span className='text-2xl text-dark font-semibold font-roboto capitalize'>
             Edit {type}
           </span>
-          <div className='flex items-center justify-center rounded-full cursor-pointer bg-white shadow-lg border h-10 w-10'>
+          <div className='flex items-center justify-center rounded-full cursor-pointer bg-white border h-10 w-10'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='15'
@@ -118,7 +118,7 @@ export default function EditClassModal({
 
           <div className='flex items-center space-x-5 w-full'>
             <Button
-              size='sm'
+              size='xs'
               onClick={() => {
                 handleAction && handleAction();
               }}
@@ -127,7 +127,7 @@ export default function EditClassModal({
             </Button>
 
             {type === "class" && (
-              <Button size='sm' color='outline'>
+              <Button size='xs' color='outline'>
                 Save
               </Button>
             )}

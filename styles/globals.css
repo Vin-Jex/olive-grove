@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  a {
+    @apply text-primary underline underline-offset-2
+  }
+}
+
 .input {
   @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext;
 }
@@ -111,7 +117,7 @@ sidebar-nav.active ul li a span {
 }
 
 .dashboard_logout .btn-logout {
-  @apply relative space-x-2;
+  @apply flex items-center justify-start w-full px-6 relative space-x-2;
 }
 
 
@@ -124,11 +130,11 @@ sidebar-nav.active ul li a span {
 }
 
 .sidebar-nav .btn-logout span {
-  @apply text-center transition-all duration-300 ease-linear opacity-0 text-base whitespace-nowrap
+  @apply text-center transition-all duration-300 ease-linear opacity-0 hidden text-base whitespace-nowrap
 }
 
 .sidebar-nav.active .btn-logout span {
-  @apply text-center transition-all duration-300 ease-linear opacity-100 text-sm
+  @apply text-center transition-all duration-300 ease-linear opacity-100 block text-sm;
 }
 
 .quill {

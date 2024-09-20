@@ -34,9 +34,11 @@ const LoginPath = () => {
   const maxAge = 1 * 24 * 60 * 60;
 
   useEffect(() => {
-    if (formState.teacherID === "" || formState.password === "")
+    if (formState.teacherID === "" || formState.password.length < 6) {
       setIsDisabled(true);
-    else setIsDisabled(false);
+    } else {
+      setIsDisabled(false);
+    }
   }, [formState.password, formState.teacherID]);
 
   const handleChange = ({
@@ -49,14 +51,11 @@ const LoginPath = () => {
   };
 
   const resetForm = () => {
-    setFormState((prevState) => ({
-      ...prevState,
+    setFormState({
       teacherID: "",
       password: "",
-    }));
-    if (formState.teacherID === "" || formState.password === "")
-      setIsDisabled(true);
-    else setIsDisabled(false);
+    });
+    setIsDisabled(true);
   };
 
   const handleErrors = (data: any) => {
@@ -78,10 +77,10 @@ const LoginPath = () => {
       return;
     }
 
-    if (!formState.password.trim()) {
+    if (formState.password.length < 6) {
       setFormError((prevState) => ({
         ...prevState,
-        passwordError: "Password field cannot be empty",
+        passwordError: "Password must be at least 6 characters long",
       }));
       return;
     }
@@ -100,29 +99,41 @@ const LoginPath = () => {
       console.error("Error Message: ", data.error);
     }
 
+    clearError();
+  };
+
+  const clearError = () => {
     // Clear errors after 7 seconds
     setTimeout(() => {
-      return setFormError({
+      setFormError({
         internetError: "",
         teacherIDError: "",
         passwordError: "",
         successError: "",
       });
     }, 7000);
-    if (formState.teacherID === "" || formState.password === "")
-      setIsDisabled(true);
-    else setIsDisabled(false);
   };
 
   const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
-    // Reset previous error messages
     event.preventDefault();
-    resetForm();
 
     try {
-      if (formState.teacherID === "" || formState.password === "")
-        setIsDisabled(true);
-      else setIsDisabled(false);
+      if (!navigator.onLine) {
+        setFormError((prevState) => ({
+          ...prevState,
+          internetError: "No internet connection",
+        }));
+        return;
+      }
+
+      if (formState.password.length < 6) {
+        setFormError((prevState) => ({
+          ...prevState,
+          passwordError: "Password must be at least 6 characters long",
+        }));
+        return;
+      }
+
       const response = await fetch(`${baseUrl}/teacher-login`, {
         method: "POST",
         headers: {
@@ -133,8 +144,6 @@ const LoginPath = () => {
           password: formState.password,
         }),
       });
-
-      console.error("Response Status: ", response.status);
 
       if (!response.ok) {
         const data = await response.json();
@@ -160,16 +169,15 @@ const LoginPath = () => {
         secure: true,
       });
 
-      // Reset the form after successful submission
       resetForm();
 
-      // Wait for 5 seconds before redirecting to login
       setTimeout(() => {
         router.push("/");
       }, 500);
     } catch (error) {
-      console.log("Status: ", error);
+      console.log("Error:", error);
     } finally {
+      clearError();
       setIsDisabled(false);
     }
   };
@@ -198,28 +206,29 @@ const LoginPath = () => {
           </h5>
         </div>
 
-        {formError.internetError !== "" ? (
+        {formError.internetError && (
           <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
             <Info sx={{ fontSize: "1.1rem" }} />
             {formError.internetError}
           </span>
-        ) : formError.successError !== "" ? (
+        )}
+        {formError.successError && (
           <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
             <Info sx={{ fontSize: "1.1rem" }} />
             {formError.successError}
           </span>
-        ) : formError.teacherIDError !== "" ? (
+        )}
+        {formError.teacherIDError && (
           <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
             <Info sx={{ fontSize: "1.1rem" }} />
             {formError.teacherIDError}
           </span>
-        ) : formError.passwordError !== "" ? (
+        )}
+        {formError.passwordError && (
           <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
             <Info sx={{ fontSize: "1.1rem" }} />
             {formError.passwordError}
           </span>
-        ) : (
-          ""
         )}
         <form
           onKeyPress={handleKeyPress}

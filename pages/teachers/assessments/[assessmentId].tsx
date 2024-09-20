@@ -49,7 +49,7 @@ const AssessmentDetailsPage = () => {
       title={`Assessment`}
       metaTitle={`Olive Groove ~ ${assessmentId} assessment`}
     >
-      <div className='p-12 space-y-5'>
+      <div className='space-y-5'>
         <div className='flex items-center justify-between'>
           <div className='flex flex-col'>
             <span className='text-lg font-medium text-dark font-roboto'>

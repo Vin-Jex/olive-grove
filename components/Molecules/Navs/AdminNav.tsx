@@ -15,7 +15,7 @@ interface AdminNavType {
 
 const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
   return (
-    <div className='flex items-center justify-between w-full h-fit py-2 md:py-3 px-3 md:px-0 bg-light border-b space-x-2'>
+    <div className='flex items-center justify-between w-full h-fit py-2 md:py-3 bg-light border-b space-x-2'>
       <Menu
         className='!text-2xl cursor-pointer flex lg:hidden'
         onClick={toggleSidenav}
@@ -31,7 +31,7 @@ const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
           <button className='flex items-center justify-center'>
             <NotificationsOutlined className='!text-xl md:!text-2xl text-subtext' />
           </button>
-          <div className='w-7 h-7 md:w-10 md:h-10 overflow-hidden'>
+          <div className='w-7 h-7 md:w-9 md:h-9 overflow-hidden'>
             <Image
               src={Profile}
               alt='Profile Pics'

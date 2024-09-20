@@ -49,7 +49,7 @@ const ModifyAssessments = () => {
       title='Assessments'
       metaTitle='Olive Groove ~ Create or Modify Assessments'
     >
-      <div className='p-12 space-y-5'>
+      <div className='space-y-5'>
         {/* Title */}
         <div className='flex items-center justify-between'>
           <div className='flex flex-col'>

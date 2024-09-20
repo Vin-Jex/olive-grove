@@ -6,47 +6,9 @@ import SearchInput from "@/components/Atoms/SearchInput";
 import TableReuse from "@/components/Molecules/Table/TableReuse";
 import Img from "@/public/image/student3.png";
 
-const data = [
-  {
-    id: 1,
-    student: {
-      name: "John Doe",
-      profile: Img,
-    },
-    classWork: 55,
-    homeWork: 66,
-    assessment: 30,
-    test: 69,
-    total: 88,
-  },
-  {
-    id: 2,
-    student: {
-      name: "Jane Doe",
-      profile: Img,
-    },
-    classWork: 55,
-    homeWork: 66,
-    assessment: 30,
-    test: 69,
-    total: 98,
-  },
-  {
-    id: 3,
-    student: {
-      name: "Smith Doe",
-      profile: Img,
-    },
-    classWork: 55,
-    homeWork: 66,
-    assessment: 30,
-    test: 69,
-    total: 88,
-  },
-];
 const Students = () => {
   const router = useRouter();
-  const [searchResults, setSearchResults] = useState(data);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   const columns = [
     { label: "Student Names", key: "student" },
@@ -59,7 +21,7 @@ const Students = () => {
 
   return (
     <TeachersWrapper title='Student' metaTitle='Olive Groove ~ Student'>
-      <div className='p-12 space-y-5'>
+      <div className='space-y-5'>
         {/* Title */}
         <div className='flex flex-col'>
           <span className='text-lg font-medium text-dark font-roboto'>
@@ -70,14 +32,14 @@ const Students = () => {
           </span>
         </div>
 
-        <div className='space-y-8 !my-12'>
-          <div className='flex items-center justify-between'>
+        <div className='space-y-8 md:!my-12'>
+          <div className='flex flex-col md:flex-row md:items-center md:justify-between w-full gap-y-4'>
             <select
               // value={formState.instituteType}
               name='subject'
               // onChange={handleChange}
               required
-              className='flex items-center px-2 sm:px-2.5 py-3.5 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-[200px] h-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext'
+              className='flex items-center px-2 sm:px-2.5 py-3.5 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full md:w-[200px] h-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
             >
               <option value='mathematics' className='h-full'>
                 Mathematics
@@ -87,13 +49,15 @@ const Students = () => {
               </option>
             </select>
 
-            <SearchInput
-              shape='rounded-lg'
-              placeholder='Search'
-              searchResults={searchResults}
-              setSearchResults={setSearchResults}
-              initialData={data}
-            />
+            <div className=''>
+              <SearchInput
+                shape='rounded-lg'
+                placeholder='Search'
+                searchResults={searchResults}
+                setSearchResults={setSearchResults}
+                initialData={[]}
+              />
+            </div>
           </div>
           <TableReuse data={searchResults} columns={columns} action={false} />
         </div>

@@ -10,7 +10,7 @@ const Assessments = () => {
   const router = useRouter();
   return (
     <TeachersWrapper title='Assessments' metaTitle='Olive Groove ~ Assessments'>
-      <div className='p-12 space-y-5'>
+      <div className='space-y-5'>
         {/* Title */}
         <div className='flex items-center justify-between'>
           <div className='flex flex-col'>
@@ -21,7 +21,11 @@ const Assessments = () => {
               Manage, create and access assessments.
             </span>
           </div>
-          <Button size='md' width='fit' onClick={() => router.push(`/teachers/assessments/create`)}>
+          <Button
+            size='xs'
+            width='fit'
+            onClick={() => router.push(`/teachers/assessments/create`)}
+          >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='20'
@@ -39,7 +43,10 @@ const Assessments = () => {
         </div>
 
         {Object.keys(subjectData).map((week, index) => (
-          <div key={index} className='grid grid-cols-3 gap-8 !my-14'>
+          <div
+            key={index}
+            className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8'
+          >
             {subjectData[week].map((subject, sIndex) => (
               <AssessmentCard
                 key={sIndex}

@@ -23,26 +23,26 @@ const AssessmentCard: React.FC<SubjectProps> = ({
   btnLink2,
 }) => {
   return (
-    <div className='flex flex-col justify-center gap-6 border-[1.2px] border-dark/30 rounded-xl p-6 shadow-md w-full'>
+    <div className='flex flex-col justify-center gap-6 border-[1.2px] border-dark/30 rounded-lg px-4 py-4 shadow-md w-full'>
       <div className='flex items-start justify-between'>
         <div className='flex items-center gap-3'>
           <Image
             src={img}
             alt='Profile Pics'
-            className='shadow w-16 h-16 object-cover rounded-full'
+            className='shadow w-12 h-12 object-cover rounded-full'
           />
           <div className='flex flex-col justify-center'>
-            <span className='text-dark text-lg font-roboto leading-5'>
+            <span className='text-dark text-sm md:text-base font-roboto leading-5'>
               {name}
             </span>
-            <span className='text-subtext'>{role}</span>
+            <span className='text-subtext text-xs sm:text-sm'>{role}</span>
           </div>
         </div>
-        <div className='flex items-center justify-center rounded-full cursor-pointer bg-white border-2 h-10 w-10'>
+        <div className='flex items-center justify-center rounded-full cursor-pointer bg-white border-2 h-9 w-9'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
-            width='24'
-            height='24'
+            width='20'
+            height='20'
             viewBox='0 0 24 24'
             fill='none'
           >
@@ -53,19 +53,19 @@ const AssessmentCard: React.FC<SubjectProps> = ({
           </svg>
         </div>
       </div>
-      <div className='flex flex-col justify-center '>
-        <span className='text-dark text-2xl font-medium font-roboto'>
+      <div className='flex flex-col justify-center'>
+        <span className='text-dark text-sm sm:text-base md:text-lg font-medium font-roboto'>
           {subject}
         </span>
 
-        <div className='flex items-center space-x-6'>
-          <span className='flex gap-1 text-base text-subtext'>
+        <div className='flex flex-col justify-center'>
+          <span className='flex gap-1 text-sm md:text-base text-subtext'>
             <b className='font-roboto font-medium text-dark'>Due:</b>
             {time}
           </span>
-          <span className='flex gap-1 text-base text-subtext'>
+          <span className='flex gap-1 text-sm md:text-base text-subtext'>
             <b className='font-roboto font-medium text-dark'>
-              Type of assessment:
+              Type:
             </b>
             {assessmentType}
           </span>
@@ -73,11 +73,11 @@ const AssessmentCard: React.FC<SubjectProps> = ({
       </div>
 
       <div className='flex items-center gap-4'>
-        <Button size='sm' onClick={btnLink1}>
+        <Button size='xs' width='fit' onClick={btnLink1}>
           Submissions
         </Button>
 
-        <Button onClick={btnLink2} width='fit' size='sm' color='outline'>
+        <Button onClick={btnLink2} width='fit' size='xs' color='outline'>
           Edit Questions
         </Button>
       </div>
