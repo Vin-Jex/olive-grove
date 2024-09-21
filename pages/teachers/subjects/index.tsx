@@ -17,6 +17,7 @@ import Image from "next/image";
 import CreateClassModal from "@/components/Molecules/Modal/CreateClassModal";
 import { baseUrl } from "@/components/utils/baseURL";
 import coursePlaceholder from "@/images/course-placeholder.png";
+import CourseModal from "@/components/Molecules/Modal/CourseModal";
 
 const subjects: TCourse[] = [
   {
@@ -104,11 +105,8 @@ const Subjects = () => {
   });
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [formState, setFormState] = useState({
-    class: "",
+    title: "",
     description: "",
-    duration: "",
-    meetingLink: "",
-    video: "",
   });
   const [createCourseRes, setCreateCourseRes] = useState<
     TFetchState<TCourse | undefined>
@@ -217,7 +215,7 @@ const Subjects = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: formState.class,
+        title: formState.title,
         description: formState.description,
       }),
     });
@@ -280,7 +278,7 @@ const Subjects = () => {
 
   return (
     <>
-      <CreateClassModal
+      <CourseModal
         formState={formState}
         setFormState={setFormState}
         type="course"
