@@ -15,24 +15,30 @@ export type TCourse = {
 export type TChapter = {
   _id: string;
   title: string;
+  description?: string;
   lessons: TLesson[];
 };
 
 export type TLesson = {
   _id: string;
   title: string;
+  description?: string;
   sections: TSection[];
 };
 
 export type TSection = {
   _id: string;
   title: string;
+  notes?: string;
+  videoUrl?: string;
+  youtubeUrl?: string;
   subsections: TSubSection[];
 };
 
 export type TSubSection = {
   _id: string;
   title: string;
+  description?: string;
 };
 
 export type TResponse<T> = {

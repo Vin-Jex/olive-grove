@@ -85,9 +85,12 @@ export default function CourseModal({
   };
 
   const actionProps: Omit<ButtonProps, "children"> = {
-    onClick: () => {
+    onClick: async () => {
       /// * Make the request to handle the form submission
-      const result = handleAction && handleAction();
+      const result = handleAction && (await handleAction());
+
+      console.log("Reached here...");
+      console.log("result", result);
 
       // * If the request was completed successfully, close the modal
       if (result) handleModalClose();
@@ -134,7 +137,7 @@ export default function CourseModal({
 
           <TextEditor
             value={formState.description}
-            placeholder={`${capitalize(type)} Description ${
+            placeholder={`${capitalize(type)} Description${
               type === "topic" ? "/Notes" : ""
             }`}
             onChange={(e: any) => {

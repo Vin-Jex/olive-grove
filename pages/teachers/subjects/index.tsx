@@ -14,10 +14,10 @@ import {
   TSubject,
 } from "@/components/utils/types";
 import Image from "next/image";
-import CreateClassModal from "@/components/Molecules/Modal/CreateClassModal";
 import { baseUrl } from "@/components/utils/baseURL";
 import coursePlaceholder from "@/images/course-placeholder.png";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
+import { useRouter } from "next/navigation";
 
 const subjects: TCourse[] = [
   {
@@ -74,9 +74,14 @@ class CourseClass implements TCourse {
 }
 
 const Course: FC<{ course: TCourse }> = ({ course }) => {
+  const router = useRouter();
+
   return (
-    <div className="flex rounded-lg overflow-hidden flex-col items-center w-full border border-[#1E1E1E33]">
-      <div className="w-full h-[225px]">
+    <div className="flex rounded-lg overflow-hidden flex-col items-center w-full border border-[#1E1E1E33] cursor-pointer transition hover:scale-105">
+      <div
+        className="w-full h-[225px] cursor-pointer"
+        onClick={() => router.push(`/teachers/subjects/${course._id}`)}
+      >
         <Image
           src={course.image || coursePlaceholder.src}
           width={266}

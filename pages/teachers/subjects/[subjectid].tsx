@@ -2,34 +2,32 @@ import React, {
   FC,
   ReactNode,
   Reducer,
-  ReducerWithoutAction,
   useEffect,
   useReducer,
   useState,
 } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
-import SearchInput from "@/components/Atoms/SearchInput";
-import Img from "@/public/image/student3.png";
 import Button from "@/components/Atoms/Button";
-import Select from "@/components/Atoms/Select";
-import dummy_subject_img from "../../images/olive-groove-subject.png";
 import {
   TChapter,
   TCourse,
   TFetchState,
-  THandleSearchChange,
   TLesson,
   TResponse,
   TSection,
-  TSubject,
-  TSubSection,
 } from "@/components/utils/types";
-import Image from "next/image";
-import CreateClassModal from "@/components/Molecules/Modal/CreateClassModal";
 import { baseUrl } from "@/components/utils/baseURL";
 import { useRouter } from "next/router";
+import { useRouter as useNavRouter } from "next/navigation";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
+import Tab, { TTabBody } from "@/components/Molecules/Tab/Tab";
+import Video from "next-video";
+
+const demoNotes = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus lacus, dignissim commodo dictum aliquam, maximus nec mauris. Phasellus sed nisl dignissim erat eleifend congue. Nullam ultricies est a tempus varius. Phasellus vitae massa rutrum, elementum urna sed, volutpat urna. Nam at nulla dui. Suspendisse aliquet metus purus, eget ultrices tellus pharetra eget. Proin dictum urna non aliquet pellentesque. Nunc dapibus gravida justo eu finibus.
+<br />
+<br />
+Duis dapibus purus tristique eros rutrum placerat. Sed et congue augue. Vivamus hendrerit quam vel justo rutrum hendrerit sed a enim. Curabitur a placerat mauris, eu efficitur turpis. Suspendisse tempus, dolor et imperdiet imperdiet, neque nibh mollis dolor, sed laoreet ex lacus id dolor. Aliquam pellentesque nunc ac feugiat tempus. Nulla blandit magna non nulla luctus sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos`;
 
 type courseReducerActionTypes =
   | "FETCHING_COURSE"
@@ -37,7 +35,10 @@ type courseReducerActionTypes =
   | "ADD_COURSE"
   | "CREATE_CHAPTER"
   | "CREATE_LESSON"
-  | "CREATE_TOPIC";
+  | "CREATE_TOPIC"
+  | "EDIT_CHAPTER"
+  | "EDIT_LESSON"
+  | "EDIT_TOPIC";
 
 type CourseDispatcher = React.Dispatch<{
   type: courseReducerActionTypes;
@@ -73,12 +74,24 @@ const courseReducer: Reducer<
   }
 
   if (action.type === "CREATE_CHAPTER") {
+    // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
-    modifiedCourse.chapters?.push({
-      _id: action.payload._id || "",
-      title: action.payload?.title || "",
-      lessons: [],
-    });
+
+    // * Search if a chapter with this id has been previously created
+    const chapterExists = modifiedCourse.chapters?.find(
+      (chapter) => chapter._id === action.payload._id
+    );
+
+    // * If the chapter with this id hasn't been created, create one
+    if (!chapterExists) {
+      modifiedCourse.chapters?.push({
+        _id: action.payload._id || "",
+        title: action.payload?.title || "",
+        lessons: [],
+      });
+
+      console.log("Created chapter");
+    }
 
     return {
       data: modifiedCourse,
@@ -88,15 +101,28 @@ const courseReducer: Reducer<
   }
 
   if (action.type === "CREATE_LESSON") {
+    // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
+
+    // * Retrieve the chapter which the lesson will be created in
     const chapterToUpdate = modifiedCourse.chapters?.find(
       (chapter) => chapter._id === action.payload.parentId
     );
-    chapterToUpdate?.lessons.push({
-      _id: action.payload._id || "",
-      title: action.payload?.title || "",
-      sections: [],
-    });
+
+    // * Check if a lesson with this id has been previously created
+    const createdLesson = chapterToUpdate?.lessons?.find(
+      (lesson) => lesson._id === action.payload?._id
+    );
+
+    // * If the lesson hasn't been created, create it and add it to the list of lessons under this chapter
+    if (!createdLesson) {
+      chapterToUpdate?.lessons.push({
+        _id: action.payload._id || "",
+        title: action.payload?.title || "",
+        sections: [],
+      });
+      console.log("Created lesson");
+    }
 
     return {
       data: modifiedCourse,
@@ -106,15 +132,35 @@ const courseReducer: Reducer<
   }
 
   if (action.type === "CREATE_TOPIC") {
+    // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
-    const chapterToUpdate = modifiedCourse.chapters?.find(
-      (chapter) => chapter._id === action.payload.parentId
-    );
-    chapterToUpdate?.lessons.push({
-      _id: action.payload._id || "",
-      title: action.payload?.title || "",
-      sections: [],
-    });
+
+    // * Loop through each chapter in the course
+    for (const chapter of modifiedCourse?.chapters || []) {
+      // * Search for the lesson which the topic/section will be created in/added to
+      const lessonToUpdate = chapter.lessons.find(
+        (lesson) => lesson._id === action.payload.parentId
+      );
+
+      // * If the lesson which the topic will be added to exists
+      if (lessonToUpdate) {
+        // * Check if this topic/section has been previously created
+        const sectionExists = lessonToUpdate?.sections?.find(
+          (section) => section._id === action.payload._id
+        );
+
+        // * If the topic with this id hasn't been created in this lesson yet, create it
+        if (!sectionExists) {
+          lessonToUpdate?.sections?.push({
+            _id: action.payload._id || "",
+            title: action.payload?.title || "",
+            subsections: [],
+          });
+          console.log("Created topic");
+          break;
+        }
+      }
+    }
 
     return {
       data: modifiedCourse,
@@ -126,8 +172,201 @@ const courseReducer: Reducer<
   return { data: state.data, loading: false, error: false };
 };
 
-const Course: FC<{ course: TCourse }> = ({ course }) => {
-  return <div>Course - {course.title}</div>;
+/**
+ * * Function responsible for creating a new chapter/lesson/topic - Making the API request to the endpoint required to create any of the items
+ * @returns void
+ */
+const editItem = async (
+  type: "chapter" | "lesson" | "topic",
+  setEditItemRes: React.Dispatch<
+    React.SetStateAction<TFetchState<TCourse | undefined>>
+  >,
+  reqData: { _id: string; title: string; description: string },
+  dispatch: CourseDispatcher
+) => {
+  // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
+  setEditItemRes({
+    data: undefined,
+    loading: true,
+    error: false,
+  });
+
+  // * Make an API request to create this item
+  const response = await fetch(
+    `${baseUrl}/courses/${
+      type === "chapter"
+        ? "chapters"
+        : type === "lesson"
+        ? "lessons"
+        : type === "topic"
+        ? "section"
+        : ""
+    }/${reqData._id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: reqData.title,
+        description: reqData.description,
+      }),
+    }
+  );
+
+  // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
+  if (!response.ok) {
+    // * If it's a 400 error, display message that the input details are incomplete
+    if (response.status == 400) {
+      const data = (await response.json()) as TResponse<any>;
+      setEditItemRes({
+        data: undefined,
+        loading: false,
+        error: data.message,
+      });
+      return false;
+    }
+
+    // * If it's any other error code, display default error msg
+    setEditItemRes({
+      data: undefined,
+      loading: false,
+      error: `An error occurred while editing the ${type}`,
+    });
+
+    console.error("Returned false");
+    return false;
+  }
+
+  // * Update the existing data with that returned by the API request
+  const responseData = (await response.json()) as TResponse<TCourse>;
+  setEditItemRes({
+    data: responseData.data,
+    loading: false,
+    error: false,
+  });
+
+  // * Edit an existing item (chapter/lesson/topic) with the details of the updated item to the Course reducer
+  dispatch({
+    type:
+      type === "chapter"
+        ? "EDIT_CHAPTER"
+        : type === "lesson"
+        ? "EDIT_LESSON"
+        : type === "topic"
+        ? "EDIT_TOPIC"
+        : "EDIT_CHAPTER",
+    payload: {
+      title: responseData.data.title,
+      description: responseData.data.description,
+      _id: responseData.data._id,
+    },
+  });
+  console.log("Adding " + type);
+
+  return true;
+};
+
+const TopicVideo: FC<{ url?: string }> = ({ url }) => {
+  return (
+    <div className="rounded-2xl overflow-hidden">
+      <Video
+        src={
+          url ||
+          "https://videos.pexels.com/video-files/9559153/9559153-uhd_2732_1440_25fps.mp4"
+        }
+        accentColor="#02E7F5"
+        primaryColor="#FFFFFF"
+        controls={true}
+        className="!w-full"
+        autoPlay
+      />
+    </div>
+  );
+};
+
+const TopicDetails: FC<{ course: TCourse }> = ({ course }) => {
+  const router = useRouter();
+  const { topic } = router.query;
+  const [topicDetails, setTopicDetails] = useState<{
+    path: [string, string, string];
+    topic: TSection;
+  }>();
+
+  const tabBody: TTabBody[] = [
+    {
+      slug: "video",
+      content: <TopicVideo url={topicDetails?.topic?.videoUrl || ""} />,
+    },
+    {
+      slug: "notes",
+      content: (
+        <div
+          dangerouslySetInnerHTML={{
+            __html: topicDetails?.topic.notes || demoNotes,
+          }}
+        ></div>
+      ),
+    },
+  ];
+
+  /**
+   * * Function responsible for returning the details of the topic to be displayed
+   */
+  const getTopic = () => {
+    // * Loop through each chapter in the course
+    for (const chapter of course.chapters) {
+      // * Loop through each lesson in each chapter
+      for (const lesson of chapter.lessons) {
+        // * Search for the topic with the id passed in the query in the list of topics under the current lesson
+        const section = lesson.sections.find(
+          (section) => section._id === topic
+        );
+
+        // * If the topic was found, update the topic details state and break the loop
+        if (section) {
+          setTopicDetails({
+            path: [chapter.title, lesson.title, section?.title],
+            topic: section,
+          });
+          break;
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    getTopic();
+  }, [router.asPath]);
+
+  return (
+    <>
+      {topicDetails ? (
+        <div className="flex flex-col w-full gap-4">
+          {/* BREADCRUMB */}
+          <div className="font-thin flex gap-1 w-full">
+            {topicDetails.path.map((crumb, i) => (
+              <span key={i}>
+                {crumb} {i != topicDetails.path.length - 1 ? "/" : ""}
+              </span>
+            ))}
+          </div>
+          {/* TITLE */}
+          <div className="text-3xl font-bold">{topicDetails.topic.title}</div>
+          {/* TAB */}
+          <Tab
+            slugs={[
+              { name: "topic video", key: "video" },
+              { name: "topic notes", key: "notes" },
+            ]}
+            body={tabBody}
+          />
+        </div>
+      ) : (
+        <div>No topic found...</div>
+      )}
+    </>
+  );
 };
 
 const Chapter: FC<{
@@ -167,7 +406,38 @@ const Lesson: FC<{
 };
 
 const Topic: FC<{ topic: TSection }> = ({ topic }) => {
-  return <div>{topic.title}</div>;
+  const navRouter = useNavRouter();
+  const router = useRouter();
+  const isActive = router.query.topic === topic._id;
+
+  return (
+    <div
+      onClick={() =>
+        navRouter.push(
+          `/teachers/subjects/${router.query.subjectid}/?topic=${topic._id}`
+        )
+      }
+      className={`flex items-center gap-4 px-3 ${
+        isActive ? "text-primary" : "text-[#1E1E1E80]"
+      } cursor-pointer`}
+    >
+      <svg
+        width="15"
+        height="16"
+        viewBox="0 0 15 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="transition hover:scale-125 cursor-pointer"
+      >
+        <path
+          d="M1.66667 13.8333H2.85417L11 5.6875L9.8125 4.5L1.66667 12.6458V13.8333ZM0 15.5V11.9583L11 0.979167C11.1667 0.826389 11.3508 0.708333 11.5525 0.625C11.7542 0.541667 11.9658 0.5 12.1875 0.5C12.4097 0.5 12.625 0.541667 12.8333 0.625C13.0417 0.708333 13.2222 0.833333 13.375 1L14.5208 2.16667C14.6875 2.31944 14.8092 2.5 14.8858 2.70833C14.9625 2.91667 15.0006 3.125 15 3.33333C15 3.55556 14.9617 3.7675 14.885 3.96917C14.8083 4.17083 14.6869 4.35472 14.5208 4.52083L3.54167 15.5H0ZM10.3958 5.10417L9.8125 4.5L11 5.6875L10.3958 5.10417Z"
+          fill="#32A8C4"
+        />
+      </svg>
+
+      {topic.title}
+    </div>
+  );
 };
 
 const Wrapper: FC<{
@@ -179,7 +449,7 @@ const Wrapper: FC<{
   const [hideChildren, setHideChildren] = useState(true);
 
   return (
-    <div className="w-full rounded border border-light-dark p-3">
+    <div className="w-full rounded border border-[#1E1E1E26] p-3">
       <div
         className="flex  w-full justify-between items-center cursor-pointer"
         {...(type === "add"
@@ -206,15 +476,16 @@ const Wrapper: FC<{
 
           {type == "section" && (
             <svg
-              width="14"
+              width="15"
               height="16"
-              viewBox="0 0 14 16"
+              viewBox="0 0 15 16"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              className="transition hover:scale-125 cursor-pointer"
             >
               <path
-                d="M2.83333 15.5C2.37499 15.5 1.98249 15.3367 1.65583 15.01C1.32916 14.6833 1.16611 14.2911 1.16666 13.8333V3H0.333328V1.33333H4.49999V0.5H9.49999V1.33333H13.6667V3H12.8333V13.8333C12.8333 14.2917 12.67 14.6842 12.3433 15.0108C12.0167 15.3375 11.6244 15.5006 11.1667 15.5H2.83333ZM11.1667 3H2.83333V13.8333H11.1667V3ZM4.49999 12.1667H6.16666V4.66667H4.49999V12.1667ZM7.83333 12.1667H9.49999V4.66667H7.83333V12.1667Z"
-                fill="#FF3B3B"
+                d="M1.66667 13.8333H2.85417L11 5.6875L9.8125 4.5L1.66667 12.6458V13.8333ZM0 15.5V11.9583L11 0.979167C11.1667 0.826389 11.3508 0.708333 11.5525 0.625C11.7542 0.541667 11.9658 0.5 12.1875 0.5C12.4097 0.5 12.625 0.541667 12.8333 0.625C13.0417 0.708333 13.2222 0.833333 13.375 1L14.5208 2.16667C14.6875 2.31944 14.8092 2.5 14.8858 2.70833C14.9625 2.91667 15.0006 3.125 15 3.33333C15 3.55556 14.9617 3.7675 14.885 3.96917C14.8083 4.17083 14.6869 4.35472 14.5208 4.52083L3.54167 15.5H0ZM10.3958 5.10417L9.8125 4.5L11 5.6875L10.3958 5.10417Z"
+                fill="#32A8C4"
               />
             </svg>
           )}
@@ -346,11 +617,23 @@ const Add: FC<{
         _id: responseData.data._id,
       },
     });
+    console.log("Adding " + type);
 
     return true;
   };
 
+  /**
+   * Function responsible for opening the modal
+   */
   const onAdd = () => {
+    setOpenModalCreate((prev) => !prev);
+  };
+
+  /**
+   * Function responsible for closing the modal and clearing the form state
+   */
+  const closeModal = () => {
+    setFormState({ title: "", description: "" });
     setOpenModalCreate((prev) => !prev);
   };
 
@@ -361,7 +644,7 @@ const Add: FC<{
           formState={formState}
           setFormState={setFormState}
           type={type}
-          handleModalClose={() => setOpenModalCreate((prev) => !prev)}
+          handleModalClose={closeModal}
           modalOpen={openModalCreate}
           mode="create"
           handleAction={createNew}
@@ -506,7 +789,7 @@ const Subject = () => {
                 </div>
               </div>
 
-              <div className="flex items-stretch ">
+              <div className="flex items-stretch gap-4">
                 {/* SIDEBAR */}
                 <div className="flex-none">
                   <SideBar
@@ -517,7 +800,7 @@ const Subject = () => {
                 </div>
                 {/* COURSE */}
                 <div className="flex-1">
-                  <Course course={course.data} />
+                  <TopicDetails course={course.data} />
                 </div>
               </div>
             </>
