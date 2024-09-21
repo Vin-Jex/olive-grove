@@ -5,7 +5,7 @@ import React, {
   useState,
 } from "react";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   size?: "xs" | "sm" | "md" | "lg";
   color?: "blue" | "outline" | "red" | "yellow";
