@@ -9,30 +9,36 @@ export type TCourse = {
   title: string;
   description: string;
   image?: string;
-  chapters: [
-    {
-      _id: string;
-      title: string;
-      lessons: [
-        {
-          _id: string;
-          title: string;
-          sections: [
-            {
-              _id: string;
-              title: string;
-              subsections: [
-                {
-                  _id: string;
-                  title: string;
-                }
-              ];
-            }
-          ];
-        }
-      ];
-    }
-  ];
+  chapters: TChapter[];
+};
+
+export type TChapter = {
+  _id: string;
+  title: string;
+  description?: string;
+  lessons: TLesson[];
+};
+
+export type TLesson = {
+  _id: string;
+  title: string;
+  description?: string;
+  sections: TSection[];
+};
+
+export type TSection = {
+  _id: string;
+  title: string;
+  notes?: string;
+  videoUrl?: string;
+  youtubeUrl?: string;
+  subsections: TSubSection[];
+};
+
+export type TSubSection = {
+  _id: string;
+  title: string;
+  description?: string;
 };
 
 export type TResponse<T> = {

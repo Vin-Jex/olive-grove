@@ -30,6 +30,9 @@ const config: Config = {
         light: "#FFF",
         dark: "#1E1E1E",
       },
+      borderColor: {
+        primary: "#32A8C4",
+      },
     },
   },
   plugins: [],
