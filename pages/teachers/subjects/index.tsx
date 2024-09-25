@@ -7,6 +7,7 @@ import Button from "@/components/Atoms/Button";
 import Select from "@/components/Atoms/Select";
 import dummy_subject_img from "../../images/olive-groove-subject.png";
 import {
+  TClass,
   TCourse,
   TFetchState,
   THandleSearchChange,
@@ -16,8 +17,14 @@ import {
 import Image from "next/image";
 import { baseUrl } from "@/components/utils/baseURL";
 import coursePlaceholder from "@/images/course-placeholder.png";
-import CourseModal from "@/components/Molecules/Modal/CourseModal";
+import CourseModal, {
+  TCourseModalFormData,
+} from "@/components/Molecules/Modal/CourseModal";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import Loader from "@/components/Atoms/Loader";
+import NotFoundError from "@/components/Atoms/NotFoundError";
+import ServerError from "@/components/Atoms/ServerError";
 
 const subjects: TCourse[] = [
   {
@@ -106,19 +113,25 @@ const Subjects = () => {
   const [courses, setCourses] = useState<TFetchState<TCourse[]>>({
     data: [],
     loading: false,
-    error: false,
+    error: undefined,
+  });
+  const [classes, setClasses] = useState<TFetchState<TClass[] | undefined>>({
+    data: [],
+    loading: false,
+    error: undefined,
   });
   const [openModalCreate, setOpenModalCreate] = useState(false);
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<Omit<TCourse, "chapters">>({
     title: "",
     description: "",
+    classId: "",
   });
   const [createCourseRes, setCreateCourseRes] = useState<
     TFetchState<TCourse | undefined>
   >({
     data: undefined,
     loading: false,
-    error: false,
+    error: undefined,
   });
 
   /**
@@ -126,12 +139,80 @@ const Subjects = () => {
    * @param filter The filter object, in the case of retriving courses via a filter, e.g. by their title
    */
   const getCourses = async (filter?: { query: "title"; value: string }) => {
+    try {
+      // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
+      setCourses({
+        data: [],
+        loading: true,
+        error: undefined,
+      });
+
+      // * Get the access token from the cookies
+      const jwt = Cookies.get("jwt");
+
+      // * Make an API request to retrieve the list of courses created by this teacher
+      const response = await fetch(
+        `${baseUrl}/courses${
+          filter ? `?${filter?.query}=${filter?.value}` : ""
+        }`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: jwt || "",
+          },
+        }
+      );
+
+      // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
+      if (!response.ok) {
+        // * If it's a 404 error, display message that courses couldn't be found
+        if (response.status == 404) {
+          setCourses({
+            data: [],
+            loading: false,
+            error: "No course found",
+          });
+          return;
+        }
+
+        // * If it's any other error code, display default error msg
+        setCourses({
+          data: [],
+          loading: false,
+          error: "An error occurred while retrieving courses",
+        });
+
+        setSearchResults([]);
+        return;
+      }
+
+      // * Display the list of courses returned by the endpoint
+      const responseData = (await response.json()) as TResponse<TCourse[]>;
+      setCourses({
+        data: responseData.data,
+        loading: false,
+        error: undefined,
+      });
+      setSearchResults(responseData.data);
+    } catch (error) {
+      console.error(error);
+      setCourses({
+        data: [],
+        loading: false,
+        error: "An error occurred while retrieving courses",
+      });
+    }
+
     // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
     setCourses({
       data: [],
       loading: true,
-      error: false,
+      error: undefined,
     });
+
+    // * Get the access token from the cookies
+    const jwt = Cookies.get("jwt");
 
     // * Make an API request to retrieve the list of courses created by this teacher
     const response = await fetch(
@@ -140,6 +221,7 @@ const Subjects = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Authorization: jwt || "",
         },
       }
     );
@@ -148,11 +230,10 @@ const Subjects = () => {
     if (!response.ok) {
       // * If it's a 404 error, display message that courses couldn't be found
       if (response.status == 404) {
-        const data = (await response.json()) as TResponse<TCourse>;
         setCourses({
           data: [],
           loading: false,
-          error: data.message,
+          error: "No course found",
         });
         return;
       }
@@ -173,9 +254,72 @@ const Subjects = () => {
     setCourses({
       data: responseData.data,
       loading: false,
-      error: false,
+      error: undefined,
     });
     setSearchResults(responseData.data);
+  };
+
+  /**
+   * * Function responsible from retrieving the classes on the platform
+   */
+  const getClasses = async (filter?: { query: "title"; value: string }) => {
+    try {
+      // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
+      setClasses({
+        data: [],
+        loading: true,
+        error: undefined,
+      });
+
+      // * Get the access token from the cookies
+      const jwt = Cookies.get("jwt");
+
+      // * Make an API request to retrieve the list of classes created by this teacher
+      const response = await fetch(`${baseUrl}/classes/all`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: jwt || "",
+        },
+      });
+
+      // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
+      if (!response.ok) {
+        // * If it's a 404 error, display message that classes couldn't be found
+        if (response.status == 404) {
+          setClasses({
+            data: [],
+            loading: false,
+            error: "No class found",
+          });
+          return;
+        }
+
+        // * If it's any other error code, display default error msg
+        setClasses({
+          data: [],
+          loading: false,
+          error: "An error occurred while retrieving classes",
+        });
+
+        return;
+      }
+
+      // * Display the list of classes returned by the endpoint
+      const responseData = (await response.json()) as TResponse<TClass[]>;
+      setClasses({
+        data: responseData.data,
+        loading: false,
+        error: undefined,
+      });
+    } catch (error) {
+      console.error(error);
+      setClasses({
+        data: undefined,
+        loading: false,
+        error: "An error occurred while fetching classes",
+      });
+    }
   };
 
   /**
@@ -206,79 +350,108 @@ const Subjects = () => {
    * @returns void
    */
   const createCourse = async () => {
-    // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
-    setCreateCourseRes({
-      data: undefined,
-      loading: true,
-      error: false,
-    });
+    try {
+      // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
+      setCreateCourseRes({
+        data: undefined,
+        loading: true,
+        error: undefined,
+      });
 
-    // * Make an API request to retrieve the list of courses created by this teacher
-    const response = await fetch(`${baseUrl}/courses`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: formState.title,
-        description: formState.description,
-      }),
-    });
+      // * Get the access token from the cookies
+      const jwt = Cookies.get("jwt");
 
-    // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
-    if (!response.ok) {
-      // * If it's a 400 error, display message that the input details are incomplete
-      if (response.status == 400) {
-        const data = (await response.json()) as TResponse<any>;
+      // * Make an API request to retrieve the list of courses created by this teacher
+      const response = await fetch(`${baseUrl}/courses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: jwt || "",
+        },
+        body: JSON.stringify({
+          title: formState.title,
+          description: formState.description,
+          classId: formState.classId,
+        }),
+      });
+
+      // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
+      if (!response.ok) {
+        // * If it's a 400 error, display message that the input details are incomplete
+        if (response.status == 400) {
+          // const data = (await response.json()) as TResponse<any>;
+          setCreateCourseRes({
+            data: undefined,
+            loading: false,
+            error: "Invalid form data passed",
+          });
+          return false;
+        }
+
+        // * If it's any other error code, display default error msg
         setCreateCourseRes({
           data: undefined,
           loading: false,
-          error: data.message,
+          error: "An error occurred while creating the course",
         });
+
         return false;
       }
 
-      // * If it's any other error code, display default error msg
+      // * Update the existing data with that returned by the API request
+      const responseData = (await response.json()) as TResponse<TCourse>;
+      setCreateCourseRes({
+        data: responseData.data,
+        loading: false,
+        error: undefined,
+      });
+
+      // * Add a new course with the details of the newly created course to the list of courses
+      const newCourses = [
+        ...courses.data,
+        new CourseClass(
+          responseData.data.title,
+          responseData.data.description || "",
+          responseData.data._id || "",
+          []
+        ),
+      ];
+
+      // * Add the newly created course to the list of courses
+      setCourses((prev) => ({
+        ...prev,
+        data: newCourses,
+      }));
+      setSearchResults(newCourses);
+
+      return true;
+    } catch (error) {
+      console.error(error);
       setCreateCourseRes({
         data: undefined,
         loading: false,
         error: "An error occurred while creating the course",
       });
-
       return false;
     }
+  };
 
-    // * Update the existing data with that returned by the API request
-    const responseData = (await response.json()) as TResponse<TCourse>;
-    setCreateCourseRes({
-      data: responseData.data,
-      loading: false,
-      error: false,
+  /**
+   * * Function responsible for closing the modal and clearing the form state
+   */
+  const handleCloseModal = () => {
+    setFormState({
+      title: "",
+      classId: "",
+      description: "",
     });
-
-    // * Add a new course with the details of the newly created course to the list of courses
-    const newCourses = [
-      ...courses.data,
-      new CourseClass(
-        responseData.data.title,
-        responseData.data.description,
-        responseData.data._id,
-        []
-      ),
-    ];
-
-    // * Add the newly created course to the list of courses
-    setCourses((prev) => ({
-      ...prev,
-      data: newCourses,
-    }));
-    setSearchResults(newCourses);
-
-    return true;
+    setOpenModalCreate((prev) => !prev);
+    setCreateCourseRes({ data: undefined, error: undefined, loading: false });
   };
 
   useEffect(() => {
     getCourses();
+    getClasses();
   }, []);
 
   return (
@@ -287,11 +460,12 @@ const Subjects = () => {
         formState={formState}
         setFormState={setFormState}
         type="course"
-        handleModalClose={() => setOpenModalCreate((prev) => !prev)}
+        handleModalClose={handleCloseModal}
         modalOpen={openModalCreate}
         mode="create"
         handleAction={createCourse}
         requestState={createCourseRes}
+        classes={classes.data?.map((each) => each._id)}
       />
 
       <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
@@ -309,7 +483,7 @@ const Subjects = () => {
             <Button
               onClick={() => setOpenModalCreate((prev) => !prev)}
               width="fit"
-              size="sm"
+              size="xs"
               color="outline"
             >
               <svg
@@ -335,11 +509,15 @@ const Subjects = () => {
                   options={["jss 1", "jss 2", "jss 3", "ss 1", "ss 2", "ss 3"]}
                   name="class"
                   required
+                  onChange={() => {}}
+                  placeholder="Select class"
                 />
                 <Select
                   options={["physics", "further mathematics"]}
                   name="subject"
                   required
+                  onChange={() => {}}
+                  placeholder="Select subject"
                 />
               </div>
 
@@ -356,16 +534,23 @@ const Subjects = () => {
             </div>
 
             {courses.loading ? (
-              <div className="w-full h-full flex items-center justify-center">
-                Loading...
-              </div>
+              <Loader />
             ) : courses.error ? (
               <div className="w-full h-full flex items-center justify-center">
-                {courses.error}
+                {typeof courses.error === "object" &&
+                  (courses.error.status === 404 ? (
+                    <>
+                      <NotFoundError msg={courses.error.message} />
+                    </>
+                  ) : (
+                    <>
+                      <ServerError msg={courses.error.message} />
+                    </>
+                  ))}
               </div>
             ) : searchResults.length < 1 ? (
               <div className="w-full h-full flex items-center justify-center">
-                No data found...
+                <NotFoundError msg="No courses found" />
               </div>
             ) : (
               <>

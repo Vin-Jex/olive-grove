@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import Modal from "./Modal";
 import Button, { ButtonProps } from "@/components/Atoms/Button";
 import Input from "@/components/Atoms/Input";
@@ -6,32 +6,33 @@ import TextEditor from "@/components/Atoms/TextEditor";
 import File from "@/components/Atoms/File";
 import { title } from "process";
 import { capitalize } from "@/components/utils/utils";
-import { TFetchState } from "@/components/utils/types";
+import {
+  TChapter,
+  TClass,
+  TCourse,
+  TFetchState,
+  TLesson,
+  TSection,
+} from "@/components/utils/types";
+import Select from "@/components/Atoms/Select";
 
-type ClassModalProps = {
+export type TCourseModalFormData =
+  | Omit<TCourse, "chapters">
+  | Omit<TChapter, "lessons">
+  | Omit<TLesson, "sections">
+  | Omit<TSection, "subsections">;
+
+type CourseModalProps = {
   modalOpen: boolean;
   handleModalClose: () => void;
-  handleDelete?: () => void;
-  handleAction?: () => Promise<boolean>;
+  handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
+  handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
   type: "course" | "chapter" | "lesson" | "topic";
   mode: "create" | "edit";
-  formState: {
-    title: string;
-    description: string;
-    image?: string;
-    notes?: string;
-    video?: string;
-  };
-  setFormState: React.Dispatch<
-    React.SetStateAction<{
-      title: string;
-      description: string;
-      image?: string;
-      notes?: string;
-      video?: string;
-    }>
-  >;
+  formState: TCourseModalFormData;
+  setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
   requestState?: TFetchState<any>;
+  classes?: string[];
 };
 
 export default function CourseModal({
@@ -44,12 +45,16 @@ export default function CourseModal({
   setFormState,
   requestState,
   mode,
-}: ClassModalProps) {
+  classes,
+}: CourseModalProps) {
   const [selectedImage, setSelectedImage] = useState<
     Blob | null | string | undefined
   >(null);
   const [fileName, setFileName] = useState("");
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
+
+  const textEditorValue =
+    type === "topic" ? "topicNote" : type === "course" ? "description" : "";
 
   const resetImageField = () => {
     setSelectedImage(null);
@@ -85,18 +90,34 @@ export default function CourseModal({
   };
 
   const actionProps: Omit<ButtonProps, "children"> = {
-    onClick: async () => {
+    onClick: async (e) => {
+      console.log("Onsubmit: Form state", formState);
+      // * Prevent's the page from getting reloaded on submit
+      e.preventDefault();
       /// * Make the request to handle the form submission
-      const result = handleAction && (await handleAction());
-
-      console.log("Reached here...");
-      console.log("result", result);
-
+      const result = handleAction && (await handleAction(formState));
       // * If the request was completed successfully, close the modal
       if (result) handleModalClose();
     },
     disabled: requestState?.loading || false,
   };
+
+  const deleteActionProps: Omit<ButtonProps, "children"> = {
+    onClick: async (e) => {
+      console.log("Onsubmit: Form state", formState);
+      // * Prevent's the page from getting reloaded on submit
+      e.preventDefault();
+      /// * Make the request to handle the form submission
+      const result = handleDelete && (await handleDelete(formState));
+      // * If the request was completed successfully, close the modal
+      if (result) handleModalClose();
+    },
+    disabled: requestState?.loading || false,
+  };
+
+  useEffect(() => {
+    console.log("FORM STATE", formState);
+  }, []);
 
   return (
     <div>
@@ -109,22 +130,17 @@ export default function CourseModal({
           <span className="text-2xl text-dark font-semibold font-roboto capitalize">
             {capitalize(mode)} {capitalize(type)}
           </span>
-          <div className="flex items-center justify-center rounded-full cursor-pointer bg-white shadow-lg border h-10 w-10">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="15"
-              height="16"
-              viewBox="0 0 17 19"
-              fill="none"
-            >
-              <path
-                d="M3.29169 18.875C2.71877 18.875 2.22815 18.6708 1.81981 18.2625C1.41148 17.8542 1.20766 17.3639 1.20835 16.7917V3.25H0.166687V1.16667H5.37502V0.125H11.625V1.16667H16.8334V3.25H15.7917V16.7917C15.7917 17.3646 15.5875 17.8552 15.1792 18.2635C14.7709 18.6719 14.2806 18.8757 13.7084 18.875H3.29169ZM13.7084 3.25H3.29169V16.7917H13.7084V3.25ZM5.37502 14.7083H7.45835V5.33333H5.37502V14.7083ZM9.54169 14.7083H11.625V5.33333H9.54169V14.7083Z"
-                fill="#32A8C4"
-              />
-            </svg>
-          </div>
         </div>
         <form className="flex flex-col justify-center py-5 md:py-[40px] px-4 md:px-6 w-full space-y-6">
+          {type === "course" && (
+            <Select
+              name="classId"
+              options={classes || []}
+              required
+              placeholder="Select class"
+              onChange={handleChange}
+            />
+          )}
           <Input
             type="text"
             name="title"
@@ -135,18 +151,24 @@ export default function CourseModal({
             className="input"
           />
 
-          <TextEditor
-            value={formState.description}
-            placeholder={`${capitalize(type)} Description${
-              type === "topic" ? "/Notes" : ""
-            }`}
-            onChange={(e: any) => {
-              setFormState((prevState: any) => ({
-                ...prevState,
-                description: e,
-              }));
-            }}
-          />
+          {(type === "topic" || type === "course") && (
+            <TextEditor
+              value={(formState as any)[textEditorValue]}
+              placeholder={`${capitalize(type)} ${
+                type === "topic"
+                  ? "Notes"
+                  : type === "course"
+                  ? "Description"
+                  : ""
+              }`}
+              onChange={(e: any) => {
+                setFormState((prevState: any) => ({
+                  ...prevState,
+                  [textEditorValue]: e,
+                }));
+              }}
+            />
+          )}
 
           {type === "topic" && (
             <File
@@ -167,9 +189,14 @@ export default function CourseModal({
             </div>
           )}
           <div className="flex items-center space-x-5 w-full">
-            <Button size="sm" color="outline" {...actionProps}>
+            <Button size="xs" color="outline" {...actionProps}>
               Save
             </Button>
+            {handleDelete && (
+              <Button size="xs" color="red" {...deleteActionProps}>
+                Delete
+              </Button>
+            )}
           </div>
         </form>
       </Modal>

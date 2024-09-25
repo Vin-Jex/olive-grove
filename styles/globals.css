@@ -4,7 +4,7 @@
 
 @layer components {
   a.link {
-    @apply text-primary underline underline-offset-2
+    @apply text-primary underline underline-offset-2;
   }
 }
 
@@ -68,7 +68,6 @@
   @apply w-[700px];
 }
 
-
 .sidebar-nav.active ul li a {
   @apply text-subtext/60 font-medium font-roboto text-xl flex items-center mr-4 no-underline opacity-100;
 }
@@ -120,7 +119,6 @@ sidebar-nav.active ul li a span {
   @apply flex items-center justify-start w-full px-6 relative space-x-2;
 }
 
-
 .dashboard_logout .sign-out {
   @apply text-subtext text-[1.5rem] bg-transparent rounded-[0.6rem];
 }
@@ -130,7 +128,7 @@ sidebar-nav.active ul li a span {
 }
 
 .sidebar-nav .btn-logout span {
-  @apply text-center transition-all duration-300 ease-linear opacity-0 hidden text-base whitespace-nowrap
+  @apply text-center transition-all duration-300 ease-linear opacity-0 hidden text-base whitespace-nowrap;
 }
 
 .sidebar-nav.active .btn-logout span {
@@ -142,7 +140,7 @@ sidebar-nav.active ul li a span {
 }
 
 .ql-editor {
-  @apply !text-dark/80 placeholder:!text-dark/80
+  @apply !text-dark/80 placeholder:!text-dark/80;
 }
 
 .ql-container.ql-snow {
@@ -159,7 +157,7 @@ sidebar-nav.active ul li a span {
 .ql-snow .ql-fill,
 .ql-snow .ql-stroke.ql-fill,
 .ql-snow .ql-picker-label {
-  @apply !fill-[rgb(0,0,0)]/[0.5] text-dark/[0.5]
+  @apply !fill-[rgb(0,0,0)]/[0.5] text-dark/[0.5];
 }
 
 .ql-snow .ql-stroke {
@@ -187,3 +185,22 @@ sidebar-nav.active ul li a span {
   color: rgba(0, 0, 0, 0.6);
 }
 
+::-webkit-scrollbar {
+  /* Customize the scrollbar width */
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  /* Customize the scrollbar track */
+  width: 5px;
+  height: 5px;
+  background: lightgray;
+}
+
+::-webkit-scrollbar-thumb {
+  /* Customize the scrollbar thumb */
+  width: 5px;
+  height: 20px;
+  background: #32a8c4;
+}

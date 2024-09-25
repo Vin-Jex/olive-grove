@@ -1,3 +1,4 @@
+import CourseContextProvider from "@/contexts/CourseContext";
 import { SidebarContextProvider } from "@/contexts/SidebarContext";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
@@ -12,9 +13,11 @@ const roboto = Roboto({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <main className={`${roboto.variable}`}>
-      <SidebarContextProvider>
-        <Component {...pageProps} />
-      </SidebarContextProvider>
+      <CourseContextProvider>
+        <SidebarContextProvider>
+          <Component {...pageProps} />
+        </SidebarContextProvider>
+      </CourseContextProvider>
     </main>
   );
 }
