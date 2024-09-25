@@ -2,17 +2,14 @@ import React, { FC, useEffect, useState } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import SearchInput from "@/components/Atoms/SearchInput";
-import Img from "@/public/image/student3.png";
 import Button from "@/components/Atoms/Button";
 import Select from "@/components/Atoms/Select";
-import dummy_subject_img from "../../images/olive-groove-subject.png";
 import {
   TClass,
   TCourse,
   TFetchState,
   THandleSearchChange,
   TResponse,
-  TSubject,
 } from "@/components/utils/types";
 import Image from "next/image";
 import { baseUrl } from "@/components/utils/baseURL";
@@ -26,51 +23,6 @@ import Loader from "@/components/Atoms/Loader";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import ServerError from "@/components/Atoms/ServerError";
 
-
-const subjects: TCourse[] = [
-  {
-    image: coursePlaceholder.src,
-    title: "AD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "BD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "CD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "DD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "ED Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "FD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-];
 
 class CourseClass implements TCourse {
   constructor(

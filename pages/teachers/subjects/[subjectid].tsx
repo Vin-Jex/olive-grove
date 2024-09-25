@@ -17,12 +17,12 @@ import CourseModal, {
   TCourseModalFormData,
 } from "@/components/Molecules/Modal/CourseModal";
 import Tab, { TTabBody } from "@/components/Molecules/Tab/Tab";
-import Video from "next-video";
 import Cookies from "js-cookie";
 import { useCourseContext, TCourseDispatch } from "@/contexts/CourseContext";
 import Loader from "@/components/Atoms/Loader";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import { AnimatePresence, motion, Variants } from "framer";
+import Video from "next-video";
 
 const demoNotes = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus lacus, dignissim commodo dictum aliquam, maximus nec mauris. Phasellus sed nisl dignissim erat eleifend congue. Nullam ultricies est a tempus varius. Phasellus vitae massa rutrum, elementum urna sed, volutpat urna. Nam at nulla dui. Suspendisse aliquet metus purus, eget ultrices tellus pharetra eget. Proin dictum urna non aliquet pellentesque. Nunc dapibus gravida justo eu finibus.
 <br />

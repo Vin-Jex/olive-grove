@@ -1,13 +1,66 @@
-import React from "react";
-import { subjectData } from "../classes";
+import React, { useState, useEffect, useCallback } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
 import AssessmentCard from "@/components/Molecules/Card/AssessmentCard";
+import { baseUrl } from "@/components/utils/baseURL";
+import Cookies from "js-cookie";
+
+interface AssessmentData {
+  _id: string;
+  subject: string;
+  description: string;
+  classTime: string;
+  meetingLink: string;
+  teacher: string;
+  isActive: boolean;
+  academicWeekDate: string;
+}
 
 const Assessments = () => {
+  const [assessments, setAssessments] = useState<AssessmentData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const router = useRouter();
+
+  const fetchAssessments = useCallback(async () => {
+    try {
+      const userId = Cookies.get("userId");
+      const token = Cookies.get("jwt");
+      setLoading(true);
+      const response = await fetch(`${baseUrl}/teacher/${userId}/assessments`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (
+          errorData.message ===
+          "No Assessments found for the provided teacher ID."
+        ) {
+          setError("No assessments found for your profile.");
+        } else {
+          setError("Failed to load assessments.");
+        }
+        return;
+      }
+
+      const data = await response.json();
+      setAssessments(data?.data);
+    } catch (err) {
+      setError("Failed to load assessments");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAssessments();
+  }, [fetchAssessments]);
+
   return (
     <TeachersWrapper title='Assessments' metaTitle='Olive Groove ~ Assessments'>
       <div className='space-y-5'>
@@ -38,25 +91,32 @@ const Assessments = () => {
                 fill='#FDFDFD'
               />
             </svg>
-            <span className=''>Create Task</span>
+            <span>Create Task</span>
           </Button>
         </div>
 
-        {Object.keys(subjectData).map((week, index) => (
-          <div
-            key={index}
-            className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8'
-          >
-            {subjectData[week].map((subject, sIndex) => (
+        {loading ? (
+          <p>Loading assessments...</p>
+        ) : error ? (
+          <p className='text-red-500'>{error}</p>
+        ) : assessments.length === 0 ? (
+          <div className='flex justify-center items-center h-64'>
+            <p className='text-gray-500 text-lg'>
+              No assessments available at the moment.
+            </p>
+          </div>
+        ) : (
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8'>
+            {assessments.map((assessment, index) => (
               <AssessmentCard
-                key={sIndex}
-                name={subject.name}
-                role={subject.role}
-                time={subject.time}
-                subject={subject.subject}
+                key={assessment._id}
+                name={assessment.subject}
+                role={assessment.description}
+                time={new Date(assessment.classTime).toLocaleString()}
+                subject={assessment.subject}
                 assessmentType='Class Work'
                 btnLink1={() => {
-                  router.push(`/teachers/assessments/${sIndex}`);
+                  router.push(`/teachers/assessments/${assessment._id}`);
                 }}
                 btnLink2={() => {
                   router.push(`/teachers/assessments/create`);
@@ -64,7 +124,7 @@ const Assessments = () => {
               />
             ))}
           </div>
-        ))}
+        )}
       </div>
     </TeachersWrapper>
   );

@@ -1,5 +1,4 @@
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import SwitchContentNav from "@/components/Molecules/Navs/SwitchContentNav";
 import TeacherSubjectCard from "@/components/Molecules/Card/TeacherSubjectCard";
@@ -7,85 +6,30 @@ import EditClassModal from "@/components/Molecules/Modal/EditClassModal";
 import Button from "@/components/Atoms/Button";
 import CreateClassModal from "@/components/Molecules/Modal/CreateClassModal";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
+import { baseUrl } from "@/components/utils/baseURL";
+import Cookies from "js-cookie";
 
-interface SubjectData {
-  [key: string]: {
-    subject: string;
-    role: string;
-    time: string;
-    topic: string;
-    name: string;
-    btnLink1: string;
+interface ClassData {
+  subject: string;
+  description: string;
+  classTime: string;
+  meetingLink: string;
+  teacher: string;
+  isActive: boolean;
+  academicWeekDate: string;
+  recordedLecture: string;
+  attendance: {
+    student: string;
+    attended: boolean;
+    timestamp: string;
   }[];
 }
-
-export const subjectData: SubjectData = {
-  week1: [
-    {
-      subject: "Further Mathematics",
-      role: "Teacher",
-      time: "09:00AM - 10:30AM",
-      topic: "Calculus",
-      name: "Dr. Ayodeji Emmanuel",
-      btnLink1: "#",
-    },
-    {
-      subject: "Chemistry",
-      role: "Teacher",
-      time: "09:00AM - 10:30AM",
-      topic: "Organic Chemistry",
-      name: "Dr. Ayodeji Emmanuel",
-      btnLink1: "#",
-    },
-    {
-      subject: "Chemistry",
-      role: "Teacher",
-      time: "09:00AM - 10:30AM",
-      topic: "Organic Chemistry",
-      name: "Dr. Ayodeji Emmanuel",
-      btnLink1: "#",
-    },
-    {
-      subject: "Chemistry",
-      role: "Teacher",
-      time: "09:00AM - 10:30AM",
-      topic: "Organic Chemistry",
-      name: "Dr. Ayodeji Emmanuel",
-      btnLink1: "#",
-    },
-    {
-      subject: "Chemistry",
-      role: "Teacher",
-      time: "09:00AM - 10:30AM",
-      topic: "Organic Chemistry",
-      name: "Dr. Ayodeji Emmanuel",
-      btnLink1: "#",
-    },
-  ],
-  week2: [
-    {
-      subject: "Physics",
-      role: "Teacher",
-      time: "09:00AM - 10:30AM",
-      topic: "Motion",
-      name: "Dr. Ayodeji Emmanuel",
-      btnLink1: "#",
-    },
-    {
-      subject: "Mathematics",
-      role: "Teacher",
-      time: "09:00AM - 10:30AM",
-      topic: "Trigonometry",
-      name: "Dr. Ayodeji Emmanuel",
-      btnLink1: "#",
-    },
-  ],
-};
 
 const Classes = () => {
   const [activeItem, setActiveItem] = useState("all courses");
   const [openModalEdit, setOpenModalEdit] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
+  const [classes, setClasses] = useState<ClassData[]>([]);
   const [formState, setFormState] = useState({
     class: "",
     description: "",
@@ -93,13 +37,52 @@ const Classes = () => {
     meetingLink: "",
     video: "",
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const handleModalEdit = () => {
     setOpenModalEdit(!openModalEdit);
   };
+
   const handleModalCreate = () => {
     setOpenModalCreate(!openModalCreate);
   };
+
+  const fetchClasses = useCallback(async () => {
+    try {
+      const userId = Cookies.get("userId");
+      const token = Cookies.get("jwt");
+      setLoading(true);
+      const response = await fetch(`${baseUrl}/teacher/${userId}/lectures`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (
+          errorData.message === "No lectures found for the provided teacher ID."
+        ) {
+          setError("No lecture found for your profile.");
+        } else {
+          setError("Failed to load assessments.");
+        }
+        return;
+      }
+
+      const data = await response.json();
+      setClasses(data?.data);
+    } catch (err) {
+      setError("Failed to load assessments");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchClasses();
+  }, [fetchClasses]);
 
   return (
     <>
@@ -121,7 +104,7 @@ const Classes = () => {
         <div className='space-y-5'>
           {/* Title */}
           <div className='flex flex-row items-center justify-between gap-4'>
-            <div className="flex flex-col">
+            <div className='flex flex-col'>
               <span className='text-lg font-medium text-dark font-roboto'>
                 Explore your classes
               </span>
@@ -129,7 +112,7 @@ const Classes = () => {
                 Manage, edit and create classes.
               </span>
             </div>
-            <Button size='sm' width='fit' onClick={handleModalCreate}>
+            <Button size='xs' width='fit' onClick={handleModalCreate}>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 width='20'
@@ -152,49 +135,56 @@ const Classes = () => {
             navLink={["all courses", "active courses"]}
           />
 
-          <>
-            {activeItem === "all courses"
-              ? Object.keys(subjectData).map((week, index) => (
-                  <div key={index} className='mt-8'>
-                    <span className='text-dark text-xl font-medium capitalize'>
-                      {week}
-                    </span>
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8 mt-4'>
-                      {subjectData[week].map((subject, sIndex) => (
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p className='text-red-500'>{error}</p>
+          ) : (
+            <>
+              {activeItem === "all courses"
+                ? classes.map((classItem, index) => (
+                    <div key={index} className='mt-8'>
+                      <span className='text-dark text-xl font-medium capitalize'>
+                        {new Date(
+                          classItem.academicWeekDate
+                        ).toLocaleDateString()}
+                      </span>
+                      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8 mt-4'>
                         <TeacherSubjectCard
-                          key={sIndex}
-                          name={subject.name}
-                          role={subject.role}
-                          time={subject.time}
-                          topic={subject.topic}
-                          subject={subject.subject}
+                          key={index}
+                          name={classItem.teacher}
+                          role={classItem.isActive ? "Active" : "Inactive"}
+                          time={new Date(classItem.classTime).toLocaleString()}
+                          topic={classItem.description}
+                          subject={classItem.subject}
                           btnLink1={() => {}}
                           btnLink2={handleModalEdit}
                         />
-                      ))}
+                      </div>
                     </div>
-                  </div>
-                ))
-              : Object.keys(subjectData).map((week, index) => (
-                  <div
-                    key={index}
-                    className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8 mt-8'
-                  >
-                    {subjectData[week].map((subject, sIndex) => (
-                      <TeacherSubjectCard
-                        key={sIndex}
-                        name={subject.name}
-                        role={subject.role}
-                        time={subject.time}
-                        topic={subject.topic}
-                        subject={subject.subject}
-                        btnLink1={() => {}}
-                        btnLink2={handleModalEdit}
-                      />
+                  ))
+                : classes
+                    .filter((classItem) => classItem.isActive)
+                    .map((classItem, index) => (
+                      <div key={index} className='mt-8'>
+                        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-8 mt-4'>
+                          <TeacherSubjectCard
+                            key={index}
+                            name={classItem.teacher}
+                            role={classItem.isActive ? "Active" : "Inactive"}
+                            time={new Date(
+                              classItem.classTime
+                            ).toLocaleString()}
+                            topic={classItem.description}
+                            subject={classItem.subject}
+                            btnLink1={() => {}}
+                            btnLink2={handleModalEdit}
+                          />
+                        </div>
+                      </div>
                     ))}
-                  </div>
-                ))}
-          </>
+            </>
+          )}
         </div>
       </TeachersWrapper>
     </>
