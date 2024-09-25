@@ -1,5 +1,6 @@
 import React, {
   ButtonHTMLAttributes,
+  HTMLAttributes,
   ReactNode,
   useEffect,
   useState,
@@ -43,14 +44,14 @@ const Button: React.FC<ButtonProps> = ({
 
   const colorClassName = {
     blue: "bg-primary text-[#fdfdfd]", // bg of dark cyan-blue
-    outline: "bg-transparent border border-subtext text-[#1E1E1E]", // bg of transparent
-    red: "bg-red-500", // bg of red
+    outline: `bg-transparent border border-subtext disabled:border-none text-[#1E1E1E]`, // bg of transparent
+    red: "bg-red-500 !text-white", // bg of red
     yellow: "bg-yellow-500", // bg of yellow
   }[color];
 
   return (
     <button
-      className={`flex items-center justify-center space-x-1 rounded-md font-roboto font-medium ${widthClassName} text-center ${sizeClassName} ${colorClassName} whitespace-nowrap disabled:text-[#F8F8F8D9] disabled:bg-[#1E1E1E4D] cursor-pointer`}
+      className={`flex items-center justify-center space-x-1 rounded-md font-roboto font-medium ${widthClassName} text-center ${sizeClassName} ${colorClassName} whitespace-nowrap disabled:text-[#F8F8F8D9] disabled:cursor-no-drop  disabled:bg-[#1E1E1E4D] cursor-pointer`}
       {...props}
     >
       {children}
