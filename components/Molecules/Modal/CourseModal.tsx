@@ -185,7 +185,7 @@ export default function CourseModal({
           )}
           {requestState?.error && (
             <div className="text-red-500 text-center">
-              {requestState?.error}
+              {typeof requestState?.error === "string" && requestState.error}
             </div>
           )}
           <div className="flex items-center space-x-5 w-full">
