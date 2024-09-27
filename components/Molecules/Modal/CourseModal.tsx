@@ -115,23 +115,19 @@ export default function CourseModal({
     disabled: requestState?.loading || false,
   };
 
-  useEffect(() => {
-    console.log("FORM STATE", formState);
-  }, []);
-
   return (
     <div>
       <Modal
         isOpen={modalOpen}
         onClose={handleModalClose}
-        className="w-[80%] sm:w-[70%] md:w-[751px] bg-white backdrop-blur-[10px] rounded-3xl"
+        className="w-[80%] sm:w-[70%] md:w-[501px] bg-white backdrop-blur-[10px] rounded-3xl"
       >
-        <div className="flex justify-between items-center px-7 py-2 mt-7">
+        <div className="flex justify-between items-center px-7 py-2 mt-4">
           <span className="text-2xl text-dark font-semibold font-roboto capitalize">
             {capitalize(mode)} {capitalize(type)}
           </span>
         </div>
-        <form className="flex flex-col justify-center py-5 md:py-[40px] px-4 md:px-6 w-full space-y-6">
+        <form className="flex flex-col justify-center py-4 mb-5 px-4 md:px-6 w-full space-y-6">
           {type === "course" && (
             <Select
               name="classId"
@@ -185,7 +181,8 @@ export default function CourseModal({
           )}
           {requestState?.error && (
             <div className="text-red-500 text-center">
-              {requestState?.error}
+              {typeof requestState?.error === "string" &&
+                (requestState.error as string)}
             </div>
           )}
           <div className="flex items-center space-x-5 w-full">

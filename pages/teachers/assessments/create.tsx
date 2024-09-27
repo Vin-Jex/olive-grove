@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { subjectData } from "../classes";
 import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";

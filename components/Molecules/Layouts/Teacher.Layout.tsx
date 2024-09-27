@@ -97,7 +97,7 @@ const TeachersWrapper = ({
               active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
-          <div className="min-h-max w-full z-10 px-4 py-4 lg:py-6">
+          <div className="h-[90vh] box-border w-full z-10 px-4 py-4 lg:py-6">
             {children}
           </div>
         </main>

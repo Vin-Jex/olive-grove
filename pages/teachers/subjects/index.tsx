@@ -2,17 +2,14 @@ import React, { FC, useEffect, useState } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import SearchInput from "@/components/Atoms/SearchInput";
-import Img from "@/public/image/student3.png";
 import Button from "@/components/Atoms/Button";
 import Select from "@/components/Atoms/Select";
-import dummy_subject_img from "../../images/olive-groove-subject.png";
 import {
   TClass,
   TCourse,
   TFetchState,
   THandleSearchChange,
   TResponse,
-  TSubject,
 } from "@/components/utils/types";
 import Image from "next/image";
 import { baseUrl } from "@/components/utils/baseURL";
@@ -25,52 +22,6 @@ import Cookies from "js-cookie";
 import Loader from "@/components/Atoms/Loader";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import ServerError from "@/components/Atoms/ServerError";
-
-
-const subjects: TCourse[] = [
-  {
-    image: coursePlaceholder.src,
-    title: "AD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "BD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "CD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "DD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "ED Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-  {
-    image: coursePlaceholder.src,
-    title: "FD Mathematics",
-    chapters: [] as any,
-    _id: "28899",
-    description: "This is a demo",
-  },
-];
 
 class CourseClass implements TCourse {
   constructor(
@@ -85,25 +36,25 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
   const router = useRouter();
 
   return (
-    <div className='flex rounded-lg overflow-hidden flex-col items-center w-full border border-[#1E1E1E33] cursor-pointer transition hover:scale-105'>
+    <div className="flex rounded-lg overflow-hidden flex-col items-center w-full border border-[#1E1E1E33] cursor-pointer transition hover:scale-105">
       <div
-        className='w-full h-[225px] cursor-pointer'
+        className="w-full h-[225px] cursor-pointer"
         onClick={() => router.push(`/teachers/subjects/${course._id}`)}
       >
         <Image
           src={course.image || coursePlaceholder.src}
           width={266}
           height={225}
-          className='w-full h-full object-cover'
+          className="w-full h-full object-cover"
           alt={course.title}
         />
       </div>
 
-      <div className='flex flex-col items-center justify-center w-full space-y-1.5 pt-4 pb-2 px-4'>
-        <span className='font-semibold font-roboto text-base text-dark leading-3'>
+      <div className="flex flex-col items-center justify-center w-full space-y-1.5 pt-4 pb-2 px-4">
+        <span className="font-semibold font-roboto text-base text-dark leading-3">
           {course.title}
         </span>
-        <span className='font-roboto text-base'>{0} Lessons</span>
+        <span className="font-roboto text-base">{0} Lessons</span>
       </div>
     </div>
   );
@@ -427,14 +378,6 @@ const Subjects = () => {
 
       return true;
     } catch (error) {
-      console.error(error);
-      setCreateCourseRes({
-        data: undefined,
-        loading: false,
-        error: false,
-      });
-      setSearchResults(responseData.data);
-    } catch (error) {
       // * Handle unexpected errors during the API request
       setCourses({
         data: [],
@@ -471,21 +414,21 @@ const Subjects = () => {
         type="course"
         handleModalClose={handleCloseModal}
         modalOpen={openModalCreate}
-        mode='create'
+        mode="create"
         handleAction={createCourse}
         requestState={createCourseRes}
         classes={classes.data?.map((each) => each._id)}
       />
 
-      <TeachersWrapper title='Subjects' metaTitle='Olive Groove ~ Subjects'>
-        <div className='space-y-5'>
+      <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
+        <div className="space-y-5">
           {/* Title */}
-          <div className='flex justify-between items-start'>
-            <div className='flex flex-col'>
-              <span className='text-lg font-medium text-dark font-roboto'>
+          <div className="flex justify-between items-start">
+            <div className="flex flex-col">
+              <span className="text-lg font-medium text-dark font-roboto">
                 Subjects
               </span>
-              <span className='text-md text-subtext font-roboto'>
+              <span className="text-md text-subtext font-roboto">
                 View and manage subjects
               </span>
             </div>
@@ -496,44 +439,44 @@ const Subjects = () => {
               color="outline"
             >
               <svg
-                xmlns='http://www.w3.org/2000/svg'
-                width='20'
-                height='20'
-                viewBox='0 0 20 20'
-                fill='none'
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
               >
                 <path
-                  d='M15.0001 10.8317H10.8334V14.9984C10.8334 15.2194 10.7456 15.4313 10.5893 15.5876C10.4331 15.7439 10.2211 15.8317 10.0001 15.8317C9.77907 15.8317 9.56711 15.7439 9.41083 15.5876C9.25455 15.4313 9.16675 15.2194 9.16675 14.9984V10.8317H5.00008C4.77907 10.8317 4.56711 10.7439 4.41083 10.5876C4.25455 10.4313 4.16675 10.2194 4.16675 9.99837C4.16675 9.77736 4.25455 9.5654 4.41083 9.40912C4.56711 9.25284 4.77907 9.16504 5.00008 9.16504H9.16675V4.99837C9.16675 4.77736 9.25455 4.5654 9.41083 4.40912C9.56711 4.25284 9.77907 4.16504 10.0001 4.16504C10.2211 4.16504 10.4331 4.25284 10.5893 4.40912C10.7456 4.5654 10.8334 4.77736 10.8334 4.99837V9.16504H15.0001C15.2211 9.16504 15.4331 9.25284 15.5893 9.40912C15.7456 9.5654 15.8334 9.77736 15.8334 9.99837C15.8334 10.2194 15.7456 10.4313 15.5893 10.5876C15.4331 10.7439 15.2211 10.8317 15.0001 10.8317Z'
-                  fill='#1E1E1E'
+                  d="M15.0001 10.8317H10.8334V14.9984C10.8334 15.2194 10.7456 15.4313 10.5893 15.5876C10.4331 15.7439 10.2211 15.8317 10.0001 15.8317C9.77907 15.8317 9.56711 15.7439 9.41083 15.5876C9.25455 15.4313 9.16675 15.2194 9.16675 14.9984V10.8317H5.00008C4.77907 10.8317 4.56711 10.7439 4.41083 10.5876C4.25455 10.4313 4.16675 10.2194 4.16675 9.99837C4.16675 9.77736 4.25455 9.5654 4.41083 9.40912C4.56711 9.25284 4.77907 9.16504 5.00008 9.16504H9.16675V4.99837C9.16675 4.77736 9.25455 4.5654 9.41083 4.40912C9.56711 4.25284 9.77907 4.16504 10.0001 4.16504C10.2211 4.16504 10.4331 4.25284 10.5893 4.40912C10.7456 4.5654 10.8334 4.77736 10.8334 4.99837V9.16504H15.0001C15.2211 9.16504 15.4331 9.25284 15.5893 9.40912C15.7456 9.5654 15.8334 9.77736 15.8334 9.99837C15.8334 10.2194 15.7456 10.4313 15.5893 10.5876C15.4331 10.7439 15.2211 10.8317 15.0001 10.8317Z"
+                  fill="#1E1E1E"
                 />
               </svg>
               <span>Create new subject</span>
             </Button>
           </div>
 
-          <div className='space-y-8 !my-12'>
-            <div className='flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center'>
-              <div className='flex justify-start items-center gap-4 w-full md:w-auto'>
+          <div className="space-y-8 !my-12">
+            <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
+              <div className="flex justify-start items-center gap-4 w-full md:w-auto">
                 <Select
                   options={["jss 1", "jss 2", "jss 3", "ss 1", "ss 2", "ss 3"]}
-                  name='class'
+                  name="class"
                   required
                   onChange={() => {}}
                   placeholder="Select class"
                 />
                 <Select
                   options={["physics", "further mathematics"]}
-                  name='subject'
+                  name="subject"
                   required
                   onChange={() => {}}
                   placeholder="Select subject"
                 />
               </div>
 
-              <div className='w-full md:w-[400px]'>
+              <div className="w-full md:w-[400px]">
                 <SearchInput
-                  shape='rounded-lg'
-                  placeholder='Search for Subjects'
+                  shape="rounded-lg"
+                  placeholder="Search for Subjects"
                   searchResults={searchResults}
                   setSearchResults={setSearchResults}
                   initialData={courses.data}
@@ -563,7 +506,7 @@ const Subjects = () => {
               </div>
             ) : (
               <>
-                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 xl:gap-5 2xl:gap-7'>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 xl:gap-5 2xl:gap-7">
                   {searchResults.map((course, i) => (
                     <>
                       <Course course={course} key={i} />

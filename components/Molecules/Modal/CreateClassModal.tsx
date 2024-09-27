@@ -175,7 +175,7 @@ export default function CreateClassModal({
             required
             fileName={fileName}
           />
-          {requestState?.error && (
+          {typeof requestState?.error === "string" && (
             <div className="text-red-500 text-center">
               {requestState?.error}
             </div>
