@@ -17,6 +17,7 @@ const Button: React.FC<ButtonProps> = ({
   size = "md",
   color = "blue",
   width = "auto",
+  className,
   ...props
 }) => {
   const [isClient, setIsClient] = useState(false);
@@ -51,7 +52,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`flex items-center justify-center space-x-1 rounded-md font-roboto font-medium ${widthClassName} text-center ${sizeClassName} ${colorClassName} whitespace-nowrap disabled:text-[#F8F8F8D9] disabled:cursor-no-drop  disabled:bg-[#1E1E1E4D] cursor-pointer`}
+      className={`flex items-center justify-center space-x-1 rounded-md font-roboto font-medium ${widthClassName} text-center ${sizeClassName} ${colorClassName} whitespace-nowrap disabled:text-[#F8F8F8D9] disabled:cursor-no-drop  disabled:bg-[#1E1E1E4D] cursor-pointer ${className}`}
       {...props}
     >
       {children}

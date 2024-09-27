@@ -11,17 +11,13 @@ import {
   THandleSearchChange,
   TResponse,
 } from "@/components/utils/types";
-import Image from "next/image";
 import { baseUrl } from "@/components/utils/baseURL";
-import coursePlaceholder from "@/images/course-placeholder.png";
-import CourseModal, {
-  TCourseModalFormData,
-} from "@/components/Molecules/Modal/CourseModal";
-import { useRouter } from "next/navigation";
+import CourseModal from "@/components/Molecules/Modal/CourseModal";
 import Cookies from "js-cookie";
 import Loader from "@/components/Atoms/Loader";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import ServerError from "@/components/Atoms/ServerError";
+import Course from "@/components/Atoms/Course/EachCourse";
 
 class CourseClass implements TCourse {
   constructor(
@@ -32,39 +28,11 @@ class CourseClass implements TCourse {
   ) {}
 }
 
-const Course: FC<{ course: TCourse }> = ({ course }) => {
-  const router = useRouter();
-
-  return (
-    <div className="flex rounded-lg overflow-hidden flex-col items-center w-full border border-[#1E1E1E33] cursor-pointer transition hover:scale-105">
-      <div
-        className="w-full h-[225px] cursor-pointer"
-        onClick={() => router.push(`/teachers/subjects/${course._id}`)}
-      >
-        <Image
-          src={course.image || coursePlaceholder.src}
-          width={266}
-          height={225}
-          className="w-full h-full object-cover"
-          alt={course.title}
-        />
-      </div>
-
-      <div className="flex flex-col items-center justify-center w-full space-y-1.5 pt-4 pb-2 px-4">
-        <span className="font-semibold font-roboto text-base text-dark leading-3">
-          {course.title}
-        </span>
-        <span className="font-roboto text-base">{0} Lessons</span>
-      </div>
-    </div>
-  );
-};
-
-const Subjects = () => {
+const Subjects: FC = () => {
   const [searchResults, setSearchResults] = useState<TCourse[]>([]);
   const [courses, setCourses] = useState<TFetchState<TCourse[]>>({
     data: [],
-    loading: false,
+    loading: true,
     error: undefined,
   });
   const [classes, setClasses] = useState<TFetchState<TClass[] | undefined>>({
@@ -379,10 +347,10 @@ const Subjects = () => {
       return true;
     } catch (error) {
       // * Handle unexpected errors during the API request
-      setCourses({
-        data: [],
+      setCreateCourseRes({
+        data: undefined,
         loading: false,
-        error: "An unexpected error occurred while retrieving courses",
+        error: "An unexpected error occurred while creating the course",
       });
       return false;
     }
@@ -421,7 +389,7 @@ const Subjects = () => {
       />
 
       <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
-        <div className="space-y-5">
+        <div className="h-full ">
           {/* Title */}
           <div className="flex justify-between items-start">
             <div className="flex flex-col">
@@ -454,7 +422,8 @@ const Subjects = () => {
             </Button>
           </div>
 
-          <div className="space-y-8 !my-12">
+          {/* Content */}
+          <div className="h-full mt-4">
             <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
               <div className="flex justify-start items-center gap-4 w-full md:w-auto">
                 <Select
@@ -506,7 +475,10 @@ const Subjects = () => {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 xl:gap-5 2xl:gap-7">
+                <div
+                  className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4"
+                  // className="flex flex-wrap gap-4 mt-4 2xl:gap-7 justify-between"
+                >
                   {searchResults.map((course, i) => (
                     <>
                       <Course course={course} key={i} />

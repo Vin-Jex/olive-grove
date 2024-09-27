@@ -16,7 +16,7 @@ const Tab: FC<{
         {slugs.map((slug, i) => (
           <>
             <div
-              className={`px-9 py-3 font-medium cursor-pointer transition ${
+              className={`px-7 py-2 font-medium text-sm cursor-pointer transition ${
                 activeTab === slug.key
                   ? "border-primary border-b-2 bg-[#32A8C41A] text-primary"
                   : ""
