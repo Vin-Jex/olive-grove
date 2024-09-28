@@ -1,13 +1,9 @@
-import { FC, useEffect, useState } from "react";
-import Tab, { TTabBody } from "../../Molecules/Tab/Tab";
-import { TCourse, TSection } from "../../utils/types";
+import { FC } from "react";
+import { TSection } from "../../utils/types";
 import { useRouter } from "next/router";
-import NotFoundError from "../NotFoundError";
 import { useRouter as useNavRouter } from "next/navigation";
 import { editItem } from "../../utils/course";
 import { useCourseContext } from "@/contexts/CourseContext";
-
-
 
 export const Topic: FC<{ topic: TSection; lessonId: string }> = ({
   topic,

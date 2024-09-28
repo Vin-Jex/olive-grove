@@ -126,7 +126,7 @@ const Subject: FC = () => {
       )}
 
       <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
-        <div className="space-y-5 h-fit">
+        <div className="space-y-5 h-full">
           {course.loading ? (
             <Loader />
           ) : course.error ? (

@@ -11,7 +11,7 @@ const SideBar: FC<{
   } = useCourseContext();
 
   return (
-    <div className="gap-4 flex w-80 flex-col max-h-[85vh] overflow-y-auto rounded-sm px-2 ">
+    <div className="gap-4 flex w-80 flex-col max-h-[80vh] overflow-y-auto rounded-sm px-2 ">
       {course?.chapters.map((chapter) => (
         <>
           <Chapter chapter={chapter} key={chapter._id} />

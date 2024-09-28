@@ -35,7 +35,7 @@ export const TopicDetails: FC<{ course: TCourse }> = ({ course }) => {
       slug: "notes",
       content: (
         <div
-          className="max-h-[80vh] overflow-y-auto rounded-sm px-2"
+          className="lg:max-h-[80vh] overflow-y-auto rounded-sm px-2"
           dangerouslySetInnerHTML={{
             __html: topicDetails?.topic.topicNote || demoNotes,
           }}
