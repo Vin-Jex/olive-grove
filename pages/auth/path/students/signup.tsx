@@ -13,6 +13,8 @@ import File from "@/components/Atoms/File";
 import { baseUrl } from "@/components/utils/baseURL";
 import { useRouter } from "next/router";
 import InputField from "@/components/Atoms/InputField";
+import CustomCursor from "@/components/Molecules/CustomCursor";
+import { CircularProgress } from "@mui/material";
 
 export type SignupType = {
   firstName: string;
@@ -42,7 +44,7 @@ const StudentSignup = () => {
     password: "",
   });
   const [formError, setFormError] = useState({
-    internerError: "",
+    internetError: "",
     firstNameError: "",
     lastNameError: "",
     classError: "",
@@ -52,11 +54,13 @@ const StudentSignup = () => {
     passwordError: "",
     profileImageError: "",
     successError: "",
+    generalError: "",
   });
   const [isDisabled, setIsDisabled] = useState(true);
   const maxAge = 1 * 24 * 60 * 60;
 
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const inputFields: (
     | {
@@ -179,7 +183,7 @@ const StudentSignup = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internerError: "No internet connection",
+        internetError: "No internet connection",
       }));
       return;
     }
@@ -240,21 +244,16 @@ const StudentSignup = () => {
       console.error("Error Message: ", data.error);
     }
 
-    // Clear errors after 10 seconds
-    setTimeout(() => {
-      setFormError({
-        internerError: "",
-        firstNameError: "",
-        lastNameError: "",
-        classError: "",
-        dobError: "",
-        emailError: "",
-        usernameError: "",
-        passwordError: "",
-        profileImageError: "",
-        successError: "",
-      });
-    }, 10000);
+    if (data.error) {
+      setFormError((prevState) => ({
+        ...prevState,
+        generalError: data.error,
+      }));
+    }
+
+    // Clear errors after 7 seconds
+
+    clearError();
   };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -273,10 +272,38 @@ const StudentSignup = () => {
     }
   };
 
+  const clearError = () => {
+    setTimeout(() => {
+      setFormError({
+        internetError: "",
+        firstNameError: "",
+        lastNameError: "",
+        classError: "",
+        dobError: "",
+        emailError: "",
+        usernameError: "",
+        passwordError: "",
+        profileImageError: "",
+        successError: "",
+        generalError: "",
+      });
+    }, 7000);
+  };
+
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     event.preventDefault();
-    resetForm();
+    setIsLoading(true);
+
+    if (!navigator.onLine) {
+      setFormError((prevState) => ({
+        ...prevState,
+        internetError: "No internet connection",
+      }));
+      setIsLoading(false);
+      clearError();
+      return;
+    }
 
     const formData = new FormData();
     formData.append("image", selectedImage as Blob);
@@ -320,6 +347,8 @@ const StudentSignup = () => {
       console.log("Status: ", error);
     } finally {
       setIsDisabled(false);
+      setIsLoading(false);
+      clearError();
     }
   };
 
@@ -331,6 +360,8 @@ const StudentSignup = () => {
 
   return (
     <div className='flex w-full h-screen relative'>
+      <CustomCursor />
+
       <Image
         src={AuthBg1}
         alt='Auth Background Image 2'
@@ -370,19 +401,37 @@ const StudentSignup = () => {
           </span>
         </div>
 
-        {formError.internerError !== "" ? (
-          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
+        {formError.usernameError ? (
+          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
             <Info sx={{ fontSize: "1.1rem" }} />
-            {formError.internerError}
-            sdca
+            {formError.usernameError}
           </span>
-        ) : formError.successError !== "" ? (
-          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
+        ) : formError.passwordError ? (
+          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
             <Info sx={{ fontSize: "1.1rem" }} />
+            {formError.passwordError}
+          </span>
+        ) : formError.internetError ? (
+          <span className='text-yellow-600 text-sm flex items-center justify-center gap-1'>
+            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+            {formError.internetError}
+          </span>
+        ) : formError.successError ? (
+          <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
+            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
             {formError.successError}
           </span>
-        ) : (
-          ""
+        ) : formError.generalError ? (
+          <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
+            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+            <span>{formError.generalError}</span>
+          </span>
+        ) : null}
+        {formError.profileImageError !== "" && (
+          <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-[#F6CE46]'>
+            <Info sx={{ fontSize: "1.1rem" }} />
+            {formError.profileImageError}
+          </span>
         )}
         <form
           className='flex flex-col mx-auto gap-y-5 w-[490px]'
@@ -423,12 +472,6 @@ const StudentSignup = () => {
           ))}
 
           <div className='w-full flex flex-col gap-1 cursor-pointer'>
-            {formError.profileImageError !== "" && (
-              <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-[#F6CE46]'>
-                <Info sx={{ fontSize: "1.1rem" }} />
-                {formError.profileImageError}
-              </span>
-            )}
             <File
               selectedImage={selectedImage}
               setSelectedImage={setSelectedImage}
@@ -443,8 +486,17 @@ const StudentSignup = () => {
               fileName={fileName}
             />
           </div>
-          <Button type='submit' size='md' width='full' disabled={isDisabled}>
-            Create Account
+          <Button
+            type='submit'
+            size='sm'
+            width='full'
+            disabled={isDisabled || isLoading}
+          >
+            {isLoading ? (
+              <CircularProgress size={20} color='inherit' />
+            ) : (
+              "Create Account"
+            )}
           </Button>
           <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
             <span className='text-subtext'>Already have an account?</span>

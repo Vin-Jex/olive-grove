@@ -15,6 +15,8 @@ import {
 import { useRouter } from "next/router";
 import { baseUrl } from "@/components/utils/baseURL";
 import Cookies from "js-cookie";
+import CustomCursor from "@/components/Molecules/CustomCursor";
+import { CircularProgress } from "@mui/material";
 
 export type loginType = {
   username: string;
@@ -31,7 +33,10 @@ const StudentLogin = () => {
     usernameError: "",
     passwordError: "",
     successError: "",
+    generalError: "",
   });
+
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(true);
   const maxAge = 1 * 24 * 60 * 60;
@@ -89,40 +94,62 @@ const StudentLogin = () => {
       return;
     }
 
-    console.log("Data: ", data);
+    if (data.error) {
+      setFormError((prevState) => ({
+        ...prevState,
+        generalError: data.error,
+      }));
+    }
 
     if (data.message.username) {
       setFormError((prevState) => ({
         ...prevState,
         usernameError: data.message.username,
       }));
-    } else if (data.message.password) {
+    }
+
+    if (data.message.password) {
       setFormError((prevState) => ({
         ...prevState,
         passwordError: data.message.password,
       }));
-    } else {
-      console.error("Error Message: ", data.error);
     }
 
-    // Clear errors after 7 seconds
-    setTimeout(() => {
-      return setFormError({
-        internetError: "",
-        usernameError: "",
-        passwordError: "",
-        successError: "",
-      });
-    }, 7000);
     if (formState.username === "" || formState.password === "")
       setIsDisabled(true);
     else setIsDisabled(false);
+
+    clearError();
+  };
+
+  const clearError = () => {
+    setTimeout(() => {
+      setFormError({
+        internetError: "",
+        passwordError: "",
+        successError: "",
+        generalError: "",
+        usernameError: "",
+      });
+    }, 7000);
   };
 
   const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     event.preventDefault();
     resetForm();
+
+    setIsLoading(true);
+
+    if (!navigator.onLine) {
+      setFormError((prevState) => ({
+        ...prevState,
+        internetError: "No internet connection",
+      }));
+      setIsLoading(false);
+      clearError();
+      return;
+    }
 
     try {
       if (formState.username === "" || formState.password === "")
@@ -176,6 +203,9 @@ const StudentLogin = () => {
       console.log("Status: ", error);
     } finally {
       setIsDisabled(false);
+      setIsLoading(false);
+
+      clearError();
     }
   };
 
@@ -187,6 +217,8 @@ const StudentLogin = () => {
 
   return (
     <div className='flex w-full h-screen relative'>
+      <CustomCursor />
+
       <Image
         src={AuthBg1}
         alt='Auth Background Image 2'
@@ -208,49 +240,49 @@ const StudentLogin = () => {
       </div>
       <div className='w-full flex flex-col items-center justify-center gap-y-8'>
         <div className='flex flex-col items-center justify-center'>
-          <Link href='/' className='w-[4.5rem] h-[5rem] -ml-4 -mb-2'>
-            <Image
-              src={logo}
-              alt='Olive_grove_logo'
-              width='10000'
-              height='10000'
-              className='w-full h-full object-cover'
-            />
+          <Link href='/' className='w-[5.5rem]'>
+            <Image src={logo} alt='Olive Grove Logo' width={100} height={100} />
           </Link>
-          <h5 className='text-dark text-[20px] font-semibold capitalize font-roboto leading-[25px]'>
-            Student Portal
+          <h5 className='text-dark text-[20px] font-semibold capitalize font-roboto'>
+            Step into Your Future
           </h5>
           <span className='text-primary text-[30px] font-semibold capitalize font-roboto leading-[30px]'>
             Olive Grove School
           </span>
           <span className='text-subtext text-[16px] font-medium capitalize font-roboto leading-[28px]'>
-            Login to your Account
+            Log in to your Student Account and unlock your potential!
           </span>
         </div>
 
-        {formError.internetError !== "" ? (
-          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
-            <Info sx={{ fontSize: "1.1rem" }} />
-            {formError.internetError}
-          </span>
-        ) : formError.successError !== "" ? (
-          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
-            <Info sx={{ fontSize: "1.1rem" }} />
-            {formError.successError}
-          </span>
-        ) : formError.usernameError !== "" ? (
-          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-            <Info sx={{ fontSize: "1.1rem" }} />
-            {formError.usernameError}
-          </span>
-        ) : formError.passwordError !== "" ? (
-          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-            <Info sx={{ fontSize: "1.1rem" }} />
-            {formError.passwordError}
-          </span>
-        ) : (
-          ""
-        )}
+        {/* Error Messages */}
+        {
+          formError.usernameError ? (
+            <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
+              <Info sx={{ fontSize: "1.1rem" }} />
+              {formError.usernameError}
+            </span>
+          ) : formError.passwordError ? (
+            <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
+              <Info sx={{ fontSize: "1.1rem" }} />
+              {formError.passwordError}
+            </span>
+          ) : formError.internetError ? (
+            <span className='text-yellow-600 text-sm flex items-center justify-center gap-1'>
+              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              {formError.internetError}
+            </span>
+          ) : formError.successError ? (
+            <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
+              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              {formError.successError}
+            </span>
+          ) : formError.generalError ? (
+            <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
+              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <span>{formError.generalError}</span>
+            </span>
+          ) : null // Return null if no errors exist
+        }
 
         <form
           onKeyPress={handleKeyPress}
@@ -283,8 +315,12 @@ const StudentLogin = () => {
             Forgot Password
           </span>
 
-          <Button size='md' width='full' disabled={isDisabled}>
-            Login
+          <Button size='sm' width='full' disabled={isDisabled || isLoading}>
+            {isLoading ? (
+              <CircularProgress size={20} color='inherit' />
+            ) : (
+              "Sign In"
+            )}
           </Button>
           <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
             <span className='text-subtext'>Don&apos;t have an account?</span>

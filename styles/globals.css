@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+.glass-card {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+*, body {
+  cursor: none !important; 
+}
+
 @layer components {
   a.link {
     @apply text-primary underline underline-offset-2;
@@ -9,7 +24,7 @@
 }
 
 .input {
-  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext;
+  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
 }
 .radio-check {
   @apply h-6 w-6 appearance-none ring-[2.4px] ring-inset ring-white border-[3.5px] border-primary rounded-full checked:bg-primary checked:border-primary;

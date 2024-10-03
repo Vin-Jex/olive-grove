@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import Meta from "../Atoms/Meta";
 import Header from "./Header";
 import Footer from "./Footer";
+import CustomCursor from "./CustomCursor";
 
 interface LayoutProps {
   title: string;
@@ -11,7 +12,9 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ title, description, children }) => {
   return (
-    <div className="relative">
+    <div className='relative'>
+      <CustomCursor />
+
       <Meta title={title} description={description} />
       <header className='sticky top-0 w-full z-50'>
         <Header />

@@ -11,93 +11,82 @@ import {
   VisibilityOffOutlined,
   VisibilityOutlined,
 } from "@mui/icons-material";
-import { baseUrl } from "@/components/utils/baseURL";
 import { CircularProgress } from "@mui/material";
+import { baseUrl } from "@/components/utils/baseURL";
 import CustomCursor from "@/components/Molecules/CustomCursor";
 
 export type loginType = {
-  teacherID: string;
+  username: string;
   password: string;
 };
 
-const LoginPath = () => {
+const AdminAccess = () => {
   const [formState, setFormState] = useState<loginType>({
-    teacherID: "",
+    username: "",
     password: "",
   });
   const [formError, setFormError] = useState({
     internetError: "",
-    teacherIDError: "",
+    usernameError: "",
     passwordError: "",
     successError: "",
-    generalError: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(true);
+  const router = useRouter();
   const maxAge = 1 * 24 * 60 * 60;
 
   useEffect(() => {
-    if (formState.teacherID === "" || formState.password.length < 6) {
-      setIsDisabled(true);
-    } else {
-      setIsDisabled(false);
-    }
-  }, [formState.password, formState.teacherID]);
+    setIsDisabled(!formState.username || !formState.password);
+  }, [formState]);
 
   const handleChange = ({
     target: { name, value },
-  }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormState((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+  }: ChangeEvent<HTMLInputElement>) => {
+    setFormState((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const resetForm = () => {
-    setFormState({
-      teacherID: "",
-      password: "",
+    setFormState({ username: "", password: "" });
+    setFormError({
+      internetError: "",
+      usernameError: "",
+      passwordError: "",
+      successError: "",
     });
-    setIsDisabled(true);
   };
 
   const handleErrors = (data: any) => {
     if (!navigator.onLine) {
-      setFormError((prevState) => ({
-        ...prevState,
+      setFormError({
         internetError: "No internet connection",
+        usernameError: "",
+        passwordError: "",
+        successError: "",
+      });
+      return;
+    }
+
+    if (!formState.username.trim()) {
+      setFormError((prevState) => ({
+        ...prevState,
+        usernameError: "Username field cannot be empty",
       }));
       return;
     }
 
-    if (!formState.teacherID.trim()) {
+    if (!formState.password.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        teacherIDError: "Teacher ID field cannot be empty",
+        passwordError: "Password field cannot be empty",
       }));
       return;
     }
 
-    if (formState.password.length < 6) {
+    if (data.message.username) {
       setFormError((prevState) => ({
         ...prevState,
-        passwordError: "Password must be at least 6 characters long",
-      }));
-      return;
-    }
-
-    if (data.error) {
-      setFormError((prevState) => ({
-        ...prevState,
-        generalError: data.error,
-      }));
-    }
-
-    if (data.message.teacherID) {
-      setFormError((prevState) => ({
-        ...prevState,
-        teacherIDError: data.message.teacherID,
+        usernameError: data.message.username,
       }));
     } else if (data.message.password) {
       setFormError((prevState) => ({
@@ -106,6 +95,7 @@ const LoginPath = () => {
       }));
     }
 
+    // Clear errors after 7 seconds
     clearError();
   };
 
@@ -113,10 +103,9 @@ const LoginPath = () => {
     setTimeout(() => {
       setFormError({
         internetError: "",
-        teacherIDError: "",
+        usernameError: "",
         passwordError: "",
         successError: "",
-        generalError: "",
       });
     }, 7000);
   };
@@ -136,11 +125,9 @@ const LoginPath = () => {
     }
 
     try {
-      const response = await fetch(`${baseUrl}/teacher-login`, {
+      const response = await fetch(`${baseUrl}/admin-login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formState),
       });
 
@@ -153,38 +140,19 @@ const LoginPath = () => {
       const data = await response.json();
       setFormError((prevState) => ({
         ...prevState,
-        successError: "Teacher successfully logged in.",
+        successError: "Successfully logged in!",
       }));
-
-      Cookies.set("jwt", data?.token, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
-      Cookies.set("userId", data?.id, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
-      Cookies.set("role", data?.role, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
+      Cookies.set("jwt", data.token, { expires: maxAge, secure: true });
+      Cookies.set("userId", data.id, { expires: maxAge, secure: true });
+      Cookies.set("role", data.role, { expires: maxAge, secure: true });
 
       resetForm();
-
-      setTimeout(() => {
-        router.push("/");
-      }, 500);
+      setTimeout(() => router.push("/"), 500);
     } catch (error) {
-      console.log("Error:", error);
+      console.error("Error:", error);
     } finally {
       setIsLoading(false);
       clearError();
-    }
-  };
-
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === "Enter") {
-      handleSignIn(event);
     }
   };
 
@@ -194,54 +162,65 @@ const LoginPath = () => {
 
       <div className='bg-white rounded-lg shadow-lg px-6 py-8 w-full md:w-[480px] flex flex-col items-center gap-6'>
         <div className='flex flex-col items-center mb-6'>
-          <Link href='/' className='w-[4.5rem]'>
-            <Image src={logo} alt='Olive Grove Logo' width={72} height={80} />
+          <Link href='/' className='w-[5rem] mb-2'>
+            <Image
+              src={logo}
+              alt='Olive Grove Logo'
+              width={80}
+              height={90}
+              className='rounded-full'
+            />
           </Link>
-          <h5 className='text-dark text-[18px] md:text-[20px] lg:text-[24px] font-bold mb-1 text-center'>
-            Welcome back,&nbsp;
-            <span className='text-[#32A8C4]'>Instructor!</span>
+          <h5 className='text-dark text-[20px] md:text-[22px] lg:text-[26px] font-bold mb-1 text-center'>
+            Great to see you again,&nbsp;
+            <span className='font-extrabold text-[#32A8C4]'>Admin!</span>
           </h5>
 
-          <p className='text-gray-600 text-sm text-center mx-4'>
-            Easily access your teaching resources and manage your classes
+          <p className='text-gray-500 text-xs md:text-sm text-center mx-2 md:mx-4'>
+            Kindly sign in to access and manage your administrative functions
             seamlessly.
           </p>
         </div>
 
         {/* Error Messages */}
         {formError.internetError && (
-          <span className='text-yellow-600 text-sm flex items-center justify-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+          <span className='text-yellow-600 text-sm flex items-center gap-1'>
+            <Info sx={{ fontSize: "1.1rem" }} />
             {formError.internetError}
           </span>
         )}
         {formError.successError && (
-          <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+          <span className='text-green-600 text-sm flex items-center gap-1'>
+            <Info sx={{ fontSize: "1.1rem" }} />
             {formError.successError}
           </span>
         )}
-        {formError.generalError && (
-          <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-            <span>{formError.generalError}</span>
+        {formError.usernameError && (
+          <span className='text-red-600 text-sm flex items-center gap-1'>
+            <Info sx={{ fontSize: "1.1rem" }} />
+            {formError.usernameError}
+          </span>
+        )}
+        {formError.passwordError && (
+          <span className='text-red-600 text-sm flex items-center gap-1'>
+            <Info sx={{ fontSize: "1.1rem" }} />
+            {formError.passwordError}
           </span>
         )}
 
         {/* Form Section */}
         <form
-          onKeyPress={handleKeyPress}
           onSubmit={handleSignIn}
-          className='flex flex-col w-full gap-4'
+          className='flex flex-col w-full gap-4 space-y-1'
         >
           <Input
             type='text'
-            name='teacherID'
-            value={formState.teacherID}
+            name='username'
+            value={formState.username}
             onChange={handleChange}
-            placeholder='Teacher ID'
-            className='input rounded-lg shadow-md p-3'
+            placeholder='Username'
             required
+            className='input rounded-lg p-3'
           />
           <Input
             type='password'
@@ -251,8 +230,8 @@ const LoginPath = () => {
             placeholder='Password'
             showIcon={VisibilityOutlined}
             hideIcon={VisibilityOffOutlined}
-            className='input rounded-lg shadow-md p-3'
             required
+            className='input rounded-lg p-3'
           />
 
           <Button size='sm' width='full' disabled={isDisabled || isLoading}>
@@ -263,9 +242,8 @@ const LoginPath = () => {
             )}
           </Button>
         </form>
-
         <p className='text-gray-500 text-sm'>
-          Not a teacher?&nbsp;
+          Not an admin?&nbsp;
           <Link
             href='/auth/path/students/login'
             className='text-[#32A8C4] font-semibold'
@@ -278,4 +256,4 @@ const LoginPath = () => {
   );
 };
 
-export default LoginPath;
+export default AdminAccess;

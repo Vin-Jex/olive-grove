@@ -7,6 +7,7 @@ import WarningModal from "../Modal/WarningModal";
 import { useRouter } from "next/router";
 import { baseUrl } from "@/components/utils/baseURL";
 import Cookies from "js-cookie";
+import CustomCursor from "../CustomCursor";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -66,6 +67,8 @@ const StudentWrapper = ({
 
   return (
     <div className='w-full h-full'>
+      <CustomCursor />
+
       <Meta title={metaTitle || "Dashboard"} description={description} />
       <WarningModal
         handleModalClose={handleWarning}
