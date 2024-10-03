@@ -1,5 +1,5 @@
 {
-  "name": "Olive Grove School",
+  "name": "Olive Groove School",
   "short_name": "Olive",
   "icons": [
     {
@@ -15,5 +15,5 @@
   ],
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "display": "standalone"
+  "display": "browser"
 }
