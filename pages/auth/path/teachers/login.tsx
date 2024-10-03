@@ -13,6 +13,7 @@ import {
 } from "@mui/icons-material";
 import { baseUrl } from "@/components/utils/baseURL";
 import { CircularProgress } from "@mui/material";
+import CustomCursor from "@/components/Molecules/CustomCursor";
 
 export type loginType = {
   teacherID: string;
@@ -189,6 +190,8 @@ const LoginPath = () => {
 
   return (
     <div className='flex w-full h-screen justify-center items-center bg-gradient-to-r from-[#0078a8] to-[#32A8C4]'>
+      <CustomCursor />
+
       <div className='bg-white rounded-lg shadow-lg px-6 py-8 w-full md:w-[480px] flex flex-col items-center gap-6'>
         <div className='flex flex-col items-center mb-6'>
           <Link href='/' className='w-[4.5rem]'>

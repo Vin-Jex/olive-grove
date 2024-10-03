@@ -23,7 +23,7 @@ const InputField: React.FC<InputFieldProps> = ({
   error,
 }) => (
   <label htmlFor={name} className='w-full flex flex-col gap-1'>
-    {error !== "" && (
+    {error && (
       <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-[#F6CE46]'>
         <Info sx={{ fontSize: "1.1rem" }} />
         {error}

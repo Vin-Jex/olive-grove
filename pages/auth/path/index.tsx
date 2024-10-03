@@ -6,6 +6,7 @@ import AuthBg1 from "@/public/image/auth__bg2.png";
 import AuthBg2 from "@/public/image/auth_bg.png";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
+import CustomCursor from "@/components/Molecules/CustomCursor";
 
 export type loginType = {
   username: string;
@@ -43,6 +44,8 @@ const LoginPath = () => {
 
   return (
     <div className='flex w-full h-screen relative'>
+      <CustomCursor />
+
       <Image
         src={AuthBg1}
         alt='Auth Background Image 2'
