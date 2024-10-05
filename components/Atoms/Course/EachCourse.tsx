@@ -1,26 +1,66 @@
 import { TCourse } from "@/components/utils/types";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FC } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import coursePlaceholder from "@/images/course-placeholder.png";
 import Button from "../Button";
 
+enum CONTAINER_STYLES {
+  ROW = "flex-row max-w-[450px]",
+  COL = "flex-col max-w-[300px]",
+}
+
 const Course: FC<{ course: TCourse }> = ({ course }) => {
   const router = useRouter();
-const description = (course?.description && course.description?.length > 150) ? `${course.description?.slice(0, 150)}...` : course.description
+  // * The styles for the container wrapper, image container, and image components
+  const [card_arrangement, setCardArrangement] = useState<{
+    container_arrangement: CONTAINER_STYLES.COL | CONTAINER_STYLES.ROW;
+    img_width: "w-full" | "w-[180px]";
+  }>({
+    container_arrangement: CONTAINER_STYLES.ROW,
+    img_width: "w-[180px]",
+  });
+  const container_ref = useRef<HTMLImageElement | HTMLDivElement>(null);
+  const description =
+    course?.description && course.description?.length > 150
+      ? `${course.description?.slice(0, 150)}...`
+      : course.description;
+
+  useEffect(() => {
+    if (!container_ref.current) return;
+
+    const observable = new ResizeObserver(() => {
+      console.log("Width", container_ref.current?.clientWidth);
+
+      if (container_ref.current && container_ref.current?.clientWidth <= 380)
+        setCardArrangement({
+          container_arrangement: CONTAINER_STYLES.COL,
+          img_width: "w-full",
+        });
+      else
+        setCardArrangement({
+          container_arrangement: CONTAINER_STYLES.ROW,
+          img_width: "w-[180px]",
+        });
+    });
+
+    observable.observe(container_ref.current);
+  }, []);
 
   return (
     <div
-      className="flex rounded-lg overflow-hidden flex-row items-start max-w-[450px] border border-[#1E1E1E33] cursor-pointer transition hover:scale-105"
+      className={`flex rounded-lg overflow-hidden ${card_arrangement.container_arrangement} items-start  border border-[#1E1E1E33] cursor-pointer transition hover:scale-105`}
       onClick={() => router.push(`/teachers/subjects/${course._id}`)}
+      ref={container_ref}
     >
       {/* IMAGE */}
-      <div className="w-[180px] h-[175px] cursor-pointer">
+      <div className={`${card_arrangement.img_width} h-[175px] cursor-pointer`}>
         <Image
           src={course.image || coursePlaceholder.src}
           width={180}
           height={175}
-          className="w-[180px] h-[175px] object-cover"
+          className={`${card_arrangement.img_width} h-[175px] object-cover
+`}
           alt={course.title}
         />
       </div>
