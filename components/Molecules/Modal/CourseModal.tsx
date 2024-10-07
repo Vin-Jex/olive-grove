@@ -15,6 +15,7 @@ import {
   TSection,
 } from "@/components/utils/types";
 import Select from "@/components/Atoms/Select";
+import { CircularProgress } from "@mui/material";
 
 export type TCourseModalFormData =
   | Omit<TCourse, "chapters">
@@ -52,6 +53,10 @@ export default function CourseModal({
   >(null);
   const [fileName, setFileName] = useState("");
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
+  const [is_loading, setIsLoading] = useState({
+    saving: false,
+    deleting: false,
+  });
 
   const textEditorValue =
     type === "topic" ? "topicNote" : type === "course" ? "description" : "";
@@ -94,10 +99,14 @@ export default function CourseModal({
       console.log("Onsubmit: Form state", formState);
       // * Prevent's the page from getting reloaded on submit
       e.preventDefault();
-      /// * Make the request to handle the form submission
+      // * Display the saving loading state
+      setIsLoading({ saving: true, deleting: false });
+      // * Make the request to handle the form submission
       const result = handleAction && (await handleAction(formState));
       // * If the request was completed successfully, close the modal
       if (result) handleModalClose();
+      // * Remove the saving loading state
+      setIsLoading({ saving: false, deleting: false });
     },
     disabled: requestState?.loading || false,
   };
@@ -107,10 +116,14 @@ export default function CourseModal({
       console.log("Onsubmit: Form state", formState);
       // * Prevent's the page from getting reloaded on submit
       e.preventDefault();
+      // * Display the deleting loading state
+      setIsLoading({ saving: false, deleting: true });
       /// * Make the request to handle the form submission
       const result = handleDelete && (await handleDelete(formState));
       // * If the request was completed successfully, close the modal
       if (result) handleModalClose();
+      // * Remove the deleting loading state
+      setIsLoading({ saving: false, deleting: false });
     },
     disabled: requestState?.loading || false,
   };
@@ -187,11 +200,19 @@ export default function CourseModal({
           )}
           <div className="flex items-center space-x-5 w-full">
             <Button size="xs" color="outline" {...actionProps}>
-              Save
+              {is_loading.saving ? (
+                <CircularProgress size={15} color="inherit" />
+              ) : (
+                "Save"
+              )}
             </Button>
             {handleDelete && (
               <Button size="xs" color="red" {...deleteActionProps}>
-                Delete
+                {is_loading.deleting ? (
+                  <CircularProgress size={15} color="inherit" />
+                ) : (
+                  "Delete"
+                )}
               </Button>
             )}
           </div>
