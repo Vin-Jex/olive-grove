@@ -123,60 +123,6 @@ const Subjects: FC = () => {
         error: "An error occurred while retrieving courses",
       });
     }
-
-    // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
-    setCourses({
-      data: [],
-      loading: true,
-      error: undefined,
-    });
-
-    // * Get the access token from the cookies
-    const jwt = Cookies.get("jwt");
-
-    // * Make an API request to retrieve the list of courses created by this teacher
-    const response = await fetch(
-      `${baseUrl}/courses${filter ? `?${filter?.query}=${filter?.value}` : ""}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: jwt || "",
-        },
-      }
-    );
-
-    // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
-    if (!response.ok) {
-      // * If it's a 404 error, display message that courses couldn't be found
-      if (response.status == 404) {
-        setCourses({
-          data: [],
-          loading: false,
-          error: "No course found",
-        });
-        return;
-      }
-
-      // * If it's any other error code, display default error msg
-      setCourses({
-        data: [],
-        loading: false,
-        error: "An error occurred while retrieving courses",
-      });
-
-      setSearchResults([]);
-      return;
-    }
-
-    // * Display the list of courses returned by the endpoint
-    const responseData = (await response.json()) as TResponse<TCourse[]>;
-    setCourses({
-      data: responseData.data,
-      loading: false,
-      error: undefined,
-    });
-    setSearchResults(responseData.data);
   };
 
   /**
@@ -404,6 +350,9 @@ const Subjects: FC = () => {
                     <ServerError msg={courses.error.message} />
                   </>
                 ))}
+              {typeof courses.error === "string" && (
+                <ServerError msg={courses.error} />
+              )}
             </div>
           ) : searchResults.length < 1 ? (
             // 404 image

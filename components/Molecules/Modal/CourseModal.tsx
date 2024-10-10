@@ -16,6 +16,7 @@ import {
 } from "@/components/utils/types";
 import Select from "@/components/Atoms/Select";
 import { CircularProgress } from "@mui/material";
+import { Info } from "@mui/icons-material";
 
 export type TCourseModalFormData =
   | Omit<TCourse, "chapters">
@@ -141,6 +142,15 @@ export default function CourseModal({
           </span>
         </div>
         <form className="flex flex-col justify-center py-4 mb-5 px-4 md:px-6 w-full space-y-6">
+          {requestState?.error && (
+            <>
+              <div className="text-red-500 text-center">
+              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+                {typeof requestState?.error === "string" &&
+                  (requestState.error as string)}
+              </div>
+            </>
+          )}
           {type === "course" && (
             <Select
               name="classId"
@@ -192,12 +202,7 @@ export default function CourseModal({
               fileName={fileName}
             />
           )}
-          {requestState?.error && (
-            <div className="text-red-500 text-center">
-              {typeof requestState?.error === "string" &&
-                (requestState.error as string)}
-            </div>
-          )}
+
           <div className="flex items-center space-x-5 w-full">
             <Button size="xs" color="outline" {...actionProps}>
               {is_loading.saving ? (
