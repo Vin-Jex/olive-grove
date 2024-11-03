@@ -147,3 +147,69 @@ export const editItem = async (
     return false;
   }
 };
+
+/**
+ * Fetches a list of courses created by a teacher.
+ *
+ * This function makes an API request to retrieve courses, optionally filtered by title.
+ *
+ * @param filter - An optional object to filter courses:
+ *   - `query`: Field to filter by (e.g., "title").
+ *   - `value`: Value to filter against.
+ *
+ * @returns A promise that resolves to an array of `TCourse` objects or a string error message.
+ *          Returns an array if courses are found or an error message if an error occurs.
+ *
+ * @throws Will throw an error if the response status is not OK.
+ *         Displays "No course found" for 404 errors and a generic error message for others.
+ *
+ * @example
+ * const courses = await fetchCourses({ query: "title", value: "Mathematics" });
+ * // Check if the result type if an array or a string
+ * if (Array.isArray(result)) {
+ *   // Handle successful fetch of courses
+ * } else {
+ *   // Handle error message
+ * }
+ */
+export const fetchCourses = async (filter?: {
+  query: "title";
+  value: string;
+}): Promise<TCourse[] | string> => {
+  try {
+    // Construct the API URL with optional filter
+    const url = `${baseUrl}/courses${
+      filter ? `?${filter.query}=${filter.value}` : ""
+    }`;
+
+    // Get the access token from the cookies
+    const jwt = Cookies.get("jwt");
+
+    // Make an API request to retrieve the list of courses
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: jwt || "",
+      },
+    });
+
+    // Check for response errors
+    if (!response.ok) {
+      if (response.status === 404) {
+        // Return error message for 404
+        return "No course found";
+      } else {
+        // Generic error message
+        return "An error occurred while retrieving courses";
+      }
+    }
+
+    const responseData = (await response.json()) as TResponse<TCourse[]>;
+    return responseData.data;
+  } catch (error) {
+    console.error(error);
+    // Return error message on exception
+    return "An error occurred while retrieving courses";
+  }
+};

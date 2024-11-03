@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Modal from "./Modal";
 import Button from "@/components/Atoms/Button";
 
@@ -20,40 +20,57 @@ export default function ClassModal({
       <Modal
         isOpen={modalOpen}
         onClose={handleModalClose}
-        className='w-[80%] sm:w-[70%] md:w-[751px] bg-white backdrop-blur-[10px] rounded-3xl'
+        className='w-[80%] sm:w-[70%] md:w-[751px] bg-white rounded-3xl shadow-lg'
       >
-        <div className='flex flex-col justify-center py-5 md:py-[40px] px-4 md:px-6 w-full gap-y-6 md:gap-y-10'>
-          <div className='flex flex-col justify-center gap-1'>
-            <span className='text-dark text-3xl font-semibold font-roboto'>
-              Physics {type}
-            </span>
+        {/* Header Section */}
+        <div className='flex flex-col items-center py-6 md:py-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-t-3xl'>
+          <span className='text-4xl font-semibold font-roboto'>
+            {type === "class" ? "Physics Class" : "Physics Assignment"}
+          </span>
+          <span className='text-lg mt-2'>
+            Learn about Atomic Structure with Mr. Azure Johnson
+          </span>
+        </div>
 
-            <div className='text-subtext text-base font-roboto my-3'>
+        {/* Content Section */}
+        <div className='flex flex-col justify-center py-6 md:py-10 px-6 md:px-8 gap-y-6 md:gap-y-8'>
+          {/* Description */}
+          <div className='text-gray-700 text-base leading-relaxed'>
+            <p>
               Atomic structure is a fundamental topic in physics that explores
               the composition of matter at the microscopic level. It involves
               understanding the arrangement of subatomic particles within an
               atom. At the center is the nucleus, comprising positively charged
               protons and neutral neutrons. Electrons, which carry a negative
               charge, orbit the nucleus in defined energy levels.
-            </div>
-
-            <span className='flex gap-1 text-base text-subtext'>
-              Teacher: Mr Azure Johnson
-            </span>
-
-            <span className='flex gap-1 text-base text-subtext'>
-              Duration: 8:30am - 9:30am
-            </span>
+            </p>
           </div>
 
-          <div className='flex items-center w-full'>
+          {/* Class Details */}
+          <div className='flex flex-col gap-y-2 text-gray-500 text-sm font-medium'>
+            <div className='flex items-center gap-2'>
+              <span className='font-semibold text-gray-600'>Teacher:</span>
+              Mr. Azure Johnson
+            </div>
+            <div className='flex items-center gap-2'>
+              <span className='font-semibold text-gray-600'>Duration:</span>
+              8:30am - 9:30am
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className='border-t border-gray-200 my-4'></div>
+
+          {/* Action Button */}
+          <div className='flex justify-center'>
             <Button
-              size='sm'
+              size='md'
               onClick={() => {
                 handleAction && handleAction();
               }}
+              className='px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all'
             >
-              {type === "class" ? "Join Class" : "Submit"}
+              {type === "class" ? "Join Class" : "Submit Assignment"}
             </Button>
           </div>
         </div>

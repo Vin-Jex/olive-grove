@@ -1,3 +1,5 @@
+import { InputHTMLAttributes } from "react";
+
 export type TSubject = {
   image_url: string;
   course_name: string;
@@ -77,3 +79,34 @@ export type THandleSearchChange<T> = (
     setSearchResults: React.Dispatch<React.SetStateAction<T[]>>;
   }
 ) => void;
+
+export interface IImageUploadProps
+  extends InputHTMLAttributes<HTMLInputElement> {
+  placeholder?: string;
+  type?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  setSelectedImage: React.Dispatch<
+    React.SetStateAction<Blob | null | undefined | string>
+  >;
+  resetImageStates: () => void;
+  selectedImage: Blob | null | undefined | string;
+  previewImage: Blob | null | string;
+  fileName: string;
+}
+
+export interface ILectureData {
+  _id: string;
+  subject: string;
+  description: string;
+  classTime: string;
+  meetingLink: string;
+  teacher: string;
+  isActive: boolean;
+  academicWeekDate: string;
+  recordedLecture: string;
+  attendance: {
+    student: string;
+    attended: boolean;
+    timestamp: string;
+  }[];
+}

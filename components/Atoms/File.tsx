@@ -1,25 +1,8 @@
 import Image from "next/image";
-import React, {
-  ChangeEvent,
-  InputHTMLAttributes,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useRef } from "react";
+import { IImageUploadProps } from "../utils/types";
 
-interface ImageUploadProps extends InputHTMLAttributes<HTMLInputElement> {
-  placeholder?: string;
-  type?: string;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  setSelectedImage: React.Dispatch<
-    React.SetStateAction<Blob | null | undefined | string>
-  >;
-  resetImageStates: () => void;
-  selectedImage: Blob | null | undefined | string;
-  previewImage: Blob | null | string;
-  fileName: string; 
-}
-
-const File: React.FC<ImageUploadProps> = ({
+const File: React.FC<IImageUploadProps> = ({
   placeholder,
   type,
   onChange,
@@ -51,7 +34,7 @@ const File: React.FC<ImageUploadProps> = ({
         className='flex items-center gap-2 md:gap-4 cursor-pointer'
         onClick={handleDivClick}
       >
-        <div className='flex items-center justify-center w-[30px] h-[30px] sm:w-[50px] sm:h-[50px] border-[1.5px] border-[#1E1E1E60] rounded-md p-1.5'>
+        <div className='flex items-center justify-center w-[30px] h-[30px] sm:w-[45px] sm:h-[45px] border-[1.5px] border-[#1E1E1E60] rounded-md p-1.5'>
           {previewImage ? (
             <Image
               src={previewImage as string}
@@ -77,9 +60,7 @@ const File: React.FC<ImageUploadProps> = ({
           )}
         </div>
         <span className='font-normal font-roboto text-[16px] sm:text-[17px] my-auto text-[#1E1E1E60] whitespace-nowrap'>
-          {fileName === ""
-            ? placeholder || `Upload Profile Picture`
-            : fileName}
+          {fileName === "" ? placeholder || `Upload Profile Picture` : fileName}
         </span>
       </label>
       <input
