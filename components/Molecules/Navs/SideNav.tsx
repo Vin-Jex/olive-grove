@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Close, Logout, Menu } from "@mui/icons-material";
+import { Class, ClassOutlined, Close, Logout, Menu } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
@@ -127,6 +127,8 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
               </svg>
             }
           />
+
+
           {isClient && role !== "Admin" && (
             <NavItem
               href={`${
@@ -137,7 +139,7 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
                   : role === "Admin"
                   ? "/admins"
                   : ""
-              }/classes`}
+              }/lectures`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
               activeIcon={
@@ -162,7 +164,7 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
                   </defs>
                 </svg>
               }
-              label='classes'
+              label='lectures'
               icon={
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
@@ -188,6 +190,27 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             />
           )}
 
+          {isClient && role !== "Admin" && (
+            <NavItem
+              href={`${
+                isClient && role === "Teacher"
+                  ? "/teachers"
+                  : role === "Student"
+                  ? "/students"
+                  : role === "Admin"
+                  ? "/admins"
+                  : ""
+              }/classes`}
+              activeClass={activeClass}
+              setActiveClass={setActiveClass}
+              activeIcon={<Class className="text-white" />}
+              label='classes'
+              icon={
+                <ClassOutlined />
+              }
+            />
+          )}
+          
           {isClient && role !== "Admin" && (
             <NavItem
               href={`${

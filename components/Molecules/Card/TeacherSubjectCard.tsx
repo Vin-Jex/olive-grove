@@ -8,24 +8,31 @@ interface SubjectProps {
   name: string;
   role: string;
   subject: string;
-  topic: string;
+  description: string;
   time: string;
   btnLink1: () => void;
   btnLink2: () => void;
 }
+
+const truncateAndElipses = (text: string, limit: number): string => {
+  if (text.length > limit) {
+    return text.substring(0, limit) + "...";
+  }
+  return text;
+};
 
 const TeacherSubjectCard: React.FC<SubjectProps> = ({
   assessments,
   name,
   role,
   subject,
-  topic,
+  description,
   time,
   btnLink1,
   btnLink2,
 }) => {
   return (
-    <div className='flex flex-col justify-center gap-6 border-[1.2px] border-dark/30 rounded-lg px-4 py-4 shadow-md w-full'>
+    <div className='flex flex-col justify-center gap-6 border-[1.2px] border-dark/30 rounded-lg px-4 py-4 shadow-md w-full min-h-[300px] max-h-[300px]'>
       <div className='flex items-start justify-between'>
         <div className='flex items-center gap-3'>
           <Image
@@ -62,7 +69,11 @@ const TeacherSubjectCard: React.FC<SubjectProps> = ({
         {!assessments && (
           <span className='flex gap-1 text-xs sm:text-sm md:text-base text-subtext'>
             <b className='font-roboto font-medium text-dark'>Topic:</b>
-            {topic}
+            <p
+              dangerouslySetInnerHTML={{
+                __html: truncateAndElipses(description!, 30),
+              }}
+            ></p>
           </span>
         )}
         <span className='flex gap-1 text-xs md:text-sm text-subtext'>
@@ -74,7 +85,7 @@ const TeacherSubjectCard: React.FC<SubjectProps> = ({
       </div>
 
       <div className='flex items-center gap-4'>
-        <Button size='xs' width="fit" onClick={btnLink1}>
+        <Button size='xs' width='fit' onClick={btnLink1}>
           {assessments ? "Submissions" : "Start Class"}
         </Button>
 

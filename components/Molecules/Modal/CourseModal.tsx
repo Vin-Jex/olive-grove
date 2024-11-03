@@ -134,14 +134,14 @@ export default function CourseModal({
       <Modal
         isOpen={modalOpen}
         onClose={handleModalClose}
-        className="w-[80%] sm:w-[70%] md:w-[501px] bg-white backdrop-blur-[10px] rounded-3xl"
+        className="w-[80%] sm:w-[70%] md:w-[600px] bg-white backdrop-blur-[10px] rounded-3xl"
       >
-        <div className="flex justify-between items-center px-7 py-2 mt-4">
+        <div className="flex justify-between items-center px-4 mt-[1rem]">
           <span className="text-2xl text-dark font-semibold font-roboto capitalize">
             {capitalize(mode)} {capitalize(type)}
           </span>
         </div>
-        <form className="flex flex-col justify-center py-4 mb-5 px-4 md:px-6 w-full space-y-6">
+        <form className="flex flex-col justify-center py-4 my-2 px-4 w-full space-y-6">
           {requestState?.error && (
             <>
               <div className="text-red-500 text-center">
@@ -167,7 +167,7 @@ export default function CourseModal({
             onChange={handleChange}
             placeholder={`${capitalize(type)} Title`}
             required
-            className="input"
+            className="input !rounded-lg"
           />
 
           {(type === "topic" || type === "course") && (

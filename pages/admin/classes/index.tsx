@@ -5,7 +5,7 @@ import SwitchContentNav from "@/components/Molecules/Navs/SwitchContentNav";
 import TeacherSubjectCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import EditClassModal from "@/components/Molecules/Modal/EditClassModal";
 import Button from "@/components/Atoms/Button";
-import CreateClassModal from "@/components/Molecules/Modal/CreateClassModal";
+import ClassModal from "@/components/Molecules/Modal/ClassModal";
 
 interface SubjectData {
   [key: string]: {
@@ -15,6 +15,7 @@ interface SubjectData {
     topic: string;
     name: string;
     btnLink1: string;
+    isActive: "Active" | "Inactive";
   }[];
 }
 
@@ -23,10 +24,11 @@ export const subjectData: SubjectData = {
     {
       subject: "Further Mathematics",
       role: "Teacher",
-      time: "09:00AM - 10:30AM",
+      time: "09-10-2024T10:30:43",
       topic: "Calculus",
       name: "Dr. Ayodeji Emmanuel",
       btnLink1: "#",
+      isActive: "Active",
     },
     {
       subject: "Chemistry",
@@ -35,6 +37,7 @@ export const subjectData: SubjectData = {
       topic: "Organic Chemistry",
       name: "Dr. Ayodeji Emmanuel",
       btnLink1: "#",
+      isActive: "Active",
     },
     {
       subject: "Chemistry",
@@ -43,24 +46,7 @@ export const subjectData: SubjectData = {
       topic: "Organic Chemistry",
       name: "Dr. Ayodeji Emmanuel",
       btnLink1: "#",
-    },
-  ],
-  week2: [
-    {
-      subject: "Physics",
-      role: "Teacher",
-      time: "09:00AM - 10:30AM",
-      topic: "Motion",
-      name: "Dr. Ayodeji Emmanuel",
-      btnLink1: "#",
-    },
-    {
-      subject: "Mathematics",
-      role: "Teacher",
-      time: "09:00AM - 10:30AM",
-      topic: "Trigonometry",
-      name: "Dr. Ayodeji Emmanuel",
-      btnLink1: "#",
+      isActive: "Inactive",
     },
   ],
 };
@@ -93,9 +79,7 @@ const Classes = () => {
         handleModalClose={handleModalEdit}
         modalOpen={openModalEdit}
       />
-      <CreateClassModal
-        formState={formState}
-        setFormState={setFormState}
+      <ClassModal
         type='class'
         handleModalClose={handleModalCreate}
         modalOpen={openModalCreate}
@@ -143,13 +127,13 @@ const Classes = () => {
                       {week}
                     </span>
                     <div className='grid grid-cols-3 gap-8 mt-4'>
-                      {subjectData[week].map((subject, sIndex) => (
+                      {subjectData[week].map((subject, index) => (
                         <TeacherSubjectCard
-                          key={sIndex}
+                          key={index}
                           name={subject.name}
-                          role={subject.role}
-                          time={subject.time}
-                          topic={subject.topic}
+                          role={subject.isActive ? "Active" : "Inactive"}
+                          time={new Date(subject.time).toLocaleString()}
+                          description={subject.subject}
                           subject={subject.subject}
                           btnLink1={() => {}}
                           btnLink2={handleModalEdit}
@@ -160,13 +144,13 @@ const Classes = () => {
                 ))
               : Object.keys(subjectData).map((week, index) => (
                   <div key={index} className='grid grid-cols-3 gap-8 !my-14'>
-                    {subjectData[week].map((subject, sIndex) => (
+                    {subjectData[week].map((subject, index) => (
                       <TeacherSubjectCard
-                        key={sIndex}
+                        key={index}
                         name={subject.name}
-                        role={subject.role}
-                        time={subject.time}
-                        topic={subject.topic}
+                        role={subject.isActive ? "Active" : "Inactive"}
+                        time={new Date(subject.time).toLocaleString()}
+                        description={subject.subject}
                         subject={subject.subject}
                         btnLink1={() => {}}
                         btnLink2={handleModalEdit}
