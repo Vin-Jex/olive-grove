@@ -1,4 +1,5 @@
 import { FC } from "react";
+import Cookies from "js-cookie";
 import { TSection } from "../../utils/types";
 import { useRouter } from "next/router";
 import { useRouter as useNavRouter } from "next/navigation";
@@ -46,11 +47,17 @@ export const Topic: FC<{ topic: TSection; lessonId: string }> = ({
     });
   };
 
+  const userRole = Cookies.get("role");
+
   return (
     <div
       onClick={() =>
         navRouter.push(
-          `/teachers/subjects/${router.query.subjectid}/?topic=${topic._id}`
+          `/${
+            userRole === "Student" ? "students/classes" : "teachers/subjects"
+          }/${router.query.subjectid ?? router.query.subjectId}/?topic=${
+            topic._id
+          }`
         )
       }
       className={`flex items-center gap-4 px-3 ${
