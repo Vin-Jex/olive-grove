@@ -22,7 +22,8 @@ export type TCourse = {
   title: string;
   description?: string;
   image?: string;
-  chapters: TChapter[];
+  chapters?: TChapter[];
+  courseCover?: string | File | undefined;
 } & OptionalFields;
 
 export type TChapter = {
@@ -65,7 +66,7 @@ export type TFetchState<T> = {
 };
 
 export type TClass = {
-  _id: string;
+  _id?: string;
   name: string;
   category: string;
   description?: string;
@@ -110,3 +111,27 @@ export interface ILectureData {
     timestamp: string;
   }[];
 }
+
+export type TSelectOptions = (
+  | string
+  | { value: string; display_value: string; [x: string]: string }
+)[];
+
+export type TCourseModalFormData =
+  | Omit<TCourse, "chapters">
+  | Omit<TChapter, "lessons">
+  | Omit<TLesson, "sections">
+  | Omit<TSection, "subsections">;
+
+export type TCourseModalProps = {
+  modalOpen: boolean;
+  handleModalClose: () => void;
+  handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
+  handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
+  type: "course" | "chapter" | "lesson" | "topic";
+  mode: "create" | "edit";
+  formState: TCourseModalFormData;
+  setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
+  requestState?: TFetchState<any>;
+  classes?: TSelectOptions;
+};

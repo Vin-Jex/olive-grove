@@ -56,7 +56,7 @@ function collectLinearContentIds(data: TCourse): string[] {
 
   // Traverse all data items (chapters)
 
-  data.chapters.forEach((chapter: TChapter) => {
+  data.chapters!.forEach((chapter: TChapter) => {
     traverseItem(chapter);
   });
 
