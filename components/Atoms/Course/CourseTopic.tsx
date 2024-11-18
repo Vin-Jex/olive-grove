@@ -1,6 +1,6 @@
 import { FC } from "react";
 import Cookies from "js-cookie";
-import { TSection } from "../../utils/types";
+import { TSection, TSubSection } from "../../utils/types";
 import { useRouter } from "next/router";
 import { useRouter as useNavRouter } from "next/navigation";
 import { editItem } from "../../utils/course";

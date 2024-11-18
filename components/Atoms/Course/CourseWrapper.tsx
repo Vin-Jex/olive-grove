@@ -1,5 +1,6 @@
 import Cookies from "js-cookie";
 import { TCourseModalFormData } from "@/components/utils/types";
+import Cookies from "js-cookie";
 import { editItem } from "@/components/utils/course";
 import { TChapter, TCourse, TLesson, TSection } from "@/components/utils/types";
 import { useCourseContext } from "@/contexts/CourseContext";
