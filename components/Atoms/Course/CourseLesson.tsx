@@ -20,8 +20,15 @@ const Lesson: FC<{
         parentId={chapterId}
       >
         {lesson.sections.map((section) => (
+          //* IMPLEMENT THE SUBSECTION DISPLAY(Can't be viewed now as no lecture has subsection yet.)
           <>
             <Topic topic={section} lessonId={lesson._id || ""} />
+            {section.subsections &&
+              section.subsections.map((subsection) => {
+                <div className="p-3">
+                  <Topic topic={subsection} lessonId={lesson._id || ""} />;
+                </div>;
+              })}
           </>
         ))}
         {userRole === "Teacher" && (
