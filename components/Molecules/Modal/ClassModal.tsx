@@ -70,7 +70,7 @@ export default function ClassModal({
               }}
               className='px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all'
             >
-              {type === "class" ? "Join Class" : "Submit Assignment"}
+              {type === "class" ? "Join Lecture" : "Submit Assignment"}
             </Button>
           </div>
         </div>

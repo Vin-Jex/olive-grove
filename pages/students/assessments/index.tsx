@@ -1,7 +1,7 @@
 import SubjectCard from "@/components/Molecules/Card/SubjectCard";
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
 import React from "react";
-import { subjectData } from "../classes";
+import { subjectData } from "../lectures";
 import withAuth from "@/components/Molecules/WithAuth";
 
 const Assessments = () => {
