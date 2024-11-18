@@ -104,10 +104,10 @@ const Classes = () => {
               name={"No Teacher Name"}
               role={"Teacher"}
               time={"time"}
-              topic={subject.description as string}
+              topic={subject.title as string}
               subject={subject.title}
               btnLink1={""}
-              btnLink2={`/students/classes/${subject._id}`}
+              btnLink2={`/students/lectures/${subject._id}`}
             />
           ))}
         </div>
