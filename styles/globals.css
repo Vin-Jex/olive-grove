@@ -13,8 +13,9 @@ html {
   scroll-behavior: smooth;
 }
 
-*, body {
-  cursor: none !important; 
+*,
+body {
+  cursor: none !important;
 }
 
 @layer components {
@@ -25,6 +26,10 @@ html {
 
 .input {
   @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
+}
+
+.textarea {
+  @apply !rounded-lg border !border-[#1E1E1E60];
 }
 
 .radio-check {

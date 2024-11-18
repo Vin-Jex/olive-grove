@@ -1,4 +1,4 @@
-import { TCourseModalFormData } from "@/components/Molecules/Modal/CourseModal";
+import { TCourseModalFormData } from "@/components/utils/types";
 import { baseUrl } from "@/components/utils/baseURL";
 import { TCourse, TResponse } from "@/components/utils/types";
 import { useCourseContext } from "@/contexts/CourseContext";
@@ -28,6 +28,21 @@ const Add: FC<{
       // * Get the access token from the cookies
       const jwt = Cookies.get("jwt");
 
+      // * If the type is an object
+      const req_body =
+        type === "topic" ? new FormData() : JSON.stringify({ ...formState });
+
+      if (type === "topic" && typeof req_body === "object") {
+        const entries = Object.entries(formState);
+
+        for (const [key, value] of entries) {
+          if (key === "topicVideo" && typeof formState[key] === "string")
+            continue;
+
+          req_body.append(key === "topicVideo" ? "file" : key, value);
+        }
+      }
+
       // * Make an API request to create this item
       const response = await fetch(
         `${baseUrl}/courses/${
@@ -42,12 +57,12 @@ const Add: FC<{
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            ...(type === "topic"
+              ? { "Content-Type": "multipart/form-data" }
+              : { "Content-Type": "application/json" }),
             Authorization: jwt || "",
           },
-          body: JSON.stringify({
-            ...formState,
-          }),
+          body: req_body,
         }
       );
 
@@ -97,6 +112,9 @@ const Add: FC<{
           parentId: parentId,
           title: responseData.data.title,
           description: responseData.data.description,
+          topicNote: responseData.data?.topicNote,
+          topicVideo: responseData.data?.topicVideo,
+          youtubeVideo: responseData.data?.youtubeVideo,
           _id: responseData.data._id,
         },
       });

@@ -1,8 +1,21 @@
-import { TCourseModalFormData } from "@/components/Molecules/Modal/CourseModal";
+import { TCourseModalFormData } from "@/components/utils/types";
 import { TCourse, TFetchState, TResponse } from "../types";
 import { TCourseDispatch } from "@/contexts/CourseContext";
 import Cookies from "js-cookie";
 import { baseUrl } from "../baseURL";
+
+/**
+ * * Class responsible for creating a new course/subject object
+ */
+export class CourseClass implements TCourse {
+  constructor(
+    public title: string,
+    public description: string,
+    public _id: string,
+    public courseCover?: string,
+    public chapters?: any
+  ) {}
+}
 
 /**
  * * Function responsible for editing/delite a new chapter/lesson/topic - Making the API request to the endpoint required to edit/delete any of the items
@@ -18,6 +31,8 @@ export const editItem = async (
   method: "PUT" | "DELETE"
 ) => {
   try {
+    console.log("TYPE", type);
+
     // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
     setEditItemRes({
       data: undefined,
@@ -27,6 +42,20 @@ export const editItem = async (
 
     // * Get the access token from the cookies
     const jwt = Cookies.get("jwt");
+
+    // * If the type is an object
+    const req_body =
+      type === "topic" ? new FormData() : JSON.stringify({ ...reqData });
+
+    if (type === "topic" && typeof req_body === "object") {
+      const entries = Object.entries(reqData);
+
+      for (const [key, value] of entries) {
+        if (key === "topicVideo" && typeof reqData[key] === "string") continue;
+
+        req_body.append(key === "topicVideo" ? "file" : key, value);
+      }
+    }
 
     // * Make an API request to create this item
     const response = await fetch(
@@ -42,12 +71,11 @@ export const editItem = async (
       {
         method: method || "PUT",
         headers: {
-          "Content-Type": "application/json",
+          // "Content-Type":
+          //   type === "topic" ? "multipart/formdata" : "application/json",
           Authorization: jwt || "",
         },
-        body: JSON.stringify({
-          ...reqData,
-        }),
+        body: req_body,
       }
     );
 

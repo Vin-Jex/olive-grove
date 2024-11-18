@@ -19,29 +19,37 @@ export const TopicDetails: FC<{ course: TCourse }> = ({ course }) => {
   }>();
 
   const tabBody: TTabBody[] = [
-    {
-      slug: "video",
-      content: (
-        <TopicVideo
-          url={
-            topicDetails?.topic?.topicVideo ||
-            topicDetails?.topic?.youtubeVideo ||
-            ""
-          }
-        />
-      ),
-    },
-    {
-      slug: "notes",
-      content: (
-        <div
-          className="lg:max-h-[80vh] overflow-y-auto rounded-sm px-2"
-          dangerouslySetInnerHTML={{
-            __html: topicDetails?.topic.topicNote || demoNotes,
-          }}
-        ></div>
-      ),
-    },
+    ...(topicDetails?.topic.topicVideo || topicDetails?.topic.youtubeVideo
+      ? [
+          {
+            slug: "video",
+            content: (
+              <TopicVideo
+                url={
+                  topicDetails?.topic?.topicVideo ||
+                  topicDetails?.topic?.youtubeVideo ||
+                  ""
+                }
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(topicDetails?.topic.topicNote
+      ? [
+          {
+            slug: "notes",
+            content: (
+              <div
+                className="lg:max-h-[80vh] overflow-y-auto rounded-sm px-2"
+                dangerouslySetInnerHTML={{
+                  __html: topicDetails?.topic.topicNote || "",
+                }}
+              ></div>
+            ),
+          },
+        ]
+      : []),
   ];
 
   /**
@@ -49,7 +57,7 @@ export const TopicDetails: FC<{ course: TCourse }> = ({ course }) => {
    */
   const getTopic = () => {
     // * Loop through each chapter in the course
-    for (const chapter of course.chapters) {
+    for (const chapter of course.chapters || []) {
       // * Loop through each lesson in each chapter
       for (const lesson of chapter.lessons) {
         // * Search for the topic with the id passed in the query in the list of topics under the current lesson
@@ -59,6 +67,7 @@ export const TopicDetails: FC<{ course: TCourse }> = ({ course }) => {
 
         // * If the topic was found, update the topic details state and break the loop
         if (section) {
+          console.log("TOPIC", section);
           setTopicDetails({
             path: [chapter.title, lesson.title, section?.title],
             topic: section,
@@ -88,13 +97,31 @@ export const TopicDetails: FC<{ course: TCourse }> = ({ course }) => {
           {/* TITLE */}
           <div className="text-3xl font-bold">{topicDetails.topic.title}</div>
           {/* TAB */}
-          <Tab
-            slugs={[
-              { name: "topic video", key: "video" },
-              { name: "topic notes", key: "notes" },
-            ]}
-            body={tabBody}
-          />
+          {topicDetails.topic.topicVideo || topicDetails?.topic.youtubeVideo ? (
+            <Tab
+              slugs={[
+                ...(topicDetails.topic.topicVideo ||
+                topicDetails?.topic.youtubeVideo
+                  ? [{ name: "topic video", key: "video" }]
+                  : []),
+                { name: "topic notes", key: "notes" },
+              ]}
+              body={tabBody}
+            />
+          ) : topicDetails.topic.topicNote ? (
+            <Tab
+              slugs={[
+                ...(topicDetails.topic.topicVideo ||
+                topicDetails?.topic.youtubeVideo
+                  ? [{ name: "topic video", key: "video" }]
+                  : []),
+                { name: "topic notes", key: "notes" },
+              ]}
+              body={tabBody}
+            />
+          ) : (
+            <div>{<NotFoundError msg="No notes provided" />}</div>
+          )}
         </div>
       ) : (
         <>
