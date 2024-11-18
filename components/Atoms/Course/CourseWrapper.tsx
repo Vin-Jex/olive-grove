@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { TCourseModalFormData } from "@/components/Molecules/Modal/CourseModal";
 import { editItem } from "@/components/utils/course";
 import { TChapter, TCourse, TLesson, TSection } from "@/components/utils/types";
@@ -59,6 +60,8 @@ const Wrapper: FC<{
     });
   };
 
+  const userRole = Cookies.get("role");
+
   return (
     <div
       className="w-full rounded border border-[#1E1E1E26] p-3"
@@ -88,7 +91,7 @@ const Wrapper: FC<{
             </svg>
           )}
           {/* EDIT ICON - CHAPTER, LESSON, OR TITLE */}
-          {type == "section" && (
+          {type == "section" && userRole === "Teacher" && (
             <svg
               width="15"
               height="16"
