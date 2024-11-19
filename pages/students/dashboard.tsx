@@ -1,5 +1,6 @@
+import Cookies from "js-cookie";
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Img from "@/public/image/celebrate.png";
 import Image from "next/image";
 import ClassCard from "@/components/Molecules/Card/ClassCard";
@@ -7,6 +8,7 @@ import ClassModal from "@/components/Molecules/Modal/ClassModal";
 import { useRouter } from "next/router";
 import withAuth from "@/components/Molecules/WithAuth";
 import { desc } from "next-video/dist/cli/init.js";
+import { baseUrl } from "@/components/utils/baseURL";
 
 const TodayClass = [
   {
@@ -44,6 +46,26 @@ const TodayClass = [
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalAss, setOpenModalAss] = useState(false);
+  const [studentInfo, setStudentInfo] = useState({
+    firstName: "",
+  }); //specify the type for this state
+  const userId = Cookies.get("userId");
+  useEffect(() => {
+    async function fetchStudentProfile() {
+      try {
+        const response = await fetch(`${baseUrl}/students/${userId}`);
+        if (!response.ok) {
+          //handle this case.
+          //since formdata has default value I am not sure that we need to reset them here.
+        }
+        const json = await response.json();
+        setStudentInfo({ firstName: json.firstName });
+      } catch (err) {
+        //how to display error.
+      }
+    }
+    fetchStudentProfile();
+  }, []);
   const router = useRouter();
 
   const handleModal = () => {
@@ -69,7 +91,7 @@ const Dashboard = () => {
           <div className="bg-primary w-full rounded-3xl font-roboto relative overflow-hidden max-h-[200px]">
             <div className="flex flex-col px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10">
               <h3 className="font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4">
-                Welcome back, John
+                Welcome back, {studentInfo.firstName}
               </h3>
               <span className="text-sm sm:text-base text-light/80 font-roboto">
                 You have 3 classes and 2 assignments to attend to.
