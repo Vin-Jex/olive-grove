@@ -20,6 +20,7 @@ export type SignupType = {
   firstName: string;
   lastName: string;
   middleName: string;
+  department: string;
   email: string;
   dob: string;
   class: string;
@@ -37,6 +38,7 @@ const StudentSignup = () => {
     firstName: "",
     lastName: "",
     middleName: "",
+    department: "",
     email: "",
     dob: "",
     class: "",
@@ -50,6 +52,7 @@ const StudentSignup = () => {
     classError: "",
     dobError: "",
     emailError: "",
+    departmentError: "",
     usernameError: "",
     passwordError: "",
     profileImageError: "",
@@ -130,6 +133,7 @@ const StudentSignup = () => {
       formState.password === "" ||
       formState.firstName === "" ||
       formState.lastName === "" ||
+      formState.department === "" ||
       formState.email === "" ||
       selectedImage === null
     )
@@ -142,13 +146,16 @@ const StudentSignup = () => {
     formState.firstName,
     formState.lastName,
     formState.password,
+    formState.department,
     formState.username,
     selectedImage,
   ]);
 
   const handleChange = ({
     target: { name, value },
-  }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  }: ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >) => {
     setFormState((prevState) => ({
       ...prevState,
       [name]: value,
@@ -162,6 +169,7 @@ const StudentSignup = () => {
       middleName: "",
       lastName: "",
       username: "",
+      department: "",
       class: "",
       dob: "",
       email: "",
@@ -235,6 +243,11 @@ const StudentSignup = () => {
         ...prevState,
         dobError: data.message.dob,
       }));
+    } else if (data.message.dapartment) {
+      setFormError((prevState) => ({
+        ...prevState,
+        departmentError: data.message.department,
+      }));
     } else if (data.message.profileImage) {
       setFormError((prevState) => ({
         ...prevState,
@@ -279,6 +292,7 @@ const StudentSignup = () => {
         firstNameError: "",
         lastNameError: "",
         classError: "",
+        departmentError: "",
         dobError: "",
         emailError: "",
         usernameError: "",
@@ -323,11 +337,13 @@ const StudentSignup = () => {
       console.error("Response Status: ", response.status);
       if (!response.ok) {
         const data = await response.json();
+        console.log(data, "thsi is the data from student signup");
         handleErrors(data);
         return;
       }
 
       const data = await response.json();
+      console.log(data, "thsi is the data from student signup");
       setFormError((prevState) => ({
         ...prevState,
         successError: "Student account created successfully.",
@@ -359,90 +375,95 @@ const StudentSignup = () => {
   };
 
   return (
-    <div className='flex w-full h-screen relative'>
+    <div className="flex w-full h-screen relative">
       <CustomCursor />
 
       <Image
         src={AuthBg1}
-        alt='Auth Background Image 2'
-        className='absolute -z-50 bottom-0 left-0'
+        alt="Auth Background Image 2"
+        className="absolute -z-50 bottom-0 left-0"
       />
       <Image
         src={AuthBg2}
-        alt='Auth Background Image 2'
-        className='absolute -z-50 top-0 right-0'
+        alt="Auth Background Image 2"
+        className="absolute -z-50 top-0 right-0"
       />
-      <div className='w-full flex items-center justify-center'>
+      <div className="w-full flex items-center justify-center">
         <Image
           src={AuthBg3}
-          alt='Auth Background Image 2'
-          className='max-w-[659px] max-h-[659px] w-full h-full object-cover'
+          alt="Auth Background Image 2"
+          className="max-w-[659px] max-h-[659px] w-full h-full object-cover"
         />
       </div>
-      <div className='w-full flex flex-col items-center justify-center gap-y-8'>
-        <div className='flex flex-col items-center justify-center'>
-          <Link href='/' className='w-[4.5rem] h-[5rem] -ml-4 -mb-2'>
+      <div className="w-full flex flex-col items-center justify-center gap-y-8">
+        <div className="flex flex-col items-center justify-center">
+          <Link href="/" className="w-[4.5rem] h-[5rem] -ml-4 -mb-2">
             <Image
               src={logo}
-              alt='Olive_grove_logo'
-              width='10000'
-              height='10000'
-              className='w-full h-full object-cover'
+              alt="Olive_grove_logo"
+              width="10000"
+              height="10000"
+              className="w-full h-full object-cover"
             />
           </Link>
-          <h5 className='text-dark text-[20px] font-semibold capitalize font-roboto leading-[25px]'>
+          <h5 className="text-dark text-[20px] font-semibold capitalize font-roboto leading-[25px]">
             School Portal
           </h5>
-          <span className='text-primary text-[30px] font-semibold capitalize font-roboto leading-[30px]'>
+          <span className="text-primary text-[30px] font-semibold capitalize font-roboto leading-[30px]">
             Olive Grove School
           </span>
-          <span className='text-subtext text-[16px] font-medium capitalize font-roboto leading-[28px]'>
+          <span className="text-subtext text-[16px] font-medium capitalize font-roboto leading-[28px]">
             Create new account
           </span>
         </div>
 
         {formError.usernameError ? (
-          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
+          <span className="flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3">
             <Info sx={{ fontSize: "1.1rem" }} />
             {formError.usernameError}
           </span>
         ) : formError.passwordError ? (
-          <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
+          <span className="flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3">
             <Info sx={{ fontSize: "1.1rem" }} />
             {formError.passwordError}
           </span>
         ) : formError.internetError ? (
-          <span className='text-yellow-600 text-sm flex items-center justify-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+          <span className="text-yellow-600 text-sm flex items-center justify-center gap-1">
+            <Info sx={{ fontSize: "1.1rem" }} className="mt-0.5" />
             {formError.internetError}
           </span>
         ) : formError.successError ? (
-          <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+          <span className="text-green-600 text-sm flex items-center justify-center gap-1">
+            <Info sx={{ fontSize: "1.1rem" }} className="mt-0.5" />
             {formError.successError}
           </span>
+        ) : formError.departmentError ? (
+          <span className="text-green-600 text-sm flex items-center justify-center gap-1">
+            <Info sx={{ fontSize: "1.1rem" }} className="mt-0.5" />
+            {formError.departmentError}
+          </span>
         ) : formError.generalError ? (
-          <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+          <span className="text-red-600 text-sm flex items-center justify-center gap-1">
+            <Info sx={{ fontSize: "1.1rem" }} className="mt-0.5" />
             <span>{formError.generalError}</span>
           </span>
         ) : null}
         {formError.profileImageError !== "" && (
-          <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-[#F6CE46]'>
+          <span className="flex items-center gap-x-1 text-sm font-roboto font-normal text-[#F6CE46]">
             <Info sx={{ fontSize: "1.1rem" }} />
             {formError.profileImageError}
           </span>
         )}
         <form
-          className='flex flex-col mx-auto gap-y-5 w-[490px]'
+          className="flex flex-col mx-auto gap-y-5 w-[490px]"
           onKeyPress={handleKeyPress}
           onSubmit={handleSignup}
         >
-          <div className='flex items-end gap-3 w-full'>
+          <div className="flex items-end gap-3 w-full">
             <InputField
-              name='firstName'
-              type='text'
-              placeholder='First Name *'
+              name="firstName"
+              type="text"
+              placeholder="First Name *"
               value={formState.firstName}
               onChange={handleChange}
               required
@@ -450,13 +471,37 @@ const StudentSignup = () => {
             />
 
             <InputField
-              name='middleName'
-              type='text'
-              placeholder='Middle Name'
+              name="middleName"
+              type="text"
+              placeholder="Middle Name"
               value={formState.middleName}
               onChange={handleChange}
               error={""}
             />
+          </div>
+          <div className="w-full pb-5">
+            <label className="block w-full" htmlFor="department">
+              Department
+            </label>
+            <select
+              onChange={handleChange}
+              // value={formState.instituteType}
+              name="department"
+              id="department"
+              // onChange={handleChange}
+              required
+              className="flex items-center px-2 sm:px-2.5  py-2 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full h-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2"
+            >
+              <option value="science" className="h-full">
+                Science
+              </option>
+              <option value="art" className="h-full">
+                Art
+              </option>
+              <option value="commercial" className="h-full">
+                Commercial
+              </option>
+            </select>
           </div>
           {inputFields.map((field) => (
             <InputField
@@ -471,7 +516,7 @@ const StudentSignup = () => {
             />
           ))}
 
-          <div className='w-full flex flex-col gap-1 cursor-pointer'>
+          <div className="w-full flex flex-col gap-1 cursor-pointer">
             <File
               selectedImage={selectedImage}
               setSelectedImage={setSelectedImage}
@@ -487,20 +532,20 @@ const StudentSignup = () => {
             />
           </div>
           <Button
-            type='submit'
-            size='sm'
-            width='full'
+            type="submit"
+            size="sm"
+            width="full"
             disabled={isDisabled || isLoading}
           >
             {isLoading ? (
-              <CircularProgress size={20} color='inherit' />
+              <CircularProgress size={20} color="inherit" />
             ) : (
               "Create Account"
             )}
           </Button>
-          <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
-            <span className='text-subtext'>Already have an account?</span>
-            <Link href='/auth/path/students/login' className='text-primary'>
+          <div className="flex items-center justify-center text-md font-roboto gap-x-1 -mt-2">
+            <span className="text-subtext">Already have an account?</span>
+            <Link href="/auth/path/students/login" className="text-primary">
               Login
             </Link>
           </div>
