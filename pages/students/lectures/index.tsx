@@ -5,6 +5,7 @@ import Link from "next/link";
 import withAuth from "@/components/Molecules/WithAuth";
 import { TCourse, TFetchState } from "@/components/utils/types";
 import { fetchCourses } from "@/components/utils/course";
+import ClassModal from "@/components/Molecules/Modal/ClassModal";
 
 export const subjectData = [
   {
@@ -47,6 +48,8 @@ const Classes = () => {
     loading: false,
     error: undefined,
   });
+  const [lectureInfoModal, setLectureInfoModal] = useState(false);
+
   const getCourses = useCallback(
     async (filter?: { query: "title"; value: string }) => {
       setCourses({
@@ -81,38 +84,49 @@ const Classes = () => {
     []
   );
 
+  function handleModal() {
+    setLectureInfoModal(!lectureInfoModal);
+  }
+
   useEffect(() => {
     getCourses();
   }, [getCourses]);
   return (
-    <StudentWrapper title="Classes" metaTitle="Olive Groove ~ Classes">
-      <div className="p-12 space-y-5">
-        {/* Title */}
-        <div className="flex flex-col">
-          <span className="text-lg font-medium text-dark font-roboto">
-            Explore your classes
-          </span>
-          <span className="text-md text-subtext font-roboto">
-            Manage and join your classes.
-          </span>
-        </div>
+    <>
+      <ClassModal
+        type="class"
+        handleModalClose={handleModal}
+        modalOpen={lectureInfoModal!}
+      />
+      <StudentWrapper title="Classes" metaTitle="Olive Groove ~ Classes">
+        <div className="p-12 space-y-5">
+          {/* Title */}
+          <div className="flex flex-col">
+            <span className="text-lg font-medium text-dark font-roboto">
+              Explore your classes
+            </span>
+            <span className="text-md text-subtext font-roboto">
+              Manage and join your classes.
+            </span>
+          </div>
 
-        <div className="grid grid-cols-3 h-fit w-full gap-8 !mt-8">
-          {courses.data.map((subject, index) => (
-            <SubjectCard
-              key={subject._id}
-              name={"No Teacher Name"}
-              role={"Teacher"}
-              time={"time"}
-              topic={subject.title as string}
-              subject={subject.title}
-              btnLink1={""}
-              btnLink2={`/students/lectures/${subject._id}`}
-            />
-          ))}
+          <div className="grid grid-cols-3 h-fit w-full gap-8 !mt-8">
+            {courses.data.map((subject, index) => (
+              <SubjectCard
+                key={subject._id}
+                name={"No Teacher Name"}
+                role={"Teacher"}
+                time={"time"}
+                topic={subject.title as string}
+                subject={subject.title}
+                toggleModal={handleModal}
+                btnLink2={`/students/lectures/${subject._id}`}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </StudentWrapper>
+      </StudentWrapper>
+    </>
   );
 };
 
