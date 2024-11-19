@@ -82,13 +82,13 @@ function getNextId(currentId: string, linearIds: string[]): string | null {
 const Tab: FC<{
   slugs: { key: string; name: string }[];
   body: TTabBody[];
-  subjectId?: string;
-}> = ({ slugs, body, subjectId }) => {
+}> = ({ slugs, body }) => {
   const [activeTab, setActiveTab] = useState(slugs[0].key);
   const [contentIds, setContentIds] = useState<string[]>([]);
   const router = useRouter();
   const { topic } = router.query;
   const pathName = usePathname();
+  const subjectId = pathName.split("/").pop();
   const getContentIds = useMemo(() => collectLinearContentIds, []);
   useEffect(() => {
     async function fetchNavigate() {

@@ -215,7 +215,7 @@ const SubjectDetailsPage: FC = () => {
                 </AnimatePresence>
                 {/* COURSE */}
                 <div className="flex-1">
-                  <TopicDetails course={course.data} subjectId={subjectId as string} />
+                  <TopicDetails course={course.data} />
                 </div>
               </div>
             </>
