@@ -116,11 +116,7 @@ const Tab: FC<{
   }
 
   return (
-<<<<<<< HEAD
     <div className="min-[1560px]:w-[64rem] flex flex-col gap-6">
-=======
-    <div className="w-fit flex flex-col gap-6">
->>>>>>> 0bba2e7 (feat: implement previous and next tab functionality)
       {/* TAB ACTIONS */}
       <div className="w-full flex gap-0">
         {slugs.map((slug, i) => (
