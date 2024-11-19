@@ -1,5 +1,8 @@
-import { TCourseModalFormData } from "@/components/Molecules/Modal/CourseModal";
-import { TCourse, TFetchState } from "@/components/utils/types";
+import {
+  TCourse,
+  TFetchState,
+  TCourseModalFormData,
+} from "@/components/utils/types";
 import {
   createContext,
   FC,
@@ -171,6 +174,9 @@ const courseReducer: Reducer<
           lessonToUpdate?.sections?.push({
             _id: action.payload._id || "",
             title: action.payload?.title || "",
+            topicNote: action.payload?.topicNote || "",
+            topicVideo: action.payload?.topicVideo || "",
+            youtubeVideo: action.payload?.youtubeVideo || "",
             subsections: [],
           });
           console.log("Created topic");

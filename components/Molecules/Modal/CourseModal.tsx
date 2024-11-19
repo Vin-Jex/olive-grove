@@ -10,6 +10,7 @@ import {
   TChapter,
   TClass,
   TCourse,
+  TCourseModalProps,
   TFetchState,
   TLesson,
   TSection,
@@ -17,25 +18,6 @@ import {
 import Select from "@/components/Atoms/Select";
 import { CircularProgress } from "@mui/material";
 import { Info } from "@mui/icons-material";
-
-export type TCourseModalFormData =
-  | Omit<TCourse, "chapters">
-  | Omit<TChapter, "lessons">
-  | Omit<TLesson, "sections">
-  | Omit<TSection, "subsections">;
-
-type CourseModalProps = {
-  modalOpen: boolean;
-  handleModalClose: () => void;
-  handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
-  handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
-  type: "course" | "chapter" | "lesson" | "topic";
-  mode: "create" | "edit";
-  formState: TCourseModalFormData;
-  setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
-  requestState?: TFetchState<any>;
-  classes?: string[];
-};
 
 export default function CourseModal({
   modalOpen,
@@ -48,7 +30,7 @@ export default function CourseModal({
   requestState,
   mode,
   classes,
-}: CourseModalProps) {
+}: TCourseModalProps) {
   const [selectedImage, setSelectedImage] = useState<
     Blob | null | string | undefined
   >(null);
@@ -69,7 +51,10 @@ export default function CourseModal({
   };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const {
+      target: { name, files },
+    } = event;
+    const file = files?.[0];
 
     if (file) {
       const reader = new FileReader();
@@ -79,6 +64,11 @@ export default function CourseModal({
       };
       reader.readAsDataURL(file);
       setFileName(file.name);
+      // * Update the course cover image or topic video form state
+      setFormState((prevState: any) => ({
+        ...prevState,
+        [name]: file,
+      }));
     } else {
       setSelectedImage(null);
     }
@@ -145,7 +135,7 @@ export default function CourseModal({
           {requestState?.error && (
             <>
               <div className="text-red-500 text-center">
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+                <Info sx={{ fontSize: "1.1rem" }} className="mt-0.5" />
                 {typeof requestState?.error === "string" &&
                   (requestState.error as string)}
               </div>
@@ -170,7 +160,7 @@ export default function CourseModal({
             className="input !rounded-lg"
           />
 
-          {(type === "topic" || type === "course") && (
+          {type === "topic" && (
             <TextEditor
               value={(formState as any)[textEditorValue]}
               placeholder={`${capitalize(type)} ${
@@ -189,15 +179,34 @@ export default function CourseModal({
             />
           )}
 
-          {type === "topic" && (
+          {/* If the modal is that for creating or editing a course */}
+          {type === "course" && (
+            <textarea
+              name="description"
+              value={formState.description}
+              onChange={handleChange}
+              placeholder="Description"
+              required
+              className="input textarea"
+            ></textarea>
+          )}
+
+          {(type === "topic" || type === "course") && (
             <File
               selectedImage={selectedImage}
+              name={type === "topic" ? "topicVideo" : "courseCover"}
               setSelectedImage={setSelectedImage}
               previewImage={previewImage}
               onChange={handleImageChange}
               disabled={false}
               resetImageStates={resetImageField}
-              placeholder={fileName !== "" ? fileName : "Upload Video"}
+              placeholder={
+                fileName !== ""
+                  ? fileName
+                  : type === "topic"
+                  ? "Upload Video"
+                  : "Upload course image"
+              }
               required
               fileName={fileName}
             />

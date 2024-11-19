@@ -56,7 +56,7 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
       {/* IMAGE */}
       <div className={`${card_arrangement.img_width} h-[175px] cursor-pointer`}>
         <Image
-          src={course.image || coursePlaceholder.src}
+          src={(course.courseCover as string) || coursePlaceholder.src}
           width={180}
           height={175}
           className={`${card_arrangement.img_width} h-[175px] object-cover
