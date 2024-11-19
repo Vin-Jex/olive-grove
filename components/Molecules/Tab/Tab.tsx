@@ -116,7 +116,7 @@ const Tab: FC<{
   }
 
   return (
-    <div className="w-fit flex flex-col gap-6">
+    <div className="min-[1560px]:w-[64rem] flex flex-col gap-6">
       {/* TAB ACTIONS */}
       <div className="w-full flex gap-0">
         {slugs.map((slug, i) => (
