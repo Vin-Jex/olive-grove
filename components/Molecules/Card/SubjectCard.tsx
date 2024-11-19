@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SetStateAction } from "react";
 import Image from "next/image";
 import Button from "@/components/Atoms/Button";
 import img from "@/public/image/tutor.png";
@@ -11,7 +11,7 @@ interface SubjectProps {
   subject: string;
   topic: string;
   time: string;
-  btnLink1: string;
+  toggleModal: () => void;
   btnLink2: string;
 }
 
@@ -22,7 +22,7 @@ const SubjectCard: React.FC<SubjectProps> = ({
   subject,
   topic,
   time,
-  btnLink1,
+  toggleModal,
   btnLink2,
 }) => {
   return (
@@ -59,14 +59,22 @@ const SubjectCard: React.FC<SubjectProps> = ({
       </div>
 
       <div className="flex items-center gap-4">
-        <Link href={btnLink1} passHref>
-          <Button size="sm">{assessments ? "Submit" : "Join Lecture"}</Button>
+        <Link
+          className="w-fit border-primary border hover:bg-[#28a1b0] transition duration-200 ease-in-out hover:text-white rounded-md px-2 md:px-3 lg:px-4 py-2.5 lg:py-3 text-sm md:text-base font-medium"
+          href={btnLink2}
+          passHref
+        >
+          {assessments ? "Submit" : "Join Lecture"}
         </Link>
-        <Link href={btnLink2} passHref>
-          <Button width="fit" size="sm" color="outline">
-            View {assessments ? "Assignment" : "Lecture"}
-          </Button>
-        </Link>
+        {/* <Link
+          className="w-fit px-2 md:px-3 bg-[#32A8C4] rounded-md text-[#fdfdfd]  lg:px-4 py-2.5 lg:py-3 text-sm md:text-base font-medium"
+          href={btnLink1}
+          passHref
+        > */}
+        <Button onClick={toggleModal} size="sm">
+          View {assessments ? "Assignment" : "Lecture"}
+        </Button>
+        {/* </Link> */}
       </div>
     </div>
   );
