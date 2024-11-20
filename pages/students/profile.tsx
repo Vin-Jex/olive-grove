@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
 import Image from "next/image";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
@@ -33,6 +34,8 @@ const Profile = () => {
     successError: "",
   });
   const [isDisabled, setIsDisabled] = useState(true);
+  const [profileImage, setProfileImage] = useState(""); // there needs to ne like a dummy image.
+  const [studentName, setStudentName] = useState("");
 
   const router = useRouter();
 
@@ -179,6 +182,7 @@ const Profile = () => {
     }, 10000);
   };
 
+  const userId = Cookies.get("userId");
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     event.preventDefault();
@@ -221,6 +225,48 @@ const Profile = () => {
     }
   };
 
+  useEffect(() => {
+    async function fetchStudentProfile() {
+      try {
+        const response = await fetch(`${baseUrl}/students/${userId}`);
+        if (!response.ok) {
+          //handle this case.
+          //since formdata has default value I am not sure that we need to reset them here.
+        }
+        const json = await response.json();
+        setFormState({
+          firstName: json.firstName,
+          lastName: json.lastName,
+          middleName: json.middleName,
+          email: json.email,
+          username: json.username,
+          password: "",
+        });
+        setProfileImage(json.profileImage);
+        setStudentName(json.firstName + " " + json.lastName);
+      } catch (err) {
+        //how to display error.
+      }
+    }
+    // department: "science";
+    // dob: "2024-10-31T00:00:00.000Z";
+    // email: "henryabayomi12@gmail.com";
+    // enrolledSubjects: [];
+    // firstName: "Jakande";
+    // lastName: "Isheri";
+    // middleName: "Estate";
+    // password: "$2b$10$ASSaz448Doz5rvhge3be1OfTD1ysAjnTbokYYCjRto6erqkfp8Ik.";
+    // profileImage: "https://res.cloudinary.com/difc1xy6v/image/upload/v1732028085/student-files/ximyskjgd8vsyxcoks0o.jpg";
+    // repeated: [];
+    // role: "Student";
+    // studentID: "AQ1LJO2PRSXU";
+    // username: "olive";
+    // __v: 0;
+    // _id: "673ca6b347a34dee9993a503";
+
+    fetchStudentProfile();
+  }, []);
+
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
     if (isDisabled && event.key === "Enter") {
       handleSignup(event);
@@ -229,41 +275,43 @@ const Profile = () => {
 
   return (
     <>
-      <StudentWrapper title='Profile' metaTitle='Olive Groove ~ Profile'>
-        <div className='p-12 space-y-5'>
+      <StudentWrapper title="Profile" metaTitle="Olive Groove ~ Profile">
+        <div className="p-12 space-y-5">
           {/* Title */}
-          <div className='flex flex-col'>
-            <span className='text-lg font-medium text-dark font-roboto'>
+          <div className="flex flex-col">
+            <span className="text-lg font-medium text-dark font-roboto">
               Access your Information
             </span>
-            <span className='text-md text-subtext font-roboto'>
+            <span className="text-md text-subtext font-roboto">
               Mange and edit your details.
             </span>
           </div>
 
-          <div className='flex gap-4'>
+          <div className="flex gap-4">
             <Image
-              src={ProfileImg}
-              alt='Profile Pics'
-              className='shadow w-16 h-16 object-cover rounded-full'
+              src={profileImage}
+              width={300}
+              height={300}
+              alt="Profile Pics"
+              className="shadow w-16 h-16 object-cover rounded-full"
             />
-            <div className='flex flex-col justify-center'>
-              <span className='text-dark text-lg font-roboto leading-5'>
-                Dr. Ayodeji Emmanuel
+            <div className="flex flex-col justify-center">
+              <span className="text-dark text-lg font-roboto leading-5">
+                {studentName}
               </span>
-              <span className='text-subtext'>Student</span>
+              <span className="text-subtext">Student</span>
             </div>
           </div>
 
-          <div className='!mt-20'>
+          <div className="!mt-20">
             {formError.internetError !== "" ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
+              <span className="flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3">
                 <Info sx={{ fontSize: "1.1rem" }} />
                 {formError.internetError}
                 sdca
               </span>
             ) : formError.successError !== "" ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
+              <span className="flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3">
                 <Info sx={{ fontSize: "1.1rem" }} />
                 {formError.successError}
               </span>
@@ -271,18 +319,18 @@ const Profile = () => {
               ""
             )}
             <form
-              className='flex flex-col gap-y-5 w-[560px]'
+              className="flex flex-col gap-y-5 w-[560px]"
               onKeyPress={handleKeyPress}
               onSubmit={handleSignup}
             >
-              <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
+              <span className="text-subtext text-xl font-roboto font-medium -mb-1">
                 Personal Information
               </span>
-              <div className='flex items-end gap-8 w-full'>
+              <div className="flex items-end gap-8 w-full">
                 <InputField
-                  name='firstName'
-                  type='text'
-                  placeholder='First Name *'
+                  name="firstName"
+                  type="text"
+                  placeholder="First Name *"
                   value={formState.firstName}
                   onChange={handleChange}
                   required
@@ -290,9 +338,9 @@ const Profile = () => {
                 />
 
                 <InputField
-                  name='middleName'
-                  type='text'
-                  placeholder='Middle Name'
+                  name="middleName"
+                  type="text"
+                  placeholder="Middle Name"
                   value={formState.middleName}
                   onChange={handleChange}
                   error={""}
@@ -312,24 +360,25 @@ const Profile = () => {
               ))}
 
               <Input
-                type='password'
-                name='password'
+                type="password"
+                name="password"
                 value={formState.password}
                 onChange={handleChange}
-                placeholder='Password *'
+                placeholder="Password *"
                 required
-                className='input'
+                className="input"
                 showIcon={VisibilityOutlined}
                 hideIcon={VisibilityOffOutlined}
               />
 
               <Button
-                type='submit'
-                size='sm'
-                width='full'
+                type="submit"
+                size="sm"
+                width="fit"
+                className="!px-8"
                 disabled={isDisabled}
               >
-                Create Account
+                Save
               </Button>
             </form>
           </div>

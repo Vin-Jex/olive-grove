@@ -1,5 +1,6 @@
 import { TChapter } from "@/components/utils/types";
 import { FC } from "react";
+import Cookies from "js-cookie";
 import Add from "./CourseAddButton";
 import Wrapper from "./CourseWrapper";
 import Lesson from "./CourseLesson";
@@ -7,6 +8,7 @@ import Lesson from "./CourseLesson";
 const Chapter: FC<{
   chapter: TChapter;
 }> = ({ chapter }) => {
+  const userRole = Cookies.get("role");
   return (
     <>
       <Wrapper
@@ -20,7 +22,9 @@ const Chapter: FC<{
             <Lesson lesson={lesson} chapterId={chapter._id || ""} />
           </>
         ))}
-        <Add type="lesson" parentId={chapter._id || ""} />
+        {userRole === "Teacher" && (
+          <Add type="lesson" parentId={chapter._id || ""} />
+        )}
       </Wrapper>
     </>
   );
