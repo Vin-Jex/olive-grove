@@ -101,7 +101,6 @@ export const TopicDetails: FC<{
           {/* TITLE */}
           <div className="text-3xl font-bold">{topicDetails.topic.title}</div>
           {/* TAB */}
-
           {topicDetails.topic.topicVideo || topicDetails?.topic.youtubeVideo ? (
             <Tab
               slugs={[
