@@ -9,7 +9,14 @@ import {
   TSubSection,
 } from "@/components/utils/types";
 import { capitalize } from "@/components/utils/utils";
-import React, { FC, ReactNode, useEffect, useMemo, useState } from "react";
+import React, {
+  FC,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/router";
 import { usePathname } from "next/navigation";
 
@@ -56,9 +63,9 @@ function collectLinearContentIds(data: TCourse): string[] {
 
   // Traverse all data items (chapters)
 
-  data.chapters!.forEach((chapter: TChapter) => {
+  data.chapters?.forEach((chapter: TChapter) => {
     traverseItem(chapter);
-  });
+  }) ?? [];
 
   return ids;
 }
@@ -114,6 +121,70 @@ const Tab: FC<{
       router.push(`${pathName}?topic=${previousId}`);
     }
   }
+  const lastViewPoint = useRef(0);
+  const [viewedSegment, setViewedSegment] = useState<
+    { start: number; end: number }[]
+  >([]);
+
+  //* Track the video progress
+  useEffect(() => {
+    const videoElement = document.querySelector(
+      ".video-player"
+    ) as HTMLMediaElement;
+
+    if (!videoElement) return;
+
+    function handleTimeUpdate() {
+      const currentTime = videoElement.currentTime;
+
+      setViewedSegment((prev) => {
+        const segment = [...prev];
+        const lastSegment = segment[segment.length - 1];
+        if (lastSegment && lastViewPoint.current === lastSegment.end) {
+          lastSegment.end = currentTime;
+        } else {
+          segment.push({
+            start: lastViewPoint.current,
+            end: currentTime,
+          });
+        }
+        return segment;
+      });
+      lastViewPoint.current = currentTime;
+    }
+
+    window.addEventListener("timeupdate", handleTimeUpdate);
+
+    return () => {
+      window.removeEventListener("timeupdate", handleTimeUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
+    const videoElement = document.querySelector(
+      ".video-player"
+    ) as HTMLMediaElement;
+
+    if (!videoElement) return;
+
+    function durationWatched() {
+      if (viewedSegment) {
+        return viewedSegment.reduce(
+          (acc, curr) => acc + (curr.end - curr.start),
+          0
+        );
+      }
+      return 0;
+    }
+
+    const duration = videoElement.duration;
+    const watchedDuration = durationWatched();
+    if (watchedDuration >= 0.7 * duration)
+      console.log(
+        `${(watchedDuration / duration) * 100}% of the video watched`
+      );
+    else console.log("not watched enoug of the video yet");
+  }, [viewedSegment]);
 
   return (
     <div className="min-[1560px]:w-[64rem] flex flex-col gap-6">
