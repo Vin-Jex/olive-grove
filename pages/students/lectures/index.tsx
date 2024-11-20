@@ -102,7 +102,7 @@ const Classes = () => {
         <div className="p-12 space-y-5">
           {/* Title */}
           <div className="flex flex-col">
-            <span className="text-lg font-medium text-dark font-roboto">
+            <span className="text-lg lg:text-3xl font-medium text-dark font-roboto">
               Explore your classes
             </span>
             <span className="text-md text-subtext font-roboto">
@@ -110,12 +110,13 @@ const Classes = () => {
             </span>
           </div>
 
-          <div className="grid grid-cols-3 h-fit w-full gap-8 !mt-8">
+          <div className="grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-fit w-full gap-8 !mt-8">
             {courses.data.map((subject, index) => (
               <SubjectCard
                 key={subject._id}
                 name={"No Teacher Name"}
                 role={"Teacher"}
+                // type="lecture"
                 time={"time"}
                 topic={subject.title as string}
                 subject={subject.title}

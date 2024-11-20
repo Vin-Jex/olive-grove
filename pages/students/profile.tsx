@@ -9,6 +9,7 @@ import React, {
   useState,
 } from "react";
 import ProfileImg from "@/public/image/student4.png";
+import dummyImage from "@/images/dummy-img.jpg";
 import Button from "@/components/Atoms/Button";
 import InputField from "@/components/Atoms/InputField";
 import { baseUrl } from "@/components/utils/baseURL";
@@ -294,7 +295,7 @@ const Profile = () => {
 
           <div className="flex gap-4">
             <Image
-              src={profileImage}
+              src={profileImage.length === 0 ? dummyImage : profileImage}
               width={300}
               height={300}
               alt="Profile Pics"

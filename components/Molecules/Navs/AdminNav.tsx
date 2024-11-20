@@ -1,12 +1,12 @@
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { Menu, NotificationsOutlined } from "@mui/icons-material";
-import { useRouter } from "next/router";
+import dummyImage from "@/images/dummy-img.jpg";
 import {
   DateFormatter,
   generateDateString,
 } from "@/components/Functions/DateFormatter";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Profile from "@/public/image/student4.png";
 import { baseUrl } from "@/components/utils/baseURL";
 
@@ -16,23 +16,25 @@ interface AdminNavType {
 }
 
 const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
-  const [profileImage, setProfileImage] = useState("");
-  const userId = Cookies.get("userId");
-  const userRole = Cookies.get("role");
+  const [profileImage, setProfileImage] = useState<string | StaticImageData>(
+    dummyImage
+  );
   useEffect(() => {
     async function fetchProfileImage() {
+      const userRole = Cookies.get("role");
+      const userId = Cookies.get("userId");
       if (userRole === "Student") {
         try {
           const response = await fetch(`${baseUrl}/students/${userId}`);
           if (!response.ok) {
             //insert a fallback image;
             //for now set it to an empty string
-            setProfileImage("");
+            setProfileImage(dummyImage);
           }
           const json = await response.json();
           setProfileImage(json.profileImage);
         } catch (err) {
-          setProfileImage("");
+          setProfileImage(dummyImage);
         }
       }
       if (userRole === "Teacher") {
@@ -46,7 +48,7 @@ const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
           const json = await response.json();
           setProfileImage(json.profileImage);
         } catch (err) {
-          setProfileImage("");
+          setProfileImage(dummyImage);
         }
       }
       if (userRole === "Admin") {
@@ -55,12 +57,12 @@ const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
           if (!response.ok) {
             //insert a fallback image;
             //for now set it to an empty string
-            setProfileImage("");
+            setProfileImage(dummyImage);
           }
           const json = await response.json();
           setProfileImage(json.profileImage);
         } catch (err) {
-          setProfileImage("");
+          setProfileImage(dummyImage);
         }
       }
     }

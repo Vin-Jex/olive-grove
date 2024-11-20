@@ -201,7 +201,7 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
               activeClass={activeClass}
               setActiveClass={setActiveClass}
               activeIcon={<Class className="text-white" />}
-              label="lectures"
+              label="classes"
               icon={<ClassOutlined />}
             />
           )}
