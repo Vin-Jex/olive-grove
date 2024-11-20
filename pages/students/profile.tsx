@@ -1,7 +1,13 @@
 import Cookies from "js-cookie";
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
 import Image from "next/image";
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import ProfileImg from "@/public/image/student4.png";
 import Button from "@/components/Atoms/Button";
 import InputField from "@/components/Atoms/InputField";
@@ -182,7 +188,6 @@ const Profile = () => {
     }, 10000);
   };
 
-  const userId = Cookies.get("userId");
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     event.preventDefault();
@@ -225,29 +230,31 @@ const Profile = () => {
     }
   };
 
-  useEffect(() => {
-    async function fetchStudentProfile() {
-      try {
-        const response = await fetch(`${baseUrl}/students/${userId}`);
-        if (!response.ok) {
-          //handle this case.
-          //since formdata has default value I am not sure that we need to reset them here.
-        }
-        const json = await response.json();
-        setFormState({
-          firstName: json.firstName,
-          lastName: json.lastName,
-          middleName: json.middleName,
-          email: json.email,
-          username: json.username,
-          password: "",
-        });
-        setProfileImage(json.profileImage);
-        setStudentName(json.firstName + " " + json.lastName);
-      } catch (err) {
-        //how to display error.
+  const fetchProfile = useCallback(async () => {
+    try {
+      const userId = Cookies.get("userId");
+      const response = await fetch(`${baseUrl}/students/${userId}`);
+      if (!response.ok) {
+        //handle this case.
+        //since formdata has default value I am not sure that we need to reset them here.
       }
+      const json = await response.json();
+      setFormState({
+        firstName: json.firstName,
+        lastName: json.lastName,
+        middleName: json.middleName,
+        email: json.email,
+        username: json.username,
+        password: "",
+      });
+      setProfileImage(json.profileImage);
+      setStudentName(json.firstName + " " + json.lastName);
+    } catch (err) {
+      //how to display error.
     }
+  }, []);
+  useEffect(() => {
+    fetchProfile();
     // department: "science";
     // dob: "2024-10-31T00:00:00.000Z";
     // email: "henryabayomi12@gmail.com";
@@ -263,9 +270,7 @@ const Profile = () => {
     // username: "olive";
     // __v: 0;
     // _id: "673ca6b347a34dee9993a503";
-
-    fetchStudentProfile();
-  }, []);
+  }, [fetchProfile]);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
     if (isDisabled && event.key === "Enter") {
