@@ -130,14 +130,14 @@ const Classes = () => {
                     <div className="grid grid-cols-3 gap-8 mt-4">
                       {subjectData[week].map((subject, index) => (
                         <TeacherCard
-                          academicWeekDate={subject.time}
+                          academicWeekDate={1}
                           type="lecture"
                           key={index}
                           // name={subject.name}
                           // role={subject.isActive ? "Active" : "Inactive"}
                           time={new Date(subject.time).toLocaleString()}
                           // description={subject.subject}
-                          subject={subject.subject as TCourse}
+                          subject={(subject.subject as TCourse).title}
                           btnLink1={() => {}}
                           btnLink2={handleModalEdit}
                         />
@@ -150,13 +150,13 @@ const Classes = () => {
                     {subjectData[week].map((subject, index) => (
                       <TeacherCard
                         key={index}
-                        academicWeekDate={subject.time}
+                        academicWeekDate={1}
                         type="lecture"
                         // name={subject.name}
                         // role={subject.isActive ? "Active" : "Inactive"}
                         time={new Date(subject.time).toLocaleString()}
                         // description={subject.topic}
-                        subject={subject.subject}
+                        subject={(subject.subject as TCourse).title}
                         btnLink1={() => {}}
                         btnLink2={handleModalEdit}
                       />

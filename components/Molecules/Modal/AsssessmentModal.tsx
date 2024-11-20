@@ -15,9 +15,11 @@ import Button, { ButtonProps } from "@/components/Atoms/Button";
 import { CircularProgress } from "@mui/material";
 
 const AsssessmentModal: FC<
-  TModalProps<TAssessment> & {
+  TModalProps<TAssessment<"post">> & {
     subjects: TSelectOptions;
     assessmentTypes: TSelectOptions;
+    academicWeeks: TSelectOptions;
+    assessmentClasses: TSelectOptions;
   }
 > = ({
   modalOpen,
@@ -30,12 +32,16 @@ const AsssessmentModal: FC<
   setFormState,
   subjects,
   assessmentTypes,
+  academicWeeks,
+  assessmentClasses,
 }) => {
   const handleChange = ({
     target: { name, value },
   }: ChangeEvent<
     HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   >) => {
+    if (name === "timeline") console.log("Date time", value);
+
     setFormState((prevState: any) => ({
       ...prevState,
       [name]: value,
@@ -114,16 +120,41 @@ const AsssessmentModal: FC<
           <Select
             name="type"
             onChange={handleChange}
-            value={formState.type}
+            value={(formState.type as string).toLowerCase()}
             options={assessmentTypes}
             placeholder="Assessment type"
+            required
+          />
+
+          <Select
+            name="academicWeek"
+            onChange={handleChange}
+            value={(formState.academicWeek as string).toLowerCase()}
+            options={academicWeeks}
+            placeholder="Academic week"
+            required
+          />
+
+          <Select
+            name="class"
+            onChange={handleChange}
+            value={(formState.class as string).toLowerCase()}
+            options={assessmentClasses}
+            placeholder="Class"
             required
           />
 
           <Input
             type="datetime-local"
             name="timeline"
-            value={formState.timeline.toString()}
+            value={
+              new Date(formState.timeline || Date.now())
+                ?.toISOString()
+                ?.slice(
+                  0,
+                  16
+                ) /* new Date(formState.timeline).toLocaleString() */
+            }
             onChange={handleChange}
             placeholder="Timeline"
             required

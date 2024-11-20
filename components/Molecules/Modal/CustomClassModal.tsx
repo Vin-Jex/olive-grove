@@ -88,12 +88,20 @@ export const CreateOrEditClassModal = ({
           <Select
             name="category"
             onChange={handleChange}
-            value={formState.category.toLowerCase()}
+            value={formState.category}
             options={[
-              "primary",
-              "junior secondary",
-              "senior secondary",
-              "undergraduate",
+              "Nursery",
+              "Primary",
+              "Junior Secondary",
+              "Senior Secondary",
+              "Post-Secondary",
+              "Undergraduate",
+              "Graduate",
+              "Vocational",
+              "Adult Education",
+              "Online Courses",
+              "Continuing Education",
+              "Special Education",
             ]}
             placeholder="Class Category"
             required

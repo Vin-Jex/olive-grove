@@ -45,61 +45,61 @@ const ModifyAssessments = () => {
   };
   return (
     <TeachersWrapper
-      title='Assessments'
-      metaTitle='Olive Groove ~ Create or Modify Assessments'
+      title="Assessments"
+      metaTitle="Olive Groove ~ Create or Modify Assessments"
     >
-      <div className='space-y-5'>
+      <div className="space-y-5">
         {/* Title */}
-        <div className='flex items-center justify-between'>
-          <div className='flex flex-col'>
-            <span className='text-lg font-medium text-dark font-roboto'>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <span className="text-lg font-medium text-dark font-roboto">
               Access Assessments
             </span>
-            <span className='text-md text-subtext font-roboto'>
+            <span className="text-md text-subtext font-roboto">
               Manage, create and access assessments.
             </span>
           </div>
-          <div className=''>
+          <div className="">
             <button
-              className='flex items-center font-roboto font-medium text-primary text-base cursor-pointer'
+              className="flex items-center font-roboto font-medium text-primary text-base cursor-pointer"
               onClick={() => {
                 router.back();
               }}
             >
-              <ArrowBackIos className='text-primary !text-base' />
+              <ArrowBackIos className="text-primary !text-base" />
               Back
             </button>
           </div>
         </div>
 
-        <div className=''>
+        <div className="">
           <form
-            className='flex flex-col gap-y-5 w-[560px]'
+            className="flex flex-col gap-y-5 w-[560px]"
             // onKeyPress={handleKeyPress}
             // onSubmit={handleSignup}
           >
-            <div className='flex flex-col mx-auto gap-y-5 w-full'>
+            <div className="flex flex-col mx-auto gap-y-5 w-full">
               {/* {formError?.emailError !== "" && formError?.emailError} */}
 
-              <div className='flex flex-col gap-2 h-full'>
-                <div className='flex flex-col gap-2 w-full'>
+              <div className="flex flex-col gap-2 h-full">
+                <div className="flex flex-col gap-2 w-full">
                   <label
-                    htmlFor='subject'
-                    className='font-medium font-roboto text-sm text-dark/80'
+                    htmlFor="subject"
+                    className="font-medium font-roboto text-sm text-dark/80"
                   >
                     Subject:
                   </label>
                   <select
                     // value={formState.instituteType}
-                    name='subject'
+                    name="subject"
                     // onChange={handleChange}
                     required
-                    className='flex items-center px-2 sm:px-2.5 py-3.5 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal h-full outline-none border-[1.5px] border-dark/20 w-full text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext'
+                    className="flex items-center px-2 sm:px-2.5 py-3.5 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal h-full outline-none border-[1.5px] border-dark/20 w-full text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext"
                   >
-                    <option value='mathematics' className='h-full'>
+                    <option value="mathematics" className="h-full">
                       Mathematics
                     </option>
-                    <option value='english' className='h-full'>
+                    <option value="english" className="h-full">
                       English
                     </option>
                   </select>
@@ -107,62 +107,62 @@ const ModifyAssessments = () => {
               </div>
               {/*  */}
 
-              <div className='flex flex-col gap-2 h-full'>
-                <div className='flex flex-col gap-2 w-full'>
+              <div className="flex flex-col gap-2 h-full">
+                <div className="flex flex-col gap-2 w-full">
                   <label
-                    htmlFor='assessmentType'
-                    className='font-medium font-inter text-sm text-dark/80'
+                    htmlFor="assessmentType"
+                    className="font-medium font-inter text-sm text-dark/80"
                   >
                     Type of Assessment:
                   </label>
                   <select
                     // value={formState.assessmentType}
-                    name='assessmentType'
+                    name="assessmentType"
                     // onChange={handleChange}
                     required
-                    className='flex items-center px-2 sm:px-2.5 py-3.5 rounded-xl bg-transparent !border-[#D0D5DD] font-inter font-normal h-full outline-none border-[1.5px] border-dark/20 w-full text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext'
+                    className="flex items-center px-2 sm:px-2.5 py-3.5 rounded-xl bg-transparent !border-[#D0D5DD] font-inter font-normal h-full outline-none border-[1.5px] border-dark/20 w-full text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext"
                   >
-                    <option value='classWork' className='h-full'>
+                    <option value="classWork" className="h-full">
                       Class Work
                     </option>
-                    <option value='assignment' className='h-full'>
+                    <option value="assignment" className="h-full">
                       Assignment
                     </option>
-                    <option value='test' className='h-full'>
+                    <option value="test" className="h-full">
                       Test
                     </option>
                   </select>
                 </div>
               </div>
 
-              <div className='flex flex-col gap-2'>
+              <div className="flex flex-col gap-2">
                 <label
-                  htmlFor='duration'
-                  className='font-medium font-inter text-sm text-dark/80'
+                  htmlFor="duration"
+                  className="font-medium font-inter text-sm text-dark/80"
                 >
                   Duration:
                 </label>
                 <Input
-                  type='time'
-                  name='duration'
+                  type="time"
+                  name="duration"
                   // value={formState.duration}
                   // onChange={handleChange}
-                  placeholder='duration'
+                  placeholder="duration"
                   required={true}
-                  className='input'
+                  className="input"
                 />
               </div>
 
-              <div className='space-y-6'>
-                <div className='flex space-x-4'>
-                  <span className=''>Questions: </span>
-                  <div className='flex flex-col space-y-5 w-full'>
-                    <div className='flex items-center space-x-2'>
-                      <span className='border rounded-sm flex items-center justify-center w-7 h-7 text-subtext text-sm cursor-pointer'>
+              <div className="space-y-6">
+                <div className="flex space-x-4">
+                  <span className="">Questions: </span>
+                  <div className="flex flex-col space-y-5 w-full">
+                    <div className="flex items-center space-x-2">
+                      <span className="border rounded-sm flex items-center justify-center w-7 h-7 text-subtext text-sm cursor-pointer">
                         {questions.length}
                       </span>
                       <span
-                        className='border rounded-sm flex items-center justify-center w-7 h-7 text-subtext text-sm cursor-pointer'
+                        className="border rounded-sm flex items-center justify-center w-7 h-7 text-subtext text-sm cursor-pointer"
                         onClick={addQuestion}
                       >
                         +
@@ -171,37 +171,39 @@ const ModifyAssessments = () => {
                   </div>
                 </div>
 
-                <div className='flex flex-col space-y-8 gap-2 h-full'>
+                <div className="flex flex-col space-y-8 gap-2 h-full">
                   {questions.map((question, index) => (
-                    <div key={index} className='space-y-4'>
-                      <div className='flex flex-col gap-2 w-full'>
+                    <div key={index} className="space-y-4">
+                      <div className="flex flex-col gap-2 w-full">
                         <label
                           htmlFor={`question${index}`}
-                          className='font-medium font-inter text-sm text-dark/80'
+                          className="font-medium font-inter text-sm text-dark/80"
                         >
                           {question}:
                         </label>
-                        <div className='flex items-center w-full space-x-2'>
+                        <div className="flex items-center w-full space-x-2">
                           <Input
-                            type='text'
-                            name='question'
-                            placeholder='Enter Question'
+                            type="text"
+                            name="question"
+                            placeholder="Enter Question"
                             required={true}
-                            className='input'
+                            className="input"
                           />
-                          {questions.length > 1 && <Close
-                            className='text-[#FF3B3B]'
-                            onClick={() => removeQuestion(index)}
-                          />}
+                          {questions.length > 1 && (
+                            <Close
+                              className="text-[#FF3B3B]"
+                              onClick={() => removeQuestion(index)}
+                            />
+                          )}
                         </div>
                       </div>
                       {answers[index].map((answer, answerIndex) => (
                         <div key={answerIndex}>
-                          <div className='flex flex-col gap-2 w-full'>
-                            <div className='flex items-center w-full space-x-2'>
+                          <div className="flex flex-col gap-2 w-full">
+                            <div className="flex items-center w-full space-x-2">
                               <Input
-                                type='text'
-                                name='question'
+                                type="text"
+                                name="question"
                                 id={`answer${answerIndex}`}
                                 value={answer}
                                 onChange={(e) => {
@@ -211,10 +213,10 @@ const ModifyAssessments = () => {
                                   setAnswers(updatedAnswers);
                                 }}
                                 placeholder={`Enter answer ${answerIndex + 1}`}
-                                className='input'
+                                className="input"
                               />
                               <Close
-                                className='text-[#FF3B3B]'
+                                className="text-[#FF3B3B]"
                                 onClick={() => removeAnswer(index, answerIndex)}
                               />
                             </div>
