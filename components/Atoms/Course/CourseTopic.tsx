@@ -6,7 +6,7 @@ import { useRouter as useNavRouter } from "next/navigation";
 import { editItem } from "../../utils/course";
 import { useCourseContext } from "@/contexts/CourseContext";
 
-function CheckSvg() {
+function CheckSvg({ isActive }: { isActive: boolean }) {
   return (
     <svg
       width="18"
@@ -17,7 +17,7 @@ function CheckSvg() {
     >
       <path
         d="M9 0.5C4.02947 0.5 0 4.52947 0 9.5C0 14.4708 4.02947 18.5 9 18.5C13.9708 18.5 18 14.4708 18 9.5C18 4.52947 13.9708 0.5 9 0.5ZM9 17.3927C4.65778 17.3927 1.125 13.8422 1.125 9.49996C1.125 5.15775 4.65778 1.62496 9 1.62496C13.3422 1.62496 16.875 5.15776 16.875 9.49996C16.875 13.8422 13.3422 17.3927 9 17.3927ZM12.5918 6.20684L7.31136 11.5205L4.93339 9.14253C4.71373 8.92288 4.35767 8.92288 4.13773 9.14253C3.91808 9.36219 3.91808 9.71825 4.13773 9.93791L6.92183 12.7223C7.14148 12.9417 7.49754 12.9417 7.71748 12.7223C7.74279 12.697 7.76447 12.6694 7.78416 12.6407L13.3878 7.00248C13.6072 6.78283 13.6072 6.42676 13.3878 6.20684C13.1678 5.98719 12.8118 5.98719 12.5918 6.20684Z"
-        fill="#32A8C4"
+        fill={isActive ? "#32A8C4" : "#1E1E1E80"}
       />
     </svg>
   );
@@ -97,7 +97,7 @@ export const Topic: FC<{ topic: TSection | TSubSection; lessonId: string }> = ({
           />
         </svg>
       )}
-      {userRole === "Student" && <CheckSvg />}
+      {userRole === "Student" && <CheckSvg isActive={isActive} />}
 
       {topic.title}
     </div>

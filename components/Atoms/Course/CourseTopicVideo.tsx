@@ -12,7 +12,7 @@ const TopicVideo: FC<{ url?: string }> = ({ url }) => {
         accentColor="#02E7F5"
         primaryColor="#FFFFFF"
         controls={true}
-        className="max-w-screen-lg"
+        className="max-w-screen-lg video-player"
         autoPlay
       />
     </div>
