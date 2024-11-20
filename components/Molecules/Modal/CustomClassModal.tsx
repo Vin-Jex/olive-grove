@@ -187,7 +187,7 @@ export const DeleteClassModal = ({
             <Button
               size="xs"
               color="outline"
-              className="text-red-500 border-red-500 hover:bg-red-500"
+              className="text-red-500 !border-red-500 !outline-red-500 hover:bg-red-500"
               {...actionProps}
             >
               {requestState?.loading ? (
