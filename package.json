@@ -26,7 +26,8 @@
     "react-dom": "^18",
     "react-quill": "^2.0.0",
     "react-spinners": "^0.14.1",
-    "swiper": "^11.0.5"
+    "swiper": "^11.0.5",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@types/aos": "^3.0.7",

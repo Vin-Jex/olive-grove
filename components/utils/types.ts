@@ -136,16 +136,24 @@ export type TCourseModalProps = {
   classes?: TSelectOptions;
 };
 
-export type TAssessment = {
+export type TAcademicWeek = {
+  startDate: string;
+  endDate: string;
+  weekNumber: number;
+  academicYear: string;
+  isActive: true;
   _id?: string;
-  subject: TCourse | string;
-  type: string;
+};
+
+export type TAssessment<T extends "post" | "get"> = {
+  _id?: string;
+  subject: T extends "post" ? string : TCourse;
+  type: T extends "post" ? string : TAssessmentType;
   description: string;
   timeline: string | Date;
-  meetingLink: string;
-  teacherId: string;
-  teacher?: TTeacher;
-  academicWeekDate: string;
+  teacher: T extends "post" ? string : TTeacher;
+  academicWeek: T extends "post" ? string : TAcademicWeek;
+  class: T extends "post" ? string : TClass;
 };
 
 export type TStudent = {
@@ -176,6 +184,7 @@ export type TTeacher = {
   password: string;
   profileImage?: string;
   role?: string;
+  _id: string;
 };
 
 export type TAdmin = {

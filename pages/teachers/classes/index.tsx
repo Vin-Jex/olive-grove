@@ -80,7 +80,7 @@ const Classes = () => {
    * Updates/Deletes class in the local state after it has been edited or deleted
    */
   const updateClasses = useCallback(
-    (data: TClass, mode: "edit" | "delete") => {
+    (data: TClass, mode: "edit" | "delete" | "create") => {
       const old_classes = [...fetchClassesState.data];
 
       if (mode === "edit") {
@@ -104,6 +104,12 @@ const Classes = () => {
         setFetchClassesState((prev) => ({
           ...prev,
           data: [...filtered_classes],
+        }));
+      }
+      if (mode === "create") {
+        setFetchClassesState((prev) => ({
+          ...prev,
+          data: [data, ...old_classes],
         }));
       }
     },
@@ -231,6 +237,9 @@ const Classes = () => {
         loading: false,
         error: undefined,
       }));
+
+      // Add the newly created class to the list of classes
+      updateClasses(data.data, "create");
 
       return true;
     } catch (err) {

@@ -3,46 +3,55 @@ import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
-import AssessmentCard from "@/components/Molecules/Card/AssessmentCard";
 import { baseUrl } from "@/components/utils/baseURL";
 import Cookies from "js-cookie";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import ServerError from "@/components/Atoms/ServerError";
 import Loader from "@/components/Atoms/Loader";
 import {
+  TAcademicWeek,
   TAssessment,
   TAssessmentType,
+  TClass,
   TCourse,
   TFetchState,
+  TTeacher,
 } from "@/components/utils/types";
-import SwitchContentNav from "@/components/Molecules/Navs/SwitchContentNav";
 import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import AsssessmentModal from "@/components/Molecules/Modal/AsssessmentModal";
 import { fetchCourses } from "@/components/utils/course";
 
 const Assessments = () => {
+  const router = useRouter();
   const [openModalEdit, setOpenModalEdit] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
-  const [formState, setFormState] = useState<TAssessment>({
+  const [formState, setFormState] = useState<TAssessment<"post">>({
     subject: "",
     type: "",
     description: "",
     timeline: "",
-    meetingLink: "",
-    teacherId: "",
-    academicWeekDate: "",
+    teacher: "",
+    academicWeek: "",
     _id: "",
+    class: "",
   });
   const [fetchAssessmentsState, setFetchAssessmentsState] = useState<
-    TFetchState<TAssessment[]>
+    TFetchState<TAssessment<"get">[]>
+  >({
+    data: [],
+    error: undefined,
+    loading: false,
+  });
+  const [fetchAcademicWeekState, setFetchAcademicWeekState] = useState<
+    TFetchState<TAcademicWeek[]>
   >({
     data: [],
     error: undefined,
     loading: false,
   });
   const [createAssessmentState, setCreateAssessmentState] = useState<
-    TFetchState<TAssessment | undefined>
+    TFetchState<TAssessment<"post"> | undefined>
   >({
     data: undefined,
     error: undefined,
@@ -50,6 +59,13 @@ const Assessments = () => {
   });
   const [fetchCoursesState, setFetchCoursesState] = useState<
     TFetchState<TCourse[]>
+  >({
+    data: [],
+    loading: true,
+    error: undefined,
+  });
+  const [fetchClassesState, setFetchClassesState] = useState<
+    TFetchState<TClass[]>
   >({
     data: [],
     loading: true,
@@ -72,10 +88,10 @@ const Assessments = () => {
       type: "",
       description: "",
       timeline: "",
-      meetingLink: "",
-      teacherId: "",
-      academicWeekDate: "",
+      teacher: "",
+      academicWeek: "",
       _id: "",
+      class: "",
     });
   };
 
@@ -89,7 +105,7 @@ const Assessments = () => {
     setOpenModalCreate(!openModalCreate);
   };
 
-  const toogleModalEdit = (existing_data?: TAssessment) => {
+  const toogleModalEdit = (existing_data?: TAssessment<"post">) => {
     if (openModalEdit) {
       clearFormState();
       setCreateAssessmentState({
@@ -101,7 +117,7 @@ const Assessments = () => {
     setOpenModalEdit((prev) => !prev);
   };
 
-  const toogleModalDelete = (existing_data?: TAssessment) => {
+  const toogleModalDelete = (existing_data?: TAssessment<"post">) => {
     if (openModalDelete) {
       clearFormState();
       setCreateAssessmentState({
@@ -117,8 +133,28 @@ const Assessments = () => {
    * Updates/Deletes class in the local state after it has been edited or deleted
    */
   const updateAssessments = useCallback(
-    (data: TAssessment, mode: "edit" | "delete" | "create") => {
+    (data: TAssessment<"post">, mode: "edit" | "delete" | "create") => {
       const old_assessments = [...fetchAssessmentsState.data];
+      console.log(
+        "Returned course",
+        fetchCoursesState.data?.find((course) => course._id === data.subject)
+      );
+      const assessmentData: TAssessment<"get"> = {
+        ...data,
+        academicWeek: fetchAcademicWeekState.data?.find(
+          (week) => week._id === data.academicWeek
+        )!,
+        subject: fetchCoursesState.data?.find(
+          (course) => course._id === data.subject
+        )!,
+        class: fetchClassesState.data?.find(
+          (class_) => class_._id === data.class
+        )!,
+        type: fetchAssessmentTypesState.data?.find(
+          (type) => type._id === data.type
+        )!,
+        teacher: { name: "Dummy" } as TTeacher,
+      };
 
       if (mode === "edit") {
         const i = old_assessments.findIndex((each) => each._id === data._id);
@@ -126,7 +162,7 @@ const Assessments = () => {
         if (i < 0) return;
 
         old_assessments[i] = {
-          ...data,
+          ...assessmentData,
         };
 
         setFetchAssessmentsState((prev) => ({
@@ -144,14 +180,23 @@ const Assessments = () => {
         }));
       }
       if (mode === "create") {
-        const updated_assessments = [data, ...old_assessments];
+        const updated_assessments: TAssessment<"get">[] = [
+          assessmentData,
+          ...old_assessments,
+        ];
         setFetchAssessmentsState((prev) => ({
           ...prev,
           data: updated_assessments,
         }));
       }
     },
-    [fetchAssessmentsState.data]
+    [
+      fetchAcademicWeekState.data,
+      fetchAssessmentTypesState.data,
+      fetchAssessmentsState.data,
+      fetchClassesState.data,
+      fetchCoursesState.data,
+    ]
   );
 
   /**
@@ -209,6 +254,122 @@ const Assessments = () => {
     } finally {
       // Remove loading state
       setFetchAssessmentTypesState((prev) => ({ ...prev, loading: false }));
+    }
+  }, []);
+
+  /**
+   * Function to retrieve the list of academic weeks
+   */
+  const getAcademicWeeks = useCallback(async () => {
+    try {
+      // Display loading state
+      setFetchAcademicWeekState((prev) => ({
+        ...prev,
+        loading: true,
+        error: undefined,
+      }));
+
+      const userId = Cookies.get("userId");
+      const token = Cookies.get("jwt");
+
+      const response = await fetch(`${baseUrl}/academic-weeks`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        // Display error state
+        setFetchAcademicWeekState((prev) => ({
+          ...prev,
+          loading: false,
+          error: {
+            message: "Failed to load academic weeks.",
+            status: 500,
+            state: true,
+          },
+        }));
+      }
+
+      const data = await response.json();
+      // Display data
+      setFetchAcademicWeekState((prev) => ({
+        data: data?.data,
+        loading: false,
+        error: undefined,
+      }));
+    } catch (err) {
+      // Display error state
+      setFetchAcademicWeekState((prev) => ({
+        ...prev,
+        loading: false,
+        error: {
+          message: "Failed to load academic weeks",
+          status: 500,
+          state: true,
+        },
+      }));
+    } finally {
+      // Remove loading state
+      setFetchAcademicWeekState((prev) => ({ ...prev, loading: false }));
+    }
+  }, []);
+
+  /**
+   * Function to retrieve the list of classes
+   */
+  const getClasses = useCallback(async () => {
+    try {
+      // Display loading state
+      setFetchClassesState((prev) => ({
+        ...prev,
+        loading: true,
+        error: undefined,
+      }));
+
+      const userId = Cookies.get("userId");
+      const token = Cookies.get("jwt");
+
+      const response = await fetch(`${baseUrl}/classes/all`, {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        // Display error state
+        setFetchClassesState((prev) => ({
+          ...prev,
+          loading: false,
+          error: {
+            message: "Failed to load classes",
+            status: 500,
+            state: true,
+          },
+        }));
+      }
+
+      const data = await response.json();
+      // Display data
+      setFetchClassesState((prev) => ({
+        data: data?.data,
+        loading: false,
+        error: undefined,
+      }));
+    } catch (err) {
+      // Display error state
+      setFetchClassesState((prev) => ({
+        ...prev,
+        loading: false,
+        error: {
+          message: "Failed to load classes",
+          status: 500,
+          state: true,
+        },
+      }));
+    } finally {
+      // Remove loading state
+      setFetchClassesState((prev) => ({ ...prev, loading: false }));
     }
   }, []);
 
@@ -291,68 +452,71 @@ const Assessments = () => {
   /**
    * Function to create a new class
    */
-  const createAssessment = useCallback(async (formState: TAssessment) => {
-    try {
-      // Display loading state
-      setCreateAssessmentState((prev) => ({
-        ...prev,
-        loading: true,
-        error: undefined,
-      }));
+  const createAssessment = useCallback(
+    async (formState: TAssessment<"post">) => {
+      try {
+        // Display loading state
+        setCreateAssessmentState((prev) => ({
+          ...prev,
+          loading: true,
+          error: undefined,
+        }));
 
-      const userId = Cookies.get("userId");
-      const token = Cookies.get("jwt");
+        const userId = Cookies.get("userId");
+        const token = Cookies.get("jwt");
 
-      delete formState._id;
+        delete formState._id;
 
-      const response = await fetch(`${baseUrl}/assessment`, {
-        headers: {
-          Authorization: `${token}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({ ...formState, teacherId: userId }),
-      });
+        const response = await fetch(`${baseUrl}/assessment`, {
+          headers: {
+            Authorization: `${token}`,
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({ ...formState, teacher: userId }),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
+        if (!response.ok) {
+          const errorData = await response.json();
+          // Display error state
+          setCreateAssessmentState((prev) => ({
+            ...prev,
+            loading: false,
+            error: errorData?.data || "Failed to create assessment",
+          }));
+
+          return false;
+        }
+
+        const data = await response.json();
+        // Display data
+        setCreateAssessmentState((prev) => ({
+          data: data?.data,
+          loading: false,
+          error: undefined,
+        }));
+
+        // Update the list of assessments
+        updateAssessments(data?.data, "create");
+
+        return true;
+      } catch (err) {
+        console.error("ERROR CREATING ASSESSMENT", err);
         // Display error state
         setCreateAssessmentState((prev) => ({
           ...prev,
           loading: false,
-          error: errorData?.data || "Failed to create assessment",
+          error: "Failed to create assessment",
         }));
 
         return false;
+      } finally {
+        // Remove loading state
+        setCreateAssessmentState((prev) => ({ ...prev, loading: false }));
       }
-
-      const data = await response.json();
-      // Display data
-      setCreateAssessmentState((prev) => ({
-        data: data?.data,
-        loading: false,
-        error: undefined,
-      }));
-
-      // Update the list of assessments
-      updateAssessments(data?.data, "create");
-
-      return true;
-    } catch (err) {
-      console.error("ERROR CREATING ASSESSMENT", err);
-      // Display error state
-      setCreateAssessmentState((prev) => ({
-        ...prev,
-        loading: false,
-        error: "Failed to create assessment",
-      }));
-
-      return false;
-    } finally {
-      // Remove loading state
-      setCreateAssessmentState((prev) => ({ ...prev, loading: false }));
-    }
-  }, []);
+    },
+    [updateAssessments]
+  );
 
   /**
    * * Function responsible from retrieving the courses made by a teacher
@@ -396,7 +560,7 @@ const Assessments = () => {
    * Function to edit an existing class
    */
   const editAssessment = useCallback(
-    async (formState: TAssessment) => {
+    async (formState: TAssessment<"post">) => {
       try {
         // Display loading state
         setCreateAssessmentState((prev) => ({
@@ -409,7 +573,7 @@ const Assessments = () => {
         const token = Cookies.get("jwt");
 
         const response = await fetch(
-          `${baseUrl}/assessments/${formState._id}`,
+          `${baseUrl}/assessment/${formState._id}/${userId}`,
           {
             headers: {
               Authorization: `${token}`,
@@ -465,7 +629,7 @@ const Assessments = () => {
    * Function to delete an existing class
    */
   const deleteAssessment = useCallback(
-    async (formState: TAssessment) => {
+    async (formState: TAssessment<"post">) => {
       try {
         // Display loading state
         setCreateAssessmentState((prev) => ({
@@ -533,7 +697,15 @@ const Assessments = () => {
     fetchAssessments();
     getAssessmentTypes();
     getCourses();
-  }, []);
+    getAcademicWeeks();
+    getClasses();
+  }, [
+    fetchAssessments,
+    getAssessmentTypes,
+    getCourses,
+    getAcademicWeeks,
+    getClasses,
+  ]);
 
   return (
     <>
@@ -557,6 +729,22 @@ const Assessments = () => {
             value: type._id || "",
           })) || []
         }
+        academicWeeks={
+          fetchAcademicWeekState.data?.map((type) => ({
+            display_value: `Week ${type.weekNumber}, ${new Date(
+              type.startDate
+            ).toDateString()} - ${new Date(type.endDate).toDateString()}, ${
+              type.academicYear
+            }`,
+            value: type._id || "",
+          })) || []
+        }
+        assessmentClasses={
+          fetchClassesState.data?.map((type) => ({
+            display_value: type.name,
+            value: type._id || "",
+          })) || []
+        }
       />
       <AsssessmentModal
         formState={formState}
@@ -574,6 +762,22 @@ const Assessments = () => {
         }
         assessmentTypes={
           fetchAssessmentTypesState.data?.map((type) => ({
+            display_value: type.name,
+            value: type._id || "",
+          })) || []
+        }
+        academicWeeks={
+          fetchAcademicWeekState.data?.map((type) => ({
+            display_value: `Week ${type.weekNumber}, ${new Date(
+              type.startDate
+            ).toDateString()} - ${new Date(type.endDate).toDateString()}, ${
+              type.academicYear
+            }`,
+            value: type._id || "",
+          })) || []
+        }
+        assessmentClasses={
+          fetchClassesState.data?.map((type) => ({
             display_value: type.name,
             value: type._id || "",
           })) || []
@@ -618,13 +822,38 @@ const Assessments = () => {
                   {fetchAssessmentsState.data.map((assessment, index) => (
                     <div key={index} className="mt-4 w-full space-y-2">
                       <TeacherCard
-                        academicWeekDate={assessment.academicWeekDate}
+                        academicWeekDate={
+                          (assessment.academicWeek as TAcademicWeek).weekNumber
+                        }
                         key={index}
                         type="assessment"
+                        teacher={assessment.teacher}
+                        assessmentType={
+                          (assessment.type as TAssessmentType).name
+                        }
                         timeline={assessment.timeline}
-                        subject={assessment.subject as TCourse}
-                        btnLink1={() => {}}
-                        btnLink2={toogleModalEdit}
+                        assessmentClass={(assessment.class as TClass).name}
+                        subject={(assessment.subject as TCourse).title}
+                        actionClick={() =>
+                          toogleModalEdit({
+                            ...assessment,
+                            academicWeek: assessment.academicWeek._id!,
+                            class: assessment.class._id!,
+                            subject: assessment.subject._id!,
+                            type: assessment.type._id!,
+                            teacher: assessment.teacher._id!,
+                          })
+                        }
+                        btnLink1={() => {
+                          router.push(
+                            `/teachers/assessments/submissions/${assessment._id}`
+                          );
+                        }}
+                        btnLink2={() =>
+                          router.push(
+                            `/teachers/assessments/questions/${assessment._id}`
+                          )
+                        }
                       />
                     </div>
                   ))}

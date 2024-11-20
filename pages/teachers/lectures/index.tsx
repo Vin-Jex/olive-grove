@@ -292,12 +292,12 @@ const Lectures = () => {
                           </span>
                           <TeacherCard
                             key={index}
-                            academicWeekDate={lectureItem.academicWeekDate}
+                            academicWeekDate={1}
                             type="lecture"
                             time={new Date(
                               lectureItem.classTime
                             ).toLocaleString()}
-                            subject={lectureItem.subject as TCourse}
+                            subject={(lectureItem.subject as TCourse).title}
                             lectureTopic={lectureItem.description}
                             btnLink1={() => {}}
                             btnLink2={() => {
@@ -318,12 +318,12 @@ const Lectures = () => {
                             </span>
                             <TeacherCard
                               key={index}
-                              academicWeekDate={lectureItem.academicWeekDate}
+                              academicWeekDate={1}
                               type="lecture"
                               time={new Date(
                                 lectureItem.classTime
                               ).toLocaleString()}
-                              subject={lectureItem.subject as TCourse}
+                              subject={(lectureItem.subject as TCourse).title}
                               lectureTopic={lectureItem.description}
                               btnLink1={() => {}}
                               btnLink2={() => {
