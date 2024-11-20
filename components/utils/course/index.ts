@@ -227,6 +227,12 @@ export const fetchCourses = async (filter?: {
       if (response.status === 404) {
         // Return error message for 404
         return "No course found";
+      } else if (response.status === 401) {
+        //* In this case I had to remove the token since the users token seemed to have expired, is there a better way?
+        console.log(response.status, "response status");
+        Cookies.remove("jwt");
+        Cookies.remove("role");
+        Cookies.remove("userId");
       } else {
         // Generic error message
         return "An error occurred while retrieving courses";
