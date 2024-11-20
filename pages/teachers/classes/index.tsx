@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import SwitchContentNav from "@/components/Molecules/Navs/SwitchContentNav";
-import TeacherSubjectCard from "@/components/Molecules/Card/TeacherSubjectCard";
+import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import Button from "@/components/Atoms/Button";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import { baseUrl } from "@/components/utils/baseURL";
@@ -18,7 +18,6 @@ import EachClass from "@/components/Atoms/Class/EachClass";
 import { TClass, TFetchState } from "@/components/utils/types";
 
 const Classes = () => {
-  const [activeItem, setActiveItem] = useState("all courses");
   const [openModalEdit, setOpenModalEdit] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);

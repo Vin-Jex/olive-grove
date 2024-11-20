@@ -97,7 +97,7 @@ export interface IImageUploadProps
 
 export interface ILectureData {
   _id: string;
-  subject: string;
+  subject: TCourse | string;
   description: string;
   classTime: string;
   meetingLink: string;
@@ -134,4 +134,70 @@ export type TCourseModalProps = {
   setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
   requestState?: TFetchState<any>;
   classes?: TSelectOptions;
+};
+
+export type TAssessment = {
+  _id?: string;
+  subject: TCourse | string;
+  type: string;
+  description: string;
+  timeline: string | Date;
+  meetingLink: string;
+  teacherId: string;
+  teacher?: TTeacher;
+  academicWeekDate: string;
+};
+
+export type TStudent = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  dob: Date;
+  graduated?: boolean | null;
+  graduatedYear?: Date | null;
+  academicSection?: string | null;
+  repeated?: { year?: Date; repeated?: boolean }[];
+  department: string;
+  username: string;
+  password: string;
+  studentID: string;
+  middleName?: string;
+  profileImage?: string | null;
+  role?: string;
+  enrolledSubjects?: string[];
+};
+
+export type TTeacher = {
+  name: string;
+  teacherID: string;
+  email: string;
+  tel: number;
+  address: string;
+  password: string;
+  profileImage?: string;
+  role?: string;
+};
+
+export type TAdmin = {
+  name: string;
+  username: string;
+  password: string;
+  profileImage?: string;
+  role?: string;
+};
+
+export type TModalProps<T> = {
+  modalOpen: boolean;
+  handleModalClose: () => void;
+  handleAction?: (formData: T) => Promise<boolean>;
+  handleDelete?: (formData: T) => Promise<boolean>;
+  requestState?: TFetchState<any>;
+  mode: "create" | "edit";
+  formState: T;
+  setFormState: React.Dispatch<React.SetStateAction<T>>;
+};
+
+export type TAssessmentType = {
+  _id: string;
+  name: string;
 };
