@@ -2,7 +2,10 @@ import { TCourseModalFormData } from "@/components/utils/types";
 import { editItem } from "@/components/utils/course";
 import { TChapter, TCourse, TLesson, TSection } from "@/components/utils/types";
 import { useCourseContext } from "@/contexts/CourseContext";
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode, useCallback, useEffect, useState } from "react";
+import AddItemSVG from "./AddItemSVG";
+import { useRouter } from "next/router";
+import { useTopicContext } from "@/contexts/TopicContext";
 
 const Wrapper: FC<{
   type: "section" | "add";
@@ -11,6 +14,7 @@ const Wrapper: FC<{
   onAdd?: Function;
   existingDetails?: TCourse | TChapter | TLesson | TSection;
   sectionType?: "chapter" | "lesson" | "topic";
+  sectionId?: string;
   parentId?: string;
 }> = ({
   type,
@@ -19,9 +23,11 @@ const Wrapper: FC<{
   onAdd,
   existingDetails,
   sectionType,
+  sectionId,
   parentId,
 }) => {
   const { dispatch, openModal, setModalRequestState } = useCourseContext();
+  const { topicDetails } = useTopicContext();
   const [hideChildren, setHideChildren] = useState(true);
   const initialFormData: TCourseModalFormData = {
     _id: existingDetails?._id || "",
@@ -59,6 +65,25 @@ const Wrapper: FC<{
     });
   };
 
+  /**
+   * * Function responsible for automatically displaying or hiding the children based on the current topic/lesson
+   */
+  const toggleChildren = useCallback(() => {
+    if (sectionType === "chapter" && topicDetails.topicChapter === sectionId)
+      setHideChildren(false);
+    if (sectionType === "lesson" && topicDetails.topicLesson === sectionId)
+      setHideChildren(false);
+  }, [
+    sectionId,
+    sectionType,
+    topicDetails.topicChapter,
+    topicDetails.topicLesson,
+  ]);
+
+  useEffect(() => {
+    toggleChildren();
+  }, [toggleChildren]);
+
   return (
     <div
       className="w-full rounded border border-[#1E1E1E26] p-3"
@@ -73,20 +98,7 @@ const Wrapper: FC<{
       >
         <div className="flex gap-4 items-center justify-start">
           {/* ADD ICON */}
-          {type == "add" && (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-            >
-              <path
-                d="M15.0001 10.8317H10.8334V14.9984C10.8334 15.2194 10.7456 15.4313 10.5893 15.5876C10.4331 15.7439 10.2211 15.8317 10.0001 15.8317C9.77907 15.8317 9.56711 15.7439 9.41083 15.5876C9.25455 15.4313 9.16675 15.2194 9.16675 14.9984V10.8317H5.00008C4.77907 10.8317 4.56711 10.7439 4.41083 10.5876C4.25455 10.4313 4.16675 10.2194 4.16675 9.99837C4.16675 9.77736 4.25455 9.5654 4.41083 9.40912C4.56711 9.25284 4.77907 9.16504 5.00008 9.16504H9.16675V4.99837C9.16675 4.77736 9.25455 4.5654 9.41083 4.40912C9.56711 4.25284 9.77907 4.16504 10.0001 4.16504C10.2211 4.16504 10.4331 4.25284 10.5893 4.40912C10.7456 4.5654 10.8334 4.77736 10.8334 4.99837V9.16504H15.0001C15.2211 9.16504 15.4331 9.25284 15.5893 9.40912C15.7456 9.5654 15.8334 9.77736 15.8334 9.99837C15.8334 10.2194 15.7456 10.4313 15.5893 10.5876C15.4331 10.7439 15.2211 10.8317 15.0001 10.8317Z"
-                fill="#1E1E1E"
-              />
-            </svg>
-          )}
+          {type == "add" && <AddItemSVG />}
           {/* EDIT ICON - CHAPTER, LESSON, OR TITLE */}
           {type == "section" && (
             <svg

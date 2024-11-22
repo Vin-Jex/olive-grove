@@ -5,6 +5,7 @@ import { useCourseContext } from "@/contexts/CourseContext";
 import { FC } from "react";
 import Cookies from "js-cookie";
 import Wrapper from "./CourseWrapper";
+import AddItemSVG from "./AddItemSVG";
 
 const Add: FC<{
   type: "chapter" | "lesson" | "topic";
@@ -39,7 +40,7 @@ const Add: FC<{
           if (key === "topicVideo" && typeof formState[key] === "string")
             continue;
 
-          req_body.append(key === "topicVideo" ? "file" : key, value);
+          req_body.append(key, value);
         }
       }
 
@@ -57,9 +58,7 @@ const Add: FC<{
         {
           method: "POST",
           headers: {
-            ...(type === "topic"
-              ? { "Content-Type": "multipart/form-data" }
-              : { "Content-Type": "application/json" }),
+            ...(type === "topic" ? {} : { "Content-Type": "application/json" }),
             Authorization: jwt || "",
           },
           body: req_body,
@@ -148,10 +147,22 @@ const Add: FC<{
     });
   };
 
+  if (type === "topic") {
+    return (
+      <span
+        className="text-greyed flex items-center gap-2  transition hover:text-primary"
+        onClick={onAdd}
+      >
+        <i className="fas fa-plus"></i>{" "}
+        <span className="underline">Add new {type}</span>{" "}
+      </span>
+    );
+  }
+
   return (
     <>
       <Wrapper type="add" onAdd={onAdd}>
-        Add new {type}
+        <span className="text-greyed">Add new {type}</span>
       </Wrapper>
     </>
   );

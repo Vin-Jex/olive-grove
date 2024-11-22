@@ -14,6 +14,7 @@ const Chapter: FC<{
         title={chapter.title}
         existingDetails={chapter}
         sectionType="chapter"
+        sectionId={chapter._id!}
       >
         {chapter.lessons.map((lesson) => (
           <>

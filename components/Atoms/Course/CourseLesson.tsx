@@ -16,6 +16,7 @@ const Lesson: FC<{
         existingDetails={lesson}
         sectionType="lesson"
         parentId={chapterId}
+        sectionId={lesson._id!}
       >
         {lesson.sections.map((section) => (
           <>
