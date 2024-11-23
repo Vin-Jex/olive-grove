@@ -50,6 +50,7 @@ export type TSubSection = {
   _id?: string;
   title: string;
   description?: string;
+  viewed?: boolean;
 } & OptionalFields;
 
 export type TResponse<T> = {

@@ -18,13 +18,16 @@ import { Alert, Checkbox, FormControlLabel, Snackbar } from "@mui/material";
 import { baseUrl } from "@/components/utils/baseURL";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import Button from "../Button";
 
 const demoNotes = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus lacus, dignissim commodo dictum aliquam, maximus nec mauris. Phasellus sed nisl dignissim erat eleifend congue. Nullam ultricies est a tempus varius. Phasellus vitae massa rutrum, elementum urna sed, volutpat urna. Nam at nulla dui. Suspendisse aliquet metus purus, eget ultrices tellus pharetra eget. Proin dictum urna non aliquet pellentesque. Nunc dapibus gravida justo eu finibus.
 <br />
 <br />
 Duis dapibus purus tristique eros rutrum placerat. Sed et congue augue. Vivamus hendrerit quam vel justo rutrum hendrerit sed a enim. Curabitur a placerat mauris, eu efficitur turpis. Suspendisse tempus, dolor et imperdiet imperdiet, neque nibh mollis dolor, sed laoreet ex lacus id dolor. Aliquam pellentesque nunc ac feugiat tempus. Nulla blandit magna non nulla luctus sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos`;
 
-export const TopicDetails: FC<{ course: TCourse }> = ({ course }) => {
+export const TopicDetails: FC<{
+  course: TCourse;
+}> = ({ course }) => {
   const router = useRouter();
   const { topicDetails } = useTopicContext();
   const videoRef =
@@ -221,6 +224,7 @@ export const TopicDetails: FC<{ course: TCourse }> = ({ course }) => {
               </span>
             ))}
           </div>
+          {/**I AM NOT SURE OF THE NEED OF THE BREADCRUMB, IT LOOKS ROUGH */}
           {/* TITLE */}
           <div className="text-3xl font-bold">{topicDetails.topic?.title}</div>
           {/* TAB */}

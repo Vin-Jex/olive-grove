@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import { TLesson } from "@/components/utils/types";
 import { FC } from "react";
 import { Topic } from "./CourseTopic";
@@ -8,6 +9,7 @@ const Lesson: FC<{
   lesson: TLesson;
   chapterId: string;
 }> = ({ lesson, chapterId }) => {
+  const userRole = Cookies.get("role");
   return (
     <>
       <Wrapper
@@ -19,11 +21,20 @@ const Lesson: FC<{
         sectionId={lesson._id!}
       >
         {lesson.sections.map((section) => (
+          //* IMPLEMENT THE SUBSECTION DISPLAY(Can't be viewed now as no lecture has subsection yet.)
           <>
             <Topic topic={section} lessonId={lesson._id || ""} />
+            {section.subsections &&
+              section.subsections.map((subsection) => {
+                <div className="p-3">
+                  <Topic topic={subsection} lessonId={lesson._id || ""} />;
+                </div>;
+              })}
           </>
         ))}
-        <Add type="topic" parentId={lesson._id || ""} />
+        {userRole === "Teacher" && (
+          <Add type="topic" parentId={lesson._id || ""} />
+        )}
       </Wrapper>
     </>
   );

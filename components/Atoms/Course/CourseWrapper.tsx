@@ -1,4 +1,5 @@
 import { TCourseModalFormData } from "@/components/utils/types";
+import Cookies from "js-cookie";
 import { editItem } from "@/components/utils/course";
 import { TChapter, TCourse, TLesson, TSection } from "@/components/utils/types";
 import { useCourseContext } from "@/contexts/CourseContext";
@@ -35,6 +36,7 @@ const Wrapper: FC<{
     description: existingDetails?.description || "",
     ...(sectionType === "lesson" ? { chapterId: parentId || "" } : {}),
   };
+  const userRole = Cookies.get("role");
 
   /**
    * * Function responsible for opening the modal
@@ -100,7 +102,7 @@ const Wrapper: FC<{
           {/* ADD ICON */}
           {type == "add" && <AddItemSVG />}
           {/* EDIT ICON - CHAPTER, LESSON, OR TITLE */}
-          {type == "section" && (
+          {type == "section" && userRole === "Teacher" && (
             <svg
               width="15"
               height="16"
