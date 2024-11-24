@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import { useAuth } from "@/contexts/AuthContext";
 import Cookies from "js-cookie";
 
 interface WithAuthProps {
@@ -12,18 +13,18 @@ const withAuth = <P extends WithAuthProps>(
 ) => {
   const WithAuth: React.FC<P> = (props) => {
     const router = useRouter();
+    const { user, loggedIn } = useAuth();
+    const userRole = user?.role;
 
     useEffect(() => {
-      const authToken = Cookies.get("jwt");
-      const userRole = Cookies.get("role");
-
-      if (!authToken || userRole !== role) {
+      if (!loggedIn || userRole !== role) {
         router.push("/auth/path");
-        Cookies.remove("jwt");
+        Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
         Cookies.remove("role");
         Cookies.remove("userId");
       }
-    }, [router]);
+    }, [loggedIn, router, userRole]);
 
     return <WrappedComponent {...props} />;
   };

@@ -5,9 +5,8 @@ import { useSidebarContext } from "@/contexts/SidebarContext";
 import Meta from "@/components/Atoms/Meta";
 import WarningModal from "../Modal/WarningModal";
 import { useRouter } from "next/router";
-import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
 import CustomCursor from "../CustomCursor";
+import { handleLogout } from "./Admin.Layout";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -35,29 +34,6 @@ const TeachersWrapper = ({
     setWarningModal(!warningModal);
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/teacher-logout`, {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        return;
-      }
-
-      Cookies.remove("jwt");
-      Cookies.remove("role");
-      Cookies.remove("userId");
-
-      // Wait for 5 seconds before redirecting to login
-      setTimeout(() => {
-        router.push("/auth/path/teachers/login/");
-      }, 500);
-    } catch (error) {
-      console.log("Status: ", error);
-    }
-  };
 
   return (
     <div className='w-full h-full'>
@@ -67,7 +43,7 @@ const TeachersWrapper = ({
       <WarningModal
         handleModalClose={handleWarning}
         handleConfirm={() => {
-          handleLogout();
+          handleLogout().then(() => router.push("/auth/path/teachers/login/"));
         }}
         modalOpen={warningModal}
       />

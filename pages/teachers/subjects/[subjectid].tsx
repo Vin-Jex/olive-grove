@@ -6,7 +6,6 @@ import { TCourse, TResponse } from "@/components/utils/types";
 import { baseUrl } from "@/components/utils/baseURL";
 import { useRouter } from "next/router";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
-import Cookies from "js-cookie";
 import { useCourseContext } from "@/contexts/CourseContext";
 import Loader from "@/components/Atoms/Loader";
 import NotFoundError from "@/components/Atoms/NotFoundError";
@@ -46,14 +45,12 @@ const Subject: FC = () => {
         });
 
         // * Get the access token from the cookies
-        const jwt = Cookies.get("jwt");
-
         // * Make an API request to retrieve the list of courses created by this teacher
         const response = await fetch(`${baseUrl}/courses/${id}`, {
           method: "GET",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            Authorization: jwt || "",
           },
         });
 
@@ -106,7 +103,7 @@ const Subject: FC = () => {
 
   useEffect(() => {
     if (subjectid) getCourse((subjectid as string) || "nil");
-  }, [subjectid]);
+  }, [getCourse, subjectid]);
 
   return (
     <>
@@ -127,12 +124,12 @@ const Subject: FC = () => {
       )}
 
       <TopicContextProvider course={course.data}>
-        <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
-          <div className="space-y-5 h-full">
+        <TeachersWrapper title='Subjects' metaTitle='Olive Groove ~ Subjects'>
+          <div className='space-y-5 h-full'>
             {course.loading ? (
               <Loader />
             ) : course.error ? (
-              <div className="w-full h-full flex items-center justify-center">
+              <div className='w-full h-full flex items-center justify-center'>
                 {typeof course.error === "object" &&
                 course.error.status === 404 ? (
                   <>
@@ -145,23 +142,23 @@ const Subject: FC = () => {
             ) : course.data ? (
               <>
                 {/* Title */}
-                <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start">
-                  <div className="flex flex-row gap-2 items-center">
+                <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start'>
+                  <div className='flex flex-row gap-2 items-center'>
                     {/* Previous page button */}
                     <div
-                      className="w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full "
+                      className='w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full '
                       onClick={() => router.back()}
                     >
-                      <i className="fas fa-arrow-left text-greyed hover:text-dark"></i>
+                      <i className='fas fa-arrow-left text-greyed hover:text-dark'></i>
                     </div>
-                    <span className="text-2xl font-medium text-dark font-roboto">
+                    <span className='text-2xl font-medium text-dark font-roboto'>
                       {course.data?.title || "Loading..."}
                     </span>
                   </div>
-                  <div className="flex gap-4 items-center">
+                  <div className='flex gap-4 items-center'>
                     {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
                     <div
-                      className="rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110"
+                      className='rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110'
                       onClick={() => setShowSideBar((prev) => !prev)}
                     >
                       <i
@@ -170,16 +167,16 @@ const Subject: FC = () => {
                         } text-primary`}
                       ></i>
                     </div>
-                    <Button width="fit" size="xs" color="outline">
-                      <i className="fas fa-pencil"></i>
+                    <Button width='fit' size='xs' color='outline'>
+                      <i className='fas fa-pencil'></i>
 
                       <span>Edit Course</span>
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-stretch gap-4 relative">
+                <div className='flex items-stretch gap-4 relative'>
                   {/* SIDEBAR */}
-                  <div className="flex-none hidden xl:block">
+                  <div className='flex-none hidden xl:block'>
                     <SideBar courseId={(subjectid as string) || ""} />
                   </div>
                   {/* MOBILE SIDEBAR */}
@@ -189,7 +186,7 @@ const Subject: FC = () => {
                     )}
                   </AnimatePresence>
                   {/* COURSE */}
-                  <div className="flex-1">
+                  <div className='flex-1'>
                     <TopicDetails course={course.data} />
                   </div>
                 </div>

@@ -1,8 +1,8 @@
 import { TCourseModalFormData } from "@/components/utils/types";
 import { TCourse, TFetchState, TResponse } from "../types";
 import { TCourseDispatch } from "@/contexts/CourseContext";
-import Cookies from "js-cookie";
 import { baseUrl } from "../baseURL";
+import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
 
 /**
  * * Class responsible for creating a new course/subject object
@@ -41,8 +41,6 @@ export const editItem = async (
     });
 
     // * Get the access token from the cookies
-    const jwt = Cookies.get("jwt");
-
     // * If the type is an object
     const req_body =
       type === "topic" ? new FormData() : JSON.stringify({ ...reqData });
@@ -70,11 +68,7 @@ export const editItem = async (
       }/${reqData._id}`,
       {
         method: method || "PUT",
-        headers: {
-          // "Content-Type":
-          //   type === "topic" ? "multipart/formdata" : "application/json",
-          Authorization: jwt || "",
-        },
+        credentials: "include",
         body: req_body,
       }
     );
@@ -211,14 +205,12 @@ export const fetchCourses = async (filter?: {
     }`;
 
     // Get the access token from the cookies
-    const jwt = Cookies.get("jwt");
-
     // Make an API request to retrieve the list of courses
     const response = await fetch(url, {
       method: "GET",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        Authorization: jwt || "",
       },
     });
 
@@ -229,10 +221,7 @@ export const fetchCourses = async (filter?: {
         return "No course found";
       } else if (response.status === 401) {
         //* In this case I had to remove the token since the users token seemed to have expired, is there a better way?
-        console.log(response.status, "response status");
-        Cookies.remove("jwt");
-        Cookies.remove("role");
-        Cookies.remove("userId");
+        handleLogout();
       } else {
         // Generic error message
         return "An error occurred while retrieving courses";

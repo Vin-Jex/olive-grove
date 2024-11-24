@@ -3,8 +3,6 @@ import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
-import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import ServerError from "@/components/Atoms/ServerError";
 import Loader from "@/components/Atoms/Loader";
@@ -20,6 +18,7 @@ import {
 import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import AsssessmentModal from "@/components/Molecules/Modal/AsssessmentModal";
 import { fetchCourses } from "@/components/utils/course";
+import { baseUrl } from "@/components/utils/baseURL";
 
 const Assessments = () => {
   const router = useRouter();
@@ -211,13 +210,8 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const userId = Cookies.get("userId");
-      const token = Cookies.get("jwt");
-
       const response = await fetch(`${baseUrl}/assessment/type`, {
-        headers: {
-          Authorization: `${token}`,
-        },
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -269,13 +263,8 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const userId = Cookies.get("userId");
-      const token = Cookies.get("jwt");
-
       const response = await fetch(`${baseUrl}/academic-weeks`, {
-        headers: {
-          Authorization: `${token}`,
-        },
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -327,13 +316,8 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const userId = Cookies.get("userId");
-      const token = Cookies.get("jwt");
-
       const response = await fetch(`${baseUrl}/classes/all`, {
-        headers: {
-          Authorization: `${token}`,
-        },
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -385,13 +369,8 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const userId = Cookies.get("userId");
-      const token = Cookies.get("jwt");
-
-      const response = await fetch(`${baseUrl}/teacher/${userId}/assessments`, {
-        headers: {
-          Authorization: `${token}`,
-        },
+      const response = await fetch(`${baseUrl}/teacher/assessments`, {
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -462,18 +441,15 @@ const Assessments = () => {
           error: undefined,
         }));
 
-        const userId = Cookies.get("userId");
-        const token = Cookies.get("jwt");
-
         delete formState._id;
 
         const response = await fetch(`${baseUrl}/assessment`, {
+          credentials: "include",
           headers: {
-            Authorization: `${token}`,
             "Content-Type": "application/json",
           },
           method: "POST",
-          body: JSON.stringify({ ...formState, teacher: userId }),
+          body: JSON.stringify({ ...formState, }),
         });
 
         if (!response.ok) {
@@ -569,14 +545,11 @@ const Assessments = () => {
           error: undefined,
         }));
 
-        const userId = Cookies.get("userId");
-        const token = Cookies.get("jwt");
-
         const response = await fetch(
-          `${baseUrl}/assessment/${formState._id}/${userId}`,
+          `${baseUrl}/assessment/${formState._id}`,
           {
+            credentials: "include",
             headers: {
-              Authorization: `${token}`,
               "Content-Type": "application/json",
             },
             method: "PUT",
@@ -638,15 +611,12 @@ const Assessments = () => {
           error: undefined,
         }));
 
-        const userId = Cookies.get("userId");
-        const token = Cookies.get("jwt");
-
         const response = await fetch(
           `${baseUrl}/assessments/${formState._id}`,
           {
             method: "DELETE",
+            credentials: "include",
             headers: {
-              Authorization: `${token}`,
               "Content-Type": "application/json",
             },
           }
@@ -712,7 +682,7 @@ const Assessments = () => {
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode="create"
+        mode='create'
         handleModalClose={toogleModalCreate}
         modalOpen={openModalCreate}
         handleAction={createAssessment}
@@ -749,7 +719,7 @@ const Assessments = () => {
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode="edit"
+        mode='edit'
         handleModalClose={toogleModalEdit}
         modalOpen={openModalEdit}
         handleAction={editAssessment}
@@ -784,27 +754,27 @@ const Assessments = () => {
         }
       />
       <TeachersWrapper
-        title="Assessments"
-        metaTitle="Olive Groove ~ Assessments"
+        title='Assessments'
+        metaTitle='Olive Groove ~ Assessments'
       >
-        <div className="space-y-5 h-full">
+        <div className='space-y-5 h-full'>
           <>
-            <div className="flex flex-row items-center justify-between gap-4">
-              <div className="flex flex-col">
-                <span className="text-lg font-medium text-dark font-roboto">
+            <div className='flex flex-row items-center justify-between gap-4'>
+              <div className='flex flex-col'>
+                <span className='text-lg font-medium text-dark font-roboto'>
                   Explore your available assessments.
                 </span>
-                <span className="text-md text-subtext font-roboto">
+                <span className='text-md text-subtext font-roboto'>
                   Manage, edit and create assessments.
                 </span>
               </div>
-              <Button size="xs" width="fit" onClick={toogleModalCreate}>
+              <Button size='xs' width='fit' onClick={toogleModalCreate}>
                 <span>Create Assessment</span>
               </Button>
             </div>
 
             {fetchAssessmentsState.loading ? (
-              <div className="h-full w-full">
+              <div className='h-full w-full'>
                 <Loader />
               </div>
             ) : fetchAssessmentsState.error ? (
@@ -818,15 +788,15 @@ const Assessments = () => {
               </>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6'>
                   {fetchAssessmentsState.data.map((assessment, index) => (
-                    <div key={index} className="mt-4 w-full space-y-2">
+                    <div key={index} className='mt-4 w-full space-y-2'>
                       <TeacherCard
                         academicWeekDate={
                           (assessment.academicWeek as TAcademicWeek).weekNumber
                         }
                         key={index}
-                        type="assessment"
+                        type='assessment'
                         teacher={assessment.teacher}
                         assessmentType={
                           (assessment.type as TAssessmentType).name

@@ -5,9 +5,35 @@ import { useSidebarContext } from "@/contexts/SidebarContext";
 import Meta from "@/components/Atoms/Meta";
 import WarningModal from "../Modal/WarningModal";
 import { useRouter } from "next/router";
-import { baseUrl } from "@/components/utils/baseURL";
 import Cookies from "js-cookie";
 import CustomCursor from "../CustomCursor";
+import { baseUrl } from "@/components/utils/baseURL";
+
+export const handleLogout = async () => {
+  const role = Cookies.get("role");
+  try {
+    const response = await fetch(`${baseUrl}/${role?.toLowerCase()}-logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      await response.json();
+      return;
+    }
+
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    Cookies.remove("role");
+    Cookies.remove("userId");
+
+    setTimeout(() => {
+      window.location.href = "/auth/path/teachers/login/";
+    }, 500);
+  } catch (error) {
+    console.log("Status: ", error);
+  }
+};
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -35,29 +61,6 @@ const AdminsWrapper = ({
     setWarningModal(!warningModal);
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/teacher-logout`, {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        return;
-      }
-
-      Cookies.remove("jwt");
-      Cookies.remove("role");
-      Cookies.remove("userId");
-
-      setTimeout(() => {
-        router.push("/auth/path/teachers/login/");
-      }, 500);
-    } catch (error) {
-      console.log("Status: ", error);
-    }
-  };
-
   return (
     <div className='w-full h-full'>
       <CustomCursor />
@@ -66,7 +69,7 @@ const AdminsWrapper = ({
       <WarningModal
         handleModalClose={handleWarning}
         handleConfirm={() => {
-          handleLogout();
+          handleLogout().then(() => router.push("/auth/path/teachers/login/"));
         }}
         modalOpen={warningModal}
       />

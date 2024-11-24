@@ -2,7 +2,6 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/public/image/logo.png";
-import Cookies from "js-cookie";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
 import Input from "@/components/Atoms/Input";
@@ -138,6 +137,7 @@ const LoginPath = () => {
     try {
       const response = await fetch(`${baseUrl}/teacher-login`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -149,25 +149,11 @@ const LoginPath = () => {
         handleErrors(data);
         return;
       }
-
-      const data = await response.json();
+      await response.json();
       setFormError((prevState) => ({
         ...prevState,
         successError: "Teacher successfully logged in.",
       }));
-
-      Cookies.set("jwt", data?.token, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
-      Cookies.set("userId", data?.id, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
-      Cookies.set("role", data?.role, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
 
       resetForm();
 

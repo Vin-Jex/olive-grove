@@ -1,11 +1,9 @@
 import { TCourseModalFormData } from "@/components/utils/types";
-import { baseUrl } from "@/components/utils/baseURL";
 import { TCourse, TResponse } from "@/components/utils/types";
 import { useCourseContext } from "@/contexts/CourseContext";
 import { FC } from "react";
-import Cookies from "js-cookie";
 import Wrapper from "./CourseWrapper";
-import AddItemSVG from "./AddItemSVG";
+import { baseUrl } from "@/components/utils/baseURL";
 
 const Add: FC<{
   type: "chapter" | "lesson" | "topic";
@@ -27,8 +25,6 @@ const Add: FC<{
       });
 
       // * Get the access token from the cookies
-      const jwt = Cookies.get("jwt");
-
       // * If the type is an object
       const req_body =
         type === "topic" ? new FormData() : JSON.stringify({ ...formState });
@@ -57,9 +53,9 @@ const Add: FC<{
         }/${parentId}`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             ...(type === "topic" ? {} : { "Content-Type": "application/json" }),
-            Authorization: jwt || "",
           },
           body: req_body,
         }
@@ -150,19 +146,19 @@ const Add: FC<{
   if (type === "topic") {
     return (
       <span
-        className="text-greyed flex items-center gap-2  transition hover:text-primary"
+        className='text-greyed flex items-center gap-2  transition hover:text-primary'
         onClick={onAdd}
       >
-        <i className="fas fa-plus"></i>{" "}
-        <span className="underline">Add new {type}</span>{" "}
+        <i className='fas fa-plus'></i>{" "}
+        <span className='underline'>Add new {type}</span>{" "}
       </span>
     );
   }
 
   return (
     <>
-      <Wrapper type="add" onAdd={onAdd}>
-        <span className="text-greyed">Add new {type}</span>
+      <Wrapper type='add' onAdd={onAdd}>
+        <span className='text-greyed'>Add new {type}</span>
       </Wrapper>
     </>
   );

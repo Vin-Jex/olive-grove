@@ -15,15 +15,8 @@ import NotFoundError from "../NotFoundError";
 import { useTopicContext } from "@/contexts/TopicContext";
 import img404 from "@/images/olive-notes-404.png";
 import { Alert, Checkbox, FormControlLabel, Snackbar } from "@mui/material";
-import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
-import Button from "../Button";
-
-const demoNotes = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus lacus, dignissim commodo dictum aliquam, maximus nec mauris. Phasellus sed nisl dignissim erat eleifend congue. Nullam ultricies est a tempus varius. Phasellus vitae massa rutrum, elementum urna sed, volutpat urna. Nam at nulla dui. Suspendisse aliquet metus purus, eget ultrices tellus pharetra eget. Proin dictum urna non aliquet pellentesque. Nunc dapibus gravida justo eu finibus.
-<br />
-<br />
-Duis dapibus purus tristique eros rutrum placerat. Sed et congue augue. Vivamus hendrerit quam vel justo rutrum hendrerit sed a enim. Curabitur a placerat mauris, eu efficitur turpis. Suspendisse tempus, dolor et imperdiet imperdiet, neque nibh mollis dolor, sed laoreet ex lacus id dolor. Aliquam pellentesque nunc ac feugiat tempus. Nulla blandit magna non nulla luctus sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos`;
+import { baseUrl } from "@/components/utils/baseURL";
 
 export const TopicDetails: FC<{
   course: TCourse;
@@ -102,16 +95,12 @@ export const TopicDetails: FC<{
    */
   const markTopicAsRead = useCallback(async () => {
     // * Get the access token from the cookies
-    const jwt = Cookies.get("jwt");
-
     // * Make an API request to retrieve the list of courses created by this teacher
     const response = await fetch(
       `${baseUrl}/courses/mark-as-viewed/${topicDetails.type}/${topicDetails.topic?._id}`,
       {
         method: "POST",
-        headers: {
-          Authorization: jwt || "",
-        },
+        credentials: "include",
         body: JSON.stringify({
           currentDate: Date.now(),
           nextId: "6739522037923060e34feabd",
@@ -187,14 +176,14 @@ export const TopicDetails: FC<{
           {
             slug: "notes",
             content: (
-              <div className="flex w-full gap-2 flex-col">
+              <div className='flex w-full gap-2 flex-col'>
                 <div
-                  className="lg:max-h-[80vh] w-full overflow-y-auto rounded-sm px-2"
+                  className='lg:max-h-[80vh] w-full overflow-y-auto rounded-sm px-2'
                   dangerouslySetInnerHTML={{
                     __html: topicDetails?.topic.topicNote || "",
                   }}
                 ></div>
-                <div className="w-full">
+                <div className='w-full'>
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -215,9 +204,9 @@ export const TopicDetails: FC<{
   return (
     <>
       {topicDetails ? (
-        <div className="flex flex-col w-full gap-4">
+        <div className='flex flex-col w-full gap-4'>
           {/* BREADCRUMB */}
-          <div className="font-thin flex gap-1 w-full">
+          <div className='font-thin flex gap-1 w-full'>
             {topicDetails.path?.map((crumb, i) => (
               <span key={i}>
                 {crumb} {i != (topicDetails.path?.length || 0) - 1 ? "/" : ""}
@@ -226,7 +215,7 @@ export const TopicDetails: FC<{
           </div>
           {/**I AM NOT SURE OF THE NEED OF THE BREADCRUMB, IT LOOKS ROUGH */}
           {/* TITLE */}
-          <div className="text-3xl font-bold">{topicDetails.topic?.title}</div>
+          <div className='text-3xl font-bold'>{topicDetails.topic?.title}</div>
           {/* TAB */}
           {topicDetails.topic?.topicVideo ||
           topicDetails?.topic?.youtubeVideo ? (
@@ -255,7 +244,7 @@ export const TopicDetails: FC<{
             <div>
               {
                 <NotFoundError
-                  msg="No notes provided"
+                  msg='No notes provided'
                   width={320}
                   height={320}
                   img={img404.src}
@@ -275,9 +264,9 @@ export const TopicDetails: FC<{
           onClose={() => setTopicIsCompleted(false)}
           autoHideDuration={6000}
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          className="!z-[999]"
+          className='!z-[999]'
         >
-          <Alert severity="success" onClose={() => setTopicIsCompleted(false)}>
+          <Alert severity='success' onClose={() => setTopicIsCompleted(false)}>
             Topic completed!
           </Alert>
         </Snackbar>
