@@ -13,10 +13,9 @@ import {
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useRouter } from "next/router";
-import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
 import CustomCursor from "@/components/Molecules/CustomCursor";
 import { CircularProgress } from "@mui/material";
+import { baseUrl } from "@/components/utils/baseURL";
 
 export type loginType = {
   username: string;
@@ -39,7 +38,6 @@ const StudentLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(true);
-  const maxAge = 1 * 24 * 60 * 60;
 
   useEffect(() => {
     if (formState.username === "" || formState.password === "")
@@ -157,6 +155,7 @@ const StudentLogin = () => {
       else setIsDisabled(false);
       const response = await fetch(`${baseUrl}/student-login`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -166,31 +165,17 @@ const StudentLogin = () => {
         }),
       });
 
-      console.error("Response Status: ", response.status);
-
       if (!response.ok) {
         const data = await response.json();
         handleErrors(data);
         return;
       }
 
-      const data = await response.json();
+      await response.json();
       setFormError((prevState) => ({
         ...prevState,
         successError: "Student successfully logged in.",
       }));
-      Cookies.set("jwt", data?.token, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
-      Cookies.set("userId", data?.id, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
-      Cookies.set("role", data?.role, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
 
       // Reset the form after successful submission
       resetForm();

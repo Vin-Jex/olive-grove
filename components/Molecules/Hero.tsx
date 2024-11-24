@@ -1,20 +1,20 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade } from "swiper/modules";
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import Image from "next/image";
 import Img1 from "@/public/image/building1.jpeg";
 import Button from "../Atoms/Button";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Sample image array
 const images = [Img1];
 
 export default function Hero() {
   const router = useRouter();
+  const { user } = useAuth();
 
   // Framer Motion Variants for text animations
   const textContainer = {
@@ -108,7 +108,7 @@ export default function Hero() {
                     size='sm'
                     color='blue'
                     onClick={() => {
-                      const role = Cookies.get("role");
+                      const role = user?.role;
                       router.push(
                         role === "Student"
                           ? "/students/dashboard"

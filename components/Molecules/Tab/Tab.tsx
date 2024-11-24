@@ -1,6 +1,4 @@
-import Cookies from "js-cookie";
 import Button from "@/components/Atoms/Button";
-import { baseUrl } from "@/components/utils/baseURL";
 import {
   TChapter,
   TCourse,
@@ -23,17 +21,18 @@ import { usePathname } from "next/navigation";
 import Image, { StaticImageData } from "next/image";
 import dummyImage from "@/images/dummy-img.jpg";
 import Input from "@/components/Atoms/Input";
+import { baseUrl } from "@/components/utils/baseURL";
+import Cookies from "js-cookie";
 
 export type TTabBody = { slug: string; content: ReactNode };
 
 async function fetchCourses(id: string) {
-  const jwt = Cookies.get("jwt");
   try {
     const response = await fetch(`${baseUrl}/courses/${id}`, {
       method: "GET",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        Authorization: jwt || "",
       },
     });
     if (response.ok) {
@@ -119,12 +118,12 @@ const Tab: FC<{
     const userId = Cookies.get("userId");
     try {
       const response = await fetch(`${baseUrl}/students/${userId}`);
-      if (!response) setProfileImage(dummyImage); // this should be the dummy image
+      if (!response) setProfileImage(dummyImage);
       const data = await response.json();
       setProfileImage(data.profileImage);
     } catch (err) {
       console.error("failed to load student information");
-      setProfileImage(dummyImage); //i probably should make this a dummy image
+      setProfileImage(dummyImage);
     }
   }, []);
   useEffect(() => {
@@ -210,9 +209,9 @@ const Tab: FC<{
   }, [viewedSegment]);
 
   return (
-    <div className="min-[1560px]:w-[64rem] flex flex-col gap-6">
+    <div className='min-[1560px]:w-[64rem] flex flex-col gap-6'>
       {/* TAB ACTIONS */}
-      <div className="w-full flex gap-0">
+      <div className='w-full flex gap-0'>
         {slugs.map((slug, i) => (
           <>
             <div
@@ -230,44 +229,44 @@ const Tab: FC<{
         ))}
       </div>
       {/* TAB BODY */}
-      <div className="w-full">
+      <div className='w-full'>
         {body.find((content) => content.slug === activeTab)?.content}
-        <div className="flex w-full justify-between py-5">
+        <div className='flex w-full justify-between py-5'>
           <Button
             onClick={handlePreviousTab}
-            size="md"
-            className="text-primary !border-primary border"
-            color="outline"
-            width="fit"
+            size='md'
+            className='text-primary !border-primary border'
+            color='outline'
+            width='fit'
           >
             Previous Topic
           </Button>
 
-          <Button onClick={handleNextTab} size="md" color="blue" width="fit">
+          <Button onClick={handleNextTab} size='md' color='blue' width='fit'>
             Next Topic
           </Button>
         </div>
         <div>
-          <div className="grid grid-cols-[50px_1fr] py-8 gap-4 w-full">
+          <div className='grid grid-cols-[50px_1fr] py-8 gap-4 w-full'>
             <div>
               <Image
                 src={profileImage}
                 width={40}
                 height={40}
-                alt="student profile"
+                alt='student profile'
               />
             </div>
             {/**profil imega */}
-            <div className="relative ">
+            <div className='relative '>
               <Input
-                name="text"
-                className="rounded-full w-full px-3 py-3"
-                placeholder="Share your thoughts"
-                value=""
+                name='text'
+                className='rounded-full w-full px-3 py-3'
+                placeholder='Share your thoughts'
+                value=''
                 onChange={() => {}}
               />
-              <button className="h-full absolute right-2 top-0  rounded-full">
-                <SendIcon className="w-full h-[75%]" />
+              <button className='h-full absolute right-2 top-0  rounded-full'>
+                <SendIcon className='w-full h-[75%]' />
               </button>
             </div>
           </div>
@@ -280,27 +279,27 @@ const Tab: FC<{
 function SendIcon({ className }: { className: string }) {
   return (
     <svg
-      width="30"
-      height="30"
-      viewBox="0 0 30 30"
-      fill="none"
+      width='30'
+      height='30'
+      viewBox='0 0 30 30'
+      fill='none'
       className={className}
-      xmlns="http://www.w3.org/2000/svg"
+      xmlns='http://www.w3.org/2000/svg'
     >
-      <rect width="30" height="30" rx="15" fill="#32A8C4" fill-opacity="0.1" />
-      <g clip-path="url(#clip0_1182_3065)">
+      <rect width='30' height='30' rx='15' fill='#32A8C4' fill-opacity='0.1' />
+      <g clip-path='url(#clip0_1182_3065)'>
         <path
-          d="M21.1759 10.2644C21.4999 9.3682 20.6314 8.4997 19.7352 8.82445L8.78142 12.7859C7.88217 13.1114 7.77342 14.3384 8.60067 14.8177L12.0972 16.8419L15.2194 13.7197C15.3609 13.5831 15.5503 13.5075 15.747 13.5092C15.9436 13.5109 16.1317 13.5898 16.2708 13.7288C16.4098 13.8679 16.4887 14.056 16.4904 14.2526C16.4921 14.4493 16.4165 14.6387 16.2799 14.7802L13.1577 17.9024L15.1827 21.3989C15.6612 22.2262 16.8882 22.1167 17.2137 21.2182L21.1759 10.2644Z"
-          fill="#32A8C4"
+          d='M21.1759 10.2644C21.4999 9.3682 20.6314 8.4997 19.7352 8.82445L8.78142 12.7859C7.88217 13.1114 7.77342 14.3384 8.60067 14.8177L12.0972 16.8419L15.2194 13.7197C15.3609 13.5831 15.5503 13.5075 15.747 13.5092C15.9436 13.5109 16.1317 13.5898 16.2708 13.7288C16.4098 13.8679 16.4887 14.056 16.4904 14.2526C16.4921 14.4493 16.4165 14.6387 16.2799 14.7802L13.1577 17.9024L15.1827 21.3989C15.6612 22.2262 16.8882 22.1167 17.2137 21.2182L21.1759 10.2644Z'
+          fill='#32A8C4'
         />
       </g>
       <defs>
-        <clipPath id="clip0_1182_3065">
+        <clipPath id='clip0_1182_3065'>
           <rect
-            width="18"
-            height="18"
-            fill="white"
-            transform="translate(6 6)"
+            width='18'
+            height='18'
+            fill='white'
+            transform='translate(6 6)'
           />
         </clipPath>
       </defs>

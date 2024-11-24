@@ -4,8 +4,8 @@ import React, { useEffect, useState, useRef } from "react";
 import logo from "@/public/image/logo.png";
 import Button from "../Atoms/Button";
 import { Close, Menu } from "@mui/icons-material";
-import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [toggleNav, setToggleNav] = useState<boolean>(false);
@@ -13,6 +13,7 @@ const Header = () => {
   const modalRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [currentHash, setCurrentHash] = useState("");
+  const { loggedIn, user } = useAuth();
 
   // Set the hash on page load and whenever the route changes
   useEffect(() => {
@@ -55,7 +56,7 @@ const Header = () => {
   }, [toggleNav]);
 
   return (
-    <header className='relative w-full h-fit flex items-center justify-between py-3 px-2 sm:px-3.5 md:px-5 lg:px-8 bg-white z-50 bg-gradient-to-br from-[rgba(224,_224,_224,_0.45)] via-[rgba(224,_224,_224,_0.45)] to-[rgba(224,_224,_224,_0.45)] '>
+    <header className='relative w-full h-fit flex items-center justify-between py-1.5 px-2 sm:px-3.5 md:px-5 lg:px-8 bg-white z-50 bg-gradient-to-br from-[rgba(224,_224,_224,_0.45)] via-[rgba(224,_224,_224,_0.45)] to-[rgba(224,_224,_224,_0.45)] '>
       <Link
         href='/'
         className='w-[3.8rem] h-[2.8rem] md:h-[3.2rem] md:w-[4rem]'
@@ -156,11 +157,11 @@ const Header = () => {
             </li>
           </ul>
 
-          {isClient && !Cookies.get("jwt") ? (
+          {isClient && !loggedIn ? (
             <div className='w-full flex flex-col space-y-4'>
               <Button
                 width='full'
-                size='sm'
+                size='xs'
                 color='outline'
                 onClick={() => {
                   router.push("/auth/path");
@@ -171,7 +172,7 @@ const Header = () => {
               </Button>
               <Button
                 width='full'
-                size='sm'
+                size='xs'
                 color='blue'
                 onClick={() => {
                   router.push("/auth/path");
@@ -185,7 +186,7 @@ const Header = () => {
             <div className='w-full flex flex-col gap-y-5'>
               <Button
                 width='full'
-                size='sm'
+                size='xs'
                 color='blue'
                 onClick={() => setToggleNav(false)}
               >
@@ -237,7 +238,7 @@ const Header = () => {
           </li>
         </ul>
 
-        {isClient && !Cookies.get("jwt") ? (
+        {isClient && !loggedIn ? (
           <div className='flex w-full max-w-[270px] h-fit gap-4'>
             <Button
               width='full'
@@ -258,10 +259,10 @@ const Header = () => {
           </div>
         ) : (
           <Button
-            size='sm'
+            size='xs'
             color='blue'
             onClick={() => {
-              const role = Cookies.get("role");
+              const role = user?.role;
               router.push(
                 role === "Student"
                   ? "/students/dashboard"

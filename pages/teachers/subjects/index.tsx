@@ -13,7 +13,6 @@ import {
 } from "@/components/utils/types";
 import { baseUrl } from "@/components/utils/baseURL";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
-import Cookies from "js-cookie";
 import Loader from "@/components/Atoms/Loader";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import ServerError from "@/components/Atoms/ServerError";
@@ -101,14 +100,12 @@ const Subjects: FC = () => {
       });
 
       // * Get the access token from the cookies
-      const jwt = Cookies.get("jwt");
-
       // * Make an API request to retrieve the list of classes created by this teacher
       const response = await fetch(`${baseUrl}/classes/all`, {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: jwt || "",
         },
       });
 
@@ -188,8 +185,6 @@ const Subjects: FC = () => {
       });
 
       // * Get the access token from the cookies
-      const jwt = Cookies.get("jwt");
-
       const request_data = new FormData();
 
       // * Append the course details to the request body
@@ -204,10 +199,7 @@ const Subjects: FC = () => {
       // * Make an API request to retrieve the list of courses created by this teacher
       const response = await fetch(`${baseUrl}/courses`, {
         method: "POST",
-        headers: {
-          // "Content-Type": "multipart/formdata",
-          Authorization: jwt || "",
-        },
+        credentials: "include",
         body: request_data,
       });
 
@@ -298,10 +290,10 @@ const Subjects: FC = () => {
       <CourseModal
         formState={formState}
         setFormState={setFormState}
-        type="course"
+        type='course'
         handleModalClose={handleCloseModal}
         modalOpen={openModalCreate}
-        mode="create"
+        mode='create'
         handleAction={createCourse}
         requestState={createCourseRes}
         classes={classes.data?.map((each) => ({
@@ -310,12 +302,12 @@ const Subjects: FC = () => {
         }))}
       />
 
-      <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
-        <div className="h-full ">
+      <TeachersWrapper title='Subjects' metaTitle='Olive Groove ~ Subjects'>
+        <div className='h-full '>
           {courses.loading ? (
             <Loader />
           ) : courses.error ? (
-            <div className="w-full h-full flex items-center justify-center">
+            <div className='w-full h-full flex items-center justify-center'>
               {typeof courses.error === "object" &&
                 (courses.error.status === 404 ? (
                   <>
@@ -332,26 +324,26 @@ const Subjects: FC = () => {
             </div>
           ) : searchResults.length < 1 ? (
             // 404 image
-            <div className="w-full h-full flex items-center justify-center">
-              <NotFoundError msg="No courses found" />
+            <div className='w-full h-full flex items-center justify-center'>
+              <NotFoundError msg='No courses found' />
             </div>
           ) : (
             <>
               {/* Title */}
-              <div className="flex justify-between items-start">
-                <div className="flex flex-col">
-                  <span className="text-lg font-medium text-dark font-roboto">
+              <div className='flex justify-between items-start'>
+                <div className='flex flex-col'>
+                  <span className='text-lg font-medium text-dark font-roboto'>
                     Subjects
                   </span>
-                  <span className="text-md text-subtext font-roboto">
+                  <span className='text-md text-subtext font-roboto'>
                     View and manage subjects
                   </span>
                 </div>
                 <Button
                   onClick={() => setOpenModalCreate((prev) => !prev)}
-                  width="fit"
-                  size="xs"
-                  color="outline"
+                  width='fit'
+                  size='xs'
+                  color='outline'
                 >
                   <Add />
                   <span>Create new subject</span>
@@ -359,10 +351,10 @@ const Subjects: FC = () => {
               </div>
 
               {/* Content */}
-              <div className="h-full mt-4">
+              <div className='h-full mt-4'>
                 {/* Searchbars and select fields */}
-                <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
-                  <div className="flex justify-start items-center gap-4 w-full md:w-auto">
+                <div className='flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center'>
+                  <div className='flex justify-start items-center gap-4 w-full md:w-auto'>
                     <Select
                       options={[
                         "jss 1",
@@ -372,24 +364,24 @@ const Subjects: FC = () => {
                         "ss 2",
                         "ss 3",
                       ]}
-                      name="class"
+                      name='class'
                       required
                       onChange={() => {}}
-                      placeholder="Select class"
+                      placeholder='Select class'
                     />
                     <Select
                       options={["physics", "further mathematics"]}
-                      name="subject"
+                      name='subject'
                       required
                       onChange={() => {}}
-                      placeholder="Select subject"
+                      placeholder='Select subject'
                     />
                   </div>
 
-                  <div className="w-full md:w-[400px]">
+                  <div className='w-full md:w-[400px]'>
                     <SearchInput
-                      shape="rounded-lg"
-                      placeholder="Search for Subjects"
+                      shape='rounded-lg'
+                      placeholder='Search for Subjects'
                       searchResults={searchResults}
                       setSearchResults={setSearchResults}
                       initialData={courses.data}
@@ -398,7 +390,7 @@ const Subjects: FC = () => {
                   </div>
                 </div>
                 {/* Courses */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4">
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4'>
                   {searchResults &&
                     searchResults.map((course, i) => (
                       <Course course={course} key={i + course.title} />

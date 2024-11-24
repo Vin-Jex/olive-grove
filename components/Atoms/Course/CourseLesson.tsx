@@ -1,22 +1,22 @@
-import Cookies from "js-cookie";
 import { TLesson } from "@/components/utils/types";
 import { FC } from "react";
 import { Topic } from "./CourseTopic";
 import Wrapper from "./CourseWrapper";
 import Add from "./CourseAddButton";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Lesson: FC<{
   lesson: TLesson;
   chapterId: string;
 }> = ({ lesson, chapterId }) => {
-  const userRole = Cookies.get("role");
+  const { user } = useAuth();
   return (
     <>
       <Wrapper
-        type="section"
+        type='section'
         title={lesson.title}
         existingDetails={lesson}
-        sectionType="lesson"
+        sectionType='lesson'
         parentId={chapterId}
         sectionId={lesson._id!}
       >
@@ -26,14 +26,14 @@ const Lesson: FC<{
             <Topic topic={section} lessonId={lesson._id || ""} />
             {section.subsections &&
               section.subsections.map((subsection) => {
-                <div className="p-3">
+                <div className='p-3'>
                   <Topic topic={subsection} lessonId={lesson._id || ""} />;
                 </div>;
               })}
           </>
         ))}
-        {userRole === "Teacher" && (
-          <Add type="topic" parentId={lesson._id || ""} />
+        {user?.role === "Teacher" && (
+          <Add type='topic' parentId={lesson._id || ""} />
         )}
       </Wrapper>
     </>
