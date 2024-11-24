@@ -29,6 +29,7 @@ const config: Config = {
         "disabled-text": "rgba(248, 248, 248, 0.85)",
         light: "#FFF",
         dark: "#1E1E1E",
+        greyed: "#1E1E1E80",
       },
       borderColor: {
         primary: "#32A8C4",

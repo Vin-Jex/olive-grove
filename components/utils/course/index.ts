@@ -53,7 +53,7 @@ export const editItem = async (
       for (const [key, value] of entries) {
         if (key === "topicVideo" && typeof reqData[key] === "string") continue;
 
-        req_body.append(key === "topicVideo" ? "file" : key, value);
+        req_body.append(key, value);
       }
     }
 

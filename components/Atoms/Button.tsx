@@ -43,15 +43,14 @@ const Button: React.FC<ButtonProps> = ({
     fit: "w-fit",
   }[width];
 
-const colorClassName = {
-  blue: "bg-[#32A8C4] text-[#fdfdfd] hover:bg-[#28a1b0] transition duration-200 ease-in-out",
-  outline:
-    "bg-transparent border border-subtext hover:border-[#32A8] text-[#1E1E1E] hover:bg-[#32A8C4] hover:text-white transition duration-200 ease-in-out",
-  red: "bg-red-500 text-white hover:bg-red-600 transition duration-200 ease-in-out", 
-  yellow:
-    "bg-yellow-500 text-white hover:bg-yellow-600 transition duration-200 ease-in-out",
-}[color];
-
+  const colorClassName = {
+    blue: "bg-[#32A8C4] text-[#fdfdfd] hover:bg-[#28a1b0] transition duration-200 ease-in-out",
+    outline:
+      "bg-transparent border border-subtext hover:border-[transparent] text-[#1E1E1E] hover:bg-[#32A8C4] hover:text-white transition duration-200 ease-in-out",
+    red: "bg-red-500 text-white hover:bg-red-600 transition duration-200 ease-in-out",
+    yellow:
+      "bg-yellow-500 text-white hover:bg-yellow-600 transition duration-200 ease-in-out",
+  }[color];
 
   return (
     <button

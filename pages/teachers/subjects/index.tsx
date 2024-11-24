@@ -198,7 +198,7 @@ const Subjects: FC = () => {
       request_data.append("classId", formState.classId || "");
       {
         typeof formState.courseCover === "object" &&
-          request_data.append("file", formState.courseCover);
+          request_data.append("courseCover", formState.courseCover);
       }
 
       // * Make an API request to retrieve the list of courses created by this teacher
