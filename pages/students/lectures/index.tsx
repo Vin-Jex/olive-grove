@@ -1,3 +1,4 @@
+import Cookies from "js-cookie";
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
 import React, { useCallback, useEffect, useState } from "react";
 import SubjectCard from "@/components/Molecules/Card/SubjectCard";
@@ -51,7 +52,7 @@ const Classes = () => {
   const [lectureInfoModal, setLectureInfoModal] = useState(false);
 
   const getCourses = useCallback(
-    async (filter?: { query: "title"; value: string }) => {
+    async (/*filter?: { query: "title"; value: string }*/) => {
       setCourses({
         data: [],
         loading: true,
@@ -59,8 +60,9 @@ const Classes = () => {
       });
 
       try {
+        const studentId = Cookies.get("userId") ?? "";
         // Call the reusable getCourses function, passing the setClasses state updater
-        const courses = await fetchCourses(filter);
+        const courses = await fetchCourses(/*{ value: studentId, type: "student" }*/);
 
         if (Array.isArray(courses)) {
           // Set the courses state to the fetched list of courses
@@ -110,7 +112,7 @@ const Classes = () => {
             </span>
           </div>
 
-          <div className="grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-fit w-full gap-8 !mt-8">
+          <div className="grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-fit w-full gap-3 !mt-8">
             {courses.data.map((subject, index) => (
               <SubjectCard
                 key={subject._id}
