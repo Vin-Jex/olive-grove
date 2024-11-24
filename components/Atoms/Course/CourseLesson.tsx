@@ -18,6 +18,7 @@ const Lesson: FC<{
         existingDetails={lesson}
         sectionType="lesson"
         parentId={chapterId}
+        sectionId={lesson._id!}
       >
         {lesson.sections.map((section) => (
           //* IMPLEMENT THE SUBSECTION DISPLAY(Can't be viewed now as no lecture has subsection yet.)

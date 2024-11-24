@@ -36,11 +36,13 @@ export type TLesson = {
   _id?: string;
   title: string;
   sections: TSection[];
+  viewed?: boolean;
 } & OptionalFields;
 
 export type TSection = {
   _id?: string;
   title: string;
+  viewed?: boolean;
   subsections: TSubSection[];
 } & OptionalFields;
 
@@ -48,6 +50,7 @@ export type TSubSection = {
   _id?: string;
   title: string;
   description?: string;
+  viewed?: boolean;
 } & OptionalFields;
 
 export type TResponse<T> = {
@@ -209,4 +212,12 @@ export type TModalProps<T> = {
 export type TAssessmentType = {
   _id: string;
   name: string;
+};
+
+export type TTopicDetails = {
+  path: [string, string, string] | undefined;
+  topicChapter: string;
+  topicLesson: string;
+  type: "section" | "lesson";
+  topic: TSection | undefined;
 };

@@ -1,9 +1,23 @@
 import Tab, { TTabBody } from "@/components/Molecules/Tab/Tab";
-import { TCourse, TSection } from "@/components/utils/types";
-import { useRouter } from "next/router";
-import { FC, useEffect, useState } from "react";
+import { VideoProps } from "next-video";
+import { TCourse } from "@/components/utils/types";
+import {
+  FC,
+  ForwardRefExoticComponent,
+  RefAttributes,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import TopicVideo from "./CourseTopicVideo";
 import NotFoundError from "../NotFoundError";
+import { useTopicContext } from "@/contexts/TopicContext";
+import img404 from "@/images/olive-notes-404.png";
+import { Alert, Checkbox, FormControlLabel, Snackbar } from "@mui/material";
+import { baseUrl } from "@/components/utils/baseURL";
+import Cookies from "js-cookie";
+import { useRouter } from "next/router";
 import Button from "../Button";
 
 const demoNotes = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus lacus, dignissim commodo dictum aliquam, maximus nec mauris. Phasellus sed nisl dignissim erat eleifend congue. Nullam ultricies est a tempus varius. Phasellus vitae massa rutrum, elementum urna sed, volutpat urna. Nam at nulla dui. Suspendisse aliquet metus purus, eget ultrices tellus pharetra eget. Proin dictum urna non aliquet pellentesque. Nunc dapibus gravida justo eu finibus.
@@ -15,93 +29,207 @@ export const TopicDetails: FC<{
   course: TCourse;
 }> = ({ course }) => {
   const router = useRouter();
-  const { topic } = router.query;
-  const [topicDetails, setTopicDetails] = useState<{
-    path: [string, string, string];
-    topic: TSection;
-  }>();
+  const { topicDetails } = useTopicContext();
+  const videoRef =
+    useRef<ForwardRefExoticComponent<VideoProps & RefAttributes<unknown>>>(
+      null
+    );
+  const [videoCompletedIsTriggered, setVideoCompletedIsTriggered] = useState(
+    topicDetails.topic?.viewed || false
+  );
+  const [noteCompletedIsTriggered, setNoteCompletedIsTriggered] = useState(
+    topicDetails.topic?.viewed || false
+  );
+  const [topicIsCompleted, setTopicIsCompleted] = useState(
+    topicDetails.topic?.viewed || false
+  );
+
+  const displayCompleted = () => {
+    setTopicIsCompleted(true);
+
+    setTimeout(() => setTopicIsCompleted(false), 6000);
+  };
+
+  /**
+   * Function responsible for marking the video as completed
+   * @param e The video event handler
+   * @returns void
+   */
+  const markVideoCompleted = () => {
+    if (
+      !videoRef.current ||
+      topicDetails.topic?.viewed ||
+      videoCompletedIsTriggered
+    )
+      return;
+
+    const duration: number | undefined = (videoRef.current as any)?.duration;
+    const currentTime: number | undefined = (videoRef.current as any)
+      ?.currentTime;
+    const percentage = ((currentTime || 0) / (duration || 0)) * 100;
+
+    // Mark video as completed after reaching 90% of the video duration
+    if (percentage >= 90) {
+      // Mark video as completed
+      // alert("Video completed!");
+      setVideoCompletedIsTriggered(true);
+    }
+
+    console.log("VIDEO DURATION", duration);
+    console.log("VIDEO TIMESTAMP", currentTime);
+    console.log("PERCENTAGE", percentage);
+  };
+
+  /**
+   * Function responsible for indicating if the user has finished reading
+   * @param event The checkbox change event
+   * @param checked The current state of the checkbox
+   */
+  const markNotesRead = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => {
+    if (!topicDetails.topic?.viewed && !noteCompletedIsTriggered && checked) {
+      // Mark notes as read
+      // alert("Notes read!");
+      setNoteCompletedIsTriggered(true);
+    }
+  };
+
+  /**
+   * Function responsible for marking the topic as read
+   * @returns void
+   */
+  const markTopicAsRead = useCallback(async () => {
+    // * Get the access token from the cookies
+    const jwt = Cookies.get("jwt");
+
+    // * Make an API request to retrieve the list of courses created by this teacher
+    const response = await fetch(
+      `${baseUrl}/courses/mark-as-viewed/${topicDetails.type}/${topicDetails.topic?._id}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: jwt || "",
+        },
+        body: JSON.stringify({
+          currentDate: Date.now(),
+          nextId: "6739522037923060e34feabd",
+        }),
+      }
+    );
+
+    //  Display a success message to the user if the topic was marked as read successfully
+    displayCompleted();
+
+    // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
+    if (!response.ok) {
+      return false;
+    }
+
+    console.log("TOPIC CHECKED SUCCESSFULLY");
+
+    return true;
+  }, [topicDetails.topic?._id, topicDetails.type]);
+
+  useEffect(() => {
+    setTopicIsCompleted(false);
+    setVideoCompletedIsTriggered(false);
+    setNoteCompletedIsTriggered(false);
+  }, [router.asPath]);
+
+  useEffect(() => {
+    if (
+      (topicDetails.topic?.topicVideo || topicDetails.topic?.youtubeVideo) &&
+      videoCompletedIsTriggered &&
+      noteCompletedIsTriggered
+    ) {
+      markTopicAsRead();
+      return;
+    }
+
+    if (
+      !topicDetails.topic?.topicVideo &&
+      !topicDetails.topic?.youtubeVideo &&
+      noteCompletedIsTriggered
+    ) {
+      markTopicAsRead();
+      return;
+    }
+  }, [
+    videoCompletedIsTriggered,
+    noteCompletedIsTriggered,
+    topicDetails,
+    markTopicAsRead,
+  ]);
 
   const tabBody: TTabBody[] = [
-    ...(topicDetails?.topic.topicVideo || topicDetails?.topic.youtubeVideo
+    ...(topicDetails?.topic?.topicVideo || topicDetails?.topic?.youtubeVideo
       ? [
           {
             slug: "video",
             content: (
               <TopicVideo
+                ref={videoRef}
+                markVideoCompleted={markVideoCompleted}
                 url={
-                  topicDetails?.topic?.topicVideo ||
-                  topicDetails?.topic?.youtubeVideo ||
-                  ""
+                  // topicDetails?.topic?.topicVideo ||
+                  // topicDetails?.topic?.youtubeVideo ||
+                  "https://videos.pexels.com/video-files/4203954/4203954-hd_1920_1080_24fps.mp4"
                 }
               />
             ),
           },
         ]
       : []),
-    ...(topicDetails?.topic.topicNote
+    ...(topicDetails?.topic?.topicNote
       ? [
           {
             slug: "notes",
             content: (
-              <div
-                className="lg:max-h-[80vh] overflow-y-auto rounded-sm px-2"
-                dangerouslySetInnerHTML={{
-                  __html: topicDetails?.topic.topicNote || "",
-                }}
-              ></div>
+              <div className="flex w-full gap-2 flex-col">
+                <div
+                  className="lg:max-h-[80vh] w-full overflow-y-auto rounded-sm px-2"
+                  dangerouslySetInnerHTML={{
+                    __html: topicDetails?.topic.topicNote || "",
+                  }}
+                ></div>
+                <div className="w-full">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={markNotesRead}
+                        defaultChecked={topicDetails.topic.viewed}
+                      />
+                    }
+                    label="I've finished reading"
+                  />
+                </div>
+              </div>
             ),
           },
         ]
       : []),
   ];
 
-  /**
-   * * Function responsible for returning the details of the topic to be displayed
-   */
-  const getTopic = () => {
-    // * Loop through each chapter in the course
-    for (const chapter of course.chapters || []) {
-      // * Loop through each lesson in each chapter
-      for (const lesson of chapter.lessons) {
-        // * Search for the topic with the id passed in the query in the list of topics under the current lesson
-        const section = lesson.sections.find(
-          (section) => section._id === topic
-        );
-
-        // * If the topic was found, update the topic details state and break the loop
-        if (section) {
-          console.log("TOPIC", section);
-          setTopicDetails({
-            path: [chapter.title, lesson.title, section?.title],
-            topic: section,
-          });
-          break;
-        }
-      }
-    }
-  };
-
-  useEffect(() => {
-    getTopic();
-  }, [router.asPath]);
-
   return (
     <>
       {topicDetails ? (
         <div className="flex flex-col w-full gap-4">
           {/* BREADCRUMB */}
-          {/* <div className="font-thin flex gap-1 w-full">
-            {topicDetails.path.map((crumb, i) => (
+          <div className="font-thin flex gap-1 w-full">
+            {topicDetails.path?.map((crumb, i) => (
               <span key={i}>
-                {crumb} {i != topicDetails.path.length - 1 ? "/" : ""}
+                {crumb} {i != (topicDetails.path?.length || 0) - 1 ? "/" : ""}
               </span>
             ))}
-        </div> */}
+          </div>
           {/**I AM NOT SURE OF THE NEED OF THE BREADCRUMB, IT LOOKS ROUGH */}
           {/* TITLE */}
-          <div className="text-3xl font-bold">{topicDetails.topic.title}</div>
+          <div className="text-3xl font-bold">{topicDetails.topic?.title}</div>
           {/* TAB */}
-          {topicDetails.topic.topicVideo || topicDetails?.topic.youtubeVideo ? (
+          {topicDetails.topic?.topicVideo ||
+          topicDetails?.topic?.youtubeVideo ? (
             <Tab
               slugs={[
                 ...(topicDetails.topic.topicVideo ||
@@ -112,7 +240,7 @@ export const TopicDetails: FC<{
               ]}
               body={tabBody}
             />
-          ) : topicDetails.topic.topicNote ? (
+          ) : topicDetails.topic?.topicNote ? (
             <Tab
               slugs={[
                 ...(topicDetails.topic.topicVideo ||
@@ -124,13 +252,35 @@ export const TopicDetails: FC<{
               body={tabBody}
             />
           ) : (
-            <div>{<NotFoundError msg="No notes provided" />}</div>
+            <div>
+              {
+                <NotFoundError
+                  msg="No notes provided"
+                  width={320}
+                  height={320}
+                  img={img404.src}
+                />
+              }
+            </div>
           )}
         </div>
       ) : (
         <>
           <NotFoundError msg={"No topic found"} />
         </>
+      )}
+      {topicIsCompleted && (
+        <Snackbar
+          open={topicIsCompleted}
+          onClose={() => setTopicIsCompleted(false)}
+          autoHideDuration={6000}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          className="!z-[999]"
+        >
+          <Alert severity="success" onClose={() => setTopicIsCompleted(false)}>
+            Topic completed!
+          </Alert>
+        </Snackbar>
       )}
     </>
   );
