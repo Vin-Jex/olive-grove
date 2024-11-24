@@ -43,6 +43,9 @@ const Profile = () => {
   const [studentName, setStudentName] = useState("");
   const { user } = useAuth();
   const role = user?.role;
+  const [profileError, setProfileError] = useState("");
+
+  const router = useRouter();
 
   const inputFields: (
     | {
@@ -234,6 +237,8 @@ const Profile = () => {
       const response = await fetch(`${baseUrl}/students`);
       if (!response.ok) {
         //handle this case.
+        setProfileError("failed to fetch profile");
+        console.log(response, "the profile fo the current user");
         //since formdata has default value I am not sure that we need to reset them here.
       }
       const json = await response.json();
@@ -249,6 +254,7 @@ const Profile = () => {
       setStudentName(json.firstName + " " + json.lastName);
     } catch (err) {
       //how to display error.
+      setProfileError("Error occured in fetching user profile");
     }
   }, []);
   useEffect(() => {
@@ -278,62 +284,63 @@ const Profile = () => {
 
   return (
     <>
-      <StudentWrapper title='Profile' metaTitle='Olive Groove ~ Profile'>
-        <div className='p-12 space-y-5'>
+      <StudentWrapper title="Profile" metaTitle="Olive Groove ~ Profile">
+        <div className="p-12 space-y-5">
           {/* Title */}
-          <div className='flex flex-col'>
-            <span className='text-lg font-medium text-dark font-roboto'>
+          <div className="flex flex-col">
+            <span className="text-lg font-medium text-dark font-roboto">
               Access your Information
             </span>
-            <span className='text-md text-subtext font-roboto'>
+            <span className="text-md text-subtext font-roboto">
               Mange and edit your details.
             </span>
           </div>
 
-          <div className='flex gap-4'>
+          <div className="flex gap-4">
             <Image
-              src={profileImage.length === 0 ? dummyImage : profileImage}
+              src={!profileImage ? dummyImage : profileImage}
               width={300}
               height={300}
-              alt='Profile Pics'
-              className='shadow w-16 h-16 object-cover rounded-full'
+              alt="Profile Pics"
+              className="shadow w-16 h-16 object-cover rounded-full"
             />
-            <div className='flex flex-col justify-center'>
-              <span className='text-dark text-lg font-roboto leading-5'>
+            <div className="flex flex-col justify-center">
+              <span className="text-dark text-lg font-roboto leading-5">
                 {studentName}
               </span>
-              <span className='text-subtext'>Student</span>
+              <span className="text-subtext">Student</span>
             </div>
           </div>
 
-          <div className='!mt-20'>
+          <div className="!mt-20">
             {formError.internetError !== "" ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
+              <span className="flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3">
                 <Info sx={{ fontSize: "1.1rem" }} />
                 {formError.internetError}
                 sdca
               </span>
             ) : formError.successError !== "" ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
+              <span className="flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3">
                 <Info sx={{ fontSize: "1.1rem" }} />
                 {formError.successError}
               </span>
             ) : (
               ""
             )}
+            <div className="text-red-500">{profileError && profileError}</div>
             <form
-              className='flex flex-col gap-y-5 w-[560px]'
+              className="flex flex-col gap-y-5 w-[560px]"
               onKeyPress={handleKeyPress}
               onSubmit={handleSignup}
             >
-              <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
+              <span className="text-subtext text-xl font-roboto font-medium -mb-1">
                 Personal Information
               </span>
-              <div className='flex items-end gap-8 w-full'>
+              <div className="flex items-end gap-8 w-full">
                 <InputField
-                  name='firstName'
-                  type='text'
-                  placeholder='First Name *'
+                  name="firstName"
+                  type="text"
+                  placeholder="First Name *"
                   value={formState.firstName}
                   onChange={handleChange}
                   required
@@ -341,9 +348,9 @@ const Profile = () => {
                 />
 
                 <InputField
-                  name='middleName'
-                  type='text'
-                  placeholder='Middle Name'
+                  name="middleName"
+                  type="text"
+                  placeholder="Middle Name"
                   value={formState.middleName}
                   onChange={handleChange}
                   error={""}
@@ -363,22 +370,22 @@ const Profile = () => {
               ))}
 
               <Input
-                type='password'
-                name='password'
+                type="password"
+                name="password"
                 value={formState.password}
                 onChange={handleChange}
-                placeholder='Password *'
+                placeholder="Password *"
                 required
-                className='input'
+                className="input"
                 showIcon={VisibilityOutlined}
                 hideIcon={VisibilityOffOutlined}
               />
 
               <Button
-                type='submit'
-                size='sm'
-                width='fit'
-                className='!px-8'
+                type="submit"
+                size="sm"
+                width="fit"
+                className="!px-8"
                 disabled={isDisabled}
               >
                 Save
