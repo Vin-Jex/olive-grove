@@ -117,7 +117,9 @@ const Tab: FC<{
   const fetchProfileImage = useCallback(async () => {
     const userId = Cookies.get("userId");
     try {
-      const response = await fetch(`${baseUrl}/students/${userId}`);
+      const response = await fetch(`${baseUrl}/student`, {
+        credentials: "include",
+      });
       if (!response) setProfileImage(dummyImage);
       const data = await response.json();
       setProfileImage(data.profileImage);
