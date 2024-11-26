@@ -7,7 +7,6 @@ import AuthBg2 from "@/public/image/auth_bg.png";
 import AuthBg3 from "@/public/image/Frame 5.png";
 import { InputType } from "@/components/Atoms/Input";
 import Button from "@/components/Atoms/Button";
-import Cookies from "js-cookie";
 import { Info } from "@mui/icons-material";
 import File from "@/components/Atoms/File";
 import { baseUrl } from "@/components/utils/baseURL";
@@ -60,7 +59,6 @@ const StudentSignup = () => {
     generalError: "",
   });
   const [isDisabled, setIsDisabled] = useState(true);
-  const maxAge = 1 * 24 * 60 * 60;
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -331,10 +329,10 @@ const StudentSignup = () => {
       setIsDisabled(true);
       const response = await fetch(`${baseUrl}/student-signup/`, {
         method: "POST",
+        credentials: "include",
         body: formData,
       });
 
-      console.error("Response Status: ", response.status);
       if (!response.ok) {
         const data = await response.json();
         console.log(data, "thsi is the data from student signup");
@@ -348,7 +346,6 @@ const StudentSignup = () => {
         ...prevState,
         successError: "Student account created successfully.",
       }));
-      Cookies.set("userId", data?.id, { expires: maxAge * 1000, secure: true });
 
       // Reset the form after successful submission
       resetForm();

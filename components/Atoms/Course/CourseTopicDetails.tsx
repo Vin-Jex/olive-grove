@@ -15,9 +15,9 @@ import NotFoundError from "../NotFoundError";
 import { useTopicContext } from "@/contexts/TopicContext";
 import img404 from "@/images/olive-notes-404.png";
 import { Alert, Checkbox, FormControlLabel, Snackbar } from "@mui/material";
+import { useRouter } from "next/router";
 import { baseUrl } from "@/components/utils/baseURL";
 import Cookies from "js-cookie";
-import { useRouter } from "next/router";
 import Button from "../Button";
 import { capitalize } from "@/components/utils/utils";
 
@@ -117,9 +117,7 @@ export const TopicDetails: FC<{
       }`,
       {
         method: "POST",
-        headers: {
-          Authorization: jwt || "",
-        },
+        credentials: "include",
         body: JSON.stringify({
           currentDate: new Date().toISOString(),
           nextId: "6739522037923060e34feabd",
