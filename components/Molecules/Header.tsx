@@ -56,22 +56,22 @@ const Header = () => {
   }, [toggleNav]);
 
   return (
-    <header className='relative w-full h-fit flex items-center justify-between py-1.5 px-2 sm:px-3.5 md:px-5 lg:px-8 bg-white z-50 bg-gradient-to-br from-[rgba(224,_224,_224,_0.45)] via-[rgba(224,_224,_224,_0.45)] to-[rgba(224,_224,_224,_0.45)] '>
+    <header className="relative w-full h-fit flex items-center justify-between py-1.5 px-2 sm:px-3.5 md:px-5 lg:px-8 bg-white z-50 bg-gradient-to-br from-[rgba(224,_224,_224,_0.45)] via-[rgba(224,_224,_224,_0.45)] to-[rgba(224,_224,_224,_0.45)] ">
       <Link
-        href='/'
-        className='w-[3.8rem] h-[2.8rem] md:h-[3.2rem] md:w-[4rem]'
+        href="/"
+        className="w-[3.8rem] h-[2.8rem] md:h-[3.2rem] md:w-[4rem]"
       >
         <Image
           src={logo}
-          alt='Olive_grove_logo'
-          width='10000'
-          height='10000'
-          className='w-full h-full object-cover'
+          alt="Olive_grove_logo"
+          width="10000"
+          height="10000"
+          className="w-full h-full object-cover"
         />
       </Link>
 
       <span
-        className='p-1 sm:p-2 visible sm:hidden cursor-pointer text-dark/80'
+        className="p-1 sm:p-2 visible sm:hidden cursor-pointer text-dark/80"
         onClick={() => setToggleNav(!toggleNav)}
       >
         {!toggleNav ? <Menu /> : <Close />}
@@ -80,7 +80,7 @@ const Header = () => {
       {/* Overlay */}
       {toggleNav && (
         <div
-          className='fixed inset-0 z-40 bg-black bg-opacity-40 backdrop-blur-sm w-full sm:hidden'
+          className="fixed inset-0 z-40 bg-black bg-opacity-40 backdrop-blur-sm w-full sm:hidden"
           onClick={() => setToggleNav(false)}
         />
       )}
@@ -95,30 +95,30 @@ const Header = () => {
         }`}
       >
         {/* Modal Close Button */}
-        <div className='w-full flex justify-end p-4'>
+        <div className="w-full flex justify-end p-4">
           <Close
-            className='cursor-pointer text-dark/70 hover:text-dark'
+            className="cursor-pointer text-dark/70 hover:text-dark"
             onClick={() => setToggleNav(false)}
           />
         </div>
 
-        <div className='mb-6 w-[4rem] h-[4rem] mx-auto'>
-          <Link href='/'>
+        <div className="mb-6 w-[4rem] h-[4rem] mx-auto">
+          <Link href="/">
             <Image
               src={logo}
-              alt='Olive_grove_logo'
-              width='10000'
-              height='10000'
-              className='w-full h-full object-cover'
+              alt="Olive_grove_logo"
+              width="10000"
+              height="10000"
+              className="w-full h-full object-cover"
             />
           </Link>
         </div>
 
-        <div className='w-full flex flex-col gap-y-8 items-center px-6'>
-          <ul className='flex flex-col gap-2 capitalize w-full'>
-            <li className='flex items-center w-full'>
+        <div className="w-full flex flex-col gap-y-8 items-center px-6">
+          <ul className="flex flex-col gap-2 capitalize w-full">
+            <li className="flex items-center w-full">
               <Link
-                href='#discover'
+                href="#discover"
                 onClick={() => setToggleNav(false)}
                 className={`text-subtext font-roboto leading-6 text-lg w-full text-center py-2 rounded-md transition-colors duration-200 ease-in-out ${
                   currentHash === "discover"
@@ -129,9 +129,9 @@ const Header = () => {
                 Discover
               </Link>
             </li>
-            <li className='flex items-center w-full'>
+            <li className="flex items-center w-full">
               <Link
-                href='#features'
+                href="#features"
                 onClick={() => setToggleNav(false)}
                 className={`text-subtext font-roboto leading-6 text-lg w-full text-center py-2 rounded-md transition-colors duration-200 ease-in-out ${
                   currentHash === "features"
@@ -142,9 +142,9 @@ const Header = () => {
                 Features
               </Link>
             </li>
-            <li className='flex items-center w-full'>
+            <li className="flex items-center w-full">
               <Link
-                href='#about_us'
+                href="#about_us"
                 onClick={() => setToggleNav(false)}
                 className={`text-subtext font-roboto leading-6 text-lg w-full text-center py-2 rounded-md transition-colors duration-200 ease-in-out ${
                   currentHash === "about_us"
@@ -158,11 +158,11 @@ const Header = () => {
           </ul>
 
           {isClient && !loggedIn ? (
-            <div className='w-full flex flex-col space-y-4'>
+            <div className="w-full flex flex-col space-y-4">
               <Button
-                width='full'
-                size='xs'
-                color='outline'
+                width="full"
+                size="xs"
+                color="outline"
                 onClick={() => {
                   router.push("/auth/path");
                   setToggleNav(false);
@@ -171,9 +171,9 @@ const Header = () => {
                 Login
               </Button>
               <Button
-                width='full'
-                size='xs'
-                color='blue'
+                width="full"
+                size="xs"
+                color="blue"
                 onClick={() => {
                   router.push("/auth/path");
                   setToggleNav(false);
@@ -183,11 +183,11 @@ const Header = () => {
               </Button>
             </div>
           ) : (
-            <div className='w-full flex flex-col gap-y-5'>
+            <div className="w-full flex flex-col gap-y-5">
               <Button
-                width='full'
-                size='xs'
-                color='blue'
+                width="full"
+                size="xs"
+                color="blue"
                 onClick={() => setToggleNav(false)}
               >
                 Dashboard
@@ -198,11 +198,11 @@ const Header = () => {
       </div>
 
       {/* Desktop Nav */}
-      <div className='w-full sm:flex items-center justify-end gap-6 md:gap-8 lg:gap-10 hidden'>
-        <ul className='flex items-center gap-5 md:gap-6 lg:gap-8 capitalize'>
+      <div className="w-full sm:flex items-center justify-end gap-6 md:gap-8 lg:gap-10 hidden">
+        <ul className="flex items-center gap-5 md:gap-6 lg:gap-8 capitalize">
           <li>
             <Link
-              href='#discover'
+              href="#discover"
               className={`text-subtext text-sm md:text-base font-roboto leading-6 transition-colors duration-200 ease-in-out ${
                 currentHash === "discover"
                   ? "!text-primary px-3 py-1 rounded-md"
@@ -214,7 +214,7 @@ const Header = () => {
           </li>
           <li>
             <Link
-              href='#features'
+              href="#features"
               className={`text-subtext text-sm md:text-base font-roboto leading-6 transition-colors duration-200 ease-in-out ${
                 currentHash === "features"
                   ? "!text-primary px-3 py-1 rounded-md"
@@ -226,7 +226,7 @@ const Header = () => {
           </li>
           <li>
             <Link
-              href='#about_us'
+              href="#about_us"
               className={`text-subtext text-sm md:text-base font-roboto leading-6 transition-colors duration-200 ease-in-out ${
                 currentHash === "about_us"
                   ? "!text-primary px-3 py-1 rounded-md"
@@ -239,19 +239,19 @@ const Header = () => {
         </ul>
 
         {isClient && !loggedIn ? (
-          <div className='flex w-full max-w-[270px] h-fit gap-4'>
+          <div className="flex w-full max-w-[270px] h-fit gap-4">
             <Button
-              width='full'
-              size='xs'
-              color='outline'
+              width="full"
+              size="xs"
+              color="outline"
               onClick={() => router.push("/auth/path")}
             >
               Login
             </Button>
             <Button
-              width='full'
-              size='xs'
-              color='blue'
+              width="full"
+              size="xs"
+              color="blue"
               onClick={() => router.push("/auth/path")}
             >
               Sign Up
@@ -259,8 +259,8 @@ const Header = () => {
           </div>
         ) : (
           <Button
-            size='xs'
-            color='blue'
+            size="xs"
+            color="blue"
             onClick={() => {
               const role = user?.role;
               router.push(
