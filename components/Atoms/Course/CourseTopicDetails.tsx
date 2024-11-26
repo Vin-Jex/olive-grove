@@ -19,6 +19,7 @@ import { baseUrl } from "@/components/utils/baseURL";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import Button from "../Button";
+import { capitalize } from "@/components/utils/utils";
 
 const demoNotes = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus lacus, dignissim commodo dictum aliquam, maximus nec mauris. Phasellus sed nisl dignissim erat eleifend congue. Nullam ultricies est a tempus varius. Phasellus vitae massa rutrum, elementum urna sed, volutpat urna. Nam at nulla dui. Suspendisse aliquet metus purus, eget ultrices tellus pharetra eget. Proin dictum urna non aliquet pellentesque. Nunc dapibus gravida justo eu finibus.
 <br />
@@ -41,6 +42,9 @@ export const TopicDetails: FC<{
     topicDetails.topic?.viewed || false
   );
   const [topicIsCompleted, setTopicIsCompleted] = useState(
+    topicDetails.topic?.viewed || false
+  );
+  const [checkedState, setCheckedState] = useState(
     topicDetails.topic?.viewed || false
   );
 
@@ -89,9 +93,9 @@ export const TopicDetails: FC<{
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
+    setCheckedState(checked);
     if (!topicDetails.topic?.viewed && !noteCompletedIsTriggered && checked) {
       // Mark notes as read
-      // alert("Notes read!");
       setNoteCompletedIsTriggered(true);
     }
   };
@@ -104,16 +108,20 @@ export const TopicDetails: FC<{
     // * Get the access token from the cookies
     const jwt = Cookies.get("jwt");
 
+    console.log("Marking Topic as read");
+
     // * Make an API request to retrieve the list of courses created by this teacher
     const response = await fetch(
-      `${baseUrl}/courses/mark-as-viewed/${topicDetails.type}/${topicDetails.topic?._id}`,
+      `${baseUrl}/courses/mark-as-viewed/${capitalize(topicDetails.type)}/${
+        topicDetails.topic?._id
+      }`,
       {
         method: "POST",
         headers: {
           Authorization: jwt || "",
         },
         body: JSON.stringify({
-          currentDate: Date.now(),
+          currentDate: new Date().toISOString(),
           nextId: "6739522037923060e34feabd",
         }),
       }
@@ -133,13 +141,15 @@ export const TopicDetails: FC<{
   }, [topicDetails.topic?._id, topicDetails.type]);
 
   useEffect(() => {
-    setTopicIsCompleted(false);
-    setVideoCompletedIsTriggered(false);
-    setNoteCompletedIsTriggered(false);
+    setTopicIsCompleted(topicDetails.topic?.viewed || false);
+    setVideoCompletedIsTriggered(topicDetails.topic?.viewed || false);
+    setNoteCompletedIsTriggered(topicDetails.topic?.viewed || false);
+    setCheckedState(topicDetails.topic?.viewed || false);
   }, [router.asPath]);
 
   useEffect(() => {
     if (
+      !topicDetails.topic?.viewed &&
       (topicDetails.topic?.topicVideo || topicDetails.topic?.youtubeVideo) &&
       videoCompletedIsTriggered &&
       noteCompletedIsTriggered
@@ -149,6 +159,7 @@ export const TopicDetails: FC<{
     }
 
     if (
+      !topicDetails.topic?.viewed &&
       !topicDetails.topic?.topicVideo &&
       !topicDetails.topic?.youtubeVideo &&
       noteCompletedIsTriggered
@@ -199,7 +210,8 @@ export const TopicDetails: FC<{
                     control={
                       <Checkbox
                         onChange={markNotesRead}
-                        defaultChecked={topicDetails.topic.viewed}
+                        value={checkedState}
+                        defaultChecked={topicDetails.topic.viewed || false}
                       />
                     }
                     label="I've finished reading"
@@ -214,7 +226,7 @@ export const TopicDetails: FC<{
 
   return (
     <>
-      {topicDetails ? (
+      {topicDetails.topic ? (
         <div className="flex flex-col w-full gap-4">
           {/* BREADCRUMB */}
           <div className="font-thin flex gap-1 w-full">
