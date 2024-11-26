@@ -222,3 +222,15 @@ export type TTopicDetails = {
   type: 'section' | 'lesson';
   topic: TSection | undefined;
 };
+
+export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
+  token: {
+    accessToken: string;
+    refreshToken: string;
+  };
+  details: T extends "student"
+    ? TStudent
+    : T extends "teacher"
+    ? TTeacher
+    : TAdmin;
+};
