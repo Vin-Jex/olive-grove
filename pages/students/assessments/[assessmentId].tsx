@@ -17,6 +17,7 @@ import {
 const AssessmentDetailsPage = () => {
   const router = useRouter();
   const [startExercise, setStartExercise] = useState(false);
+  const [answersReview, setAnswersReview] = useState(true);
 
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [currentQxtIndex, setCurrentQxtIndex] = useState(() => {
@@ -55,6 +56,53 @@ const AssessmentDetailsPage = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
+
+  async function handleSubmit() {
+    // Check if all questions are answered
+    if (Object.keys(answeredQxts).length !== questions.length) {
+      alert('Please answer all questions before submitting');
+      return;
+    }
+
+    //* Functionality to submit the answers to the server
+
+    try {
+      const res = await fetch('/api/submit-answers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(answeredQxts),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to submit answers');
+      }
+      const data = await res.json();
+      console.log(data);
+      alert('Answers submitted successfully');
+    } catch (error) {
+      console.error(error);
+      alert('Failed to submit answers');
+    }
+
+    // Check if all answers are correct
+    //* In the case that tha answeres to the questions are sent.
+    /** 
+    const score = Object.keys(answeredQxts).reduce((acc, qxtId) => {
+      const qxt = questions.find((q) => q.id.toString() === qxtId);
+      if (qxt?.answer === answeredQxts[qxtId]) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+
+    alert(`You scored ${score} out of ${questions.length}`);
+    **/
+    setAnsweredQxts({});
+    localStorage.setItem('answeredQxts', JSON.stringify({}));
+    setIsQuizComplete(true);
+  }
 
   // useEffect(() => {
   //   const makeOnline = () => setIsOnline(true);
@@ -117,20 +165,41 @@ const AssessmentDetailsPage = () => {
         ) : (
           <div>
             <div className='py-5 flex flex-col space-y-10'>
-              {questions.map((question, i) => (
-                <QuestionCard
-                  value={answeredQxts[question.id.toString()] ?? ''}
-                  setCurrentQxtIndex={setCurrentQxtIndex}
-                  setAnsweredQxts={setAnsweredQxts}
-                  key={i}
-                  i={i}
-                  question={question}
-                />
-              ))}
+              {answersReview &&
+                markedQuestions.map((question, i) => (
+                  <QuestionCard
+                    review={true}
+                    value={question.yourAnswer}
+                    setCurrentQxtIndex={setCurrentQxtIndex}
+                    setAnsweredQxts={setAnsweredQxts}
+                    key={i}
+                    i={i}
+                    question={question}
+                  />
+                ))}
+
+              {!answersReview &&
+                questions.map((question, i) => (
+                  <QuestionCard
+                    review={false}
+                    value={answeredQxts[question.id.toString()] ?? ''}
+                    setCurrentQxtIndex={setCurrentQxtIndex}
+                    setAnsweredQxts={setAnsweredQxts}
+                    key={i}
+                    i={i}
+                    question={question}
+                  />
+                ))}
             </div>
-            <Button size='sm' className='text-left my-4 mb-7'>
-              Submit
-            </Button>
+            {!answersReview && (
+              <Button
+                onClick={handleSubmit}
+                size='sm'
+                className='text-left my-4 mb-7'
+              >
+                Submit
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -143,19 +212,23 @@ type TQuestionCard = {
   id: number;
   question: string;
   options: string[];
-  answer: string;
+  yourAnswer?: string;
+  correctAnswer?: string;
+  answer?: string;
 };
 
 function QuestionCard({
   question,
   i,
   value,
+  review,
   setCurrentQxtIndex,
   setAnsweredQxts,
 }: {
   question: TQuestionCard;
   value: string;
   i: number;
+  review: boolean;
   setCurrentQxtIndex: React.Dispatch<React.SetStateAction<string>>;
   setAnsweredQxts: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }) {
@@ -179,8 +252,37 @@ function QuestionCard({
       >
         {question.options.map((option, i) => (
           <FormControlLabel
+            style={
+              review
+                ? option === question.correctAnswer
+                  ? {
+                      backgroundColor: '#7ecee1',
+                      fillOpacity: 0.6,
+                      borderRadius: 5,
+                      marginBlock: 2,
+                    }
+                  : option === question.yourAnswer &&
+                    option !== question.correctAnswer
+                  ? {
+                      backgroundColor: '#e07d7d',
+                      fillOpacity: 0.6,
+                      borderRadius: 5,
+                      marginBlock: 2,
+                    }
+                  : {}
+                : {}
+            }
             value={option}
-            control={<Radio />}
+            control={
+              <Radio
+                // disabled={review}
+                color={
+                  review && option === question.correctAnswer
+                    ? 'success'
+                    : 'error'
+                }
+              />
+            }
             key={i}
             label={option}
           />
@@ -250,6 +352,44 @@ const questions = [
     question: 'What is Energy',
     options: ['Rust', 'Kotlin', 'Scala'],
     answer: 'Kotlin',
+  },
+];
+
+const markedQuestions = [
+  {
+    id: 1,
+    question: 'What is Displacement',
+    options: ['HTML', 'CSS', 'JavaScript'],
+    yourAnswer: 'HTML',
+    correctAnswer: 'HTML',
+  },
+  {
+    id: 2,
+    question: 'What is Velocity',
+    options: ['Python', 'Java', 'C++'],
+    yourAnswer: 'Python',
+    correctAnswer: 'Java',
+  },
+  {
+    id: 3,
+    question: 'What is Acceleration',
+    options: ['Ruby', 'PHP', 'Swift'],
+    yourAnswer: 'Swift',
+    correctAnswer: 'Swift',
+  },
+  {
+    id: 4,
+    question: 'What is Force',
+    options: ['C#', 'TypeScript', 'Go'],
+    yourAnswer: 'C#',
+    correctAnswer: 'TypeScript',
+  },
+  {
+    id: 5,
+    question: 'What is Energy',
+    options: ['Rust', 'Kotlin', 'Scala'],
+    yourAnswer: 'Kotlin',
+    correctAnswer: 'Scala',
   },
 ];
 
