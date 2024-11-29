@@ -15,7 +15,6 @@ import React, {
   useMemo,
   useRef,
   useState,
-
 } from 'react';
 import { useRouter } from 'next/router';
 import { usePathname } from 'next/navigation';
@@ -108,7 +107,6 @@ const Tab: FC<{
   body: TTabBody[];
 }> = ({ slugs, body }) => {
   const [activeTab, setActiveTab] = useState(slugs[0].key);
-
   const [contentIds, setContentIds] = useState<TContentId>([]);
   const [comment, setComment] = useState('');
   const [commentError, setCommentError] = useState('');

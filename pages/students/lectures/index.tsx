@@ -82,7 +82,6 @@ const Classes = () => {
   useEffect(() => {
     setSearched(router.query.search ?? '');
   }, [router.query.search]);
-
   //  courses;
   const getCourses = useCallback(async () => {
     setCourses({

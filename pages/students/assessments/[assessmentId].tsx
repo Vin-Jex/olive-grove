@@ -46,7 +46,6 @@ const AssessmentDetailsPage = () => {
           `${baseUrl}/student/assessments/{assessmentId}`
         );
         setQuizQuestions(response.data);
-
       } catch (err) {
         //error fetching quiz questions
         console.error(err);
@@ -294,7 +293,6 @@ function QuestionCard({
                         fillOpacity: 0.6,
                         borderRadius: 5,
                         marginBlock: 7,
-
                       }
                     : option === question.yourAnswer &&
                       option !== question.correctAnswer
@@ -307,7 +305,6 @@ function QuestionCard({
                         fillOpacity: 0.6,
                         borderRadius: 5,
                         marginBlock: 7,
-
                       }
                     : {}
                   : {}
