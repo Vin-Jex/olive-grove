@@ -102,6 +102,7 @@ const SubjectDetailsPage: FC = () => {
     if (lastViewedIndex !== -1 && lastViewedIndex < newCourses.length - 1) {
       const nextCourse = newCourses[nextIndexToView];
 
+
       router.push(`${router.asPath.split('?')[0]}?topic=${nextCourse.id}`);
     } else {
       //I think we should instead redirect to the first course that has not being viewed instead of the on after the last viewed one.
@@ -163,6 +164,7 @@ const SubjectDetailsPage: FC = () => {
                 <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start'>
                   <div className='flex gap-4 mt-6 items-center'>
                     <BackButton />
+
                     <span className='text-2xl font-medium text-dark font-roboto'>
                       {course.data?.title || 'Loading...'}
                     </span>

@@ -32,6 +32,7 @@ async function fetchCourses(id: string) {
     const response = await axiosInstance(`${baseUrl}/courses/${id}`);
     if (response.status === 200) {
       return response.data;
+
     }
   } catch (err) {
     console.log(err);
@@ -79,6 +80,7 @@ const currentIdIndex = (linearIds: TContentId, currentId: string) => {
   return linearIds.findIndex((content) => content.id === currentId);
 };
 
+
 function getPreviousId(
   currentId: string,
   linearIds: TContentId
@@ -93,6 +95,7 @@ function getPreviousId(
 
 function getNextId(currentId: string, linearIds: TContentId): string | null {
   const currentIndex = currentIdIndex(linearIds, currentId);
+
 
   if (currentIndex > 0) {
     return linearIds[currentIndex + 1].id; // Return the ID of the previous item
@@ -127,6 +130,7 @@ const Tab: FC<{
         const contentIds = getContentIds(courses.data!);
         console.log(courses, 'gettig the courses');
         console.log(contentIds, 'ids from the source');
+
         setContentIds(contentIds);
       }
     }
@@ -138,6 +142,7 @@ const Tab: FC<{
     try {
       const response = await axiosInstance.get(`${baseUrl}/student`);
       setProfileImage(response.data.profileImage);
+
     } catch (err) {
       console.error('failed to load student information');
       setProfileImage(dummyImage);
@@ -286,6 +291,7 @@ const Tab: FC<{
             onClick={handlePreviousTab}
             size='xs'
             className={`disabled:!border-none text-primary !border-primary`}
+
             color='outline'
             width='fit'
           >
@@ -305,6 +311,7 @@ const Tab: FC<{
           </Button>
         </div>
         <div className='border rounded-lg px-5 mb-5'>
+
           {commentError && (
             <span className='text-red-500 text-sm relative left-[5.4rem]'>
               {commentError}
@@ -325,6 +332,7 @@ const Tab: FC<{
               onSubmit={handleComment}
               className='relative h-fit flex items-center'
             >
+
               <Input
                 name='text'
                 className='rounded-full w-full px-3 py-3'
@@ -337,6 +345,7 @@ const Tab: FC<{
                 className='h-full absolute right-2  rounded-full'
               >
                 <SendIcon className='w-full h-[calc(100%-0.75rem)]' />
+
               </button>
             </form>
           </div>
@@ -451,7 +460,7 @@ function MessageIcon({ commentNumber }: { commentNumber: number }) {
           height='20'
           viewBox='0 0 20 20'
           fill='none'
-          className=''
+
           xmlns='http://www.w3.org/2000/svg'
         >
           <path
@@ -483,6 +492,7 @@ function MessageIcon({ commentNumber }: { commentNumber: number }) {
       <div className='leading-3 pl-2 h-full flex items-center'>
         {commentNumber.toLocaleString()}
       </div>
+
     </div>
   );
 }
