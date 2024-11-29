@@ -9,6 +9,9 @@ import { TCourse, TFetchState } from '@/components/utils/types';
 import ClassModal from '@/components/Molecules/Modal/ClassModal';
 import { baseUrl } from '@/components/utils/baseURL';
 import axiosInstance from '@/components/utils/axiosInstance';
+import { AxiosError } from 'axios';
+import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
+import { useRouter } from 'next/router';
 
 export const subjectData = [
   {
@@ -52,6 +55,7 @@ const Classes = () => {
     error: undefined,
   });
   const [lectureInfoModal, setLectureInfoModal] = useState(false);
+  const router = useRouter();
 
   const getCourses = useCallback(
     async (/*filter?: { query: "title"; value: string }*/) => {
@@ -64,29 +68,13 @@ const Classes = () => {
       try {
         const studentId = Cookies.get('userId') ?? '';
         // Call the reusable getCourses function, passing the setClasses state updater
-        // const courses = await fetchCourses(/*{ value: studentId, type: "student" }*/);
-        // const response = await fetch(`${baseUrl}/courses`, {
-        //   // credentials: 'include',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //     Authorization: `Bearer accessToken=${Cookies.get(
-        //       'accessToken'
-        //     )};refreshToken=${Cookies.get('refreshToken')}`,
-        //   },
-        // });
-        // if (!response.ok) {
-        //   setCourses({ data: [], loading: false, error: 'NO course found' });
-        //   return;
-        // }
 
-        const { data: courses } = await axiosInstance.get(`${baseUrl}/courses`);
-        // const { data: courses } = await response.json();
-        console.log('course', courses);
-
-        if (Array.isArray(courses)) {
+        const { data: courses }: { data: { data: TCourse[] } } =
+          await axiosInstance.get(`${baseUrl}/courses`);
+        if (Array.isArray(courses.data)) {
           // Set the courses state to the fetched list of courses
           setCourses({
-            data: courses,
+            data: courses.data,
             loading: false,
             error: undefined,
           });
@@ -94,14 +82,18 @@ const Classes = () => {
           setCourses({
             data: [],
             loading: false,
-            error: courses,
+            error: 'Wrong course data format',
           });
         }
-      } catch (error) {
-        console.error('Error fetching classes:', error);
+      } catch (error: AxiosError | any) {
+        if (error.response.status === 401) {
+          handleLogout().then(() => router.push('/auth/path/students/login/'));
+        }
+        setCourses({ data: [], loading: false, error: 'NO course found' });
+        return;
       }
     },
-    []
+    [router]
   );
 
   function handleModal() {

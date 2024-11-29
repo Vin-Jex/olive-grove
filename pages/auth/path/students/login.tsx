@@ -186,8 +186,8 @@ const StudentLogin = () => {
       Cookies.set('userId', _id, {
         expires: expiryDate,
       });
-      // Cookies.set('accessToken', accessToken);
-      // Cookies.set('refreshToken', refreshToken);
+      Cookies.set('accessToken', accessToken);
+      Cookies.set('refreshToken', refreshToken);
       setFormError((prevState) => ({
         ...prevState,
         successError: 'Student successfully logged in.',
