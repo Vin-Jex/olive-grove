@@ -1,18 +1,19 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
-import withAuth from "@/components/Molecules/WithAuth";
-import Button from "@/components/Atoms/Button";
-import { TCourse, TResponse } from "@/components/utils/types";
-import { useRouter } from "next/router";
-import CourseModal from "@/components/Molecules/Modal/CourseModal";
-import { useCourseContext } from "@/contexts/CourseContext";
-import Loader from "@/components/Atoms/Loader";
-import NotFoundError from "@/components/Atoms/NotFoundError";
-import { AnimatePresence } from "framer";
-import { TopicDetails } from "@/components/Atoms/Course/CourseTopicDetails";
-import SideBar from "@/components/Atoms/Course/CourseSidebar";
-import MobileSideBar from "@/components/Atoms/Course/CourseMobileSideBar";
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import { baseUrl } from "@/components/utils/baseURL";
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import withAuth from '@/components/Molecules/WithAuth';
+import Cookies from 'js-cookie';
+import Button from '@/components/Atoms/Button';
+import { TCourse, TResponse } from '@/components/utils/types';
+import { useRouter } from 'next/router';
+import CourseModal from '@/components/Molecules/Modal/CourseModal';
+import { useCourseContext } from '@/contexts/CourseContext';
+import Loader from '@/components/Atoms/Loader';
+import NotFoundError from '@/components/Atoms/NotFoundError';
+import { AnimatePresence } from 'framer';
+import { TopicDetails } from '@/components/Atoms/Course/CourseTopicDetails';
+import SideBar from '@/components/Atoms/Course/CourseSidebar';
+import MobileSideBar from '@/components/Atoms/Course/CourseMobileSideBar';
+import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
+import { baseUrl } from '@/components/utils/baseURL';
 
 const SubjectDetailsPage: FC = () => {
   const router = useRouter();
@@ -40,16 +41,19 @@ const SubjectDetailsPage: FC = () => {
       try {
         // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
         dispatch({
-          type: "FETCHING_COURSE",
+          type: 'FETCHING_COURSE',
         });
 
         // * Get the access token from the cookies
         // * Make an API request to retrieve the list of courses created by this teacher
         const response = await fetch(`${baseUrl}/courses/${id}`, {
-          method: "GET",
-          credentials: "include",
+          method: 'GET',
+          // credentials: "include",
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
+            Authorization: `Bearer accessToken=${Cookies.get(
+              'accessToken'
+            )};refreshToken=${Cookies.get('refreshToken')}`,
           },
         });
 
@@ -59,7 +63,7 @@ const SubjectDetailsPage: FC = () => {
           if (response.status == 404) {
             const data = (await response.json()) as TResponse<TCourse>;
             dispatch({
-              type: "ERROR_FETCHING_COURSE",
+              type: 'ERROR_FETCHING_COURSE',
               payload: { status: 404, message: data.message },
             });
             return;
@@ -67,10 +71,10 @@ const SubjectDetailsPage: FC = () => {
 
           // * If it's any other error code, display default error msg
           dispatch({
-            type: "ERROR_FETCHING_COURSE",
+            type: 'ERROR_FETCHING_COURSE',
             payload: {
               status: response.status,
-              message: "An error occurred while retrieving courses",
+              message: 'An error occurred while retrieving courses',
             },
           });
           return;
@@ -78,14 +82,14 @@ const SubjectDetailsPage: FC = () => {
 
         // * Display the list of courses returned by the endpoint
         const responseData = (await response.json()) as TResponse<TCourse[]>;
-        dispatch({ type: "ADD_COURSE", payload: responseData.data });
+        dispatch({ type: 'ADD_COURSE', payload: responseData.data });
       } catch (error) {
         console.error(error);
         dispatch({
-          type: "ERROR_FETCHING_COURSE",
+          type: 'ERROR_FETCHING_COURSE',
           payload: {
             status: 500,
-            message: "An error occurred while retrieving courses",
+            message: 'An error occurred while retrieving courses',
           },
         });
       }
@@ -101,7 +105,7 @@ const SubjectDetailsPage: FC = () => {
   };
 
   useEffect(() => {
-    if (subjectId) getCourse((subjectId as string) || "nil");
+    if (subjectId) getCourse((subjectId as string) || 'nil');
   }, [getCourse, subjectId]);
 
   return (
@@ -111,10 +115,10 @@ const SubjectDetailsPage: FC = () => {
           <CourseModal
             formState={modalFormState || ({} as any)}
             setFormState={setModalFormState || ((() => {}) as any)}
-            type={type || "chapter"}
+            type={type || 'chapter'}
             handleModalClose={handleCloseModal}
             modalOpen={true}
-            mode={mode || "create"}
+            mode={mode || 'create'}
             handleAction={handleAction || ((() => {}) as any)}
             handleDelete={handleDelete || ((() => {}) as any)}
             requestState={modalRequestState}
@@ -130,7 +134,7 @@ const SubjectDetailsPage: FC = () => {
             <Loader />
           ) : course.error ? (
             <div className='w-full h-full flex items-center justify-center'>
-              {typeof course.error === "object" &&
+              {typeof course.error === 'object' &&
               course.error.status === 404 ? (
                 <>
                   <NotFoundError msg={course.error.message} />
@@ -145,7 +149,7 @@ const SubjectDetailsPage: FC = () => {
               <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start'>
                 <div className='flex flex-col'>
                   <span className='text-2xl font-medium text-dark font-roboto'>
-                    {course.data?.title || "Loading..."}
+                    {course.data?.title || 'Loading...'}
                   </span>
                 </div>
                 <div className='flex gap-4 items-center'>
@@ -156,7 +160,7 @@ const SubjectDetailsPage: FC = () => {
                   >
                     <i
                       className={`fa fa-${
-                        showSideBar ? "xmark" : "bars"
+                        showSideBar ? 'xmark' : 'bars'
                       } text-primary`}
                     ></i>
                   </div>
@@ -197,12 +201,12 @@ const SubjectDetailsPage: FC = () => {
               <div className='flex items-stretch gap-4 relative'>
                 {/* SIDEBAR */}
                 <div className='flex-none hidden xl:block'>
-                  <SideBar courseId={(subjectId as string) || ""} />
+                  <SideBar courseId={(subjectId as string) || ''} />
                 </div>
                 {/* MOBILE SIDEBAR */}
                 <AnimatePresence>
                   {showSideBar && (
-                    <MobileSideBar subjectid={(subjectId as string) || ""} />
+                    <MobileSideBar subjectid={(subjectId as string) || ''} />
                   )}
                 </AnimatePresence>
                 {/* COURSE */}
@@ -220,4 +224,4 @@ const SubjectDetailsPage: FC = () => {
   );
 };
 
-export default withAuth("Student", SubjectDetailsPage);
+export default withAuth('Student', SubjectDetailsPage);

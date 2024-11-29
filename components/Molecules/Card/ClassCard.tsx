@@ -47,7 +47,7 @@ const ClassCard: React.FC<ClassCardType> = ({
           </button>
         )}
       </div>
-      {limitedData.length > 0 ? (
+      {limitedData.length < 0 ? (
         [{ subject: "class Name", time: "Class Duration" }, ...limitedData].map(
           (item, index) => (
             <div
@@ -58,7 +58,11 @@ const ClassCard: React.FC<ClassCardType> = ({
               }`}
             >
               <div className="flex items-center space-x-2">
-                <h3 className={`text-subtext text-sm lg:text-base ${index === 0 && 'text-black'}`}>
+                <h3
+                  className={`text-subtext text-sm lg:text-base ${
+                    index === 0 && "text-black"
+                  }`}
+                >
                   {item.subject}
                 </h3>
 
@@ -92,14 +96,6 @@ const ClassCard: React.FC<ClassCardType> = ({
           className={`flex items-center border-2 rounded-lg space-x-2 p-3 text-subtext text-sm lg:text-base`}
         >
           <span>No {title === "class" ? "class" : "assignment"} created.</span>
-          <Link
-            className="link"
-            href={
-              title === "class" ? "/teachers/classes" : "/teachers/assessments"
-            }
-          >
-            Create {title}
-          </Link>
         </div>
       )}
     </div>

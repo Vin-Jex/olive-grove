@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Menu, NotificationsOutlined } from "@mui/icons-material";
-import dummyImage from "@/images/dummy-img.jpg";
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import { Menu, NotificationsOutlined } from '@mui/icons-material';
+import dummyImage from '@/images/dummy-img.jpg';
 import {
   DateFormatter,
   generateDateString,
-} from "@/components/Functions/DateFormatter";
-import Image, { StaticImageData } from "next/image";
-import { baseUrl } from "@/components/utils/baseURL";
-import { useAuth } from "@/contexts/AuthContext";
+} from '@/components/Functions/DateFormatter';
+import Image, { StaticImageData } from 'next/image';
+import { baseUrl } from '@/components/utils/baseURL';
+import { useAuth } from '@/contexts/AuthContext';
+import axiosInstance from '@/components/utils/axiosInstance';
 
 interface AdminNavType {
   title: string;
@@ -24,9 +26,33 @@ const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
     async function fetchProfileImage() {
       const userRole = user?.role;
       const userId = user?.id;
-      if (userRole === "Student") {
+      if (userRole === 'Student') {
         try {
-          const response = await fetch(`${baseUrl}/students/${userId}`);
+          // const response = await fetch(`${baseUrl}/student`, {
+          //   method: 'GET',
+          //   headers: {
+          //     'Content-Type': 'application/json',
+          //     Authorization: `Bearer accessToken=${Cookies.get(
+          //       'accessToken'
+          //     )};refreshToken=${Cookies.get('refreshToken')}`,
+          //   },
+          // });
+          // if (!response.ok) {
+          //   //insert a fallback image;
+          //   //for now set it to an empty string
+          //   setProfileImage(dummyImage);
+          //   return;
+          // }
+          // const json = await response.json();
+          const response = await axiosInstance.get(`${baseUrl}/student`)
+          setProfileImage(response.data.profileImage);
+        } catch (err) {
+          setProfileImage(dummyImage);
+        }
+      }
+      if (userRole === 'Teacher') {
+        try {
+          const response = await fetch(`${baseUrl}/teachers/${userId}`);
           if (!response.ok) {
             //insert a fallback image;
             //for now set it to an empty string
@@ -38,21 +64,7 @@ const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
           setProfileImage(dummyImage);
         }
       }
-      if (userRole === "Teacher") {
-        try {
-          const response = await fetch(`${baseUrl}/teachers/${userId}`);
-          if (!response.ok) {
-            //insert a fallback image;
-            //for now set it to an empty string
-            setProfileImage("");
-          }
-          const json = await response.json();
-          setProfileImage(json.profileImage);
-        } catch (err) {
-          setProfileImage(dummyImage);
-        }
-      }
-      if (userRole === "Admin") {
+      if (userRole === 'Admin') {
         try {
           const response = await fetch(`${baseUrl}/admins/${userId}`);
           if (!response.ok) {

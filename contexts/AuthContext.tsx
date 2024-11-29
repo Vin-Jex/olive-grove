@@ -1,13 +1,13 @@
-import { checkLoginStatus } from "@/components/utils/authUtils";
+import { checkLoginStatus } from '@/components/utils/authUtils';
 import React, {
   createContext,
   useContext,
   useEffect,
   useState,
   ReactNode,
-} from "react";
+} from 'react';
 
-export type TRole = "Teacher" | "Student" | "Admin";
+export type TRole = 'Teacher' | 'Student' | 'Admin';
 interface IUser {
   id: string;
   role: TRole;
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = (): AuthState => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
