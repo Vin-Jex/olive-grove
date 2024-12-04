@@ -2,7 +2,12 @@ import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
-import { TCourse, TResponse } from "@/components/utils/types";
+import {
+  TClass,
+  TCourse,
+  TFetchState,
+  TResponse,
+} from "@/components/utils/types";
 import { baseUrl } from "@/components/utils/baseURL";
 import { useRouter } from "next/router";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
@@ -15,12 +20,18 @@ import SideBar from "@/components/Atoms/Course/CourseSidebar";
 import MobileSideBar from "@/components/Atoms/Course/CourseMobileSideBar";
 import { TopicContextProvider } from "@/contexts/TopicContext";
 import axiosInstance from "@/components/utils/axiosInstance";
+import ServerError from "@/components/Atoms/ServerError";
+import useAjaxRequest from "use-ajax-request";
 
 const Subject: FC = () => {
   const router = useRouter();
   const { subjectid } = useMemo(() => router.query, [router.query]);
   const [showSideBar, setShowSideBar] = useState(false);
-
+  const [classes, setClasses] = useState<TFetchState<TClass[] | undefined>>({
+    data: [],
+    loading: false,
+    error: undefined,
+  });
   const {
     course,
     dispatch,
@@ -29,6 +40,8 @@ const Subject: FC = () => {
     modalFormState,
     setModalFormState,
     modalRequestState,
+    setModalRequestState,
+    openModal,
     modalMetadata: { type, mode, handleAction, handleDelete },
   } = useCourseContext();
 
@@ -68,7 +81,7 @@ const Subject: FC = () => {
           type: "ERROR_FETCHING_COURSE",
           payload: {
             status: error?.response?.status,
-            message: "An error occurred while retrieving courses",
+            message: "An error occurred while retrieving this course",
           },
         });
         return;
@@ -76,6 +89,132 @@ const Subject: FC = () => {
     },
     [dispatch]
   );
+
+  const handleEditCourse = async (formState?: any) => {
+    try {
+      // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
+      setModalRequestState({
+        data: undefined,
+        loading: true,
+        error: undefined,
+      });
+
+      const request_data = new FormData();
+
+      // * Append the course details to the request body
+      request_data.append("title", formState.title);
+      request_data.append("description", formState.description || "");
+      request_data.append("classId", formState.classId || "");
+
+      typeof formState.courseCover === "object" &&
+        request_data.append("courseCover", formState.courseCover);
+      !formState.courseCover && request_data.append("courseCover", "");
+
+      // * Make an API request to retrieve the list of courses created by this teacher
+      const response = await axiosInstance.put(
+        `/courses/${course.data?._id}`,
+        request_data,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      // * Update the existing data with that returned by the API request
+      const responseData = response.data as TResponse<TCourse>;
+      setModalRequestState({
+        data: responseData.data,
+        loading: false,
+        error: undefined,
+      });
+
+      dispatch({ type: "EDIT_COURSE", payload: responseData.data });
+
+      return true;
+    } catch (error: any) {
+      // * If it's a 400 error, display message that the input details are incomplete
+      if (error?.response?.status == 400) {
+        // const data = (await response.json()) as TResponse<any>;
+        setModalRequestState({
+          data: undefined,
+          loading: false,
+          error: "Invalid form data passed",
+        });
+        return false;
+      }
+
+      // * If it's any other error code, display default error msg
+      setModalRequestState({
+        data: undefined,
+        loading: false,
+        error: "An error occurred while updating the course",
+      });
+
+      return false;
+    }
+  };
+
+  /**
+   * * Function responsible for opening the course modal to edit the course
+   * */
+  const openEditCourseModal = () => {
+    openModal({
+      modalMetadata: {
+        formData: {
+          title: course.data?.title || "",
+          classId: course.data?.classId || "",
+          description: course.data?.description || "",
+          courseCover: course.data?.courseCover || "",
+        },
+        mode: "edit",
+        type: "course",
+        handleAction: handleEditCourse,
+      },
+    });
+  };
+
+  /**
+   * * Function responsible from retrieving the classes on the platform
+   */
+  const getClasses = async (filter?: { query: "title"; value: string }) => {
+    try {
+      // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
+      setClasses({
+        data: [],
+        loading: true,
+        error: undefined,
+      });
+
+      // * Get the access token from the cookies
+      // * Make an API request to retrieve the list of classes created by this teacher
+      const response = await axiosInstance.get(`/classes/all`);
+
+      // * Display the list of classes returned by the endpoint
+      const responseData = response.data as TResponse<TClass[]>;
+      setClasses({
+        data: responseData.data,
+        loading: false,
+        error: undefined,
+      });
+    } catch (error: any) {
+      console.error(error);
+      // * If it's a 404 error, display message that classes couldn't be found
+      if (error?.response?.status == 404) {
+        setClasses({
+          data: [],
+          loading: false,
+          error: "No class found",
+        });
+        return;
+      }
+
+      // * If it's any other error code, display default error msg
+      setClasses({
+        data: [],
+        loading: false,
+        error: "An error occurred while retrieving classes",
+      });
+
+      return;
+    }
+  };
 
   /**
    * * Function responsible for closing the modal and clearing the form state
@@ -86,6 +225,7 @@ const Subject: FC = () => {
 
   useEffect(() => {
     if (subjectid) getCourse((subjectid as string) || "nil");
+    getClasses();
   }, [getCourse, subjectid]);
 
   return (
@@ -102,6 +242,10 @@ const Subject: FC = () => {
             handleAction={handleAction || ((() => {}) as any)}
             handleDelete={handleDelete || ((() => {}) as any)}
             requestState={modalRequestState}
+            classes={classes.data?.map((each) => ({
+              value: each._id as string,
+              display_value: each.name,
+            }))}
           />
         </>
       )}
@@ -114,18 +258,18 @@ const Subject: FC = () => {
             ) : course.error ? (
               <div className="w-full h-full flex items-center justify-center">
                 {typeof course.error === "object" &&
-                course.error.status === 404 ? (
-                  <>
-                    <NotFoundError msg={course.error.message} />
-                  </>
-                ) : (
-                  course.error.toString()
-                )}
+                  (course.error.status === 404 ? (
+                    <>
+                      <NotFoundError msg={course.error.message} />
+                    </>
+                  ) : (
+                    <ServerError msg={course.error.message} />
+                  ))}
               </div>
             ) : course.data ? (
               <>
                 {/* Title */}
-                <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start">
+                <div className="flex flex-row gap-4 sm:gap-0 sm:flex-row justify-between items-start">
                   <div className="flex flex-row gap-2 items-center">
                     {/* Previous page button */}
                     <div
@@ -150,10 +294,13 @@ const Subject: FC = () => {
                         } text-primary`}
                       ></i>
                     </div>
-                    <Button width="fit" size="xs" color="outline">
-                      <i className="fas fa-pencil"></i>
-
-                      <span>Edit Course</span>
+                    <Button
+                      width="fit"
+                      size="xs"
+                      color="outline"
+                      onClick={openEditCourseModal}
+                    >
+                      <i className="fas fa-pencil"></i> <span>Edit Course</span>
                     </Button>
                   </div>
                 </div>

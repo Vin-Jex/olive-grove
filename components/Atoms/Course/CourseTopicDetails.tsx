@@ -221,6 +221,7 @@ export const TopicDetails: FC<{
     setNoteCompletedIsTriggered(topicDetails.topic?.viewed || false);
     setCheckedState(topicDetails.topic?.viewed || false);
     fetchNavigate();
+
     console.log(
       "NEW TOPIC",
       topicDetails.topic?.title,

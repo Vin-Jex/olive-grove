@@ -183,7 +183,9 @@ const Subjects: FC = () => {
       !formState.courseCover && request_data.append("courseCover", "");
 
       // * Make an API request to retrieve the list of courses created by this teacher
-      const response = await axiosInstance.post(`/courses`, request_data);
+      const response = await axiosInstance.post(`/courses`, request_data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       // * Update the existing data with that returned by the API request
       const responseData = response.data as TResponse<TCourse>;
