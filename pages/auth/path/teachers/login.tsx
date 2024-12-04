@@ -239,7 +239,9 @@ const LoginPath = () => {
     }
 
     try {
-      await loginTeacher(handleSuccessLogin, handleErrorLogin, formState);
+      await loginTeacher(handleSuccessLogin as any, handleErrorLogin, {
+        ...(formState as any),
+      });
     } catch (error) {
       console.log("Error:", error);
     } finally {
