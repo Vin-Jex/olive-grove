@@ -14,6 +14,7 @@ import { TopicDetails } from "@/components/Atoms/Course/CourseTopicDetails";
 import SideBar from "@/components/Atoms/Course/CourseSidebar";
 import MobileSideBar from "@/components/Atoms/Course/CourseMobileSideBar";
 import { TopicContextProvider } from "@/contexts/TopicContext";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Subject: FC = () => {
   const router = useRouter();
@@ -46,49 +47,31 @@ const Subject: FC = () => {
 
         // * Get the access token from the cookies
         // * Make an API request to retrieve the list of courses created by this teacher
-        const response = await fetch(`${baseUrl}/courses/${id}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await axiosInstance.get(`/courses/${id}`);
 
-        // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
-        if (!response.ok) {
-          // * If it's a 404 error, display message that courses couldn't be found
-          if (response.status == 404) {
-            const data = (await response.json()) as TResponse<TCourse>;
-            dispatch({
-              type: "ERROR_FETCHING_COURSE",
-              payload: { status: 404, message: data.message },
-            });
-            return;
-          }
-
-          // * If it's any other error code, display default error msg
+        // * Display the list of courses returned by the endpoint
+        const responseData = response.data as TResponse<TCourse[]>;
+        dispatch({ type: "ADD_COURSE", payload: responseData.data });
+      } catch (error: any) {
+        // * If it's a 404 error, display message that courses couldn't be found
+        if (error?.response?.status == 404) {
+          const data = error?.response?.data as TResponse<TCourse>;
           dispatch({
             type: "ERROR_FETCHING_COURSE",
-            payload: {
-              status: response.status,
-              message: "An error occurred while retrieving courses",
-            },
+            payload: { status: 404, message: data.message },
           });
           return;
         }
 
-        // * Display the list of courses returned by the endpoint
-        const responseData = (await response.json()) as TResponse<TCourse[]>;
-        dispatch({ type: "ADD_COURSE", payload: responseData.data });
-      } catch (error) {
-        console.error(error);
+        // * If it's any other error code, display default error msg
         dispatch({
           type: "ERROR_FETCHING_COURSE",
           payload: {
-            status: 500,
+            status: error?.response?.status,
             message: "An error occurred while retrieving courses",
           },
         });
+        return;
       }
     },
     [dispatch]
@@ -124,12 +107,12 @@ const Subject: FC = () => {
       )}
 
       <TopicContextProvider course={course.data}>
-        <TeachersWrapper title='Subjects' metaTitle='Olive Groove ~ Subjects'>
-          <div className='space-y-5 h-full'>
+        <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
+          <div className="space-y-5 h-full">
             {course.loading ? (
               <Loader />
             ) : course.error ? (
-              <div className='w-full h-full flex items-center justify-center'>
+              <div className="w-full h-full flex items-center justify-center">
                 {typeof course.error === "object" &&
                 course.error.status === 404 ? (
                   <>
@@ -142,23 +125,23 @@ const Subject: FC = () => {
             ) : course.data ? (
               <>
                 {/* Title */}
-                <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start'>
-                  <div className='flex flex-row gap-2 items-center'>
+                <div className="flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start">
+                  <div className="flex flex-row gap-2 items-center">
                     {/* Previous page button */}
                     <div
-                      className='w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full '
+                      className="w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full "
                       onClick={() => router.back()}
                     >
-                      <i className='fas fa-arrow-left text-greyed hover:text-dark'></i>
+                      <i className="fas fa-arrow-left text-greyed hover:text-dark"></i>
                     </div>
-                    <span className='text-2xl font-medium text-dark font-roboto'>
+                    <span className="text-2xl font-medium text-dark font-roboto">
                       {course.data?.title || "Loading..."}
                     </span>
                   </div>
-                  <div className='flex gap-4 items-center'>
+                  <div className="flex gap-4 items-center">
                     {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
                     <div
-                      className='rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110'
+                      className="rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110"
                       onClick={() => setShowSideBar((prev) => !prev)}
                     >
                       <i
@@ -167,16 +150,16 @@ const Subject: FC = () => {
                         } text-primary`}
                       ></i>
                     </div>
-                    <Button width='fit' size='xs' color='outline'>
-                      <i className='fas fa-pencil'></i>
+                    <Button width="fit" size="xs" color="outline">
+                      <i className="fas fa-pencil"></i>
 
                       <span>Edit Course</span>
                     </Button>
                   </div>
                 </div>
-                <div className='flex items-stretch gap-4 relative'>
+                <div className="flex items-stretch gap-4 relative">
                   {/* SIDEBAR */}
-                  <div className='flex-none hidden xl:block'>
+                  <div className="flex-none hidden xl:block">
                     <SideBar courseId={(subjectid as string) || ""} />
                   </div>
                   {/* MOBILE SIDEBAR */}
@@ -186,7 +169,7 @@ const Subject: FC = () => {
                     )}
                   </AnimatePresence>
                   {/* COURSE */}
-                  <div className='flex-1'>
+                  <div className="flex-1">
                     <TopicDetails course={course.data} />
                   </div>
                 </div>

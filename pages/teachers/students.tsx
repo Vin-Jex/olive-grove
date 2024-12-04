@@ -5,6 +5,7 @@ import SearchInput from "@/components/Atoms/SearchInput";
 import TableReuse from "@/components/Molecules/Table/TableReuse";
 import { TFetchState, TStudent } from "@/components/utils/types";
 import { baseUrl } from "@/components/utils/baseURL";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Students = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -37,43 +38,9 @@ const Students = () => {
         error: undefined,
       }));
 
+      const response = await axiosInstance.get(`/students`);
 
-      const response = await fetch(`${baseUrl}/students`, {
-        credentials: "include"
-      });
-
-      if (!response.ok) {
-        // const errorData = await response.json();
-        if (
-          // response.status === "No lectures found for the provided teacher ID."
-          response.status === 404
-        ) {
-          // Display error state
-          setFetchStudentsState((prev) => ({
-            data: [],
-            loading: false,
-            error: {
-              message: "No students found",
-              status: 404,
-              state: true,
-            },
-          }));
-        } else {
-          // Display error state
-          setFetchStudentsState((prev) => ({
-            ...prev,
-            loading: false,
-            error: {
-              message: "Failed to load students.",
-              status: 500,
-              state: true,
-            },
-          }));
-        }
-        return;
-      }
-
-      const data = await response.json();
+      const { data } = response;
       // Display data
       setFetchStudentsState((prev) => ({
         data: data,
@@ -122,39 +89,39 @@ const Students = () => {
   }, [fetchStudents]);
 
   return (
-    <TeachersWrapper title='Student' metaTitle='Olive Groove ~ Student'>
-      <div className='space-y-5'>
+    <TeachersWrapper title="Student" metaTitle="Olive Groove ~ Student">
+      <div className="space-y-5">
         {/* Title */}
-        <div className='flex flex-col'>
-          <span className='text-lg font-medium text-dark font-roboto'>
+        <div className="flex flex-col">
+          <span className="text-lg font-medium text-dark font-roboto">
             Students
           </span>
-          <span className='text-md text-subtext font-roboto'>
+          <span className="text-md text-subtext font-roboto">
             View student performances
           </span>
         </div>
 
-        <div className='space-y-8 md:!my-12'>
-          <div className='flex flex-col md:flex-row md:items-center md:justify-between w-full gap-y-4'>
+        <div className="space-y-8 md:!my-12">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full gap-y-4">
             <select
               // value={formState.instituteType}
-              name='subject'
+              name="subject"
               // onChange={handleChange}
               required
-              className='flex items-center px-2 sm:px-2.5 py-3.5 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full md:w-[200px] h-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
+              className="flex items-center px-2 sm:px-2.5 py-3.5 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full md:w-[200px] h-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2"
             >
-              <option value='mathematics' className='h-full'>
+              <option value="mathematics" className="h-full">
                 Mathematics
               </option>
-              <option value='english' className='h-full'>
+              <option value="english" className="h-full">
                 English
               </option>
             </select>
 
-            <div className=''>
+            <div className="">
               <SearchInput
-                shape='rounded-lg'
-                placeholder='Search'
+                shape="rounded-lg"
+                placeholder="Search"
                 searchResults={searchResults}
                 setSearchResults={setSearchResults}
                 initialData={[]}

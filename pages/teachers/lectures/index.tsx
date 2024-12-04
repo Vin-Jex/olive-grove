@@ -12,6 +12,7 @@ import LectureModal from "@/components/Molecules/Modal/LectureModal";
 import { ILectureData, TCourse, TFetchState } from "@/components/utils/types";
 import { fetchCourses } from "@/components/utils/course";
 import { useAuth } from "@/contexts/AuthContext";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Lectures = () => {
   const [activeItem, setActiveItem] = useState("all courses");
@@ -74,10 +75,10 @@ const Lectures = () => {
         // Call the reusable getCourses function, passing the setClasses state updater
         const courses = await fetchCourses(filter);
 
-        if (Array.isArray(courses)) {
+        if (typeof courses === "object") {
           // Set the courses state to the fetched list of courses
           setCourses({
-            data: courses,
+            data: courses.data,
             loading: false,
             error: undefined,
           });
@@ -107,22 +108,9 @@ const Lectures = () => {
     try {
       const userId = user?.id;
       setIsLoading((prevState) => ({ ...prevState, fetching: true }));
-      const response = await fetch(`${baseUrl}/teacher/${userId}/lectures`, {
-        method: "GET",
-        credentials: "include"
-      });
+      const response = await axiosInstance.get(`/teacher/lectures`);
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          setError({ msg: "No lecture found for your profile.", status: 404 });
-          setLectures([]);
-        } else {
-          setError({ msg: "Failed to load lectures.", status: 500 });
-        }
-        return;
-      }
-
-      const data = await response.json();
+      const { data } = response;
       console.log("LECTURES: ", data);
       setLectures(data?.data);
     } catch (err) {
@@ -131,11 +119,6 @@ const Lectures = () => {
       setIsLoading((prevState) => ({ ...prevState, fetching: false }));
     }
   }, [user?.id]);
-
-  useEffect(() => {
-    fetchLectures();
-    getCourses();
-  }, [fetchLectures, getCourses]);
 
   const createOrUpdateLecture = async (
     lectureId?: string,
@@ -149,7 +132,7 @@ const Lectures = () => {
       academicWeekDate,
       recordedLecture,
     } = formState;
-    const userId = user?.id
+    const userId = user?.id;
 
     const lecturePayload = {
       subject,
@@ -173,24 +156,20 @@ const Lectures = () => {
     setIsLoading((prevState) => ({ ...prevState, saving: true }));
 
     try {
-      const url =
-        mode === "edit"
-          ? `${baseUrl}/lecture/${lectureId}`
-          : `${baseUrl}/lecture`;
+      const url = mode === "edit" ? `/lecture/${lectureId}` : `/lecture`;
 
       const method = mode === "edit" ? "PUT" : "POST";
-      const response = await fetch(url, {
+      const response = await axiosInstance({
+        url,
         method,
-        credentials: "include",
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        body: formData,
+        data: formData,
       });
 
-      if (!response.ok) throw new Error("Error creating/updating lecture");
+      const { data } = response;
 
-      const data = await response.json();
       // Refresh the list of lectures
       fetchLectures();
       setOpenModalCreate(false);
@@ -207,12 +186,7 @@ const Lectures = () => {
     setIsLoading({ ...isLoading, deleting: true });
 
     try {
-      const response = await fetch(`${baseUrl}/lectures/${lectureId}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (!response.ok) throw new Error("Error deleting lecture");
+      await axiosInstance.delete(`/lectures/${lectureId}`);
 
       fetchLectures();
     } catch (err) {
@@ -222,12 +196,17 @@ const Lectures = () => {
     }
   };
 
+  useEffect(() => {
+    fetchLectures();
+    getCourses();
+  }, [fetchLectures, getCourses]);
+
   return (
     <>
       <LectureModal
         formState={formState}
         setFormState={setFormState}
-        type='class'
+        type="class"
         handleModalClose={handleModalCreate}
         modalOpen={openModalCreate}
         mode={mode}
@@ -238,25 +217,25 @@ const Lectures = () => {
         courses={courses.data.map((item) => item.title.trim())}
       />
 
-      <TeachersWrapper title='Lectures' metaTitle='Olive Groove ~ Lectures'>
-        <div className='space-y-5 h-full'>
+      <TeachersWrapper title="Lectures" metaTitle="Olive Groove ~ Lectures">
+        <div className="space-y-5 h-full">
           <>
-            <div className='flex flex-row items-center justify-between gap-4'>
-              <div className='flex flex-col'>
-                <span className='text-lg font-medium text-dark font-roboto'>
+            <div className="flex flex-row items-center justify-between gap-4">
+              <div className="flex flex-col">
+                <span className="text-lg font-medium text-dark font-roboto">
                   Explore your available lectures.
                 </span>
-                <span className='text-md text-subtext font-roboto'>
+                <span className="text-md text-subtext font-roboto">
                   Manage, edit and create lecture.
                 </span>
               </div>
-              <Button size='xs' width='fit' onClick={handleModalCreate}>
+              <Button size="xs" width="fit" onClick={handleModalCreate}>
                 <span>Create Lecture</span>
               </Button>
             </div>
 
             {isLoading.fetching ? (
-              <div className='h-full w-full'>
+              <div className="h-full w-full">
                 <Loader />
               </div>
             ) : error ? (
@@ -274,11 +253,11 @@ const Lectures = () => {
                   setActiveItem={setActiveItem}
                   navLink={["all courses", "active courses"]}
                 />
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6'>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
                   {activeItem === "all courses"
                     ? lectures.map((lectureItem, index) => (
-                        <div key={index} className='mt-4 w-full space-y-2'>
-                          <span className='text-dark text-xl font-medium capitalize'>
+                        <div key={index} className="mt-4 w-full space-y-2">
+                          <span className="text-dark text-xl font-medium capitalize">
                             {new Date(
                               lectureItem.academicWeekDate
                             ).toDateString()}
@@ -286,11 +265,13 @@ const Lectures = () => {
                           <TeacherCard
                             key={index}
                             academicWeekDate={1}
-                            type='lecture'
+                            type="lecture"
                             time={new Date(
                               lectureItem.classTime
                             ).toLocaleString()}
-                            subject={(lectureItem.subject as TCourse).title}
+                            subject={
+                              (lectureItem.subject as TCourse)?.title || ""
+                            }
                             lectureTopic={lectureItem.description}
                             btnLink1={() => {}}
                             btnLink2={() => {
@@ -303,8 +284,8 @@ const Lectures = () => {
                     : lectures
                         .filter((lectureItem) => lectureItem.isActive)
                         .map((lectureItem, index) => (
-                          <div key={index} className='mt-4 w-full space-y-2'>
-                            <span className='text-dark text-xl font-medium capitalize'>
+                          <div key={index} className="mt-4 w-full space-y-2">
+                            <span className="text-dark text-xl font-medium capitalize">
                               {new Date(
                                 lectureItem.academicWeekDate
                               ).toDateString()}
@@ -312,7 +293,7 @@ const Lectures = () => {
                             <TeacherCard
                               key={index}
                               academicWeekDate={1}
-                              type='lecture'
+                              type="lecture"
                               time={new Date(
                                 lectureItem.classTime
                               ).toLocaleString()}

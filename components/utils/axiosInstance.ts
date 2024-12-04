@@ -7,21 +7,22 @@ const axiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(
   (request) => {
-    console.log("making the fugging request");
+    // console.log("making the fugging request");
     const accessToken = Cookies.get("accessToken");
     const refreshToken = Cookies.get("refreshToken");
     if (accessToken && refreshToken) {
       request.headers.Authorization = `Bearer accessToken=${accessToken};refreshToken=${refreshToken}`;
     }
-    console.log("This is the request from the request", request);
+    // console.log("This is the request from the request", request);
     return request;
   },
   (error) => {
-    console.log("this is frmo the axios error on request");
+    // console.log("this is frmo the axios error on request");
     return Promise.reject(error);
   }
 );
