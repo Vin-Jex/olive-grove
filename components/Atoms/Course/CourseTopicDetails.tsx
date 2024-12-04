@@ -143,7 +143,12 @@ export const TopicDetails: FC<{
     setVideoCompletedIsTriggered(topicDetails.topic?.viewed || false);
     setNoteCompletedIsTriggered(topicDetails.topic?.viewed || false);
     setCheckedState(topicDetails.topic?.viewed || false);
-  }, [router.asPath]);
+    console.log(
+      "NEW TOPIC",
+      topicDetails.topic?.title,
+      topicDetails.topic?.viewed
+    );
+  }, [topicDetails.topic]);
 
   useEffect(() => {
     if (
