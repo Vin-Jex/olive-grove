@@ -19,6 +19,7 @@ import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import AsssessmentModal from "@/components/Molecules/Modal/AsssessmentModal";
 import { fetchCourses } from "@/components/utils/course";
 import { baseUrl } from "@/components/utils/baseURL";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Assessments = () => {
   const router = useRouter();
@@ -134,10 +135,12 @@ const Assessments = () => {
   const updateAssessments = useCallback(
     (data: TAssessment<"post">, mode: "edit" | "delete" | "create") => {
       const old_assessments = [...fetchAssessmentsState.data];
-      console.log(
-        "Returned course",
-        fetchCoursesState.data?.find((course) => course._id === data.subject)
-      );
+      // console.log("Assesment data", data);
+      // console.log("Fetched courses", fetchCoursesState.data);
+      // console.log(
+      //   "Returned course",
+      //   fetchCoursesState.data?.find((course) => course._id === data.subject)
+      // );
       const assessmentData: TAssessment<"get"> = {
         ...data,
         academicWeek: fetchAcademicWeekState.data?.find(
@@ -210,24 +213,9 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const response = await fetch(`${baseUrl}/assessment/type`, {
-        credentials: "include",
-      });
+      const response = await axiosInstance.get(`/assessment/type`);
 
-      if (!response.ok) {
-        // Display error state
-        setFetchAssessmentTypesState((prev) => ({
-          ...prev,
-          loading: false,
-          error: {
-            message: "Failed to load assessments.",
-            status: 500,
-            state: true,
-          },
-        }));
-      }
-
-      const data = await response.json();
+      const { data } = response;
       // Display data
       setFetchAssessmentTypesState((prev) => ({
         data: data?.data,
@@ -263,24 +251,9 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const response = await fetch(`${baseUrl}/academic-weeks`, {
-        credentials: "include",
-      });
+      const response = await axiosInstance.get(`/academic-weeks`);
 
-      if (!response.ok) {
-        // Display error state
-        setFetchAcademicWeekState((prev) => ({
-          ...prev,
-          loading: false,
-          error: {
-            message: "Failed to load academic weeks.",
-            status: 500,
-            state: true,
-          },
-        }));
-      }
-
-      const data = await response.json();
+      const { data } = response;
       // Display data
       setFetchAcademicWeekState((prev) => ({
         data: data?.data,
@@ -316,24 +289,9 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const response = await fetch(`${baseUrl}/classes/all`, {
-        credentials: "include",
-      });
+      const response = await axiosInstance.get(`/classes/all`);
 
-      if (!response.ok) {
-        // Display error state
-        setFetchClassesState((prev) => ({
-          ...prev,
-          loading: false,
-          error: {
-            message: "Failed to load classes",
-            status: 500,
-            state: true,
-          },
-        }));
-      }
-
-      const data = await response.json();
+      const { data } = response;
       // Display data
       setFetchClassesState((prev) => ({
         data: data?.data,
@@ -369,42 +327,9 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const response = await fetch(`${baseUrl}/teacher/assessments`, {
-        credentials: "include",
-      });
+      const response = await axiosInstance.get(`/teacher/assessments`);
 
-      if (!response.ok) {
-        // const errorData = await response.json();
-        if (
-          // response.status === "No lectures found for the provided teacher ID."
-          response.status === 404
-        ) {
-          // Display error state
-          setFetchAssessmentsState((prev) => ({
-            data: [],
-            loading: false,
-            error: {
-              message: "No assessments found for your profile.",
-              status: 404,
-              state: true,
-            },
-          }));
-        } else {
-          // Display error state
-          setFetchAssessmentsState((prev) => ({
-            ...prev,
-            loading: false,
-            error: {
-              message: "Failed to load assessments.",
-              status: 500,
-              state: true,
-            },
-          }));
-        }
-        return;
-      }
-
-      const data = await response.json();
+      const { data } = response;
       // Display data
       setFetchAssessmentsState((prev) => ({
         data: data?.data,
@@ -443,28 +368,11 @@ const Assessments = () => {
 
         delete formState._id;
 
-        const response = await fetch(`${baseUrl}/assessment`, {
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({ ...formState, }),
+        const response = await axiosInstance.post(`/assessment`, {
+          ...formState,
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          // Display error state
-          setCreateAssessmentState((prev) => ({
-            ...prev,
-            loading: false,
-            error: errorData?.data || "Failed to create assessment",
-          }));
-
-          return false;
-        }
-
-        const data = await response.json();
+        const { data } = response;
         // Display data
         setCreateAssessmentState((prev) => ({
           data: data?.data,
@@ -476,13 +384,13 @@ const Assessments = () => {
         updateAssessments(data?.data, "create");
 
         return true;
-      } catch (err) {
+      } catch (err: any) {
         console.error("ERROR CREATING ASSESSMENT", err);
         // Display error state
         setCreateAssessmentState((prev) => ({
           ...prev,
           loading: false,
-          error: "Failed to create assessment",
+          error: err?.response?.data?.message || "Failed to create assessment",
         }));
 
         return false;
@@ -510,10 +418,12 @@ const Assessments = () => {
         // Call the reusable getCourses function, passing the setClasses state updater
         const courses = await fetchCourses(filter);
 
-        if (Array.isArray(courses)) {
+        // console.log("Get courses res", courses);
+
+        if (typeof courses === "object") {
           // Set the courses state to the fetched list of courses
           setFetchCoursesState({
-            data: courses,
+            data: courses.data,
             loading: false,
             error: undefined,
           });
@@ -545,31 +455,14 @@ const Assessments = () => {
           error: undefined,
         }));
 
-        const response = await fetch(
-          `${baseUrl}/assessment/${formState._id}`,
+        const response = await axiosInstance.put(
+          `/assessment/${formState._id}`,
           {
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            method: "PUT",
-            body: JSON.stringify(formState),
+            ...formState,
           }
         );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          // Display error state
-          setCreateAssessmentState((prev) => ({
-            ...prev,
-            loading: false,
-            error: errorData?.data || "Failed to update assessment",
-          }));
-
-          return false;
-        }
-
-        const data = await response.json();
+        const { data } = response;
         // Display data
         setCreateAssessmentState((prev) => ({
           data: data?.data,
@@ -581,12 +474,12 @@ const Assessments = () => {
         updateAssessments(formState, "edit");
 
         return true;
-      } catch (err) {
+      } catch (err: any) {
         // Display error state
         setCreateAssessmentState((prev) => ({
           ...prev,
           loading: false,
-          error: "Failed to update assessment",
+          error: err?.response?.data?.message || "Failed to update assessment",
         }));
 
         return false;
@@ -611,30 +504,11 @@ const Assessments = () => {
           error: undefined,
         }));
 
-        const response = await fetch(
-          `${baseUrl}/assessments/${formState._id}`,
-          {
-            method: "DELETE",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+        const response = await axiosInstance.delete(
+          `/assessments/${formState._id}`
         );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          // Display error state
-          setCreateAssessmentState((prev) => ({
-            ...prev,
-            loading: false,
-            error: errorData?.data || "Failed to delete class",
-          }));
-
-          return false;
-        }
-
-        const data = await response.json();
+        const { data } = response;
         // Display data
         setCreateAssessmentState((prev) => ({
           data: data?.data,
@@ -646,12 +520,12 @@ const Assessments = () => {
         updateAssessments(formState, "delete");
 
         return true;
-      } catch (err) {
+      } catch (err: any) {
         // Display error state
         setCreateAssessmentState((prev) => ({
           ...prev,
           loading: false,
-          error: "Failed to delete class",
+          error: err?.response?.data?.message || "Failed to delete class",
         }));
 
         return false;
@@ -682,7 +556,7 @@ const Assessments = () => {
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode='create'
+        mode="create"
         handleModalClose={toogleModalCreate}
         modalOpen={openModalCreate}
         handleAction={createAssessment}
@@ -719,7 +593,7 @@ const Assessments = () => {
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode='edit'
+        mode="edit"
         handleModalClose={toogleModalEdit}
         modalOpen={openModalEdit}
         handleAction={editAssessment}
@@ -754,27 +628,27 @@ const Assessments = () => {
         }
       />
       <TeachersWrapper
-        title='Assessments'
-        metaTitle='Olive Groove ~ Assessments'
+        title="Assessments"
+        metaTitle="Olive Groove ~ Assessments"
       >
-        <div className='space-y-5 h-full'>
+        <div className="space-y-5 h-full">
           <>
-            <div className='flex flex-row items-center justify-between gap-4'>
-              <div className='flex flex-col'>
-                <span className='text-lg font-medium text-dark font-roboto'>
+            <div className="flex flex-row items-center justify-between gap-4">
+              <div className="flex flex-col">
+                <span className="text-lg font-medium text-dark font-roboto">
                   Explore your available assessments.
                 </span>
-                <span className='text-md text-subtext font-roboto'>
+                <span className="text-md text-subtext font-roboto">
                   Manage, edit and create assessments.
                 </span>
               </div>
-              <Button size='xs' width='fit' onClick={toogleModalCreate}>
+              <Button size="xs" width="fit" onClick={toogleModalCreate}>
                 <span>Create Assessment</span>
               </Button>
             </div>
 
             {fetchAssessmentsState.loading ? (
-              <div className='h-full w-full'>
+              <div className="h-full w-full">
                 <Loader />
               </div>
             ) : fetchAssessmentsState.error ? (
@@ -788,22 +662,22 @@ const Assessments = () => {
               </>
             ) : (
               <>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6'>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
                   {fetchAssessmentsState.data.map((assessment, index) => (
-                    <div key={index} className='mt-4 w-full space-y-2'>
+                    <div key={index} className="mt-4 w-full space-y-2">
                       <TeacherCard
                         academicWeekDate={
                           (assessment.academicWeek as TAcademicWeek).weekNumber
                         }
                         key={index}
-                        type='assessment'
+                        type="assessment"
                         teacher={assessment.teacher}
                         assessmentType={
                           (assessment.type as TAssessmentType).name
                         }
                         timeline={assessment.timeline}
                         assessmentClass={(assessment.class as TClass).name}
-                        subject={(assessment.subject as TCourse).title}
+                        subject={(assessment.subject as TCourse)?.title || ""}
                         actionClick={() =>
                           toogleModalEdit({
                             ...assessment,

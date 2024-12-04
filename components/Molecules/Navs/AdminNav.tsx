@@ -27,7 +27,7 @@ const AdminNav: React.FC<AdminNavType> = ({
   toggleSidenav,
 }) => {
   const [profileImage, setProfileImage] = useState<string | StaticImageData>(
-    dummyImage
+    dummyImage.src
   );
   const { user } = useAuth();
 
@@ -38,38 +38,29 @@ const AdminNav: React.FC<AdminNavType> = ({
       if (userRole === 'Student') {
         try {
           const response = await axiosInstance.get(`${baseUrl}/student`);
+
           setProfileImage(response.data.profileImage);
           console.log('show me response', response);
         } catch (err) {
-          setProfileImage(dummyImage);
+          setProfileImage(dummyImage.src);
         }
       }
       if (userRole === 'Teacher') {
         try {
-          const response = await fetch(`${baseUrl}/teachers/${userId}`);
-          if (!response.ok) {
-            //insert a fallback image;
-            //for now set it to an empty string
-            setProfileImage(dummyImage);
-          }
-          const json = await response.json();
+          const response = await axiosInstance.get(`/teacher`);
+          const json = response.data;
           setProfileImage(json.profileImage);
         } catch (err) {
-          setProfileImage(dummyImage);
+          setProfileImage(dummyImage.src);
         }
       }
       if (userRole === 'Admin') {
         try {
-          const response = await fetch(`${baseUrl}/admins/${userId}`);
-          if (!response.ok) {
-            //insert a fallback image;
-            //for now set it to an empty string
-            setProfileImage(dummyImage);
-          }
-          const json = await response.json();
+          const response = await axiosInstance.get(`/admin`);
+          const json = response.data;
           setProfileImage(json.profileImage);
         } catch (err) {
-          setProfileImage(dummyImage);
+          setProfileImage(dummyImage.src);
         }
       }
     }
