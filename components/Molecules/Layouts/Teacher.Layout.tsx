@@ -73,6 +73,7 @@ const TeachersWrapper = ({
         </div>
 
         <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-16 overflow-x-hidden'>
+
           <div
             className={`${
               active ? 'w-0 lg:w-[15rem]' : 'w-0 lg:w-[98px]'
