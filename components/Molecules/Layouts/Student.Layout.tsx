@@ -35,7 +35,7 @@ const StudentWrapper = ({
   };
 
   return (
-    <div className='w-full h-full'>
+    <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
       <CustomCursor />
 
       <Meta title={metaTitle || 'Dashboard'} description={description} />
@@ -48,7 +48,7 @@ const StudentWrapper = ({
       />
 
       <aside
-        className={`fixed left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
+        className={`absolute left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
       >
@@ -58,7 +58,7 @@ const StudentWrapper = ({
         <div
           className={`${
             active ? '' : ''
-          } fixed right-0 top-0 w-full flex z-30 lg:z-20`}
+          } absolute right-0 top-0 w-full flex z-30 lg:z-20`}
         >
           <div
             className={`${
@@ -69,7 +69,7 @@ const StudentWrapper = ({
             <AdminNav toggleSidenav={toggleSidenav} title={title} />
           </nav>
         </div>
-        <main className='w-full h-full flex mt-20'>
+        <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
           <div
             className={`${
               active ? 'w-0 lg:w-[15rem]' : 'w-0 lg:w-[98px]'
