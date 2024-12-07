@@ -21,11 +21,12 @@ import MobileSideBar from "@/components/Atoms/Course/CourseMobileSideBar";
 import { TopicContextProvider } from "@/contexts/TopicContext";
 import axiosInstance from "@/components/utils/axiosInstance";
 import ServerError from "@/components/Atoms/ServerError";
-import useAjaxRequest from "use-ajax-request";
+import Cookies from "js-cookie";
 
 const Subject: FC = () => {
   const router = useRouter();
   const { subjectid } = useMemo(() => router.query, [router.query]);
+  const [userRole, setUserRole] = useState<string>();
   const [showSideBar, setShowSideBar] = useState(false);
   const [classes, setClasses] = useState<TFetchState<TClass[] | undefined>>({
     data: [],
@@ -228,6 +229,11 @@ const Subject: FC = () => {
     getClasses();
   }, [getCourse, subjectid]);
 
+  useEffect(() => {
+    const role = Cookies.get("role");
+    setUserRole(role?.toLocaleLowerCase());
+  }, []);
+
   return (
     <>
       {modal.open && (
@@ -251,8 +257,12 @@ const Subject: FC = () => {
       )}
 
       <TopicContextProvider course={course.data}>
-        <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
-          <div className="space-y-5 h-full">
+        <TeachersWrapper
+          title="Subjects"
+          metaTitle="Olive Groove ~ Subjects"
+          className="relative"
+        >
+          <div className="space-y-5 h-full relative">
             {course.loading ? (
               <Loader />
             ) : course.error ? (
@@ -274,7 +284,17 @@ const Subject: FC = () => {
                     {/* Previous page button */}
                     <div
                       className="w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full "
-                      onClick={() => router.back()}
+                      onClick={() =>
+                        router.push(
+                          `/${
+                            userRole === "teacher"
+                              ? "teachers"
+                              : userRole === "student"
+                              ? "students"
+                              : "admin"
+                          }/subjects`
+                        )
+                      }
                     >
                       <i className="fas fa-arrow-left text-greyed hover:text-dark"></i>
                     </div>
@@ -304,7 +324,8 @@ const Subject: FC = () => {
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-stretch gap-4 relative">
+                {/* <div className="flex items-stretch gap-4 relative"> */}
+                <div className="flex items-stretch gap-4">
                   {/* SIDEBAR */}
                   <div className="flex-none hidden xl:block">
                     <SideBar courseId={(subjectid as string) || ""} />

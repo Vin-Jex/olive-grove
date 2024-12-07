@@ -34,15 +34,18 @@ const Add: FC<{
         const entries = Object.entries(formState);
 
         for (const [key, value] of entries) {
-          if (key === "topicVideo" && typeof formState[key] === "string")
+          if (
+            key === "topicVideo" &&
+            (typeof formState[key] === "string" || !formState[key])
+          )
             continue;
 
           req_body.append(key, value);
         }
 
-        if (!formState.topicVideo) {
-          req_body.append("topicVideo", undefined as any);
-        }
+        // if (!formState.topicVideo) {
+        //   req_body.append("topicVideo", undefined as any);
+        // }
       }
 
       // * Make an API request to create this item

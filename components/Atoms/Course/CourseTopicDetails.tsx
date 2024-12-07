@@ -1,12 +1,19 @@
 import Tab, { TTabBody } from "@/components/Molecules/Tab/Tab";
 import { VideoProps } from "next-video";
-import { TCourse } from "@/components/utils/types";
+import {
+  TChapter,
+  TCourse,
+  TLesson,
+  TSection,
+  TSubSection,
+} from "@/components/utils/types";
 import {
   FC,
   ForwardRefExoticComponent,
   RefAttributes,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -20,16 +27,59 @@ import { baseUrl } from "@/components/utils/baseURL";
 import Cookies from "js-cookie";
 import Button from "../Button";
 import { capitalize } from "@/components/utils/utils";
+import { usePathname } from "next/navigation";
+import CourseQA from "./CourseQA";
 
-const demoNotes = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus lacus, dignissim commodo dictum aliquam, maximus nec mauris. Phasellus sed nisl dignissim erat eleifend congue. Nullam ultricies est a tempus varius. Phasellus vitae massa rutrum, elementum urna sed, volutpat urna. Nam at nulla dui. Suspendisse aliquet metus purus, eget ultrices tellus pharetra eget. Proin dictum urna non aliquet pellentesque. Nunc dapibus gravida justo eu finibus.
-<br />
-<br />
-Duis dapibus purus tristique eros rutrum placerat. Sed et congue augue. Vivamus hendrerit quam vel justo rutrum hendrerit sed a enim. Curabitur a placerat mauris, eu efficitur turpis. Suspendisse tempus, dolor et imperdiet imperdiet, neque nibh mollis dolor, sed laoreet ex lacus id dolor. Aliquam pellentesque nunc ac feugiat tempus. Nulla blandit magna non nulla luctus sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos`;
+// Function to collect IDs of lessons, sections, and subsections in a linear array
+function collectLinearContentIds(data: TCourse): string[] {
+  const ids: string[] = [];
+
+  // Helper function to traverse chapters, lessons, sections, and subsections
+  function traverseItem(item: TChapter) {
+    if (item.lessons) {
+      // Traverse lessons
+      item.lessons.forEach((lesson: TLesson) => {
+        lesson._id && ids.push(lesson._id); // Add lesson ID
+        lesson.sections.forEach((section: TSection) => {
+          section._id && ids.push(section._id); // Add section ID
+          section.subsections.forEach((subsection: TSubSection) => {
+            subsection._id && ids.push(subsection._id); // Add subsection ID
+          });
+        });
+      });
+    }
+  }
+
+  // Traverse all data items (chapters)
+
+  data?.chapters?.forEach((chapter: TChapter) => {
+    traverseItem(chapter);
+  }) ?? [];
+
+  return ids;
+}
+
+function getPreviousId(currentId: string, linearIds: string[]): string | null {
+  const currentIndex = linearIds.indexOf(currentId);
+  if (currentIndex > 0) {
+    return linearIds[currentIndex - 1]; // Return the ID of the previous item
+  }
+  return null; // Return null if there's no previous item
+}
+
+function getNextId(currentId: string, linearIds: string[]): string | null {
+  const currentIndex = linearIds.indexOf(currentId);
+  if (currentIndex > 0) {
+    return linearIds[currentIndex + 1]; // Return the ID of the previous item
+  }
+  return null; // Return null if there's no previous item
+}
 
 export const TopicDetails: FC<{
   course: TCourse;
 }> = ({ course }) => {
   const router = useRouter();
+  const pathName = usePathname();
   const { topicDetails } = useTopicContext();
   const videoRef =
     useRef<ForwardRefExoticComponent<VideoProps & RefAttributes<unknown>>>(
@@ -47,12 +97,37 @@ export const TopicDetails: FC<{
   const [checkedState, setCheckedState] = useState(
     topicDetails.topic?.viewed || false
   );
+  const [contentIds, setContentIds] = useState<string[]>([]);
 
   const displayCompleted = () => {
     setTopicIsCompleted(true);
 
     setTimeout(() => setTopicIsCompleted(false), 6000);
   };
+
+  const getContentIds = useMemo(() => collectLinearContentIds, []);
+
+  async function fetchNavigate() {
+    const contentIds = getContentIds(course!);
+    setContentIds(contentIds);
+  }
+
+  function handlePreviousTab() {
+    if (topicDetails.topic) {
+      const previousId = getPreviousId(
+        topicDetails.topic?._id || "",
+        contentIds
+      );
+      router.push(`${pathName}?topic=${previousId}`);
+    }
+  }
+
+  function handleNextTab() {
+    if (topicDetails.topic) {
+      const previousId = getNextId(topicDetails.topic?._id || "", contentIds);
+      router.push(`${pathName}?topic=${previousId}`);
+    }
+  }
 
   /**
    * Function responsible for marking the video as completed
@@ -143,6 +218,7 @@ export const TopicDetails: FC<{
     setVideoCompletedIsTriggered(topicDetails.topic?.viewed || false);
     setNoteCompletedIsTriggered(topicDetails.topic?.viewed || false);
     setCheckedState(topicDetails.topic?.viewed || false);
+    fetchNavigate();
     console.log(
       "NEW TOPIC",
       topicDetails.topic?.title,
@@ -177,6 +253,7 @@ export const TopicDetails: FC<{
     markTopicAsRead,
   ]);
 
+  // * The list of the tab content
   const tabBody: TTabBody[] = [
     ...(topicDetails?.topic?.topicVideo || topicDetails?.topic?.youtubeVideo
       ? [
@@ -278,6 +355,24 @@ export const TopicDetails: FC<{
               }
             </div>
           )}
+          {/* Previous and next button */}
+          <div className="flex w-full justify-between py-5">
+            <Button
+              onClick={handlePreviousTab}
+              size="md"
+              className="text-primary !border-primary border"
+              color="outline"
+              width="fit"
+            >
+              Previous Topic
+            </Button>
+
+            <Button onClick={handleNextTab} size="md" color="blue" width="fit">
+              Next Topic
+            </Button>
+          </div>
+          {/* QA session */}
+          <CourseQA />
         </div>
       ) : (
         <>

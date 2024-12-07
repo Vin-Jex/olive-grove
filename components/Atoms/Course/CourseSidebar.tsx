@@ -14,13 +14,13 @@ const SideBar: FC<{
   const { user } = useAuth();
 
   return (
-    <div className='gap-4 flex w-80 flex-col max-h-[80vh] overflow-y-auto rounded-sm px-2 '>
+    <div className="gap-4 flex w-80 flex-col max-h-[80vh] overflow-y-auto rounded-sm px-2 sticky top-4 left-4">
       {course?.chapters?.map((chapter) => (
         <>
           <Chapter chapter={chapter} key={chapter._id} />
         </>
       ))}
-      {user?.role === "Teacher" && <Add type='chapter' parentId={courseId} />}
+      {user?.role === "Teacher" && <Add type="chapter" parentId={courseId} />}
     </div>
   );
 };
