@@ -84,6 +84,7 @@ function getPreviousId(
   linearIds: TContentId
 ): string | null {
   const currentIndex = currentIdIndex(linearIds, currentId);
+
   if (currentIndex > 0) {
     return linearIds[currentIndex - 1].id; // Return the ID of the previous item
   }
@@ -92,6 +93,7 @@ function getPreviousId(
 
 function getNextId(currentId: string, linearIds: TContentId): string | null {
   const currentIndex = currentIdIndex(linearIds, currentId);
+
   if (currentIndex > 0) {
     return linearIds[currentIndex + 1].id; // Return the ID of the previous item
   }
@@ -103,6 +105,7 @@ const Tab: FC<{
   body: TTabBody[];
 }> = ({ slugs, body }) => {
   const [activeTab, setActiveTab] = useState(slugs[0].key);
+
   const [contentIds, setContentIds] = useState<TContentId>([]);
   const [comment, setComment] = useState('');
   const [commentError, setCommentError] = useState('');
@@ -252,7 +255,7 @@ const Tab: FC<{
   // }, [viewedSegment]);
 
   return (
-    <div className='min-[1560px]:w-[64rem] flex flex-col gap-6'>
+    <div className='w-full flex flex-col gap-6'>
       {/* TAB ACTIONS */}
       <div className='w-full flex gap-0'>
         {slugs.map((slug, i) => (
@@ -274,6 +277,7 @@ const Tab: FC<{
       {/* TAB BODY */}
       <div className='w-full'>
         {body.find((content) => content.slug === activeTab)?.content}
+
         <div className='flex w-full justify-between py-5'>
           <Button
             disabled={

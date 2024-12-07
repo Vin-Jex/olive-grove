@@ -13,6 +13,7 @@ interface AdminWrapperProps {
   title: string;
   metaTitle?: string;
   description?: string;
+  className?: string;
 }
 
 const TeachersWrapper = ({
@@ -20,6 +21,7 @@ const TeachersWrapper = ({
   metaTitle,
   description,
   children,
+  className,
 }: AdminWrapperProps) => {
   const { active } = useSidebarContext();
   const [warningModal, setWarningModal] = useState(false);
@@ -69,6 +71,7 @@ const TeachersWrapper = ({
             <AdminNav toggleSidenav={toggleSidenav} title={title} />
           </nav>
         </div>
+
         <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-16 overflow-x-hidden'>
           <div
             className={`${

@@ -51,14 +51,20 @@ export const editItem = async (
       const entries = Object.entries(reqData);
 
       for (const [key, value] of entries) {
-        if (key === "topicVideo" && typeof reqData[key] === "string") continue;
+        if (!(reqData as any)[key]) continue;
+
+        if (
+          key === "topicVideo" &&
+          (typeof reqData[key] === "string" || !reqData[key])
+        )
+          continue;
 
         req_body.append(key, value);
       }
 
-      if (!reqData.topicVideo) {
-        req_body.append("topicVideo", "");
-      }
+      // if (!reqData.topicVideo) {
+      //   req_body.append("topicVideo", "");
+      // }
     }
 
     // * Make an API request to create this item
@@ -117,6 +123,8 @@ export const editItem = async (
       payload: {
         title: responseData.data?.title,
         description: responseData.data?.description,
+        topicNote: responseData.data?.topicNote,
+        topicVideo: responseData.data?.topicVideo,
         _id: responseData.data?._id,
         parentId:
           method === "PUT"

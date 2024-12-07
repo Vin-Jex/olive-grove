@@ -32,6 +32,7 @@ import { usePathname } from "next/navigation";
 import CourseQA from "./CourseQA";
 import YouTubeEmbed from "./CourseTopicYouTubeVideo";
 
+
 // Function to collect IDs of lessons, sections, and subsections in a linear array
 function collectLinearContentIds(data: TCourse): string[] {
   const ids: string[] = [];
@@ -379,6 +380,7 @@ export const TopicDetails: FC<{
               onClick={handlePreviousTab}
               size="xs"
               // className="text-primary !border-primary border"
+
               color="outline"
               width="fit"
             >
@@ -386,6 +388,7 @@ export const TopicDetails: FC<{
             </Button>
 
             <Button onClick={handleNextTab} size="xs" color="blue" width="fit">
+
               Next Topic
             </Button>
           </div>
