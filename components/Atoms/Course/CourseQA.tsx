@@ -108,6 +108,7 @@ const CourseQA = () => {
               src={dummyImage.src}
               width={40}
               height={40}
+              className="rounded-full"
               alt="student profile"
             />
           </div>
