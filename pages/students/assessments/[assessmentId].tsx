@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import img from "@/public/image/tutor.png";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import withAuth from "@/components/Molecules/WithAuth";
 
 const AssessmentDetailsPage = () => {
   const router = useRouter();
+  const [startExercise, setStartExercise] = useState(false);
   const { assessmentId } = router.query;
 
   return (
@@ -16,7 +17,7 @@ const AssessmentDetailsPage = () => {
       title={`Assessment`}
       metaTitle={`Olive Groove ~ ${assessmentId} assessment`}
     >
-      <div className='p-6 sm:p-8 md:p-12 space-y-5'>
+      {/* <div className='p-6 sm:p-8 md:p-12 space-y-5'>
         <div className='flex flex-col'>
           <span className='text-base sm:text-lg font-medium text-dark font-roboto'>
             Access your Assessments
@@ -76,9 +77,74 @@ const AssessmentDetailsPage = () => {
             </div>
           </div>
         </div>
+      </div> */}
+
+      <div className="mx-11 max-w-[60vw]">
+        <div className=" py-4 px-6  rounded-md bg-[#32A8C4] bg-opacity-10 w-full">
+          <h2 className="text-3xl py-5">Physics Class Exercise</h2>
+          <div className="flex justify-between">
+            <span>
+              <strong>Topic:</strong> Fundamentals of Motion
+            </span>
+            <span>
+              <strong>Due:</strong> 20-11-2024, 9:30AM
+            </span>
+          </div>
+        </div>
+        {!startExercise ? (
+          <div className=" px-5">
+            <p className="py-6">
+              This midterm test is a multiple-choice type of exam made up of 5
+              questions with options. Ensure to attempt all questions and finish
+              before the time is up. You have 25minutes.
+            </p>
+            <p className="py-6">Click on the button below to begin.</p>
+            <Button
+              onClick={() => setStartExercise((c) => !c)}
+              color="blue"
+              size="md"
+            >
+              Start Exercise
+            </Button>
+          </div>
+        ) : (
+          <div className="py-5 space-y-10">
+            <QuestionCard />
+            <QuestionCard />
+          </div>
+        )}
       </div>
     </StudentWrapper>
   );
 };
+
+function QuestionCard() {
+  return (
+    <div className="space-y-3">
+      <strong>1. What is Displacement</strong>
+      <div className="space-y-3">
+        <input type="radio" id="html" name="fav_language" value="HTML" />
+        <label htmlFor="html" className="pl-3">
+          HTML
+        </label>
+        <br />
+        <input type="radio" id="css" name="fav_language" value="CSS" />
+        <label htmlFor="css" className="pl-3">
+          CSS
+        </label>
+        <br />
+        <input
+          type="radio"
+          id="javascript"
+          name="fav_language"
+          value="JavaScript"
+        />
+        <label htmlFor="javascript" className="pl-3">
+          JavaScript
+        </label>
+      </div>
+    </div>
+  );
+}
 
 export default withAuth("Student", AssessmentDetailsPage);

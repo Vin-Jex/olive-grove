@@ -1,22 +1,23 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import logo from "@/public/image/logo.png";
-import AuthBg1 from "@/public/image/auth__bg.png";
-import AuthBg2 from "@/public/image/auth_bg.png";
-import AuthBg3 from "@/public/image/Frame 5.png";
-import Input from "@/components/Atoms/Input";
-import Button from "@/components/Atoms/Button";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import Image from 'next/image';
+import Link from 'next/link';
+import logo from '@/public/image/logo.png';
+import AuthBg1 from '@/public/image/auth__bg.png';
+import AuthBg2 from '@/public/image/auth_bg.png';
+import AuthBg3 from '@/public/image/Frame 5.png';
+import Input from '@/components/Atoms/Input';
+import Button from '@/components/Atoms/Button';
 import {
   Info,
   VisibilityOffOutlined,
   VisibilityOutlined,
-} from "@mui/icons-material";
-import { useRouter } from "next/router";
-import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
-import CustomCursor from "@/components/Molecules/CustomCursor";
-import { CircularProgress } from "@mui/material";
+} from '@mui/icons-material';
+import { useRouter } from 'next/router';
+import CustomCursor from '@/components/Molecules/CustomCursor';
+import { CircularProgress } from '@mui/material';
+import { baseUrl } from '@/components/utils/baseURL';
+import exp from 'constants';
 
 export type loginType = {
   username: string;
@@ -25,24 +26,23 @@ export type loginType = {
 
 const StudentLogin = () => {
   const [formState, setFormState] = useState<loginType>({
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
   const [formError, setFormError] = useState({
-    internetError: "",
-    usernameError: "",
-    passwordError: "",
-    successError: "",
-    generalError: "",
+    internetError: '',
+    usernameError: '',
+    passwordError: '',
+    successError: '',
+    generalError: '',
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(true);
-  const maxAge = 1 * 24 * 60 * 60;
 
   useEffect(() => {
-    if (formState.username === "" || formState.password === "")
+    if (formState.username === '' || formState.password === '')
       setIsDisabled(true);
     else setIsDisabled(false);
   }, [formState.password, formState.username]);
@@ -59,10 +59,10 @@ const StudentLogin = () => {
   const resetForm = () => {
     setFormState((prevState) => ({
       ...prevState,
-      username: "",
-      password: "",
+      username: '',
+      password: '',
     }));
-    if (formState.username === "" || formState.password === "")
+    if (formState.username === '' || formState.password === '')
       setIsDisabled(true);
     else setIsDisabled(false);
   };
@@ -72,7 +72,7 @@ const StudentLogin = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       return;
     }
@@ -81,7 +81,7 @@ const StudentLogin = () => {
     if (!formState.username.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        usernameError: "Username field cannot be empty",
+        usernameError: 'Username field cannot be empty',
       }));
       return;
     }
@@ -89,7 +89,7 @@ const StudentLogin = () => {
     if (!formState.password.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        passwordError: "Password field cannot be empty",
+        passwordError: 'Password field cannot be empty',
       }));
       return;
     }
@@ -115,7 +115,7 @@ const StudentLogin = () => {
       }));
     }
 
-    if (formState.username === "" || formState.password === "")
+    if (formState.username === '' || formState.password === '')
       setIsDisabled(true);
     else setIsDisabled(false);
 
@@ -125,11 +125,11 @@ const StudentLogin = () => {
   const clearError = () => {
     setTimeout(() => {
       setFormError({
-        internetError: "",
-        passwordError: "",
-        successError: "",
-        generalError: "",
-        usernameError: "",
+        internetError: '',
+        passwordError: '',
+        successError: '',
+        generalError: '',
+        usernameError: '',
       });
     }, 7000);
   };
@@ -144,7 +144,7 @@ const StudentLogin = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       setIsLoading(false);
       clearError();
@@ -152,13 +152,14 @@ const StudentLogin = () => {
     }
 
     try {
-      if (formState.username === "" || formState.password === "")
+      if (formState.username === '' || formState.password === '')
         setIsDisabled(true);
       else setIsDisabled(false);
       const response = await fetch(`${baseUrl}/student-login`, {
-        method: "POST",
+        method: 'POST',
+        // credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           username: formState.username,
@@ -166,41 +167,41 @@ const StudentLogin = () => {
         }),
       });
 
-      console.error("Response Status: ", response.status);
-
       if (!response.ok) {
         const data = await response.json();
+        console.log(data, 'Logoin data');
         handleErrors(data);
         return;
       }
+      // const json = await response.json();
+      // console.log(json, 'this is the login json');
+      const expiryDate = new Date().setDate(new Date().getDate() + 1);
 
-      const data = await response.json();
+      const {
+        details: { role, studentID, _id },
+        token: { accessToken, refreshToken },
+      } = await response.json();
+      Cookies.set('role', role, { expires: expiryDate });
+      Cookies.set('studentID', studentID), { expires: expiryDate };
+      Cookies.set('userId', _id, {
+        expires: expiryDate,
+      });
+      // Cookies.set('accessToken', accessToken);
+      // Cookies.set('refreshToken', refreshToken);
       setFormError((prevState) => ({
         ...prevState,
-        successError: "Student successfully logged in.",
+        successError: 'Student successfully logged in.',
       }));
-      Cookies.set("jwt", data?.token, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
-      Cookies.set("userId", data?.id, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
-      Cookies.set("role", data?.role, {
-        expires: maxAge * 1000,
-        secure: true,
-      });
 
       // Reset the form after successful submission
       resetForm();
 
-      // Wait for 5 seconds before redirecting to login
+      // Wait for 5 miliseconds before redirecting to login
       setTimeout(() => {
-        router.push("/");
+        router.push('/');
       }, 500);
     } catch (error) {
-      console.log("Status: ", error);
+      console.log('Status: ', error);
     } finally {
       setIsDisabled(false);
       setIsLoading(false);
@@ -210,7 +211,7 @@ const StudentLogin = () => {
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === "Enter") {
+    if (isDisabled && event.key === 'Enter') {
       handleSignIn(event);
     }
   };
@@ -258,27 +259,27 @@ const StudentLogin = () => {
         {
           formError.usernameError ? (
             <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: "1.1rem" }} />
+              <Info sx={{ fontSize: '1.1rem' }} />
               {formError.usernameError}
             </span>
           ) : formError.passwordError ? (
             <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: "1.1rem" }} />
+              <Info sx={{ fontSize: '1.1rem' }} />
               {formError.passwordError}
             </span>
           ) : formError.internetError ? (
             <span className='text-yellow-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               {formError.internetError}
             </span>
           ) : formError.successError ? (
             <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               {formError.successError}
             </span>
           ) : formError.generalError ? (
             <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               <span>{formError.generalError}</span>
             </span>
           ) : null // Return null if no errors exist
@@ -319,7 +320,7 @@ const StudentLogin = () => {
             {isLoading ? (
               <CircularProgress size={20} color='inherit' />
             ) : (
-              "Sign In"
+              'Sign In'
             )}
           </Button>
           <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>

@@ -5,15 +5,15 @@ import { useSidebarContext } from "@/contexts/SidebarContext";
 import Meta from "@/components/Atoms/Meta";
 import WarningModal from "../Modal/WarningModal";
 import { useRouter } from "next/router";
-import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
 import CustomCursor from "../CustomCursor";
+import { handleLogout } from "./Admin.Layout";
 
 interface AdminWrapperProps {
   children: ReactNode;
   title: string;
   metaTitle?: string;
   description?: string;
+  className?: string;
 }
 
 const TeachersWrapper = ({
@@ -21,6 +21,7 @@ const TeachersWrapper = ({
   metaTitle,
   description,
   children,
+  className,
 }: AdminWrapperProps) => {
   const { active } = useSidebarContext();
   const [warningModal, setWarningModal] = useState(false);
@@ -35,39 +36,15 @@ const TeachersWrapper = ({
     setWarningModal(!warningModal);
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/teacher-logout`, {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        return;
-      }
-
-      Cookies.remove("jwt");
-      Cookies.remove("role");
-      Cookies.remove("userId");
-
-      // Wait for 5 seconds before redirecting to login
-      setTimeout(() => {
-        router.push("/auth/path/teachers/login/");
-      }, 500);
-    } catch (error) {
-      console.log("Status: ", error);
-    }
-  };
-
   return (
-    <div className='w-full h-full'>
+    <div className={`w-full h-full ${className || ""}`}>
       <CustomCursor />
 
       <Meta title={metaTitle || "Dashboard"} description={description} />
       <WarningModal
         handleModalClose={handleWarning}
         handleConfirm={() => {
-          handleLogout();
+          handleLogout().then(() => router.push("/auth/path/teachers/login/"));
         }}
         modalOpen={warningModal}
       />
@@ -79,7 +56,7 @@ const TeachersWrapper = ({
       >
         <SideNav handleOpen={handleWarning} />
       </aside>
-      <div className='w-full'>
+      <div className="w-full">
         <div
           className={`${
             active ? "" : ""
@@ -94,13 +71,13 @@ const TeachersWrapper = ({
             <AdminNav toggleSidenav={toggleSidenav} title={title} />
           </nav>
         </div>
-        <main className='w-full h-full flex mt-16 overflow-x-hidden'>
+        <main className="w-full h-full flex mt-16 overflow-x-hidden">
           <div
             className={`${
               active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
-          <div className='h-[93vh] box-border w-full z-10 px-4 py-4 lg:py-6'>
+          <div className="h-[93vh] box-border w-full z-10 px-4 py-4 lg:py-6">
             {children}
           </div>
         </main>

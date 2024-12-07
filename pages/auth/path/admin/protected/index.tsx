@@ -2,7 +2,6 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/public/image/logo.png";
-import Cookies from "js-cookie";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
 import Input from "@/components/Atoms/Input";
@@ -12,8 +11,8 @@ import {
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
-import { baseUrl } from "@/components/utils/baseURL";
 import CustomCursor from "@/components/Molecules/CustomCursor";
+import { baseUrl } from "@/components/utils/baseURL";
 
 export type loginType = {
   username: string;
@@ -34,7 +33,6 @@ const AdminAccess = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const router = useRouter();
-  const maxAge = 1 * 24 * 60 * 60;
 
   useEffect(() => {
     setIsDisabled(!formState.username || !formState.password);
@@ -127,6 +125,7 @@ const AdminAccess = () => {
     try {
       const response = await fetch(`${baseUrl}/admin-login`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formState),
       });
@@ -137,14 +136,11 @@ const AdminAccess = () => {
         return;
       }
 
-      const data = await response.json();
+      await response.json();
       setFormError((prevState) => ({
         ...prevState,
         successError: "Successfully logged in!",
       }));
-      Cookies.set("jwt", data.token, { expires: maxAge, secure: true });
-      Cookies.set("userId", data.id, { expires: maxAge, secure: true });
-      Cookies.set("role", data.role, { expires: maxAge, secure: true });
 
       resetForm();
       setTimeout(() => router.push("/"), 500);

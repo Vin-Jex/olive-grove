@@ -29,9 +29,9 @@ const SubjectCard: React.FC<SubjectProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col justify-center gap-6 ${
-        !assessments && "max-w-[25rem]"
-      } border-dark/30 rounded-xl p-6 shadow-2xl w-full`}
+      className={`flex flex-col  justify-center gap-6 ${
+        !assessments && "max-w-full"
+      } border-dark/30 rounded-xl p-6 shadow-card-2 w-full`}
     >
       <div className="flex items-center gap-3">
         <Image
@@ -83,23 +83,28 @@ const SubjectCard: React.FC<SubjectProps> = ({
 
       <div className="flex lg:flex-col lg:items-start min-[1580px]:items-center min-[1580px]:flex-row items-center gap-4">
         {!assessments && (
+          <>
+            <Link
+              className="w-fit border-primary border hover:bg-[#28a1b0] transition duration-200 ease-in-out hover:text-white rounded-md px-2 md:px-3 lg:px-4 !py-2 lg:py-3 text-sm md:text-base font-medium"
+              href={btnLink2}
+              passHref
+            >
+              {assessments ? "Submit" : "Join Lecture"}
+            </Link>
+            <Button onClick={toggleModal} className="!py-2" size="sm">
+              View {assessments ? "Assignment" : "Lecture"}
+            </Button>
+          </>
+        )}
+        {assessments && (
           <Link
-            className="w-fit border-primary border hover:bg-[#28a1b0] transition duration-200 ease-in-out hover:text-white rounded-md px-2 md:px-3 lg:px-4 !py-2 lg:py-3 text-sm md:text-base font-medium"
+            className="w-fit px-2 md:px-3 bg-[#32A8C4] rounded-md text-[#fdfdfd]  lg:px-4 py-2.5 lg:py-3 text-sm md:text-base font-medium"
             href={btnLink2}
             passHref
           >
-            {assessments ? "Submit" : "Join Lecture"}
+            View Assignment
           </Link>
         )}
-        {/* <Link
-          className="w-fit px-2 md:px-3 bg-[#32A8C4] rounded-md text-[#fdfdfd]  lg:px-4 py-2.5 lg:py-3 text-sm md:text-base font-medium"
-          href={btnLink1}
-          passHref
-        > */}
-        <Button onClick={toggleModal} className="!py-2" size="sm">
-          View {assessments ? "Assignment" : "Lecture"}
-        </Button>
-        {/* </Link> */}
       </div>
     </div>
   );

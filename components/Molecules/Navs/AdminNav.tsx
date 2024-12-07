@@ -1,5 +1,5 @@
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import { Menu, NotificationsOutlined } from "@mui/icons-material";
 import dummyImage from "@/images/dummy-img.jpg";
 import {
@@ -7,8 +7,9 @@ import {
   generateDateString,
 } from "@/components/Functions/DateFormatter";
 import Image, { StaticImageData } from "next/image";
-import Profile from "@/public/image/student4.png";
 import { baseUrl } from "@/components/utils/baseURL";
+import { useAuth } from "@/contexts/AuthContext";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 interface AdminNavType {
   title: string;
@@ -17,52 +18,54 @@ interface AdminNavType {
 
 const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
   const [profileImage, setProfileImage] = useState<string | StaticImageData>(
-    dummyImage
+    dummyImage.src
   );
+  const { user } = useAuth();
+
   useEffect(() => {
     async function fetchProfileImage() {
-      const userRole = Cookies.get("role");
-      const userId = Cookies.get("userId");
+      const userRole = user?.role;
+      const userId = user?.id;
       if (userRole === "Student") {
         try {
-          const response = await fetch(`${baseUrl}/students/${userId}`);
-          if (!response.ok) {
-            //insert a fallback image;
-            //for now set it to an empty string
-            setProfileImage(dummyImage);
-          }
-          const json = await response.json();
-          setProfileImage(json.profileImage);
+          // const response = await fetch(`${baseUrl}/student`, {
+          //   method: 'GET',
+          //   headers: {
+          //     'Content-Type': 'application/json',
+          //     Authorization: `Bearer accessToken=${Cookies.get(
+          //       'accessToken'
+          //     )};refreshToken=${Cookies.get('refreshToken')}`,
+          //   },
+          // });
+          // if (!response.ok) {
+          //   //insert a fallback image;
+          //   //for now set it to an empty string
+          //   setProfileImage(dummyImage);
+          //   return;
+          // }
+          // const json = await response.json();
+          const response = await axiosInstance.get(`/student`);
+          setProfileImage(response.data.profileImage);
         } catch (err) {
-          setProfileImage(dummyImage);
+          setProfileImage(dummyImage.src);
         }
       }
       if (userRole === "Teacher") {
         try {
-          const response = await fetch(`${baseUrl}/teachers/${userId}`);
-          if (!response.ok) {
-            //insert a fallback image;
-            //for now set it to an empty string
-            setProfileImage("");
-          }
-          const json = await response.json();
+          const response = await axiosInstance.get(`/teacher`);
+          const json = response.data;
           setProfileImage(json.profileImage);
         } catch (err) {
-          setProfileImage(dummyImage);
+          setProfileImage(dummyImage.src);
         }
       }
       if (userRole === "Admin") {
         try {
-          const response = await fetch(`${baseUrl}/admins/${userId}`);
-          if (!response.ok) {
-            //insert a fallback image;
-            //for now set it to an empty string
-            setProfileImage(dummyImage);
-          }
-          const json = await response.json();
+          const response = await axiosInstance.get(`/admin`);
+          const json = response.data;
           setProfileImage(json.profileImage);
         } catch (err) {
-          setProfileImage(dummyImage);
+          setProfileImage(dummyImage.src);
         }
       }
     }

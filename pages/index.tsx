@@ -13,13 +13,14 @@ import file from "@/public/image/file.png";
 import favorites from "@/public/image/favorites.png";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
-import Cookies from "js-cookie";
 import { motion } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Home: React.FC = () => {
   const router = useRouter();
+  const { loggedIn, user } = useAuth();
 
   useEffect(() => {
     AOS.init({
@@ -62,9 +63,7 @@ const Home: React.FC = () => {
               <h5 className='text-primary text-base leading-6 font-semibold font-roboto'>
                 Explore
               </h5>
-              <motion.span
-                className='flex text-dark text-[2rem] md:text-[2.4rem] xl:text-[3rem] lg:items-stretch leading-[50px] md:leading-[58px] lg:leading-[60px] xl:leading-[67px] font-bold font-roboto w-full'
-              >
+              <motion.span className='flex text-dark text-[2rem] md:text-[2.4rem] xl:text-[3rem] lg:items-stretch leading-[50px] md:leading-[58px] lg:leading-[60px] xl:leading-[67px] font-bold font-roboto w-full'>
                 Explore a Variety of Classes on Our Platform
               </motion.span>
               <span className='text-subtext text-base md:text-base lg:text-lg font-roboto leading-7'>
@@ -251,8 +250,8 @@ const Home: React.FC = () => {
                   color='outline'
                   size='lg'
                   onClick={() => {
-                    const role = Cookies.get("role");
-                    Cookies.get("jwt")
+                    const role = user?.role;
+                    loggedIn
                       ? router.push(
                           role === "Student"
                             ? "/students/dashboard"
@@ -265,7 +264,7 @@ const Home: React.FC = () => {
                       : router.push("/auth/path");
                   }}
                 >
-                  {Cookies.get("jwt") ? "Dashboard" : "Login"}
+                  {loggedIn ? "Dashboard" : "Login"}
                 </Button>
               </motion.div>
             </div>

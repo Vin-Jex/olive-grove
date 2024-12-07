@@ -119,6 +119,10 @@ export default function CourseModal({
     disabled: requestState?.loading || false,
   };
 
+  useEffect(() => {
+    setPreviewImage((formState as TCourse).courseCover as string);
+  }, []);
+
   return (
     <div>
       <Modal
@@ -148,6 +152,7 @@ export default function CourseModal({
               required
               placeholder="Select class"
               onChange={handleChange}
+              {...(formState.classId ? { value: formState.classId } : {})}
             />
           )}
           <Input

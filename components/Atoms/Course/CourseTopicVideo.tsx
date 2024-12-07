@@ -12,7 +12,7 @@ const TopicVideo = forwardRef<
   { url?: string; markVideoCompleted: () => void }
 >(({ url, markVideoCompleted }, ref) => {
   return (
-    <div className="rounded-2xl overflow-hidden max-w-screen-lg">
+    <div className="rounded-2xl overflow-hidden w-full">
       <Video
         ref={ref}
         src={
@@ -22,7 +22,7 @@ const TopicVideo = forwardRef<
         accentColor="#02E7F5"
         primaryColor="#FFFFFF"
         controls={true}
-        className="max-w-screen-lg video-player"
+        className="max-h-[550px] video-player"
         onTimeUpdate={markVideoCompleted}
         autoPlay
       />

@@ -17,6 +17,7 @@ type courseReducerActionTypes =
   | "FETCHING_COURSE"
   | "ERROR_FETCHING_COURSE"
   | "ADD_COURSE"
+  | "EDIT_COURSE"
   | "CREATE_CHAPTER"
   | "CREATE_LESSON"
   | "CREATE_TOPIC"
@@ -91,6 +92,23 @@ const courseReducer: Reducer<
       loading: false,
       error: action.payload,
     };
+  }
+
+  if (action.type === "EDIT_COURSE") {
+    if (state.data) {
+      const newState = { ...state.data };
+      newState.title = action.payload.title || "";
+      newState.description = action.payload.description || "";
+      newState.classId = action.payload.classId || "";
+      action.payload.courseCover &&
+        (newState.courseCover = action.payload.courseCover);
+
+      return {
+        data: newState,
+        loading: false,
+        error: undefined,
+      };
+    }
   }
 
   if (action.type === "CREATE_CHAPTER") {
