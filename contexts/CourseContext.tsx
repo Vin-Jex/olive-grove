@@ -14,7 +14,6 @@ import {
 } from 'react';
 
 type courseReducerActionTypes =
-<<<<<<< HEAD
   | 'FETCHING_COURSE'
   | 'ERROR_FETCHING_COURSE'
   | 'ADD_COURSE'
@@ -27,21 +26,7 @@ type courseReducerActionTypes =
   | 'DELETE_CHAPTER'
   | 'DELETE_LESSON'
   | 'DELETE_TOPIC';
-=======
-  | "FETCHING_COURSE"
-  | "ERROR_FETCHING_COURSE"
-  | "ADD_COURSE"
-  | "EDIT_COURSE"
-  | "CREATE_CHAPTER"
-  | "CREATE_LESSON"
-  | "CREATE_TOPIC"
-  | "EDIT_CHAPTER"
-  | "EDIT_LESSON"
-  | "EDIT_TOPIC"
-  | "DELETE_CHAPTER"
-  | "DELETE_LESSON"
-  | "DELETE_TOPIC";
->>>>>>> 49c3e3a (Added the ability to edit a course)
+
 
 type TModalMetadata = {
   type: 'course' | 'chapter' | 'lesson' | 'topic' | undefined;
@@ -422,6 +407,7 @@ const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     notes: '',
     videoUrl: '',
     youtubeUrl: '',
+
   };
   const [modal, setModal] = useState<TModalState>({
     open: false,

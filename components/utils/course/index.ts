@@ -44,10 +44,14 @@ export const editItem = async (
 
     // * Get the access token from the cookies
     // * If the type is an object
-    const req_body =
-      type === "topic" ? new FormData() : JSON.stringify({ ...reqData });
+    const req_body = ["topic", "lesson"].includes(type)
+      ? new FormData()
+      : JSON.stringify({
+          ...reqData,
+          availableDate: new Date().toISOString(),
+        });
 
-    if (type === "topic" && typeof req_body === "object") {
+    if (["topic", "lesson"].includes(type) && typeof req_body === "object") {
       const entries = Object.entries(reqData);
 
       for (const [key, value] of entries) {
@@ -59,12 +63,13 @@ export const editItem = async (
         )
           continue;
 
-        req_body.append(key, value);
+        req_body.append(key, value as string);
       }
 
       // if (!reqData.topicVideo) {
       //   req_body.append("topicVideo", "");
       // }
+      // req_body.append("availableDate", new Date().toISOString());
     }
 
     // * Make an API request to create this item

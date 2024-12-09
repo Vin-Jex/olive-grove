@@ -27,10 +27,14 @@ const Add: FC<{
 
       // * Get the access token from the cookies
       // * If the type is an object
-      const req_body =
-        type === "topic" ? new FormData() : JSON.stringify({ ...formState });
+      const req_body = ["topic", "lesson"].includes(type)
+        ? new FormData()
+        : JSON.stringify({
+            ...formState,
+            availableDate: new Date().toISOString(),
+          });
 
-      if (type === "topic" && typeof req_body === "object") {
+      if (["topic", "lesson"].includes(type) && typeof req_body === "object") {
         const entries = Object.entries(formState);
 
         for (const [key, value] of entries) {
@@ -40,12 +44,13 @@ const Add: FC<{
           )
             continue;
 
-          req_body.append(key, value);
+          req_body.append(key, value as string);
         }
 
         // if (!formState.topicVideo) {
         //   req_body.append("topicVideo", undefined as any);
         // }
+        // req_body.append("availableDate", new Date().toISOString());
       }
 
       // * Make an API request to create this item
@@ -62,7 +67,7 @@ const Add: FC<{
         req_body,
         {
           headers: {
-            ...(type === "topic"
+            ...(["topic", "lesson"].includes(type)
               ? { "Content-Type": "multipart/form-data" }
               : { "Content-Type": "application/json" }),
           },

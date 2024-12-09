@@ -240,7 +240,7 @@ const LoginPath = () => {
 
     try {
       await loginTeacher(handleSuccessLogin as any, handleErrorLogin, {
-        ...(formState as any),
+        data: formState,
       });
     } catch (error) {
       console.log("Error:", error);
