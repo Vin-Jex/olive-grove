@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-import { Menu, NotificationsOutlined } from '@mui/icons-material';
+import { Menu, NotificationsOutlined, Search } from '@mui/icons-material';
 import dummyImage from '@/images/dummy-img.jpg';
 import {
   DateFormatter,
@@ -10,13 +10,22 @@ import Image, { StaticImageData } from 'next/image';
 import { baseUrl } from '@/components/utils/baseURL';
 import { useAuth } from '@/contexts/AuthContext';
 import axiosInstance from '@/components/utils/axiosInstance';
+import Input from '@/components/Atoms/Input';
+import SearchLayout from '../SearchLayout';
 
 interface AdminNavType {
-  title: string;
+  title?: string;
+  firstTitle?: string;
+  remark?: string;
   toggleSidenav: () => void;
 }
 
-const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
+const AdminNav: React.FC<AdminNavType> = ({
+  firstTitle,
+  remark,
+  title,
+  toggleSidenav,
+}) => {
   const [profileImage, setProfileImage] = useState<string | StaticImageData>(
     dummyImage
   );
@@ -28,24 +37,9 @@ const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
       const userId = user?.id;
       if (userRole === 'Student') {
         try {
-          // const response = await fetch(`${baseUrl}/student`, {
-          //   method: 'GET',
-          //   headers: {
-          //     'Content-Type': 'application/json',
-          //     Authorization: `Bearer accessToken=${Cookies.get(
-          //       'accessToken'
-          //     )};refreshToken=${Cookies.get('refreshToken')}`,
-          //   },
-          // });
-          // if (!response.ok) {
-          //   //insert a fallback image;
-          //   //for now set it to an empty string
-          //   setProfileImage(dummyImage);
-          //   return;
-          // }
-          // const json = await response.json();
-          const response = await axiosInstance.get(`${baseUrl}/student`)
+          const response = await axiosInstance.get(`${baseUrl}/student`);
           setProfileImage(response.data.profileImage);
+          console.log('show me response', response)
         } catch (err) {
           setProfileImage(dummyImage);
         }
@@ -86,11 +80,19 @@ const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
       <div className='flex md:!hidden'>
         <Menu className='!text-2xl cursor-pointer' onClick={toggleSidenav} />
       </div>
-      <div className='flex flex-col md:flex-row items-end md:justify-between w-fit md:w-full'>
-        <span className='leading-4 font-roboto font-medium text-sm md:text-xl text-dark order-2 md:order-1 w-full my-auto'>
-          {title}
-        </span>
+      <div className='flex flex-col md:flex-row items-center md:justify-between w-fit md:w-full'>
+        <div className='flex flex-col order-2 space-y-1 md:order-1 w-full'>
+          <span className='leading-4 font-roboto font-medium text-md md:text-xl text-dark  w-full my-auto'>
+            {title ? title : firstTitle}
+          </span>
+          {remark && (
+            <span className='leading-4 font-roboto text-xs md:text-sm text-gray-300'>
+              {remark}
+            </span>
+          )}
+        </div>
         <div className='flex items-center space-x-3 md:space-x-5 xl:space-x-7 order-1 md:order-2'>
+          {firstTitle !== 'Courses' && <SearchLayout />}
           <span className='font-roboto text-xs sm:text-sm md:text-[16px] lg:text-[18px] text-subtext leading-4 whitespace-nowrap'>
             {DateFormatter(generateDateString())}
           </span>
@@ -99,7 +101,7 @@ const AdminNav: React.FC<AdminNavType> = ({ title, toggleSidenav }) => {
           </button>
           <div className='w-7 h-7 md:w-9 md:h-9 overflow-hidden'>
             <Image
-              src={profileImage}
+              src={!profileImage ? dummyImage : profileImage} 
               width={300}
               height={300}
               alt='Profile Pics'

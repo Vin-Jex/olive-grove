@@ -8,6 +8,7 @@ import ClassModal from '@/components/Molecules/Modal/ClassModal';
 import withAuth from '@/components/Molecules/WithAuth';
 import { baseUrl } from '@/components/utils/baseURL';
 import Calendar from '@/components/Molecules/Calendar';
+import axiosInstance from '@/components/utils/axiosInstance';
 
 const TodayClass = [
   {
@@ -70,23 +71,10 @@ const Dashboard = () => {
   });
   useEffect(() => {
     async function fetchStudentProfile() {
-      const refreshToken = Cookies.get('refreshToken');
-      const accessToken = Cookies.get('accessToken');
       try {
-        const response = await fetch(`${baseUrl}/student`, {
-          // credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer accessToken=${accessToken};requestToken=${refreshToken}`,
-          },
-        });
-        if (!response.ok) {
-          //handle this case.
-          //since formdata has default value I am not sure that we need to reset them here.
-          console.error(response);
-        }
-        const json = await response.json();
-        setStudentInfo({ firstName: json.firstName });
+        const response = await axiosInstance.get(`${baseUrl}/student`);
+
+        setStudentInfo({ firstName: response.data.firstName });
       } catch (err) {
         //how to display error.
       }

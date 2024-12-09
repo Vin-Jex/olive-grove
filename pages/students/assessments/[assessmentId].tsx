@@ -13,11 +13,15 @@ import {
   Radio,
   RadioGroup,
 } from '@mui/material';
+import { BackButton } from '../lectures/[subjectId]';
+import axiosInstance from '@/components/utils/axiosInstance';
+import { baseUrl } from '@/components/utils/baseURL';
 
 const AssessmentDetailsPage = () => {
   const router = useRouter();
   const [startExercise, setStartExercise] = useState(false);
   const [answersReview, setAnswersReview] = useState(true);
+  const [quizQuestions, setQuizQuestions] = useState<TQuestionCard[]>([]);
 
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [currentQxtIndex, setCurrentQxtIndex] = useState(() => {
@@ -36,8 +40,18 @@ const AssessmentDetailsPage = () => {
   );
 
   useEffect(() => {
-    console.log(answeredQxts);
-  }, [answeredQxts]);
+    const fetchQuestions = async () => {
+      try {
+        const response = await axiosInstance(
+          `${baseUrl}/student/assessments/{assessmentId}`
+        );
+        setQuizQuestions(response.data)
+      } catch (err) {
+        //error fetching quiz questions
+        console.error(err);
+      }
+    };
+  }, []);
 
   // const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -135,7 +149,19 @@ const AssessmentDetailsPage = () => {
       metaTitle={`Olive Groove ~ ${assessmentId} assessment`}
     >
       <div className='mx-11 max-w-[60vw]'>
-        <div className=' py-4 px-6  rounded-md bg-[#32A8C4] bg-opacity-10 w-full'>
+        <div className='flex gap-4 items-center'>
+          <div className='mt-4'>
+            <BackButton />
+          </div>
+          {/* bread crumb */}
+          <div className='flex py-7 mt-4 items-center space-x-2'>
+            <Link href='/students/assessments'>
+              <span className='text-gray pr-2'>Assessments </span>
+            </Link>{' '}
+            / <span className='text-primary'>{assessmentId}</span>
+          </div>
+        </div>
+        <div className=' py-4 px-6  rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
           <h2 className='text-3xl py-5'>Physics Class Exercise</h2>
           <div className='flex justify-between'>
             <span>
@@ -169,7 +195,7 @@ const AssessmentDetailsPage = () => {
                 markedQuestions.map((question, i) => (
                   <QuestionCard
                     review={true}
-                    value={question.yourAnswer}
+                    value={question.yourAnswer!}
                     setCurrentQxtIndex={setCurrentQxtIndex}
                     setAnsweredQxts={setAnsweredQxts}
                     key={i}
@@ -207,7 +233,7 @@ const AssessmentDetailsPage = () => {
     </StudentWrapper>
   );
 };
-
+//* This is me assuming the strucure of the returned assessment object
 type TQuestionCard = {
   id: number;
   question: string;
@@ -251,41 +277,65 @@ function QuestionCard({
         name='radio-buttons-group'
       >
         {question.options.map((option, i) => (
-          <FormControlLabel
-            style={
-              review
-                ? option === question.correctAnswer
-                  ? {
-                      backgroundColor: '#7ecee1',
-                      fillOpacity: 0.6,
-                      borderRadius: 5,
-                      marginBlock: 2,
-                    }
-                  : option === question.yourAnswer &&
-                    option !== question.correctAnswer
-                  ? {
-                      backgroundColor: '#e07d7d',
-                      fillOpacity: 0.6,
-                      borderRadius: 5,
-                      marginBlock: 2,
-                    }
+          <div key={option + i} className='flex items-center'>
+            <FormControlLabel
+              style={
+                review
+                  ? option === question.correctAnswer
+                    ? {
+                        height: '28px',
+                        width: 'fit-content',
+                        paddingInlineEnd: 17,
+                        paddingBlock: 2,
+                        backgroundColor: '#7ecee1',
+                        fillOpacity: 0.6,
+                        borderRadius: 5,
+                        marginBlock: 10,
+                      }
+                    : option === question.yourAnswer &&
+                      option !== question.correctAnswer
+                    ? {
+                        height: '28px',
+                        width: 'fit-content',
+                        paddingInlineEnd: 17,
+                        paddingBlock: 2,
+                        backgroundColor: '#e8a9a9',
+                        fillOpacity: 0.6,
+                        borderRadius: 5,
+                        marginBlock: 2,
+                      }
+                    : {}
                   : {}
-                : {}
-            }
-            value={option}
-            control={
-              <Radio
-                // disabled={review}
-                color={
-                  review && option === question.correctAnswer
-                    ? 'success'
-                    : 'error'
-                }
-              />
-            }
-            key={i}
-            label={option}
-          />
+              }
+              value={option}
+              control={
+                <Radio
+                  // disabled={review}
+                  color={
+                    review && option === question.correctAnswer
+                      ? 'success'
+                      : 'error'
+                  }
+                />
+              }
+              key={i}
+              label={option}
+            />
+            <span className='-ml-3'>
+              {review &&
+              question.yourAnswer === question.correctAnswer &&
+              option === question.correctAnswer ? (
+                <CorrectCheckMark />
+              ) : null}
+            </span>
+            <span>
+              {review &&
+              question.yourAnswer !== question.correctAnswer &&
+              option === question.yourAnswer ? (
+                <WrongCrossMark />
+              ) : null}
+            </span>
+          </div>
         ))}
       </RadioGroup>
     </FormControl>
@@ -322,7 +372,7 @@ function SubmissionCard() {
   );
 }
 
-const questions = [
+const questions: TQuestionCard[] = [
   {
     id: 1,
     question: 'What is Displacement',
@@ -355,7 +405,7 @@ const questions = [
   },
 ];
 
-const markedQuestions = [
+const markedQuestions: TQuestionCard[] = [
   {
     id: 1,
     question: 'What is Displacement',
@@ -392,5 +442,45 @@ const markedQuestions = [
     correctAnswer: 'Scala',
   },
 ];
+
+const CorrectCheckMark = () => {
+  return (
+    <svg
+      width='36'
+      height='36'
+      className='h-6'
+      viewBox='0 0 36 36'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <path
+        d='M13.5002 24.255L8.29522 19.05C8.01475 18.7695 7.63436 18.612 7.23772 18.612C6.84108 18.612 6.46068 18.7695 6.18022 19.05C5.89975 19.3305 5.74219 19.7109 5.74219 20.1075C5.74219 20.3039 5.78087 20.4984 5.85603 20.6798C5.93119 20.8613 6.04135 21.0261 6.18022 21.165L12.4502 27.435C13.0352 28.02 13.9802 28.02 14.5652 27.435L30.4352 11.565C30.7157 11.2845 30.8732 10.9041 30.8732 10.5075C30.8732 10.1109 30.7157 9.73046 30.4352 9.44999C30.1548 9.16953 29.7744 9.01196 29.3777 9.01196C28.9811 9.01196 28.6007 9.16953 28.3202 9.44999L13.5002 24.255Z'
+        fill='#32A8C4'
+      />
+    </svg>
+  );
+};
+
+const WrongCrossMark = () => {
+  return (
+    <svg
+      width='18'
+      height='18'
+      viewBox='0 0 18 18'
+      className='h-3'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <path
+        d='M1.13672 16.8645L9.00122 9L16.8657 16.8645M16.8657 1.1355L8.99972 9L1.13672 1.1355'
+        stroke='#FF3B3B'
+        stroke-opacity='0.4'
+        stroke-width='2'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+    </svg>
+  );
+};
 
 export default withAuth('Student', AssessmentDetailsPage);

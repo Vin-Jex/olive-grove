@@ -18,6 +18,10 @@ body {
   cursor: none !important;
 }
 
+#__next {
+  width: 100%;
+}
+
 @layer components {
   a.link {
     @apply text-primary underline underline-offset-2;

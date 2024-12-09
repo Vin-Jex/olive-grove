@@ -85,13 +85,23 @@ const SubjectDetailsPage: FC = () => {
 
   useEffect(() => {
     const newCourses = collectLinearContentIds(course.data!);
-    const lastViewedIndex = newCourses.findLastIndex(
-      (course) => course.isViewed
-    );
-    // console.log(newCourses);
+
+    if (newCourses.length === 0) return;
+
+    const lastViewedIndex = newCourses.findIndex((course) => course.isViewed);
+
+    const nextIndexToView =
+      lastViewedIndex +
+      1 +
+      newCourses
+        .slice(lastViewedIndex + 1)
+        .findIndex((course) => !course.isViewed);
+
     console.log(newCourses, 'courses data');
-    if (lastViewedIndex !== -1) {
-      const nextCourse = newCourses[lastViewedIndex + 1];
+
+    if (lastViewedIndex !== -1 && lastViewedIndex < newCourses.length - 1) {
+      const nextCourse = newCourses[nextIndexToView];
+
       router.push(`${router.asPath.split('?')[0]}?topic=${nextCourse.id}`);
     } else {
       //I think we should instead redirect to the first course that has not being viewed instead of the on after the last viewed one.
@@ -151,10 +161,8 @@ const SubjectDetailsPage: FC = () => {
               <>
                 {/* Title */}
                 <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start'>
-                  <div className='flex gap-4 items-center'>
-                    <Button onClick={() => router.back()} size='xs' className='p-2 rouded-md !w-6 !h-6 !bg-black/[0.2]'>
-                      <ChevronLeft />
-                    </Button>
+                  <div className='flex gap-4 mt-6 items-center'>
+                    <BackButton />
                     <span className='text-2xl font-medium text-dark font-roboto'>
                       {course.data?.title || 'Loading...'}
                     </span>
@@ -231,6 +239,19 @@ const SubjectDetailsPage: FC = () => {
         </StudentWrapper>
       </TopicContextProvider>
     </>
+  );
+};
+
+export const BackButton = () => {
+  const router = useRouter();
+  return (
+    <Button
+      onClick={() => router.back()}
+      size='xs'
+      className='p-2 rouded-md !w-6 !h-6 !bg-black/[0.2]'
+    >
+      <ChevronLeft />
+    </Button>
   );
 };
 

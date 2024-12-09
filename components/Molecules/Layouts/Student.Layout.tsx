@@ -10,13 +10,17 @@ import { handleLogout } from './Admin.Layout';
 
 interface AdminWrapperProps {
   children: ReactNode;
-  title: string;
+  title?: string;
+  firstTitle?: string;
+  remark?: string;
   metaTitle?: string;
   description?: string;
 }
 
 const StudentWrapper = ({
   title,
+  firstTitle,
+  remark,
   metaTitle,
   description,
   children,
@@ -66,7 +70,7 @@ const StudentWrapper = ({
             } transition-all ease-in-out duration-500`}
           ></div>
           <nav className={`w-full bg-white px-4`}>
-            <AdminNav toggleSidenav={toggleSidenav} title={title} />
+            <AdminNav toggleSidenav={toggleSidenav} firstTitle={firstTitle} remark={remark}  />
           </nav>
         </div>
         <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
