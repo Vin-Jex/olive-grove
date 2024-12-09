@@ -51,7 +51,7 @@ type CardProps = {
 
 function Card({ header, main, footer = '' }: CardProps) {
   return (
-    <div className='flex flex-col justify-start text-start w-full border space-y-3 rounded-md shadow-lg py-4 px-6'>
+    <div className='flex flex-col justify-start text-start w-full  space-y-3 rounded-md shadow-card py-4 px-6'>
       <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
         {header}
       </h3>

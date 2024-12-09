@@ -260,7 +260,7 @@ function QuestionCard({
 }) {
   return (
     <FormControl>
-      <FormLabel style={{ fontSize: 20 }} id='demo-radio-buttons-group-label'>
+      <FormLabel style={{ fontSize: 18 }} id='demo-radio-buttons-group-label'>
         {i + 1}. {question.question}
       </FormLabel>
       <RadioGroup
@@ -290,7 +290,7 @@ function QuestionCard({
                         backgroundColor: '#7ecee1',
                         fillOpacity: 0.6,
                         borderRadius: 5,
-                        marginBlock: 10,
+                        marginBlock: 7,
                       }
                     : option === question.yourAnswer &&
                       option !== question.correctAnswer
@@ -302,7 +302,7 @@ function QuestionCard({
                         backgroundColor: '#e8a9a9',
                         fillOpacity: 0.6,
                         borderRadius: 5,
-                        marginBlock: 2,
+                        marginBlock: 7,
                       }
                     : {}
                   : {}

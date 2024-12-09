@@ -1,19 +1,19 @@
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import React, { use, useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from '@mui/icons-material';
+import React, { use, useEffect, useState } from 'react';
 
 const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 const Calendar = () => {
@@ -25,7 +25,7 @@ const Calendar = () => {
     new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
   );
   useEffect(() => {
-    console.log(currentDate.toLocaleString(), "currentDate");
+    console.log(currentDate.toLocaleString(), 'currentDate');
     // console.log(currentMontFirstDay.toLocaleString(), "currentMontFirstDay");
   }, [currentDate]);
 
@@ -47,20 +47,20 @@ const Calendar = () => {
       currentDate.getMonth() + 1,
       1
     );
-    const nextMonth =
-      firstDayOfNextMonth.toLocaleDateString() ===
-      new Date().toLocaleDateString()
-        ? firstDayOfNextMonth
-        : new Date();
-    setCurrentDate(new Date(nextMonth));
+    // const nextMonth =
+    //   firstDayOfNextMonth.toLocaleDateString() ===
+    //   new Date().toLocaleDateString()
+    //     ? firstDayOfNextMonth
+    //     : new Date();
+    setCurrentDate(new Date(firstDayOfNextMonth));
     setCurrentMonthFirstDay(new Date(firstDayOfNextMonth));
     setLastDayOfCurrentMonth(
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0)
     );
   }
   return (
-    <div className="bg-white border p-6 rounded-md">
-      <header className="flex justify-between items-center">
+    <div className='bg-white border p-6 rounded-md'>
+      <header className='flex justify-between items-center'>
         <button onClick={handlePreviousMonth}>
           <ChevronLeft />
         </button>
@@ -81,7 +81,7 @@ const Calendar = () => {
           <ChevronRight />
         </button>
       </header>
-      <div className="grid grid-cols-7 py-5">
+      <div className='grid grid-cols-7 py-5'>
         <span>SUN</span>
         <span>MON</span>
         <span>TUE</span>
@@ -90,7 +90,7 @@ const Calendar = () => {
         <span>FRI</span>
         <span>SAT</span>
       </div>
-      <main className="grid gap-y-4 grid-cols-7">
+      <main className='grid gap-y-4 grid-cols-7'>
         {Array(currentMontFirstDay.getDay() + lastDayOfCurrentMonth.getDate())
           .fill(0)
           .map((_, i) => (
@@ -100,10 +100,8 @@ const Calendar = () => {
               ) : (
                 <span
                   className={`font-semibold ${
-                    new Date().toLocaleDateString() ==
-                      currentDate.toLocaleDateString() &&
-                    new Date().getDate() === i + 1 &&
-                    "bg-blue-600 rounded-full p-[4px] -ml-1 text-white "
+                    markToday(currentDate, i) &&
+                    'bg-blue-600 rounded-full p-[4px] -ml-1 text-white '
                   }`}
                 >
                   {i + 1 - currentMontFirstDay.getDay()}
@@ -115,5 +113,13 @@ const Calendar = () => {
     </div>
   );
 };
+
+function markToday(currentDate: Date, i: number) {
+  const isSameYear = currentDate.getFullYear() === new Date().getFullYear();
+  const isSameMonth = currentDate.getMonth() === new Date().getMonth();
+  const currentIndexIsToday =
+    i + 1 - currentDate.getDay() === new Date().getDate();
+  return isSameMonth && isSameMonth && currentIndexIsToday;
+}
 
 export default Calendar;

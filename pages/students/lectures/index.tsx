@@ -172,7 +172,14 @@ const Classes = () => {
     if (searched && searched.length > 0) {
       debouncedSearch(searched as string);
     }
-  }, [searched, debouncedSearch]);
+    console.log('this effect can"t just keep running infinitely, can it?');
+    console.log(searched, 'this is searched');
+
+    if (searched.length === 0) {
+      router.push(router.pathname);
+      setFilteredCourses({ data: [], loading: false, error: undefined });
+    }
+  }, [searched]);
 
   useEffect(() => {
     debouncedGetFilteredCourses();
@@ -212,6 +219,7 @@ const Classes = () => {
                 {/**border-b border-r border-l rounded-br-md rounded-bl-md */}
                 <div className='flex flex-col gap-1 w-[20rem] absolute bg-white  border z-20'>
                   {filteredCourses.data.length > 0 &&
+                    searched.length > 0 &&
                     filteredCourses.data.map((subject, index) => (
                       <div
                         className='flex items-center px-3 py-3 gap-5  left-0 w-full h-8'
