@@ -35,6 +35,9 @@ export default function CourseModal({
     Blob | null | string | undefined
   >(null);
   const [fileName, setFileName] = useState("");
+  const [topicVideoType, setTopicVideoType] = useState<
+    "topicVideo" | "youtubeVideo"
+  >("topicVideo");
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [is_loading, setIsLoading] = useState({
     saving: false,
@@ -165,11 +168,11 @@ export default function CourseModal({
             className="input !rounded-lg"
           />
 
-          {type === "topic" && (
+          {["topic", "lesson"].includes(type) && (
             <TextEditor
               value={(formState as any)[textEditorValue]}
               placeholder={`${capitalize(type)} ${
-                type === "topic"
+                ["topic", "lesson"].includes(type)
                   ? "Notes"
                   : type === "course"
                   ? "Description"
@@ -196,7 +199,7 @@ export default function CourseModal({
             ></textarea>
           )}
 
-          {(type === "topic" || type === "course") && (
+          {/* {(type === "topic" || type === "course") && (
             <File
               selectedImage={selectedImage}
               name={type === "topic" ? "topicVideo" : "courseCover"}
@@ -215,10 +218,75 @@ export default function CourseModal({
               required
               fileName={fileName}
             />
+          )} */}
+
+          {["topic", "lesson"].includes(type) && (
+            <div className="flex flex-col gap-4">
+              <Input
+                type="datetime-local"
+                name="availableDate"
+                placeholder={`Enter the date the ${type} will be available`}
+                value={formState.availableDate}
+                onChange={handleChange}
+                className="input"
+                required
+              />
+
+              <Select
+                name="topicVideoType"
+                required
+                placeholder="Choose topic video type"
+                value={topicVideoType}
+                options={[
+                  { display_value: "Upload Video", value: "topicVideo" },
+                  { display_value: "YouTube Video URL", value: "youtubeVideo" },
+                ]}
+                onChange={(e) => setTopicVideoType(e.target.value as any)}
+              />
+              {topicVideoType === "topicVideo" ? (
+                <File
+                  selectedImage={selectedImage}
+                  name={"topicVideo"}
+                  setSelectedImage={setSelectedImage}
+                  previewImage={previewImage}
+                  onChange={handleImageChange}
+                  disabled={false}
+                  resetImageStates={resetImageField}
+                  placeholder={fileName !== "" ? fileName : "Upload Video"}
+                  required
+                  fileName={fileName}
+                />
+              ) : (
+                <Input
+                  type="url"
+                  name="youtubeVideo"
+                  value={formState.youtubeVideo}
+                  onChange={handleChange}
+                  placeholder={`Youtube video URL`}
+                  required
+                  className="input !rounded-lg"
+                />
+              )}
+            </div>
+          )}
+
+          {type === "course" && (
+            <File
+              selectedImage={selectedImage}
+              name={"courseCover"}
+              setSelectedImage={setSelectedImage}
+              previewImage={previewImage}
+              onChange={handleImageChange}
+              disabled={false}
+              resetImageStates={resetImageField}
+              placeholder={fileName !== "" ? fileName : "Upload course image"}
+              required
+              fileName={fileName}
+            />
           )}
 
           <div className="flex items-center space-x-5 w-full">
-            <Button size="xs" color="outline" {...actionProps}>
+            <Button size="xs" type="submit" color="outline" {...actionProps}>
               {is_loading.saving ? (
                 <CircularProgress size={15} color="inherit" />
               ) : (

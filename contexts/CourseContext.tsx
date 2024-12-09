@@ -414,15 +414,16 @@ const courseReducer: Reducer<
 };
 
 const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const initialFormState = {
+  const initialFormState: TCourseModalFormData = {
     title: "",
     _id: "",
     classId: "",
     description: "",
     image: "",
-    notes: "",
-    videoUrl: "",
-    youtubeUrl: "",
+    topicNote: "",
+    topicVideo: "",
+    youtubeVideo: "",
+    availableDate: "",
   };
   const [modal, setModal] = useState<TModalState>({
     open: false,

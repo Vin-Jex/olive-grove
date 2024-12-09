@@ -227,11 +227,18 @@ sidebar-nav.active ul li a span {
 }
 
 .shadow-card {
-    --tw-shadow: 0 10px 45px -3px rgb(0 0 0 / 0.07), 0 4px 29px -4px rgb(0 0 0 / 0.01);
-    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  --tw-shadow: 0 10px 45px -3px rgb(0 0 0 / 0.07),
+    0 4px 29px -4px rgb(0 0 0 / 0.01);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .shadow-card-2 {
-  --tw-shadow: 10px 10px 65px -3px rgb(0 0 0 / 0.07), 0 4px 29px -4px rgb(0 0 0 / 0.01);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  --tw-shadow: 10px 10px 65px -3px rgb(0 0 0 / 0.07),
+    0 4px 29px -4px rgb(0 0 0 / 0.01);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.question-input {
 }

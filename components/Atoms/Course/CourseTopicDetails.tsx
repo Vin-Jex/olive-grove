@@ -29,6 +29,7 @@ import Button from "../Button";
 import { capitalize } from "@/components/utils/utils";
 import { usePathname } from "next/navigation";
 import CourseQA from "./CourseQA";
+import YouTubeEmbed from "./CourseTopicYouTubeVideo";
 
 // Function to collect IDs of lessons, sections, and subsections in a linear array
 function collectLinearContentIds(data: TCourse): string[] {
@@ -260,15 +261,27 @@ export const TopicDetails: FC<{
           {
             slug: "video",
             content: (
-              <TopicVideo
-                ref={videoRef}
-                markVideoCompleted={markVideoCompleted}
-                url={
-                  // topicDetails?.topic?.topicVideo ||
-                  // topicDetails?.topic?.youtubeVideo ||
-                  "https://videos.pexels.com/video-files/4203954/4203954-hd_1920_1080_24fps.mp4"
-                }
-              />
+              <>
+                {topicDetails?.topic?.topicVideo ? (
+                  <TopicVideo
+                    ref={videoRef}
+                    markVideoCompleted={markVideoCompleted}
+                    url={
+                      topicDetails?.topic?.topicVideo
+                      // || "https://videos.pexels.com/video-files/4203954/4203954-hd_1920_1080_24fps.mp4"
+                    }
+                  />
+                ) : (
+                  <YouTubeEmbed
+                    ref={videoRef as any}
+                    markVideoCompleted={markVideoCompleted}
+                    url={
+                      topicDetails?.topic?.youtubeVideo
+                      // || "https://videos.pexels.com/video-files/4203954/4203954-hd_1920_1080_24fps.mp4"
+                    }
+                  />
+                )}
+              </>
             ),
           },
         ]

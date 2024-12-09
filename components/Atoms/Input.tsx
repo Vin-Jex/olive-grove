@@ -23,7 +23,8 @@ export type InputType =
   | "submit"
   | "tel"
   | "time"
-  | "week";
+  | "week"
+  | "url";
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   validationError?: string;
   hideIcon?:
@@ -78,7 +79,7 @@ const Input: React.FC<InputProps> = ({
       : "#1E1E1E60";
   return (
     <div
-      className='space-y-1 w-full'
+      className="space-y-1 w-full"
       style={{
         width:
           inputWidth && typeof inputWidth === "string"
@@ -88,7 +89,7 @@ const Input: React.FC<InputProps> = ({
             : "",
       }}
     >
-      <div className='flex relative items-center w-full'>
+      <div className="flex relative items-center w-full">
         <input
           type={showInput ? "" : Type}
           {...inputProps}
@@ -100,12 +101,12 @@ const Input: React.FC<InputProps> = ({
         />
         {ShowIcon && showInput ? (
           <ShowIcon
-            className='absolute right-3 top-1/2 -translate-y-1/2 text-subtext !text-[1.4rem]'
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-subtext !text-[1.4rem]"
             onClick={showInputField}
           />
         ) : HideIcon && !showInput ? (
           <HideIcon
-            className='absolute right-3 top-1/2 -translate-y-1/2 text-subtext !text-[1.4rem]'
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-subtext !text-[1.4rem]"
             onClick={showInputField}
           />
         ) : (
@@ -113,8 +114,8 @@ const Input: React.FC<InputProps> = ({
         )}
       </div>
       {validationError && isValid && (
-        <div className='flex items-center space-x-1'>
-          <span className='flex items-center'>
+        <div className="flex items-center space-x-1">
+          <span className="flex items-center">
             <InfoOutlined
               sx={{ fontSize: "1.2rem", color: `${statusColor}` }}
             />

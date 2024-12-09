@@ -13,7 +13,7 @@ const roboto = Roboto({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <main className={`${roboto.variable}`}>
+    <main className={`${roboto.variable} bg-[#FAFAFA]`}>
       <AuthProvider>
         <CourseContextProvider>
           <SidebarContextProvider>

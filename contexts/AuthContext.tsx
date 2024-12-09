@@ -17,6 +17,7 @@ interface IUser {
 interface AuthState {
   loggedIn: boolean;
   user: IUser | null;
+  role: "student" | "teacher" | "admin" | undefined;
 }
 
 const AuthContext = createContext<
@@ -30,7 +31,11 @@ interface AuthProviderProps {
 // Auth Provider
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const router = useRouter();
-  const [auth, setAuth] = useState<AuthState>({ loggedIn: false, user: null });
+  const [auth, setAuth] = useState<AuthState>({
+    loggedIn: false,
+    user: null,
+    role: undefined,
+  });
   const [loading, setLoading] = useState<boolean>(true);
 
   const reCheckUser = () => {
@@ -38,6 +43,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuth({
       loggedIn: status.loggedIn,
       user: status.loggedIn ? status.user! : null,
+      role: status.loggedIn
+        ? (status.user!.role as any)?.toLocaleLowerCase()
+        : undefined,
     });
     setLoading(false);
   };
