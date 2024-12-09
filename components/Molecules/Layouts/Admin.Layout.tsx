@@ -14,8 +14,8 @@ import { constrainedMemory } from 'process';
 export const handleLogout = async () => {
   const role = Cookies.get('role');
   try {
-    const refreshToken = Cookies.get('refreshToken');
-    const accessToken = Cookies.get('accessToken');
+    // const refreshToken = Cookies.get('refreshToken');
+    // const accessToken = Cookies.get('accessToken');
     // const response = await fetch(`${baseUrl}/${role?.toLowerCase()}-logout`, {
     //   method: 'POST',
     //   // credentials: 'include',
@@ -37,10 +37,10 @@ export const handleLogout = async () => {
     console.log(response, 'this section');
     if (!response) return;
 
-    // Cookies.remove('accessToken');
-    // Cookies.remove('refreshToken');
-    // Cookies.remove('role');
-    // Cookies.remove('userId');
+    Cookies.remove('accessToken');
+    Cookies.remove('refreshToken');
+    Cookies.remove('role');
+    Cookies.remove('userId');
 
     setTimeout(() => {
       window.location.href = '/auth/path/teachers/login/';
