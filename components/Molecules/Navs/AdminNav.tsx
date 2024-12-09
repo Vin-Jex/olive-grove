@@ -71,6 +71,7 @@ const AdminNav: React.FC<AdminNavType> = ({
       <div className='flex md:!hidden'>
         <Menu className='!text-2xl cursor-pointer' onClick={toggleSidenav} />
       </div>
+
       <div className='flex flex-col md:flex-row items-center md:justify-between w-fit md:w-full'>
         <div className='flex flex-col order-2 space-y-1 md:order-1 w-full'>
           <span className='leading-4 font-roboto font-medium text-md md:text-xl text-dark  w-full my-auto'>

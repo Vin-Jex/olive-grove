@@ -202,6 +202,7 @@ const Profile = () => {
     resetForm();
 
     const formData = new FormData();
+    console.log(Object.entries(formState))
 
     // Append other form fields to the FormData object
     Object.entries(formState).forEach(([key, value]) => {
@@ -383,72 +384,7 @@ const Profile = () => {
               >
                 Edit Personal Info
               </Button>
-            </div>
-            {formError.internetError !== '' ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
-                <Info sx={{ fontSize: '1.1rem' }} />
-                {formError.internetError}
-              </span>
-            ) : formError.successError !== '' ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
-                <Info sx={{ fontSize: '1.1rem' }} />
-                {formError.successError}
-              </span>
-            ) : (
-              ''
-            )}
-            <div className='text-red-500'>{profileError && profileError}</div>
 
-            <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
-              Personal Information
-            </span>
-            <div className='grid grid-cols-2 gap-8 w-full'>
-              <InputField
-                name='firstName'
-                type='text'
-                placeholder='First Name *'
-                value={formState.firstName}
-                onChange={handleChange}
-                required
-                error={formError.firstNameError}
-              />
-
-              <InputField
-                name='middleName'
-                type='text'
-                placeholder='Middle Name'
-                value={formState.middleName}
-                onChange={handleChange}
-                error={''}
-              />
-              {inputFields.map((field) => (
-                <InputField
-                  placeholder={field.label}
-                  key={field.name}
-                  name={field.name}
-                  type={field.type}
-                  value={formState[field.name as keyof typeof formState]}
-                  onChange={handleChange}
-                  required={field.required}
-                  error={field.error}
-                />
-              ))}
-            </div>
-          </form>
-          <form
-            onKeyPress={handleKeyPress}
-            onSubmit={handlePasswordChange}
-            className='flex flex-col !mt-20 space-y-5 gap-y-5 w-[560px]'
-          >
-            <div className='flex items-center justify-between'>
-              <div className='flex flex-col my-7'>
-                <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
-                  Security Information
-                </span>
-                <span className='text-md text-subtext font-roboto'>
-                  Edit your personal security information.
-                </span>
-              </div>
               <Button
                 type='submit'
                 size='sm'

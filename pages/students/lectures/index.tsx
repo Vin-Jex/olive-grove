@@ -181,6 +181,7 @@ const Classes = () => {
     }
   }, [searched]);
 
+
   useEffect(() => {
     debouncedGetFilteredCourses();
   }, [router.query.search, debouncedGetFilteredCourses]);
@@ -220,6 +221,7 @@ const Classes = () => {
                 <div className='flex flex-col gap-1 w-[20rem] absolute bg-white  border z-20'>
                   {filteredCourses.data.length > 0 &&
                     searched.length > 0 &&
+
                     filteredCourses.data.map((subject, index) => (
                       <div
                         className='flex items-center px-3 py-3 gap-5  left-0 w-full h-8'
@@ -231,6 +233,7 @@ const Classes = () => {
                             height={300}
                             className='h-full w-full object-cover'
                             src={(subject.courseCover as string) || dummyImage}
+
                             alt={subject.description || 'course searched'}
                           />
                         </div>

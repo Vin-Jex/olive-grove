@@ -15,6 +15,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+
 } from 'react';
 import { useRouter } from 'next/router';
 import { usePathname } from 'next/navigation';
@@ -95,7 +96,6 @@ function getPreviousId(
 
 function getNextId(currentId: string, linearIds: TContentId): string | null {
   const currentIndex = currentIdIndex(linearIds, currentId);
-
 
   if (currentIndex > 0) {
     return linearIds[currentIndex + 1].id; // Return the ID of the previous item
@@ -460,7 +460,6 @@ function MessageIcon({ commentNumber }: { commentNumber: number }) {
           height='20'
           viewBox='0 0 20 20'
           fill='none'
-
           xmlns='http://www.w3.org/2000/svg'
         >
           <path
