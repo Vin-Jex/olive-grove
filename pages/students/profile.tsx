@@ -1,48 +1,50 @@
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import Image from "next/image";
+import Cookies from 'js-cookie';
+import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
+import Image from 'next/image';
 import React, {
   ChangeEvent,
   FormEvent,
   useCallback,
   useEffect,
   useState,
-} from "react";
-import dummyImage from "@/images/dummy-img.jpg";
-import Button from "@/components/Atoms/Button";
-import InputField from "@/components/Atoms/InputField";
-import Input, { InputType } from "@/components/Atoms/Input";
+} from 'react';
+import dummyImage from '@/images/dummy-img.jpg';
+import Button from '@/components/Atoms/Button';
+import InputField from '@/components/Atoms/InputField';
+import Input, { InputType } from '@/components/Atoms/Input';
 import {
   Info,
   VisibilityOffOutlined,
   VisibilityOutlined,
-} from "@mui/icons-material";
-import withAuth from "@/components/Molecules/WithAuth";
-import { baseUrl } from "@/components/utils/baseURL";
-import { useAuth } from "@/contexts/AuthContext";
+} from '@mui/icons-material';
+import withAuth from '@/components/Molecules/WithAuth';
+import { baseUrl } from '@/components/utils/baseURL';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Profile = () => {
   const [formState, setFormState] = useState({
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    email: "",
-    username: "",
-    password: "",
+    firstName: '',
+    lastName: '',
+    middleName: '',
+    email: '',
+    username: '',
+    password: '',
   });
   const [formError, setFormError] = useState({
-    internetError: "",
-    firstNameError: "",
-    lastNameError: "",
-    emailError: "",
-    usernameError: "",
-    passwordError: "",
-    successError: "",
+    internetError: '',
+    firstNameError: '',
+    lastNameError: '',
+    emailError: '',
+    usernameError: '',
+    passwordError: '',
+    successError: '',
   });
   const [isDisabled, setIsDisabled] = useState(true);
-  const [profileImage, setProfileImage] = useState("");
-  const [studentName, setStudentName] = useState("");
+  const [profileImage, setProfileImage] = useState('');
+  const [studentName, setStudentName] = useState('');
   const { user } = useAuth();
   const role = user?.role;
+  const [profileError, setProfileError] = useState('');
 
   const inputFields: (
     | {
@@ -61,23 +63,23 @@ const Profile = () => {
       }
   )[] = [
     {
-      label: "Last Name *",
-      name: "lastName",
-      type: "text",
+      label: 'Last Name *',
+      name: 'lastName',
+      type: 'text',
       required: true,
       error: formError.lastNameError,
     },
     {
-      label: "Email Address *",
-      name: "email",
-      type: "email",
+      label: 'Email Address *',
+      name: 'email',
+      type: 'email',
       required: true,
       error: formError.emailError,
     },
     {
-      label: "Username *",
-      name: "username",
-      type: "text",
+      label: 'Username *',
+      name: 'username',
+      type: 'text',
       required: true,
       error: formError.usernameError,
     },
@@ -85,11 +87,11 @@ const Profile = () => {
 
   useEffect(() => {
     if (
-      formState.username === "" ||
-      formState.password === "" ||
-      formState.firstName === "" ||
-      formState.lastName === "" ||
-      formState.email === ""
+      formState.username === '' ||
+      formState.password === '' ||
+      formState.firstName === '' ||
+      formState.lastName === '' ||
+      formState.email === ''
     )
       setIsDisabled(true);
     else setIsDisabled(false);
@@ -113,12 +115,12 @@ const Profile = () => {
   const resetForm = () => {
     setFormState((prevState) => ({
       ...prevState,
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      username: "",
-      email: "",
-      password: "",
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      password: '',
     }));
   };
 
@@ -127,7 +129,7 @@ const Profile = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       return;
     }
@@ -136,7 +138,7 @@ const Profile = () => {
     if (!formState.email.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        emailError: "Email field cannot be empty",
+        emailError: 'Email field cannot be empty',
       }));
       return;
     }
@@ -144,7 +146,7 @@ const Profile = () => {
     if (!formState.password.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        passwordError: "Password field cannot be empty",
+        passwordError: 'Password field cannot be empty',
       }));
       return;
     }
@@ -170,19 +172,19 @@ const Profile = () => {
         lastNameError: data.message.lastName,
       }));
     } else {
-      console.error("Error Message: ", data.error);
+      console.error('Error Message: ', data.error);
     }
 
     // Clear errors after 10 seconds
     setTimeout(() => {
       setFormError({
-        internetError: "",
-        firstNameError: "",
-        lastNameError: "",
-        emailError: "",
-        usernameError: "",
-        passwordError: "",
-        successError: "",
+        internetError: '',
+        firstNameError: '',
+        lastNameError: '',
+        emailError: '',
+        usernameError: '',
+        passwordError: '',
+        successError: '',
       });
     }, 10000);
   };
@@ -202,7 +204,7 @@ const Profile = () => {
     try {
       setIsDisabled(true);
       const response = await fetch(`${baseUrl}/`, {
-        method: "POST",
+        method: 'POST',
         body: formData,
       });
 
@@ -215,15 +217,15 @@ const Profile = () => {
       const data = await response.json();
       setFormError((prevState) => ({
         ...prevState,
-        successError: "Information updated successfully.",
+        successError: 'Information updated successfully.',
       }));
 
       // Reset the form after successful submission
       resetForm();
 
-      console.log("Response: ", JSON.stringify(data));
+      console.log('Response: ', JSON.stringify(data));
     } catch (error) {
-      console.log("Status: ", error);
+      console.log('Status: ', error);
     } finally {
       setIsDisabled(false);
     }
@@ -231,9 +233,19 @@ const Profile = () => {
 
   const fetchProfile = useCallback(async () => {
     try {
-      const response = await fetch(`${baseUrl}/students`);
+      const refreshToken = Cookies.get('refreshToken');
+      const accessToken = Cookies.get('accessToken');
+      const response = await fetch(`${baseUrl}/student`, {
+        // credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer accessToken=${accessToken};requestToken=${refreshToken}`,
+        },
+      });
       if (!response.ok) {
         //handle this case.
+        setProfileError('failed to fetch profile');
+        console.log(response, 'the profile fo the current user');
         //since formdata has default value I am not sure that we need to reset them here.
       }
       const json = await response.json();
@@ -243,12 +255,13 @@ const Profile = () => {
         middleName: json.middleName,
         email: json.email,
         username: json.username,
-        password: "",
+        password: '',
       });
       setProfileImage(json.profileImage);
-      setStudentName(json.firstName + " " + json.lastName);
+      setStudentName(json.firstName + ' ' + json.lastName);
     } catch (err) {
       //how to display error.
+      setProfileError('Error occured in fetching user profile');
     }
   }, []);
   useEffect(() => {
@@ -271,7 +284,7 @@ const Profile = () => {
   }, [fetchProfile]);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === "Enter") {
+    if (isDisabled && event.key === 'Enter') {
       handleSignup(event);
     }
   };
@@ -292,7 +305,7 @@ const Profile = () => {
 
           <div className='flex gap-4'>
             <Image
-              src={profileImage.length === 0 ? dummyImage : profileImage}
+              src={!profileImage ? dummyImage : profileImage}
               width={300}
               height={300}
               alt='Profile Pics'
@@ -307,20 +320,21 @@ const Profile = () => {
           </div>
 
           <div className='!mt-20'>
-            {formError.internetError !== "" ? (
+            {formError.internetError !== '' ? (
               <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
-                <Info sx={{ fontSize: "1.1rem" }} />
+                <Info sx={{ fontSize: '1.1rem' }} />
                 {formError.internetError}
                 sdca
               </span>
-            ) : formError.successError !== "" ? (
+            ) : formError.successError !== '' ? (
               <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
-                <Info sx={{ fontSize: "1.1rem" }} />
+                <Info sx={{ fontSize: '1.1rem' }} />
                 {formError.successError}
               </span>
             ) : (
-              ""
+              ''
             )}
+            <div className='text-red-500'>{profileError && profileError}</div>
             <form
               className='flex flex-col gap-y-5 w-[560px]'
               onKeyPress={handleKeyPress}
@@ -346,7 +360,7 @@ const Profile = () => {
                   placeholder='Middle Name'
                   value={formState.middleName}
                   onChange={handleChange}
-                  error={""}
+                  error={''}
                 />
               </div>
               {inputFields.map((field) => (
@@ -391,4 +405,4 @@ const Profile = () => {
   );
 };
 
-export default withAuth("Student", Profile);
+export default withAuth('Student', Profile);

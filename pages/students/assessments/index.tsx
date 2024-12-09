@@ -18,7 +18,7 @@ const Assessments = () => {
           </span>
         </div>
 
-        <div className="grid max-md:place-items-center  md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-fit w-full gap-8 !mt-8">
+        <div className="grid max-md:place-items-center  md:grid-cols-2 lg:grid-cols-3  h-fit w-full gap-8 !mt-8">
           {subjectData.map((subject, index) => (
             <SubjectCard
               key={index}

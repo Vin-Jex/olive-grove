@@ -1,12 +1,12 @@
-import Button from "@/components/Atoms/Button";
+import Button from '@/components/Atoms/Button';
 import {
   TChapter,
   TCourse,
   TLesson,
   TSection,
   TSubSection,
-} from "@/components/utils/types";
-import { capitalize } from "@/components/utils/utils";
+} from '@/components/utils/types';
+import { capitalize } from '@/components/utils/utils';
 import React, {
   FC,
   ReactNode,
@@ -15,24 +15,27 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
-import { useRouter } from "next/router";
-import { usePathname } from "next/navigation";
-import Image, { StaticImageData } from "next/image";
-import dummyImage from "@/images/dummy-img.jpg";
-import Input from "@/components/Atoms/Input";
-import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
+} from 'react';
+import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
+import Image, { StaticImageData } from 'next/image';
+import dummyImage from '@/images/dummy-img.jpg';
+import Input from '@/components/Atoms/Input';
+import { baseUrl } from '@/components/utils/baseURL';
+import Cookies from 'js-cookie';
 
 export type TTabBody = { slug: string; content: ReactNode };
 
 async function fetchCourses(id: string) {
   try {
     const response = await fetch(`${baseUrl}/courses/${id}`, {
-      method: "GET",
-      credentials: "include",
+      method: 'GET',
+      credentials: 'include',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
+        Authorization: `Bearer accessToken=${Cookies.get(
+          'accessToken'
+        )};refreshToken=${Cookies.get('refreshToken')}`,
       },
     });
     if (response.ok) {
@@ -45,19 +48,26 @@ async function fetchCourses(id: string) {
 }
 
 // Function to collect IDs of lessons, sections, and subsections in a linear array
-function collectLinearContentIds(data: TCourse): string[] {
-  const ids: string[] = [];
+type TContentId = { id: string; isViewed: boolean }[];
+export function collectLinearContentIds(data: TCourse): TContentId {
+  const contentIds = [] as TContentId;
 
   // Helper function to traverse chapters, lessons, sections, and subsections
   function traverseItem(item: TChapter) {
     if (item.lessons) {
       // Traverse lessons
       item.lessons.forEach((lesson: TLesson) => {
-        lesson._id && ids.push(lesson._id); // Add lesson ID
+        lesson._id &&
+          contentIds.push({ id: lesson._id, isViewed: lesson.viewed! }); // Add lesson ID
         lesson.sections.forEach((section: TSection) => {
-          section._id && ids.push(section._id); // Add section ID
+          section._id &&
+            contentIds.push({ id: section._id, isViewed: section.viewed! }); // Add section ID
           section.subsections.forEach((subsection: TSubSection) => {
-            subsection._id && ids.push(subsection._id); // Add subsection ID
+            subsection._id &&
+              contentIds.push({
+                id: subsection._id,
+                isViewed: subsection.viewed!,
+              }); // Add subsection ID
           });
         });
       });
@@ -66,25 +76,32 @@ function collectLinearContentIds(data: TCourse): string[] {
 
   // Traverse all data items (chapters)
 
-  data.chapters?.forEach((chapter: TChapter) => {
+  data?.chapters?.forEach((chapter: TChapter) => {
     traverseItem(chapter);
   }) ?? [];
 
-  return ids;
+  return contentIds;
 }
 
-function getPreviousId(currentId: string, linearIds: string[]): string | null {
-  const currentIndex = linearIds.indexOf(currentId);
+function getPreviousId(
+  currentId: string,
+  linearIds: TContentId
+): string | null {
+  const currentIndex = linearIds.findIndex(
+    (content) => content.id === currentId
+  );
   if (currentIndex > 0) {
-    return linearIds[currentIndex - 1]; // Return the ID of the previous item
+    return linearIds[currentIndex - 1].id; // Return the ID of the previous item
   }
   return null; // Return null if there's no previous item
 }
 
-function getNextId(currentId: string, linearIds: string[]): string | null {
-  const currentIndex = linearIds.indexOf(currentId);
+function getNextId(currentId: string, linearIds: TContentId): string | null {
+  const currentIndex = linearIds.findIndex(
+    (content) => content.id === currentId
+  );
   if (currentIndex > 0) {
-    return linearIds[currentIndex + 1]; // Return the ID of the previous item
+    return linearIds[currentIndex + 1].id; // Return the ID of the previous item
   }
   return null; // Return null if there's no previous item
 }
@@ -94,14 +111,16 @@ const Tab: FC<{
   body: TTabBody[];
 }> = ({ slugs, body }) => {
   const [activeTab, setActiveTab] = useState(slugs[0].key);
-  const [contentIds, setContentIds] = useState<string[]>([]);
+  const [contentIds, setContentIds] = useState<TContentId>([]);
+  const [comment, setComment] = useState('');
+  const [commentError, setCommentError] = useState('');
   const [profileImage, setProfileImage] = useState<string | StaticImageData>(
     dummyImage
   );
   const router = useRouter();
   const { topic } = router.query;
   const pathName = usePathname();
-  const subjectId = pathName.split("/").pop();
+  const subjectId = pathName.split('/').pop();
   const getContentIds = useMemo(() => collectLinearContentIds, []);
   useEffect(() => {
     async function fetchNavigate() {
@@ -115,17 +134,20 @@ const Tab: FC<{
   }, [subjectId, getContentIds]);
 
   const fetchProfileImage = useCallback(async () => {
-    const userId = Cookies.get("userId");
+    const userId = Cookies.get('userId');
     try {
-      const response = await fetch(`${baseUrl}/students/${userId}`);
+      const response = await fetch(`${baseUrl}/student`, {
+        credentials: 'include',
+      });
       if (!response) setProfileImage(dummyImage);
       const data = await response.json();
       setProfileImage(data.profileImage);
     } catch (err) {
-      console.error("failed to load student information");
+      console.error('failed to load student information');
       setProfileImage(dummyImage);
     }
   }, []);
+
   useEffect(() => {
     fetchProfileImage();
   }, [fetchProfileImage]);
@@ -143,70 +165,98 @@ const Tab: FC<{
       router.push(`${pathName}?topic=${previousId}`);
     }
   }
-  const lastViewPoint = useRef(0);
-  const [viewedSegment, setViewedSegment] = useState<
-    { start: number; end: number }[]
-  >([]);
 
-  //* Track the video progress
-  useEffect(() => {
-    const videoElement = document.querySelector(
-      ".video-player"
-    ) as HTMLMediaElement;
-
-    if (!videoElement) return;
-
-    function handleTimeUpdate() {
-      const currentTime = videoElement.currentTime;
-
-      setViewedSegment((prev) => {
-        const segment = [...prev];
-        const lastSegment = segment[segment.length - 1];
-        if (lastSegment && lastViewPoint.current === lastSegment.end) {
-          lastSegment.end = currentTime;
-        } else {
-          segment.push({
-            start: lastViewPoint.current,
-            end: currentTime,
-          });
-        }
-        return segment;
+  async function handleComment(form: React.FormEvent<HTMLFormElement>) {
+    form.preventDefault();
+    try {
+      const response = await fetch(`${baseUrl}/comment`, {
+        //endpoint to submit comment
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer accessToken=${Cookies.get(
+            'accessToken'
+          )};refreshToken=${Cookies.get('refreshToken')}`,
+        },
       });
-      lastViewPoint.current = currentTime;
-    }
 
-    window.addEventListener("timeupdate", handleTimeUpdate);
-
-    return () => {
-      window.removeEventListener("timeupdate", handleTimeUpdate);
-    };
-  }, []);
-
-  useEffect(() => {
-    const videoElement = document.querySelector(
-      ".video-player"
-    ) as HTMLMediaElement;
-
-    if (!videoElement) return;
-
-    function durationWatched() {
-      if (viewedSegment) {
-        return viewedSegment.reduce(
-          (acc, curr) => acc + (curr.end - curr.start),
-          0
-        );
+      if (!response.ok) {
+        setCommentError('Failed to submit comment');
       }
-      return 0;
+    } catch (err) {
+      console.error(err);
+      console.log('sure there is an error???');
+      setCommentError('Failed to submit comment');
+      //displaying an error if submission failed
     }
+    console.log(form);
+    console.log('comment submitted');
+  }
+  // const lastViewPoint = useRef(0);
+  // const [viewedSegment, setViewedSegment] = useState<
+  //   { start: number; end: number }[]
+  // >([]);
 
-    const duration = videoElement.duration;
-    const watchedDuration = durationWatched();
-    if (watchedDuration >= 0.7 * duration)
-      console.log(
-        `${(watchedDuration / duration) * 100}% of the video watched`
-      );
-    else console.log("not watched enoug of the video yet");
-  }, [viewedSegment]);
+  // //* Track the video progress
+  // useEffect(() => {
+  //   const videoElement = document.querySelector(
+  //     '.video-player'
+  //   ) as HTMLMediaElement;
+
+  //   if (!videoElement) return;
+  //   console.log('yay!! I can find the video element');
+
+  //   function handleTimeUpdate() {
+  //     const currentTime = videoElement.currentTime;
+
+  //     setViewedSegment((prev) => {
+  //       const segment = [...prev];
+  //       const lastSegment = segment[segment.length - 1];
+  //       if (lastSegment && lastViewPoint.current === lastSegment.end) {
+  //         lastSegment.end = currentTime;
+  //       } else {
+  //         segment.push({
+  //           start: lastViewPoint.current,
+  //           end: currentTime,
+  //         });
+  //       }
+  //       return segment;
+  //     });
+  //     lastViewPoint.current = currentTime;
+  //   }
+
+  //   window.addEventListener('timeupdate', handleTimeUpdate);
+
+  //   return () => {
+  //     window.removeEventListener('timeupdate', handleTimeUpdate);
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   const videoElement = document.querySelector(
+  //     '.video-player'
+  //   ) as HTMLMediaElement;
+
+  //   if (!videoElement) return;
+
+  //   function durationWatched() {
+  //     if (viewedSegment) {
+  //       return viewedSegment.reduce(
+  //         (acc, curr) => acc + (curr.end - curr.start),
+  //         0
+  //       );
+  //     }
+  //     return 0;
+  //   }
+
+  //   const duration = videoElement.duration;
+  //   const watchedDuration = durationWatched();
+  //   if (watchedDuration >= 0.7 * duration)
+  //     console.log(
+  //       `${(watchedDuration / duration) * 100}% of the video watched`
+  //     );
+  //   else console.log('not watched enoug of the video yet');
+  // }, [viewedSegment]);
 
   return (
     <div className='min-[1560px]:w-[64rem] flex flex-col gap-6'>
@@ -217,8 +267,8 @@ const Tab: FC<{
             <div
               className={`px-7 py-2 font-medium text-sm cursor-pointer transition ${
                 activeTab === slug.key
-                  ? "border-primary border-b-2 bg-[#32A8C41A] text-primary"
-                  : ""
+                  ? 'border-primary border-b-2 bg-[#32A8C41A] text-primary'
+                  : ''
               }`}
               onClick={() => setActiveTab(slug.key)}
               key={i}
@@ -247,6 +297,11 @@ const Tab: FC<{
           </Button>
         </div>
         <div>
+          {commentError && (
+            <span className='text-red-500 text-sm relative left-[5.4rem]'>
+              {commentError}
+            </span>
+          )}
           <div className='grid grid-cols-[50px_1fr] py-8 gap-4 w-full'>
             <div>
               <Image
@@ -257,23 +312,55 @@ const Tab: FC<{
               />
             </div>
             {/**profil imega */}
-            <div className='relative '>
+            <form onSubmit={handleComment} className='relative '>
               <Input
                 name='text'
                 className='rounded-full w-full px-3 py-3'
                 placeholder='Share your thoughts'
-                value=''
-                onChange={() => {}}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
               />
-              <button className='h-full absolute right-2 top-0  rounded-full'>
-                <SendIcon className='w-full h-[75%]' />
+              <button
+                type='submit'
+                className='h-full absolute right-2 -top-[0.45rem]  rounded-full'
+              >
+                <SendIcon className='w-full h-[60%]' />
               </button>
-            </div>
+            </form>
+          </div>
+          <div>
+            {commentData.map((comment, i) => (
+              <DisplayComment comment={comment} i={i} key={i} />
+            ))}
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+function DisplayComment({ comment, i }: { comment: TComment; i: number }) {
+  const [showReply, setShowReply] = useState(false);
+  return (
+    <div className='border-b'>
+      <CommentCard setShowReply={setShowReply} comment={comment} key={i} />
+      <div className='pl-9'>
+        {comment.replies &&
+          showReply &&
+          comment.replies.map((reply, i) => (
+            <CommentCard setShowReply={setShowReply} comment={reply} key={i} />
+          ))}
+      </div>
+    </div>
+  );
+}
+
+type TComment = {
+  studentName: string;
+  comment: string;
+  commentNumber?: number;
+  replies?: { studentName: string; comment: string; timeAgo: string }[];
+  timeAgo: string;
 };
 
 function SendIcon({ className }: { className: string }) {
@@ -307,4 +394,145 @@ function SendIcon({ className }: { className: string }) {
   );
 }
 
+function CommentCard({
+  comment,
+  setShowReply,
+}: {
+  comment: TComment;
+  setShowReply: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  return (
+    <div className='py-5  space-y-7'>
+      <div className='grid items-center grid-cols-[40px_1fr] gap-4'>
+        <div className='rounded-full  border overflow-hidden  w-[40px] h-[40px]'>
+          <Image
+            src={dummyImage}
+            className=' h-full w-full'
+            width={40}
+            height={40}
+            alt='student profile'
+          />
+        </div>
+        <div className='flex flex-col gap-2'>
+          <span className='text-dark font-roboto font-medium text-sm'>
+            {comment.studentName}
+            <span className=' text-subtext'> • {comment.timeAgo}</span>
+          </span>
+          <span className='text-subtext text-sm'>{comment.comment}</span>
+        </div>
+      </div>
+      {comment.replies && (
+        <button onClick={() => setShowReply((c) => !c)} className='px-5 h-4'>
+          <MessageIcon commentNumber={comment.replies.length} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function MessageIcon({ commentNumber }: { commentNumber: number }) {
+  return (
+    <div className='flex h-full items-center'>
+      <div className='h-full flex items-center'>
+        <svg
+          width='20'
+          height='20'
+          viewBox='0 0 20 20'
+          fill='none'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            d='M2.5 10C2.5 5.85787 5.85787 2.5 10 2.5C14.1422 2.5 17.5 5.85787 17.5 10C17.5 14.1422 14.1422 17.5 10 17.5C8.76033 17.5 7.59087 17.1992 6.56067 16.6667C5.91822 16.3346 3.43407 17.9957 2.91667 17.5C2.40582 17.0107 3.85992 14.3664 3.50337 13.75C2.86523 12.6468 2.5 11.3661 2.5 10Z'
+            stroke='#3C413C'
+            stroke-opacity='0.8'
+            stroke-width='1.5'
+            stroke-linecap='round'
+            stroke-linejoin='round'
+          />
+          <path
+            d='M6.66699 11.6667H13.3337'
+            stroke='#3C413C'
+            stroke-opacity='0.8'
+            stroke-width='1.5'
+            stroke-linecap='round'
+            stroke-linejoin='round'
+          />
+          <path
+            d='M6.66699 8.33325H13.3337'
+            stroke='#3C413C'
+            stroke-opacity='0.8'
+            stroke-width='1.5'
+            stroke-linecap='round'
+            stroke-linejoin='round'
+          />
+        </svg>
+      </div>
+      <div className='leading-3 pl-2 h-full flex items-center'>{commentNumber.toLocaleString()}</div>
+    </div>
+  );
+}
+
 export default Tab;
+
+const commentData = [
+  {
+    studentName: 'Pilian Pembape',
+    comment: 'Mrs. Elle is the best math teacher everrrs',
+    commentNumber: 5,
+    replies: [
+      {
+        studentName: 'Student Name',
+        comment: 'Mrs. Elle is the best math teacher everrrs',
+        timeAgo: '5h ago',
+      },
+      {
+        studentName: 'Student Name',
+        comment: 'Mrs. Elle is the best math teacher everrrs',
+        timeAgo: '5h ago',
+      },
+    ],
+    timeAgo: '5h ago',
+  },
+  {
+    studentName: 'Harry Lineker',
+    comment: 'Mrs. Elle is the best math teacher everrrs',
+    commentNumber: 5,
+    replies: [
+      {
+        studentName: 'Student Name',
+        comment: 'Mrs. Elle is the best math teacher everrrs',
+        timeAgo: '5h ago',
+      },
+      {
+        studentName: 'Student Name',
+        comment: 'Mrs. Elle is the best math teacher everrrs',
+        timeAgo: '5h ago',
+      },
+    ],
+    timeAgo: '5h ago',
+  },
+  {
+    studentName: 'Manchester united',
+    comment: 'Mrs. Elle is the best math teacher everrrs',
+    commentNumber: 5,
+    replies: [
+      {
+        studentName: 'Mary Ann',
+        comment: 'Mrs. Elle is the best math teacher everrrs',
+        timeAgo: '5h ago',
+      },
+      {
+        studentName: 'Student Name',
+        comment: 'Mrs. Elle is the best math teacher everrrs',
+        timeAgo: '5h ago',
+      },
+    ],
+    timeAgo: '5h ago',
+  },
+  {
+    studentName: 'Student Name',
+    comment: 'Mrs. Elle is the best math teacher everrrs',
+    commentNumber: 5,
+    timeAgo: '5h ago',
+  },
+];

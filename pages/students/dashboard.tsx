@@ -1,42 +1,44 @@
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import React, { useEffect, useState } from "react";
-import Img from "@/public/image/welcome_img.svg";
-import Image from "next/image";
-import ClassCard from "@/components/Molecules/Card/ClassCard";
-import ClassModal from "@/components/Molecules/Modal/ClassModal";
-import withAuth from "@/components/Molecules/WithAuth";
-import { baseUrl } from "@/components/utils/baseURL";
+import Cookies from 'js-cookie';
+import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
+import React, { useEffect, useState } from 'react';
+import Img from '@/public/image/welcome_img.svg';
+import Image from 'next/image';
+import ClassCard from '@/components/Molecules/Card/ClassCard';
+import ClassModal from '@/components/Molecules/Modal/ClassModal';
+import withAuth from '@/components/Molecules/WithAuth';
+import { baseUrl } from '@/components/utils/baseURL';
+import Calendar from '@/components/Molecules/Calendar';
 
 const TodayClass = [
   {
-    subject: "Physics",
-    time: "08:30AM - 9:30AM",
-    description: "Introduction to Physics",
-    teacher: "Mr. John Doe",
+    subject: 'Physics',
+    time: '08:30AM - 9:30AM',
+    description: 'Introduction to Physics',
+    teacher: 'Mr. John Doe',
   },
   {
-    subject: "English Studies",
-    time: "09:40AM - 10:20AM",
-    description: "Introduction to English",
-    teacher: "Mrs. Jane Doe",
+    subject: 'English Studies',
+    time: '09:40AM - 10:20AM',
+    description: 'Introduction to English',
+    teacher: 'Mrs. Jane Doe',
   },
   {
-    subject: "Chemistry",
-    time: "10:30AM - 11:30AM",
-    description: "Introduction to Chemistry",
-    teacher: "Mr. John Doe",
+    subject: 'Chemistry',
+    time: '10:30AM - 11:30AM',
+    description: 'Introduction to Chemistry',
+    teacher: 'Mr. John Doe',
   },
   {
-    subject: "Agricultural Studies",
-    time: "11:40AM - 12:20PM",
-    description: "Introduction to Agriculture",
-    teacher: "Mrs. Jane Doe",
+    subject: 'Agricultural Studies',
+    time: '11:40AM - 12:20PM',
+    description: 'Introduction to Agriculture',
+    teacher: 'Mrs. Jane Doe',
   },
   {
-    subject: "Computer Science",
-    time: "12:30PM - 1:30PM",
-    description: "Introduction to Computer Science",
-    teacher: "Mr. John Doe",
+    subject: 'Computer Science',
+    time: '12:30PM - 1:30PM',
+    description: 'Introduction to Computer Science',
+    teacher: 'Mr. John Doe',
   },
 ];
 
@@ -46,7 +48,7 @@ type CardProps = {
   footer?: string;
 };
 
-function Card({ header, main, footer = "" }: CardProps) {
+function Card({ header, main, footer = '' }: CardProps) {
   return (
     <div className='flex flex-col justify-start text-start w-full border space-y-3 rounded-md shadow-lg py-4 px-6'>
       <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
@@ -64,17 +66,24 @@ const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalAss, setOpenModalAss] = useState(false);
   const [studentInfo, setStudentInfo] = useState({
-    firstName: "",
+    firstName: '',
   });
   useEffect(() => {
     async function fetchStudentProfile() {
+      const refreshToken = Cookies.get('refreshToken');
+      const accessToken = Cookies.get('accessToken');
       try {
-        const response = await fetch(`${baseUrl}/students`, {
-          credentials: "include",
+        const response = await fetch(`${baseUrl}/student`, {
+          // credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer accessToken=${accessToken};requestToken=${refreshToken}`,
+          },
         });
         if (!response.ok) {
           //handle this case.
           //since formdata has default value I am not sure that we need to reset them here.
+          console.error(response);
         }
         const json = await response.json();
         setStudentInfo({ firstName: json.firstName });
@@ -107,8 +116,8 @@ const Dashboard = () => {
         <div className='p-4 sm:p-6 md:p-8 lg:p-12 space-y-5'>
           {/* start */}
           <div className='xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
-            <div className='bg-primary w-full rounded-3xl font-roboto relative overflow-hidden max-h-[200px] '>
-              <div className='flex flex-col px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
+            <div className='bg-primary w-full rounded-3xl font-roboto relative overflow-hidden h-full '>
+              <div className='flex flex-col h-full justify-center my-auto px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
                 <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
                   Welcome back, {studentInfo.firstName}
                 </h3>
@@ -119,7 +128,7 @@ const Dashboard = () => {
                   Continue learning to become the best!
                 </span>
               </div>
-              <div className='w-[80px] sm:w-[130px] md:w-[160px] lg:w-[200px]  absolute right-0 bottom-0'>
+              <div className='w-[80px] sm:w-[130px] md:w-[160px] lg:w-[400px]  absolute right-0 bottom-0'>
                 <Image
                   src={Img}
                   alt={`${Img} Pics`}
@@ -129,7 +138,9 @@ const Dashboard = () => {
                 />
               </div>
             </div>
-            <div className='bg-gray-300 h-full rounded-lg p-2'>Calendar</div>
+            <div className=' h-full rounded-lg p-2'>
+              <Calendar />
+            </div>
           </div>
           {/* <div className="flex flex-col px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 md:py-6 lg:py-7 border-2 w-full rounded-3xl font-roboto gap-4 sm:gap-5 md:gap-6"> */}
 
@@ -148,6 +159,11 @@ const Dashboard = () => {
               header='No. of Courses'
               main='8'
               footer='Mathematics, English, Physics, Chemistry, Biology'
+            />
+            <Card
+              header='Current Session'
+              main='2021/2022'
+              footer='NExt session starts in 3 months'
             />
           </div>
           {/* </div> */}
@@ -170,4 +186,4 @@ const Dashboard = () => {
   );
 };
 
-export default withAuth("Student", Dashboard);
+export default withAuth('Student', Dashboard);
