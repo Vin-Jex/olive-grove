@@ -1,21 +1,21 @@
 import { TChapter } from "@/components/utils/types";
 import { FC } from "react";
-import Cookies from "js-cookie";
 import Add from "./CourseAddButton";
 import Wrapper from "./CourseWrapper";
 import Lesson from "./CourseLesson";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Chapter: FC<{
   chapter: TChapter;
 }> = ({ chapter }) => {
-  const userRole = Cookies.get("role");
+  const { user } = useAuth();
   return (
     <>
       <Wrapper
-        type="section"
+        type='section'
         title={chapter.title}
         existingDetails={chapter}
-        sectionType="chapter"
+        sectionType='chapter'
         sectionId={chapter._id!}
       >
         {chapter.lessons.map((lesson) => (
@@ -23,8 +23,8 @@ const Chapter: FC<{
             <Lesson lesson={lesson} chapterId={chapter._id || ""} />
           </>
         ))}
-        {userRole === "Teacher" && (
-          <Add type="lesson" parentId={chapter._id || ""} />
+        {user?.role === "Teacher" && (
+          <Add type='lesson' parentId={chapter._id || ""} />
         )}
       </Wrapper>
     </>

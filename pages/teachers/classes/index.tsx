@@ -1,21 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
-import SwitchContentNav from "@/components/Molecules/Navs/SwitchContentNav";
-import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import Button from "@/components/Atoms/Button";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
 import ServerError from "@/components/Atoms/ServerError";
-import NotFoundError from "@/components/Atoms/NotFoundError";
 import Loader from "@/components/Atoms/Loader";
-import { Table, TableCol, TableRow } from "@/components/Molecules/Table/Table";
+import { Table } from "@/components/Molecules/Table/Table";
 import {
   CreateOrEditClassModal,
   DeleteClassModal,
 } from "@/components/Molecules/Modal/CustomClassModal";
 import EachClass from "@/components/Atoms/Class/EachClass";
 import { TClass, TFetchState } from "@/components/utils/types";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Classes = () => {
   const [openModalEdit, setOpenModalEdit] = useState(false);
@@ -128,64 +125,41 @@ const Classes = () => {
         error: undefined,
       }));
 
-      const userId = Cookies.get("userId");
-      const token = Cookies.get("jwt");
-
-      const response = await fetch(`${baseUrl}/classes/all`, {
-        headers: {
-          Authorization: `${token}`,
-        },
+      const response = await axiosInstance.get(`/classes/all`, {
+        withCredentials: true,
       });
 
-      if (!response.ok) {
-        // const errorData = await response.json();
-        if (
-          // response.status === "No lectures found for the provided teacher ID."
-          response.status === 404
-        ) {
-          // Display error state
-          setFetchClassesState((prev) => ({
-            data: [],
-            loading: false,
-            error: {
-              message: "No classes found for your profile.",
-              status: 404,
-              state: true,
-            },
-          }));
-        } else {
-          // Display error state
-          setFetchClassesState((prev) => ({
-            ...prev,
-            loading: false,
-            error: {
-              message: "Failed to load classes.",
-              status: 500,
-              state: true,
-            },
-          }));
-        }
-        return;
-      }
-
-      const data = await response.json();
+      const { data } = response;
       // Display data
       setFetchClassesState((prev) => ({
         data: data?.data,
         loading: false,
         error: undefined,
       }));
-    } catch (err) {
-      // Display error state
-      setFetchClassesState((prev) => ({
-        ...prev,
-        loading: false,
-        error: {
-          message: "Failed to load classes.",
-          status: 500,
-          state: true,
-        },
-      }));
+    } catch (err: any) {
+      if (err?.response.status === 404) {
+        // Display error state
+        setFetchClassesState((prev) => ({
+          data: [],
+          loading: false,
+          error: {
+            message: "No classes found for your profile.",
+            status: 404,
+            state: true,
+          },
+        }));
+      } else {
+        // Display error state
+        setFetchClassesState((prev) => ({
+          ...prev,
+          loading: false,
+          error: {
+            message: "Failed to load classes.",
+            status: 500,
+            state: true,
+          },
+        }));
+      }
     } finally {
       // Remove loading state
       setFetchClassesState((prev) => ({ ...prev, loading: false }));
@@ -195,68 +169,55 @@ const Classes = () => {
   /**
    * Function to create a new class
    */
-  const createClass = useCallback(async (formState: TClass) => {
-    try {
-      // Display loading state
-      setCreateClasseState((prev) => ({
-        ...prev,
-        loading: true,
-        error: undefined,
-      }));
+  const createClass = useCallback(
+    async (formState: TClass) => {
+      try {
+        // Display loading state
+        setCreateClasseState((prev) => ({
+          ...prev,
+          loading: true,
+          error: undefined,
+        }));
 
-      const userId = Cookies.get("userId");
-      const token = Cookies.get("jwt");
+        delete formState._id;
 
-      delete formState._id;
+        const response = await axiosInstance.post(
+          `/classes`,
+          {
+            ...formState,
+          },
+          { withCredentials: true }
+        );
 
-      const response = await fetch(`${baseUrl}/classes`, {
-        headers: {
-          Authorization: `${token}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(formState),
-      });
+        const { data } = response;
+        // Display data
+        setCreateClasseState((prev) => ({
+          data: data?.data,
+          loading: false,
+          error: undefined,
+        }));
 
-      if (!response.ok) {
-        const errorData = await response.json();
+        // Add the newly created class to the list of classes
+        updateClasses(data.data, "create");
+
+        return true;
+      } catch (err) {
+        console.error("ERROR CREATING CLASS", err);
         // Display error state
         setCreateClasseState((prev) => ({
           ...prev,
           loading: false,
-          error: errorData?.data || "Failed to create class",
+          error: "Failed to create class",
         }));
 
         return false;
+      } finally {
+        // Remove loading state
+        setCreateClasseState((prev) => ({ ...prev, loading: false }));
       }
-
-      const data = await response.json();
-      // Display data
-      setCreateClasseState((prev) => ({
-        data: data?.data,
-        loading: false,
-        error: undefined,
-      }));
-
-      // Add the newly created class to the list of classes
-      updateClasses(data.data, "create");
-
-      return true;
-    } catch (err) {
-      console.error("ERROR CREATING CLASS", err);
-      // Display error state
-      setCreateClasseState((prev) => ({
-        ...prev,
-        loading: false,
-        error: "Failed to create class",
-      }));
-
-      return false;
-    } finally {
-      // Remove loading state
-      setCreateClasseState((prev) => ({ ...prev, loading: false }));
-    }
-  }, []);
+    },
+    [updateClasses]
+  );
 
   /**
    * Function to edit an existing class
@@ -271,31 +232,15 @@ const Classes = () => {
           error: undefined,
         }));
 
-        const userId = Cookies.get("userId");
-        const token = Cookies.get("jwt");
-
-        const response = await fetch(`${baseUrl}/classes/${formState._id}`, {
-          headers: {
-            Authorization: `${token}`,
-            "Content-Type": "application/json",
+        const response = await axiosInstance.put(
+          `/classes/${formState._id}`,
+          {
+            ...formState,
           },
-          method: "PUT",
-          body: JSON.stringify(formState),
-        });
+          { withCredentials: true }
+        );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          // Display error state
-          setCreateClasseState((prev) => ({
-            ...prev,
-            loading: false,
-            error: errorData?.data || "Failed to update class",
-          }));
-
-          return false;
-        }
-
-        const data = await response.json();
+        const { data } = response;
         // Display data
         setCreateClasseState((prev) => ({
           data: data?.data,
@@ -337,30 +282,14 @@ const Classes = () => {
           error: undefined,
         }));
 
-        const userId = Cookies.get("userId");
-        const token = Cookies.get("jwt");
+        const response = await axiosInstance.delete(
+          `/classes/${formState._id}`,
+          {
+            withCredentials: true,
+          }
+        );
 
-        const response = await fetch(`${baseUrl}/classes/${formState._id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          // Display error state
-          setCreateClasseState((prev) => ({
-            ...prev,
-            loading: false,
-            error: errorData?.data || "Failed to delete class",
-          }));
-
-          return false;
-        }
-
-        const data = await response.json();
+        const { data } = response;
         // Display data
         setCreateClasseState((prev) => ({
           data: data?.data,

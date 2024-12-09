@@ -5,13 +5,14 @@ import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import Button from "@/components/Atoms/Button";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
 import ServerError from "@/components/Atoms/ServerError";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import Loader from "@/components/Atoms/Loader";
 import LectureModal from "@/components/Molecules/Modal/LectureModal";
 import { ILectureData, TCourse, TFetchState } from "@/components/utils/types";
 import { fetchCourses } from "@/components/utils/course";
+import { useAuth } from "@/contexts/AuthContext";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Lectures = () => {
   const [activeItem, setActiveItem] = useState("all courses");
@@ -24,6 +25,7 @@ const Lectures = () => {
     loading: true,
     error: undefined,
   });
+  const { user } = useAuth();
   const [formState, setFormState] = useState<{
     subject: string;
     description: string;
@@ -73,10 +75,10 @@ const Lectures = () => {
         // Call the reusable getCourses function, passing the setClasses state updater
         const courses = await fetchCourses(filter);
 
-        if (Array.isArray(courses)) {
+        if (typeof courses === "object") {
           // Set the courses state to the fetched list of courses
           setCourses({
-            data: courses,
+            data: courses.data,
             loading: false,
             error: undefined,
           });
@@ -104,27 +106,11 @@ const Lectures = () => {
    */
   const fetchLectures = useCallback(async () => {
     try {
-      const userId = Cookies.get("userId");
-      const token = Cookies.get("jwt");
+      const userId = user?.id;
       setIsLoading((prevState) => ({ ...prevState, fetching: true }));
-      const response = await fetch(`${baseUrl}/teacher/${userId}/lectures`, {
-        method: "GET",
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
+      const response = await axiosInstance.get(`/teacher/lectures`);
 
-      if (!response.ok) {
-        if (response.status === 404) {
-          setError({ msg: "No lecture found for your profile.", status: 404 });
-          setLectures([]);
-        } else {
-          setError({ msg: "Failed to load lectures.", status: 500 });
-        }
-        return;
-      }
-
-      const data = await response.json();
+      const { data } = response;
       console.log("LECTURES: ", data);
       setLectures(data?.data);
     } catch (err) {
@@ -132,12 +118,7 @@ const Lectures = () => {
     } finally {
       setIsLoading((prevState) => ({ ...prevState, fetching: false }));
     }
-  }, []);
-
-  useEffect(() => {
-    fetchLectures();
-    getCourses();
-  }, [fetchLectures, getCourses]);
+  }, [user?.id]);
 
   const createOrUpdateLecture = async (
     lectureId?: string,
@@ -151,7 +132,7 @@ const Lectures = () => {
       academicWeekDate,
       recordedLecture,
     } = formState;
-    const userId = Cookies.get("userId");
+    const userId = user?.id;
 
     const lecturePayload = {
       subject,
@@ -172,29 +153,23 @@ const Lectures = () => {
       );
     }
 
-    const token = Cookies.get("jwt");
-
     setIsLoading((prevState) => ({ ...prevState, saving: true }));
 
     try {
-      const url =
-        mode === "edit"
-          ? `${baseUrl}/lecture/${lectureId}`
-          : `${baseUrl}/lecture`;
+      const url = mode === "edit" ? `/lecture/${lectureId}` : `/lecture`;
 
       const method = mode === "edit" ? "PUT" : "POST";
-      const response = await fetch(url, {
+      const response = await axiosInstance({
+        url,
         method,
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `${token}`,
         },
-        body: formData,
+        data: formData,
       });
 
-      if (!response.ok) throw new Error("Error creating/updating lecture");
+      const { data } = response;
 
-      const data = await response.json();
       // Refresh the list of lectures
       fetchLectures();
       setOpenModalCreate(false);
@@ -209,17 +184,9 @@ const Lectures = () => {
 
   const deleteLecture = async (lectureId: string) => {
     setIsLoading({ ...isLoading, deleting: true });
-    const token = Cookies.get("jwt");
 
     try {
-      const response = await fetch(`${baseUrl}/lectures/${lectureId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Error deleting lecture");
+      await axiosInstance.delete(`/lectures/${lectureId}`);
 
       fetchLectures();
     } catch (err) {
@@ -228,6 +195,11 @@ const Lectures = () => {
       setIsLoading({ ...isLoading, deleting: false });
     }
   };
+
+  useEffect(() => {
+    fetchLectures();
+    getCourses();
+  }, [fetchLectures, getCourses]);
 
   return (
     <>
@@ -297,7 +269,9 @@ const Lectures = () => {
                             time={new Date(
                               lectureItem.classTime
                             ).toLocaleString()}
-                            subject={(lectureItem.subject as TCourse).title}
+                            subject={
+                              (lectureItem.subject as TCourse)?.title || ""
+                            }
                             lectureTopic={lectureItem.description}
                             btnLink1={() => {}}
                             btnLink2={() => {

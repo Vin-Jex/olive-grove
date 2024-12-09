@@ -23,7 +23,6 @@ interface RoleCardProps {
 const LoginPath = () => {
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState("");
-
   const handleCardClick = (role: string) => {
     setSelectedRole(role);
   };
@@ -35,7 +34,6 @@ const LoginPath = () => {
       router.push("/auth/path/students/login");
     }
   };
-
   const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {

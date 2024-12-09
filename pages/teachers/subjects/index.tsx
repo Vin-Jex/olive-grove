@@ -13,13 +13,13 @@ import {
 } from "@/components/utils/types";
 import { baseUrl } from "@/components/utils/baseURL";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
-import Cookies from "js-cookie";
 import Loader from "@/components/Atoms/Loader";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import ServerError from "@/components/Atoms/ServerError";
 import Course from "@/components/Atoms/Course/EachCourse";
 import { CourseClass, fetchCourses } from "@/components/utils/course";
 import { Add } from "@mui/icons-material";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Subjects: FC = () => {
   const [searchResults, setSearchResults] = useState<TCourse[]>([]);
@@ -64,14 +64,14 @@ const Subjects: FC = () => {
         // Call the reusable getCourses function, passing the setClasses state updater
         const courses = await fetchCourses(filter);
 
-        if (Array.isArray(courses)) {
+        if (typeof courses === "object") {
           // Set the courses state to the fetched list of courses
           setCourses({
-            data: courses,
+            data: courses.data,
             loading: false,
             error: undefined,
           });
-          setSearchResults(courses);
+          setSearchResults(courses.data);
         } else {
           setCourses({
             data: [],
@@ -101,53 +101,36 @@ const Subjects: FC = () => {
       });
 
       // * Get the access token from the cookies
-      const jwt = Cookies.get("jwt");
-
       // * Make an API request to retrieve the list of classes created by this teacher
-      const response = await fetch(`${baseUrl}/classes/all`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: jwt || "",
-        },
-      });
-
-      // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
-      if (!response.ok) {
-        // * If it's a 404 error, display message that classes couldn't be found
-        if (response.status == 404) {
-          setClasses({
-            data: [],
-            loading: false,
-            error: "No class found",
-          });
-          return;
-        }
-
-        // * If it's any other error code, display default error msg
-        setClasses({
-          data: [],
-          loading: false,
-          error: "An error occurred while retrieving classes",
-        });
-
-        return;
-      }
+      const response = await axiosInstance.get(`/classes/all`);
 
       // * Display the list of classes returned by the endpoint
-      const responseData = (await response.json()) as TResponse<TClass[]>;
+      const responseData = response.data as TResponse<TClass[]>;
       setClasses({
         data: responseData.data,
         loading: false,
         error: undefined,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      // * If it's a 404 error, display message that classes couldn't be found
+      if (error?.response?.status == 404) {
+        setClasses({
+          data: [],
+          loading: false,
+          error: "No class found",
+        });
+        return;
+      }
+
+      // * If it's any other error code, display default error msg
       setClasses({
-        data: undefined,
+        data: [],
         loading: false,
-        error: "An error occurred while fetching classes",
+        error: "An error occurred while retrieving classes",
       });
+
+      return;
     }
   };
 
@@ -188,54 +171,24 @@ const Subjects: FC = () => {
       });
 
       // * Get the access token from the cookies
-      const jwt = Cookies.get("jwt");
-
       const request_data = new FormData();
 
       // * Append the course details to the request body
       request_data.append("title", formState.title);
       request_data.append("description", formState.description || "");
       request_data.append("classId", formState.classId || "");
-      {
-        typeof formState.courseCover === "object" &&
-          request_data.append("courseCover", formState.courseCover);
-      }
+
+      typeof formState.courseCover === "object" &&
+        request_data.append("courseCover", formState.courseCover);
+      !formState.courseCover && request_data.append("courseCover", "");
 
       // * Make an API request to retrieve the list of courses created by this teacher
-      const response = await fetch(`${baseUrl}/courses`, {
-        method: "POST",
-        headers: {
-          // "Content-Type": "multipart/formdata",
-          Authorization: jwt || "",
-        },
-        body: request_data,
+      const response = await axiosInstance.post(`/courses`, request_data, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
-      if (!response.ok) {
-        // * If it's a 400 error, display message that the input details are incomplete
-        if (response.status == 400) {
-          // const data = (await response.json()) as TResponse<any>;
-          setCreateCourseRes({
-            data: undefined,
-            loading: false,
-            error: "Invalid form data passed",
-          });
-          return false;
-        }
-
-        // * If it's any other error code, display default error msg
-        setCreateCourseRes({
-          data: undefined,
-          loading: false,
-          error: "An error occurred while creating the course",
-        });
-
-        return false;
-      }
-
       // * Update the existing data with that returned by the API request
-      const responseData = (await response.json()) as TResponse<TCourse>;
+      const responseData = response.data as TResponse<TCourse>;
       setCreateCourseRes({
         data: responseData.data,
         loading: false,
@@ -262,13 +215,25 @@ const Subjects: FC = () => {
       setSearchResults(newCourses);
 
       return true;
-    } catch (error) {
-      // * Handle unexpected errors during the API request
+    } catch (error: any) {
+      // * If it's a 400 error, display message that the input details are incomplete
+      if (error?.response?.status == 400) {
+        // const data = (await response.json()) as TResponse<any>;
+        setCreateCourseRes({
+          data: undefined,
+          loading: false,
+          error: "Invalid form data passed",
+        });
+        return false;
+      }
+
+      // * If it's any other error code, display default error msg
       setCreateCourseRes({
         data: undefined,
         loading: false,
-        error: "An unexpected error occurred while creating the course",
+        error: "An error occurred while creating the course",
       });
+
       return false;
     }
   };

@@ -1,16 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import SearchInput from "@/components/Atoms/SearchInput";
 import TableReuse from "@/components/Molecules/Table/TableReuse";
-import Img from "@/public/image/student3.png";
 import { TFetchState, TStudent } from "@/components/utils/types";
-import Cookies from "js-cookie";
 import { baseUrl } from "@/components/utils/baseURL";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Students = () => {
-  const router = useRouter();
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [fetchStudentsState, setFetchStudentsState] = useState<
     TFetchState<TStudent[]>
@@ -41,47 +38,9 @@ const Students = () => {
         error: undefined,
       }));
 
-      const userId = Cookies.get("userId");
-      const token = Cookies.get("jwt");
+      const response = await axiosInstance.get(`/students`);
 
-      const response = await fetch(`${baseUrl}/students`, {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        // const errorData = await response.json();
-        if (
-          // response.status === "No lectures found for the provided teacher ID."
-          response.status === 404
-        ) {
-          // Display error state
-          setFetchStudentsState((prev) => ({
-            data: [],
-            loading: false,
-            error: {
-              message: "No students found",
-              status: 404,
-              state: true,
-            },
-          }));
-        } else {
-          // Display error state
-          setFetchStudentsState((prev) => ({
-            ...prev,
-            loading: false,
-            error: {
-              message: "Failed to load students.",
-              status: 500,
-              state: true,
-            },
-          }));
-        }
-        return;
-      }
-
-      const data = await response.json();
+      const { data } = response;
       // Display data
       setFetchStudentsState((prev) => ({
         data: data,
@@ -127,7 +86,7 @@ const Students = () => {
 
   useEffect(() => {
     fetchStudents();
-  }, []);
+  }, [fetchStudents]);
 
   return (
     <TeachersWrapper title="Student" metaTitle="Olive Groove ~ Student">

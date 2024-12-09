@@ -1,12 +1,10 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
-import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
+import Cookies from "js-cookie";
 import Button from "@/components/Atoms/Button";
 import { TCourse, TResponse } from "@/components/utils/types";
-import { baseUrl } from "@/components/utils/baseURL";
 import { useRouter } from "next/router";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
-import Cookies from "js-cookie";
 import { useCourseContext } from "@/contexts/CourseContext";
 import Loader from "@/components/Atoms/Loader";
 import NotFoundError from "@/components/Atoms/NotFoundError";
@@ -15,6 +13,7 @@ import { TopicDetails } from "@/components/Atoms/Course/CourseTopicDetails";
 import SideBar from "@/components/Atoms/Course/CourseSidebar";
 import MobileSideBar from "@/components/Atoms/Course/CourseMobileSideBar";
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
+import { baseUrl } from "@/components/utils/baseURL";
 
 const SubjectDetailsPage: FC = () => {
   const router = useRouter();
@@ -46,14 +45,15 @@ const SubjectDetailsPage: FC = () => {
         });
 
         // * Get the access token from the cookies
-        const jwt = Cookies.get("jwt");
-
         // * Make an API request to retrieve the list of courses created by this teacher
         const response = await fetch(`${baseUrl}/courses/${id}`, {
           method: "GET",
+          // credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            Authorization: jwt || "",
+            Authorization: `Bearer accessToken=${Cookies.get(
+              "accessToken"
+            )};refreshToken=${Cookies.get("refreshToken")}`,
           },
         });
 
@@ -106,7 +106,7 @@ const SubjectDetailsPage: FC = () => {
 
   useEffect(() => {
     if (subjectId) getCourse((subjectId as string) || "nil");
-  }, [subjectId]);
+  }, [getCourse, subjectId]);
 
   return (
     <>

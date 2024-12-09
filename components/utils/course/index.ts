@@ -1,8 +1,10 @@
+import Cookies from "js-cookie";
 import { TCourseModalFormData } from "@/components/utils/types";
 import { TCourse, TFetchState, TResponse } from "../types";
 import { TCourseDispatch } from "@/contexts/CourseContext";
-import Cookies from "js-cookie";
 import { baseUrl } from "../baseURL";
+import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
+import axiosInstance from "../axiosInstance";
 
 /**
  * * Class responsible for creating a new course/subject object
@@ -41,25 +43,38 @@ export const editItem = async (
     });
 
     // * Get the access token from the cookies
-    const jwt = Cookies.get("jwt");
-
     // * If the type is an object
-    const req_body =
-      type === "topic" ? new FormData() : JSON.stringify({ ...reqData });
+    const req_body = ["topic", "lesson"].includes(type)
+      ? new FormData()
+      : JSON.stringify({
+          ...reqData,
+          availableDate: new Date().toISOString(),
+        });
 
-    if (type === "topic" && typeof req_body === "object") {
+    if (["topic", "lesson"].includes(type) && typeof req_body === "object") {
       const entries = Object.entries(reqData);
 
       for (const [key, value] of entries) {
-        if (key === "topicVideo" && typeof reqData[key] === "string") continue;
+        if (!(reqData as any)[key]) continue;
 
-        req_body.append(key, value);
+        if (
+          key === "topicVideo" &&
+          (typeof reqData[key] === "string" || !reqData[key])
+        )
+          continue;
+
+        req_body.append(key, value as string);
       }
+
+      // if (!reqData.topicVideo) {
+      //   req_body.append("topicVideo", "");
+      // }
+      // req_body.append("availableDate", new Date().toISOString());
     }
 
     // * Make an API request to create this item
-    const response = await fetch(
-      `${baseUrl}/courses/${
+    const response = await axiosInstance({
+      url: `/courses/${
         type === "chapter"
           ? "chapters"
           : type === "lesson"
@@ -68,48 +83,17 @@ export const editItem = async (
           ? "section"
           : ""
       }/${reqData._id}`,
-      {
-        method: method || "PUT",
-        headers: {
-          // "Content-Type":
-          //   type === "topic" ? "multipart/formdata" : "application/json",
-          Authorization: jwt || "",
-        },
-        body: req_body,
-      }
-    );
-
-    // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
-    if (!response.ok) {
-      // * If it's a 400 error, display message that the input details are incomplete
-      if (response.status == 400) {
-        const data =
-          method === "PUT"
-            ? ((await response.json()) as TResponse<TCourse>)
-            : { message: undefined };
-        setEditItemRes({
-          data: undefined,
-          loading: false,
-          error: data.message,
-        });
-        return false;
-      }
-
-      // * If it's any other error code, display default error msg
-      setEditItemRes({
-        data: undefined,
-        loading: false,
-        error: `An error occurred while editing the ${type}`,
-      });
-
-      console.error("Returned false");
-      return false;
-    }
+      method: method || "PUT",
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      data: req_body,
+    });
 
     // * Update the existing data with that returned by the API request
     const responseData =
       method === "PUT"
-        ? ((await response.json()) as TResponse<TCourseModalFormData>)
+        ? (response.data as TResponse<TCourseModalFormData>)
         : method === "DELETE"
         ? { data: reqData }
         : { data: undefined };
@@ -144,6 +128,8 @@ export const editItem = async (
       payload: {
         title: responseData.data?.title,
         description: responseData.data?.description,
+        topicNote: responseData.data?.topicNote,
+        topicVideo: responseData.data?.topicVideo,
         _id: responseData.data?._id,
         parentId:
           method === "PUT"
@@ -164,14 +150,29 @@ export const editItem = async (
     console.log("Adding " + type);
 
     return true;
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    // * If it's a 400 error, display message that the input details are incomplete
+    if (error?.response?.status == 400) {
+      const data =
+        method === "PUT"
+          ? (error?.response?.data as TResponse<TCourse>)
+          : { message: undefined };
+      setEditItemRes({
+        data: undefined,
+        loading: false,
+        error: data.message,
+      });
+      return false;
+    }
+
+    // * If it's any other error code, display default error msg
     setEditItemRes({
       data: undefined,
       loading: false,
-      error: "An error occured",
+      error: `An error occurred while editing the ${type}`,
     });
 
+    console.error("Returned false");
     return false;
   }
 };
@@ -203,44 +204,41 @@ export const editItem = async (
 export const fetchCourses = async (filter?: {
   query: "title";
   value: string;
-}): Promise<TCourse[] | string> => {
+}): Promise<{ data: TCourse[] } | string> => {
   try {
+    const userRole = Cookies.get("role");
     // Construct the API URL with optional filter
-    const url = `${baseUrl}/courses${
-      filter ? `?${filter.query}=${filter.value}` : ""
-    }`;
+    const url = `/courses${filter ? `?${filter.query}=${filter.value}` : ""}`;
 
     // Get the access token from the cookies
-    const jwt = Cookies.get("jwt");
-
     // Make an API request to retrieve the list of courses
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: jwt || "",
-      },
-    });
 
-    // Check for response errors
-    if (!response.ok) {
-      if (response.status === 404) {
-        // Return error message for 404
-        return "No course found";
-      } else if (response.status === 401) {
-        //* In this case I had to remove the token since the users token seemed to have expired, is there a better way?
-        console.log(response.status, "response status");
-        Cookies.remove("jwt");
-        Cookies.remove("role");
-        Cookies.remove("userId");
-      } else {
-        // Generic error message
-        return "An error occurred while retrieving courses";
-      }
-    }
+    const response = await axiosInstance.get(url);
+    // const response = await fetch(url, {
+    //   method: "GET",
+    //   credentials: "include",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // });
 
-    const responseData = (await response.json()) as TResponse<TCourse[]>;
-    return responseData.data;
+    // // Check for response errors
+    // if (!response.ok) {
+    //   if (response.status === 404) {
+    //     // Return error message for 404
+    //     return "No course found";
+    //   } else if (response.status === 401) {
+    //     //* In this case I had to remove the token since the users token seemed to have expired, is there a better way?
+    //     handleLogout();
+    //   } else {
+    //     // Generic error message
+    //     return "An error occurred while retrieving courses";
+    //   }
+    // }
+
+    // const responseData = (await response.json()) as TResponse<TCourse[]>;
+
+    return response.data;
   } catch (error) {
     console.error(error);
     // Return error message on exception

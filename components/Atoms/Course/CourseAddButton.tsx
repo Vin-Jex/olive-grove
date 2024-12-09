@@ -1,11 +1,10 @@
 import { TCourseModalFormData } from "@/components/utils/types";
-import { baseUrl } from "@/components/utils/baseURL";
 import { TCourse, TResponse } from "@/components/utils/types";
 import { useCourseContext } from "@/contexts/CourseContext";
 import { FC } from "react";
-import Cookies from "js-cookie";
 import Wrapper from "./CourseWrapper";
-import AddItemSVG from "./AddItemSVG";
+import { baseUrl } from "@/components/utils/baseURL";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Add: FC<{
   type: "chapter" | "lesson" | "topic";
@@ -27,25 +26,35 @@ const Add: FC<{
       });
 
       // * Get the access token from the cookies
-      const jwt = Cookies.get("jwt");
-
       // * If the type is an object
-      const req_body =
-        type === "topic" ? new FormData() : JSON.stringify({ ...formState });
+      const req_body = ["topic", "lesson"].includes(type)
+        ? new FormData()
+        : JSON.stringify({
+            ...formState,
+            availableDate: new Date().toISOString(),
+          });
 
-      if (type === "topic" && typeof req_body === "object") {
+      if (["topic", "lesson"].includes(type) && typeof req_body === "object") {
         const entries = Object.entries(formState);
 
         for (const [key, value] of entries) {
-          if (key === "topicVideo" && typeof formState[key] === "string")
+          if (
+            key === "topicVideo" &&
+            (typeof formState[key] === "string" || !formState[key])
+          )
             continue;
 
-          req_body.append(key, value);
+          req_body.append(key, value as string);
         }
+
+        // if (!formState.topicVideo) {
+        //   req_body.append("topicVideo", undefined as any);
+        // }
+        // req_body.append("availableDate", new Date().toISOString());
       }
 
       // * Make an API request to create this item
-      const response = await fetch(
+      const response = await axiosInstance.post(
         `${baseUrl}/courses/${
           type === "chapter"
             ? "chapters"
@@ -55,42 +64,18 @@ const Add: FC<{
             ? "section"
             : ""
         }/${parentId}`,
+        req_body,
         {
-          method: "POST",
           headers: {
-            ...(type === "topic" ? {} : { "Content-Type": "application/json" }),
-            Authorization: jwt || "",
+            ...(["topic", "lesson"].includes(type)
+              ? { "Content-Type": "multipart/form-data" }
+              : { "Content-Type": "application/json" }),
           },
-          body: req_body,
         }
       );
 
-      // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
-      if (!response.ok) {
-        // * If it's a 400 error, display message that the input details are incomplete
-        if (response.status == 400) {
-          const data = (await response.json()) as TResponse<any>;
-          setModalRequestState({
-            data: undefined,
-            loading: false,
-            error: data.message,
-          });
-          return false;
-        }
-
-        // * If it's any other error code, display default error msg
-        setModalRequestState({
-          data: undefined,
-          loading: false,
-          error: `An error occurred while creating the ${type}`,
-        });
-
-        console.error("Returned false");
-        return false;
-      }
-
       // * Update the existing data with that returned by the API request
-      const responseData = (await response.json()) as TResponse<TCourse>;
+      const responseData = response.data as TResponse<TCourse>;
       setModalRequestState({
         data: responseData.data,
         loading: false,
@@ -119,13 +104,27 @@ const Add: FC<{
       });
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      // * If it's a 400 error, display message that the input details are incomplete
+      if (error?.response?.status == 400) {
+        const data = error?.response?.data as TResponse<any>;
+        setModalRequestState({
+          data: undefined,
+          loading: false,
+          error: data.message,
+        });
+        return false;
+      }
+
+      // * If it's any other error code, display default error msg
       setModalRequestState({
         data: undefined,
         loading: false,
-        error: "An error occured",
+        error: `An error occurred while creating the ${type}`,
       });
+
+      console.error("Returned false");
       return false;
     }
   };

@@ -15,6 +15,8 @@ type OptionalFields = {
   description?: string;
   topicImage?: string;
   lessonId?: string;
+  viewed?: boolean;
+  availableDate?: string;
 };
 
 export type TCourse = {
@@ -36,13 +38,11 @@ export type TLesson = {
   _id?: string;
   title: string;
   sections: TSection[];
-  viewed?: boolean;
 } & OptionalFields;
 
 export type TSection = {
   _id?: string;
   title: string;
-  viewed?: boolean;
   subsections: TSubSection[];
 } & OptionalFields;
 
@@ -50,7 +50,6 @@ export type TSubSection = {
   _id?: string;
   title: string;
   description?: string;
-  viewed?: boolean;
 } & OptionalFields;
 
 export type TResponse<T> = {
@@ -221,3 +220,23 @@ export type TTopicDetails = {
   type: "section" | "lesson";
   topic: TSection | undefined;
 };
+
+export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
+  token: {
+    accessToken: string;
+    refreshToken: string;
+  };
+  details: T extends "student"
+    ? TStudent
+    : T extends "teacher"
+    ? TTeacher
+    : TAdmin;
+};
+
+export type TAssessmnentQuestionProp = {};
+
+export type TAssessmentQuestionType =
+  | "multiple choice"
+  | "paragraph"
+  | "file upload"
+  | "select many";

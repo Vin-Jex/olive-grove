@@ -1,12 +1,19 @@
 import Tab, { TTabBody } from "@/components/Molecules/Tab/Tab";
 import { VideoProps } from "next-video";
-import { TCourse } from "@/components/utils/types";
+import {
+  TChapter,
+  TCourse,
+  TLesson,
+  TSection,
+  TSubSection,
+} from "@/components/utils/types";
 import {
   FC,
   ForwardRefExoticComponent,
   RefAttributes,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -15,20 +22,65 @@ import NotFoundError from "../NotFoundError";
 import { useTopicContext } from "@/contexts/TopicContext";
 import img404 from "@/images/olive-notes-404.png";
 import { Alert, Checkbox, FormControlLabel, Snackbar } from "@mui/material";
+import { useRouter } from "next/router";
 import { baseUrl } from "@/components/utils/baseURL";
 import Cookies from "js-cookie";
-import { useRouter } from "next/router";
 import Button from "../Button";
+import { capitalize } from "@/components/utils/utils";
+import { usePathname } from "next/navigation";
+import CourseQA from "./CourseQA";
+import YouTubeEmbed from "./CourseTopicYouTubeVideo";
 
-const demoNotes = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse tellus lacus, dignissim commodo dictum aliquam, maximus nec mauris. Phasellus sed nisl dignissim erat eleifend congue. Nullam ultricies est a tempus varius. Phasellus vitae massa rutrum, elementum urna sed, volutpat urna. Nam at nulla dui. Suspendisse aliquet metus purus, eget ultrices tellus pharetra eget. Proin dictum urna non aliquet pellentesque. Nunc dapibus gravida justo eu finibus.
-<br />
-<br />
-Duis dapibus purus tristique eros rutrum placerat. Sed et congue augue. Vivamus hendrerit quam vel justo rutrum hendrerit sed a enim. Curabitur a placerat mauris, eu efficitur turpis. Suspendisse tempus, dolor et imperdiet imperdiet, neque nibh mollis dolor, sed laoreet ex lacus id dolor. Aliquam pellentesque nunc ac feugiat tempus. Nulla blandit magna non nulla luctus sollicitudin. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos`;
+// Function to collect IDs of lessons, sections, and subsections in a linear array
+function collectLinearContentIds(data: TCourse): string[] {
+  const ids: string[] = [];
+
+  // Helper function to traverse chapters, lessons, sections, and subsections
+  function traverseItem(item: TChapter) {
+    if (item.lessons) {
+      // Traverse lessons
+      item.lessons.forEach((lesson: TLesson) => {
+        lesson._id && ids.push(lesson._id); // Add lesson ID
+        lesson.sections.forEach((section: TSection) => {
+          section._id && ids.push(section._id); // Add section ID
+          section.subsections.forEach((subsection: TSubSection) => {
+            subsection._id && ids.push(subsection._id); // Add subsection ID
+          });
+        });
+      });
+    }
+  }
+
+  // Traverse all data items (chapters)
+
+  data?.chapters?.forEach((chapter: TChapter) => {
+    traverseItem(chapter);
+  }) ?? [];
+
+  return ids;
+}
+
+function getPreviousId(currentId: string, linearIds: string[]): string | null {
+  const currentIndex = linearIds.indexOf(currentId);
+  if (currentIndex > 0) {
+    return linearIds[currentIndex - 1]; // Return the ID of the previous item
+  }
+  return null; // Return null if there's no previous item
+}
+
+function getNextId(currentId: string, linearIds: string[]): string | null {
+  const currentIndex = linearIds.indexOf(currentId);
+  if (currentIndex > 0) {
+    return linearIds[currentIndex + 1]; // Return the ID of the previous item
+  }
+  return null; // Return null if there's no previous item
+}
 
 export const TopicDetails: FC<{
   course: TCourse;
 }> = ({ course }) => {
   const router = useRouter();
+  const pathName = usePathname();
   const { topicDetails } = useTopicContext();
   const videoRef =
     useRef<ForwardRefExoticComponent<VideoProps & RefAttributes<unknown>>>(
@@ -43,12 +95,40 @@ export const TopicDetails: FC<{
   const [topicIsCompleted, setTopicIsCompleted] = useState(
     topicDetails.topic?.viewed || false
   );
+  const [checkedState, setCheckedState] = useState(
+    topicDetails.topic?.viewed || false
+  );
+  const [contentIds, setContentIds] = useState<string[]>([]);
 
   const displayCompleted = () => {
     setTopicIsCompleted(true);
 
     setTimeout(() => setTopicIsCompleted(false), 6000);
   };
+
+  const getContentIds = useMemo(() => collectLinearContentIds, []);
+
+  async function fetchNavigate() {
+    const contentIds = getContentIds(course!);
+    setContentIds(contentIds);
+  }
+
+  function handlePreviousTab() {
+    if (topicDetails.topic) {
+      const previousId = getPreviousId(
+        topicDetails.topic?._id || "",
+        contentIds
+      );
+      router.push(`${pathName}?topic=${previousId}`);
+    }
+  }
+
+  function handleNextTab() {
+    if (topicDetails.topic) {
+      const previousId = getNextId(topicDetails.topic?._id || "", contentIds);
+      router.push(`${pathName}?topic=${previousId}`);
+    }
+  }
 
   /**
    * Function responsible for marking the video as completed
@@ -89,9 +169,9 @@ export const TopicDetails: FC<{
     event: React.ChangeEvent<HTMLInputElement>,
     checked: boolean
   ) => {
+    setCheckedState(checked);
     if (!topicDetails.topic?.viewed && !noteCompletedIsTriggered && checked) {
       // Mark notes as read
-      // alert("Notes read!");
       setNoteCompletedIsTriggered(true);
     }
   };
@@ -104,16 +184,18 @@ export const TopicDetails: FC<{
     // * Get the access token from the cookies
     const jwt = Cookies.get("jwt");
 
+    console.log("Marking Topic as read");
+
     // * Make an API request to retrieve the list of courses created by this teacher
     const response = await fetch(
-      `${baseUrl}/courses/mark-as-viewed/${topicDetails.type}/${topicDetails.topic?._id}`,
+      `${baseUrl}/courses/mark-as-viewed/${capitalize(topicDetails.type)}/${
+        topicDetails.topic?._id
+      }`,
       {
         method: "POST",
-        headers: {
-          Authorization: jwt || "",
-        },
+        credentials: "include",
         body: JSON.stringify({
-          currentDate: Date.now(),
+          currentDate: new Date().toISOString(),
           nextId: "6739522037923060e34feabd",
         }),
       }
@@ -133,13 +215,21 @@ export const TopicDetails: FC<{
   }, [topicDetails.topic?._id, topicDetails.type]);
 
   useEffect(() => {
-    setTopicIsCompleted(false);
-    setVideoCompletedIsTriggered(false);
-    setNoteCompletedIsTriggered(false);
-  }, [router.asPath]);
+    setTopicIsCompleted(topicDetails.topic?.viewed || false);
+    setVideoCompletedIsTriggered(topicDetails.topic?.viewed || false);
+    setNoteCompletedIsTriggered(topicDetails.topic?.viewed || false);
+    setCheckedState(topicDetails.topic?.viewed || false);
+    fetchNavigate();
+    console.log(
+      "NEW TOPIC",
+      topicDetails.topic?.title,
+      topicDetails.topic?.viewed
+    );
+  }, [topicDetails.topic]);
 
   useEffect(() => {
     if (
+      !topicDetails.topic?.viewed &&
       (topicDetails.topic?.topicVideo || topicDetails.topic?.youtubeVideo) &&
       videoCompletedIsTriggered &&
       noteCompletedIsTriggered
@@ -149,6 +239,7 @@ export const TopicDetails: FC<{
     }
 
     if (
+      !topicDetails.topic?.viewed &&
       !topicDetails.topic?.topicVideo &&
       !topicDetails.topic?.youtubeVideo &&
       noteCompletedIsTriggered
@@ -163,21 +254,34 @@ export const TopicDetails: FC<{
     markTopicAsRead,
   ]);
 
+  // * The list of the tab content
   const tabBody: TTabBody[] = [
     ...(topicDetails?.topic?.topicVideo || topicDetails?.topic?.youtubeVideo
       ? [
           {
             slug: "video",
             content: (
-              <TopicVideo
-                ref={videoRef}
-                markVideoCompleted={markVideoCompleted}
-                url={
-                  // topicDetails?.topic?.topicVideo ||
-                  // topicDetails?.topic?.youtubeVideo ||
-                  "https://videos.pexels.com/video-files/4203954/4203954-hd_1920_1080_24fps.mp4"
-                }
-              />
+              <>
+                {topicDetails?.topic?.topicVideo ? (
+                  <TopicVideo
+                    ref={videoRef}
+                    markVideoCompleted={markVideoCompleted}
+                    url={
+                      topicDetails?.topic?.topicVideo
+                      // || "https://videos.pexels.com/video-files/4203954/4203954-hd_1920_1080_24fps.mp4"
+                    }
+                  />
+                ) : (
+                  <YouTubeEmbed
+                    ref={videoRef as any}
+                    markVideoCompleted={markVideoCompleted}
+                    url={
+                      topicDetails?.topic?.youtubeVideo
+                      // || "https://videos.pexels.com/video-files/4203954/4203954-hd_1920_1080_24fps.mp4"
+                    }
+                  />
+                )}
+              </>
             ),
           },
         ]
@@ -199,7 +303,8 @@ export const TopicDetails: FC<{
                     control={
                       <Checkbox
                         onChange={markNotesRead}
-                        defaultChecked={topicDetails.topic.viewed}
+                        value={checkedState}
+                        defaultChecked={topicDetails.topic.viewed || false}
                       />
                     }
                     label="I've finished reading"
@@ -214,7 +319,7 @@ export const TopicDetails: FC<{
 
   return (
     <>
-      {topicDetails ? (
+      {topicDetails.topic ? (
         <div className="flex flex-col w-full gap-4">
           {/* BREADCRUMB */}
           <div className="font-thin flex gap-1 w-full">
@@ -263,6 +368,24 @@ export const TopicDetails: FC<{
               }
             </div>
           )}
+          {/* Previous and next button */}
+          <div className="flex w-full justify-between py-5">
+            <Button
+              onClick={handlePreviousTab}
+              size="md"
+              className="text-primary !border-primary border"
+              color="outline"
+              width="fit"
+            >
+              Previous Topic
+            </Button>
+
+            <Button onClick={handleNextTab} size="md" color="blue" width="fit">
+              Next Topic
+            </Button>
+          </div>
+          {/* QA session */}
+          <CourseQA />
         </div>
       ) : (
         <>
