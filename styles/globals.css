@@ -18,11 +18,17 @@ body {
   cursor: none !important;
 }
 
+#__next {
+  width: 100%;
+}
+
 @layer components {
   a.link {
     @apply text-primary underline underline-offset-2;
   }
 }
+
+@layer components { .container { @apply w-full 3xl:!max-w-[1400px] 2xl:!max-w-[1000px] xl:!max-w-[1700px] lg:!max-w-full md:!max-w-full sm:!max-w-full xs:!max-w-full; } }
 
 .input {
   @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
