@@ -15,33 +15,25 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
-import { useRouter } from "next/router";
-import { usePathname } from "next/navigation";
-import Image, { StaticImageData } from "next/image";
-import dummyImage from "@/images/dummy-img.jpg";
-import Input from "@/components/Atoms/Input";
-import { baseUrl } from "@/components/utils/baseURL";
-import Cookies from "js-cookie";
+
+} from 'react';
+import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
+import Image, { StaticImageData } from 'next/image';
+import dummyImage from '@/images/dummy-img.jpg';
+import Input from '@/components/Atoms/Input';
+import { baseUrl } from '@/components/utils/baseURL';
+import Cookies from 'js-cookie';
+import axiosInstance from '@/components/utils/axiosInstance';
 
 export type TTabBody = { slug: string; content: ReactNode };
 
 
 async function fetchCourses(id: string) {
   try {
-    const response = await fetch(`${baseUrl}/courses/${id}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer accessToken=${Cookies.get(
-          'accessToken'
-        )};refreshToken=${Cookies.get('refreshToken')}`,
-      },
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return data.data;
+    const response = await axiosInstance(`${baseUrl}/courses/${id}`);
+    if (response.status === 200) {
+      return response.data;
     }
   } catch (err) {
     console.log(err);
@@ -50,6 +42,7 @@ async function fetchCourses(id: string) {
 
 // Function to collect IDs of lessons, sections, and subsections in a linear array
 type TContentId = { id: string; isViewed: boolean }[];
+
 export function collectLinearContentIds(data: TCourse): TContentId {
   const contentIds = [] as TContentId;
 
@@ -84,13 +77,15 @@ export function collectLinearContentIds(data: TCourse): TContentId {
   return contentIds;
 }
 
+const currentIdIndex = (linearIds: TContentId, currentId: string) => {
+  return linearIds.findIndex((content) => content.id === currentId);
+};
+
 function getPreviousId(
   currentId: string,
   linearIds: TContentId
 ): string | null {
-  const currentIndex = linearIds.findIndex(
-    (content) => content.id === currentId
-  );
+  const currentIndex = currentIdIndex(linearIds, currentId);
   if (currentIndex > 0) {
     return linearIds[currentIndex - 1].id; // Return the ID of the previous item
   }
@@ -98,9 +93,7 @@ function getPreviousId(
 }
 
 function getNextId(currentId: string, linearIds: TContentId): string | null {
-  const currentIndex = linearIds.findIndex(
-    (content) => content.id === currentId
-  );
+  const currentIndex = currentIdIndex(linearIds, currentId);
   if (currentIndex > 0) {
     return linearIds[currentIndex + 1].id; // Return the ID of the previous item
   }
@@ -125,10 +118,15 @@ const Tab: FC<{
   const subjectId = pathName.split('/').pop();
   const getContentIds = useMemo(() => collectLinearContentIds, []);
   useEffect(() => {
+    console.log(contentIds, "you can't be an empty array");
+  }, [contentIds]);
+  useEffect(() => {
     async function fetchNavigate() {
       if (subjectId) {
         const courses = await fetchCourses(subjectId);
-        const contentIds = getContentIds(courses!);
+        const contentIds = getContentIds(courses.data!);
+        console.log(courses, 'gettig the courses');
+        console.log(contentIds, 'ids from the source');
         setContentIds(contentIds);
       }
     }
@@ -138,12 +136,8 @@ const Tab: FC<{
   const fetchProfileImage = useCallback(async () => {
     const userId = Cookies.get('userId');
     try {
-      const response = await fetch(`${baseUrl}/student`, {
-        credentials: 'include',
-      });
-      if (!response) setProfileImage(dummyImage);
-      const data = await response.json();
-      setProfileImage(data.profileImage);
+      const response = await axiosInstance.get(`${baseUrl}/student`);
+      setProfileImage(response.data.profileImage);
     } catch (err) {
       console.error('failed to load student information');
       setProfileImage(dummyImage);
@@ -286,36 +280,51 @@ const Tab: FC<{
 
         <div className='flex w-full justify-between py-5'>
           <Button
+            disabled={
+              !contentIds[currentIdIndex(contentIds, topic! as string) - 2]
+            }
             onClick={handlePreviousTab}
-            size='md'
-            className='text-primary !border-primary border'
+            size='xs'
+            className={`disabled:!border-none text-primary !border-primary`}
             color='outline'
             width='fit'
           >
             Previous Topic
           </Button>
 
-          <Button onClick={handleNextTab} size='md' color='blue' width='fit'>
+          <Button
+            disabled={
+              !contentIds[currentIdIndex(contentIds, topic! as string) + 1]
+            }
+            onClick={handleNextTab}
+            size='xs'
+            color='blue'
+            width='fit'
+          >
             Next Topic
           </Button>
         </div>
-        <div>
+        <div className='border rounded-lg px-5 mb-5'>
           {commentError && (
             <span className='text-red-500 text-sm relative left-[5.4rem]'>
               {commentError}
             </span>
           )}
-          <div className='grid grid-cols-[50px_1fr] py-8 gap-4 w-full'>
-            <div>
+          <div className=' grid grid-cols-[50px_1fr] py-8 gap-3 items-center w-full'>
+            <div className='w-[40px] h-[40px] overflow-hidden'>
               <Image
-                src={profileImage}
+                src={!profileImage ? dummyImage : profileImage}
                 width={40}
                 height={40}
+                className='w-full h-full rounded-full object-cover'
                 alt='student profile'
               />
             </div>
-            {/**profil imega */}
-            <form onSubmit={handleComment} className='relative '>
+            {/**profile imega */}
+            <form
+              onSubmit={handleComment}
+              className='relative h-fit flex items-center'
+            >
               <Input
                 name='text'
                 className='rounded-full w-full px-3 py-3'
@@ -325,9 +334,9 @@ const Tab: FC<{
               />
               <button
                 type='submit'
-                className='h-full absolute right-2 -top-[0.45rem]  rounded-full'
+                className='h-full absolute right-2  rounded-full'
               >
-                <SendIcon className='w-full h-[60%]' />
+                <SendIcon className='w-full h-[calc(100%-0.75rem)]' />
               </button>
             </form>
           </div>
@@ -443,6 +452,7 @@ function MessageIcon({ commentNumber }: { commentNumber: number }) {
           height='20'
           viewBox='0 0 20 20'
           fill='none'
+          className=''
           xmlns='http://www.w3.org/2000/svg'
         >
           <path
@@ -471,7 +481,9 @@ function MessageIcon({ commentNumber }: { commentNumber: number }) {
           />
         </svg>
       </div>
-      <div className='leading-3 pl-2 h-full flex items-center'>{commentNumber.toLocaleString()}</div>
+      <div className='leading-3 pl-2 h-full flex items-center'>
+        {commentNumber.toLocaleString()}
+      </div>
     </div>
   );
 }
