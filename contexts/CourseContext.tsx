@@ -96,6 +96,7 @@ const courseReducer: Reducer<
 
   if (action.type === 'CREATE_CHAPTER') {
 
+
     // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -399,6 +400,7 @@ const courseReducer: Reducer<
 
 const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const initialFormState = {
+
     title: '',
     _id: '',
     classId: '',
@@ -407,6 +409,7 @@ const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     notes: '',
     videoUrl: '',
     youtubeUrl: '',
+
 
   };
   const [modal, setModal] = useState<TModalState>({
@@ -441,6 +444,7 @@ const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     setRequestState({
       data: undefined,
       loading: false,
+
       error: undefined,
     });
     setModalMetadata({
