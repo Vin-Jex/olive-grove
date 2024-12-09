@@ -39,7 +39,7 @@ const AdminNav: React.FC<AdminNavType> = ({
         try {
           const response = await axiosInstance.get(`${baseUrl}/student`);
           setProfileImage(response.data.profileImage);
-          console.log('show me response', response)
+          console.log('show me response', response);
         } catch (err) {
           setProfileImage(dummyImage);
         }
@@ -92,7 +92,9 @@ const AdminNav: React.FC<AdminNavType> = ({
           )}
         </div>
         <div className='flex items-center space-x-3 md:space-x-5 xl:space-x-7 order-1 md:order-2'>
-          {firstTitle !== 'Courses' && <SearchLayout />}
+          {firstTitle !== 'Courses' && (
+            <SearchLayout onChange={() => {}} value='' />
+          )}
           <span className='font-roboto text-xs sm:text-sm md:text-[16px] lg:text-[18px] text-subtext leading-4 whitespace-nowrap'>
             {DateFormatter(generateDateString())}
           </span>
@@ -101,7 +103,7 @@ const AdminNav: React.FC<AdminNavType> = ({
           </button>
           <div className='w-7 h-7 md:w-9 md:h-9 overflow-hidden'>
             <Image
-              src={!profileImage ? dummyImage : profileImage} 
+              src={!profileImage ? dummyImage : profileImage}
               width={300}
               height={300}
               alt='Profile Pics'

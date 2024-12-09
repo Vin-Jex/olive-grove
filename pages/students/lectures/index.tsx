@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import SubjectCard from '@/components/Molecules/Card/SubjectCard';
 import Link from 'next/link';
 import withAuth from '@/components/Molecules/WithAuth';
-import { TCourse, TFetchState } from '@/components/utils/types';
+import { TFetchState } from '@/components/utils/types';
 // import { fetchCourses } from "@/components/utils/course";
 import dummyImage from '@/images/dummy-img.jpg';
 import ClassModal from '@/components/Molecules/Modal/ClassModal';
@@ -52,6 +52,16 @@ export const subjectData = [
     btnLink1: '#',
   },
 ];
+
+type TCourse = {
+  _id: string;
+  title: string;
+  courseCover: string;
+  description: string;
+  classId: {
+    description: string;
+  };
+};
 
 const Classes = () => {
   const [courses, setCourses] = useState<TFetchState<TCourse[]>>({
@@ -212,7 +222,7 @@ const Classes = () => {
                             width={300}
                             height={300}
                             className='h-full w-full object-cover'
-                            src={subject.courseCover || dummyImage}
+                            src={(subject.courseCover as string) || dummyImage}
                             alt={subject.description || 'course searched'}
                           />
                         </div>
