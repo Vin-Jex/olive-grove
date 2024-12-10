@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes } from 'react';
 
 export type TSubject = {
   image_url: string;
@@ -8,6 +8,7 @@ export type TSubject = {
 
 type OptionalFields = {
   classId?: string;
+  // courseInfo?: { description: string };
   chapterId?: string;
   topicNote?: string;
   topicVideo?: string;
@@ -120,18 +121,18 @@ export type TSelectOptions = (
 )[];
 
 export type TCourseModalFormData =
-  | Omit<TCourse, "chapters">
-  | Omit<TChapter, "lessons">
-  | Omit<TLesson, "sections">
-  | Omit<TSection, "subsections">;
+  | Omit<TCourse, 'chapters'>
+  | Omit<TChapter, 'lessons'>
+  | Omit<TLesson, 'sections'>
+  | Omit<TSection, 'subsections'>;
 
 export type TCourseModalProps = {
   modalOpen: boolean;
   handleModalClose: () => void;
   handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
   handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
-  type: "course" | "chapter" | "lesson" | "topic";
-  mode: "create" | "edit";
+  type: 'course' | 'chapter' | 'lesson' | 'topic';
+  mode: 'create' | 'edit';
   formState: TCourseModalFormData;
   setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
   requestState?: TFetchState<any>;
@@ -147,15 +148,15 @@ export type TAcademicWeek = {
   _id?: string;
 };
 
-export type TAssessment<T extends "post" | "get"> = {
+export type TAssessment<T extends 'post' | 'get'> = {
   _id?: string;
-  subject: T extends "post" ? string : TCourse;
-  type: T extends "post" ? string : TAssessmentType;
+  subject: T extends 'post' ? string : TCourse;
+  type: T extends 'post' ? string : TAssessmentType;
   description: string;
   timeline: string | Date;
-  teacher: T extends "post" ? string : TTeacher;
-  academicWeek: T extends "post" ? string : TAcademicWeek;
-  class: T extends "post" ? string : TClass;
+  teacher: T extends 'post' ? string : TTeacher;
+  academicWeek: T extends 'post' ? string : TAcademicWeek;
+  class: T extends 'post' ? string : TClass;
 };
 
 export type TStudent = {
@@ -203,7 +204,7 @@ export type TModalProps<T> = {
   handleAction?: (formData: T) => Promise<boolean>;
   handleDelete?: (formData: T) => Promise<boolean>;
   requestState?: TFetchState<any>;
-  mode: "create" | "edit";
+  mode: 'create' | 'edit';
   formState: T;
   setFormState: React.Dispatch<React.SetStateAction<T>>;
 };
@@ -217,7 +218,7 @@ export type TTopicDetails = {
   path: [string, string, string] | undefined;
   topicChapter: string;
   topicLesson: string;
-  type: "section" | "lesson";
+  type: 'section' | 'lesson';
   topic: TSection | undefined;
 };
 

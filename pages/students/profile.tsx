@@ -20,6 +20,7 @@ import {
 import withAuth from '@/components/Molecules/WithAuth';
 import { baseUrl } from '@/components/utils/baseURL';
 import { useAuth } from '@/contexts/AuthContext';
+import axiosInstance from '@/components/utils/axiosInstance';
 
 const Profile = () => {
   const [formState, setFormState] = useState({
@@ -29,6 +30,7 @@ const Profile = () => {
     email: '',
     username: '',
     password: '',
+    otp: '',
   });
   const [formError, setFormError] = useState({
     internetError: '',
@@ -41,6 +43,7 @@ const Profile = () => {
   });
   const [isDisabled, setIsDisabled] = useState(true);
   const [profileImage, setProfileImage] = useState('');
+  const [justUpdatedProfile, setJustUpdatedProfile] = useState(false);
   const [studentName, setStudentName] = useState('');
   const { user } = useAuth();
   const role = user?.role;
@@ -76,22 +79,23 @@ const Profile = () => {
       required: true,
       error: formError.emailError,
     },
-    {
-      label: 'Username *',
-      name: 'username',
-      type: 'text',
-      required: true,
-      error: formError.usernameError,
-    },
+    // {
+    //   label: 'Username *',
+    //   name: 'username',
+    //   type: 'text',
+    //   required: true,
+    //   error: formError.usernameError,
+    // },
   ];
 
   useEffect(() => {
     if (
       formState.username === '' ||
-      formState.password === '' ||
       formState.firstName === '' ||
       formState.lastName === '' ||
-      formState.email === ''
+      formState.email === '' //||
+      // formState.password === '' ||
+      // formState.otp === ''
     )
       setIsDisabled(true);
     else setIsDisabled(false);
@@ -101,6 +105,7 @@ const Profile = () => {
     formState.lastName,
     formState.password,
     formState.username,
+    formState.otp,
   ]);
 
   const handleChange = ({
@@ -143,13 +148,16 @@ const Profile = () => {
       return;
     }
 
+    /*
     if (!formState.password.trim()) {
       setFormError((prevState) => ({
         ...prevState,
         passwordError: 'Password field cannot be empty',
-      }));
+      }));formState.password === '' //||
+      // formState.otp === ''
       return;
     }
+    */ // I commented this out because the password field is not required
 
     if (data.message.username) {
       setFormError((prevState) => ({
@@ -191,6 +199,7 @@ const Profile = () => {
 
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
+    const cacheKey = `profileInfo_${role}_${user?.id}`;
     event.preventDefault();
     resetForm();
 
@@ -203,10 +212,13 @@ const Profile = () => {
 
     try {
       setIsDisabled(true);
-      const response = await fetch(`${baseUrl}/`, {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        `${baseUrl}/student-user/${formState.username}`,
+        {
+          method: 'PUT',
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         const data = await response.json();
@@ -215,6 +227,8 @@ const Profile = () => {
       }
 
       const data = await response.json();
+      localStorage.removeItem(cacheKey);
+      fetchProfile();
       setFormError((prevState) => ({
         ...prevState,
         successError: 'Information updated successfully.',
@@ -231,24 +245,77 @@ const Profile = () => {
     }
   };
 
-  const fetchProfile = useCallback(async () => {
+  const handlePasswordChange = async (event: FormEvent<HTMLFormElement>) => {
+    // Reset previous error messages
+    event.preventDefault();
+    resetForm();
+
+    const formData = new FormData();
+
+    // Append other form fields to the FormData object
+    Object.entries(formState).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
     try {
-      const refreshToken = Cookies.get('refreshToken');
-      const accessToken = Cookies.get('accessToken');
-      const response = await fetch(`${baseUrl}/student`, {
-        // credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer accessToken=${accessToken};requestToken=${refreshToken}`,
-        },
-      });
+      setIsDisabled(true);
+      let response = await fetch(`{}`); //* simulate endpoint for password update
+
       if (!response.ok) {
-        //handle this case.
-        setProfileError('failed to fetch profile');
-        console.log(response, 'the profile fo the current user');
-        //since formdata has default value I am not sure that we need to reset them here.
+        const data = await response.json();
+        handleErrors(data);
+        return;
       }
-      const json = await response.json();
+
+      const data = await response.json();
+      setFormError((prevState) => ({
+        ...prevState,
+        successError: 'Password updated successfully.',
+      }));
+
+      // Reset the form after successful submission
+      resetForm();
+
+      console.log('Response: ', JSON.stringify(data));
+    } catch (error) {
+      console.log('Status: ', error);
+    } finally {
+      setIsDisabled(false);
+    }
+  };
+
+  const fetchProfile = useCallback(async () => {
+    const cacheKey = `profileInfo_${role}_${user?.id}`;
+
+    const cachedData = localStorage.getItem(cacheKey);
+    if (cachedData) {
+      const { data, timestamp } = JSON.parse(cachedData);
+
+      if (Date.now() - timestamp < 60 * 60 * 1000) {
+        setFormState({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          middleName: data.middleName,
+          email: data.email,
+          username: data.username,
+          password: '',
+          otp: '',
+        });
+        setProfileImage(data.profileImage);
+        setStudentName(data.firstName + ' ' + data.lastName);
+        return;
+      }
+    }
+    try {
+      const response = await axiosInstance.get(`${baseUrl}/student`);
+      // if (!response.ok) {
+      //   //handle this case.
+      //   setProfileError('failed to fetch profile');
+      //   console.log(response, 'the profile fo the current user');
+      //   //since formdata has default value I am not sure that we need to reset them here.
+      // }
+
+      const json = response.data;
       setFormState({
         firstName: json.firstName,
         lastName: json.lastName,
@@ -256,16 +323,26 @@ const Profile = () => {
         email: json.email,
         username: json.username,
         password: '',
+        otp: '',
       });
       setProfileImage(json.profileImage);
       setStudentName(json.firstName + ' ' + json.lastName);
+      console.log('tell me that this lo')
+
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify({
+          data: json,
+          timestamp: Date.now(),
+        })
+      );
     } catch (err) {
       //how to display error.
       setProfileError('Error occured in fetching user profile');
     }
-  }, []);
+  }, [user?.id, role]);
   useEffect(() => {
-    fetchProfile();
+    if (user) fetchProfile();
     // department: "science";
     // dob: "2024-10-31T00:00:00.000Z";
     // email: "henryabayomi12@gmail.com";
@@ -281,7 +358,7 @@ const Profile = () => {
     // username: "olive";
     // __v: 0;
     // _id: "673ca6b347a34dee9993a503";
-  }, [fetchProfile]);
+  }, [fetchProfile, user]);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
     if (isDisabled && event.key === 'Enter') {
@@ -291,18 +368,14 @@ const Profile = () => {
 
   return (
     <>
-      <StudentWrapper title='Profile' metaTitle='Olive Groove ~ Profile'>
+      <StudentWrapper
+        firstTitle='Profile'
+        remark='Manage and edit your profile settings.'
+        title='Profile'
+        metaTitle='Olive Groove ~ Profile'
+      >
         <div className='p-12 space-y-5'>
           {/* Title */}
-          <div className='flex flex-col'>
-            <span className='text-lg font-medium text-dark font-roboto'>
-              Access your Information
-            </span>
-            <span className='text-md text-subtext font-roboto'>
-              Mange and edit your details.
-            </span>
-          </div>
-
           <div className='flex gap-4'>
             <Image
               src={!profileImage ? dummyImage : profileImage}
@@ -318,13 +391,35 @@ const Profile = () => {
               <span className='text-subtext'>Student</span>
             </div>
           </div>
-
-          <div className='!mt-20'>
+          <form
+            className='flex flex-col !mt-20 space-y-5 gap-y-5 w-[560px]'
+            onKeyPress={handleKeyPress}
+            onSubmit={handleSignup}
+          >
+            {/* <div className='> */}
+            <div className='flex items-center justify-between'>
+              <div className='flex flex-col'>
+                <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
+                  Account Information
+                </span>
+                <span className='text-md text-subtext font-roboto'>
+                  Edit your personal account information.
+                </span>
+              </div>
+              <Button
+                type='submit'
+                size='sm'
+                width='fit'
+                className='!px-8'
+                disabled={isDisabled}
+              >
+                Edit Personal Info
+              </Button>
+            </div>
             {formError.internetError !== '' ? (
               <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
                 <Info sx={{ fontSize: '1.1rem' }} />
                 {formError.internetError}
-                sdca
               </span>
             ) : formError.successError !== '' ? (
               <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
@@ -335,34 +430,29 @@ const Profile = () => {
               ''
             )}
             <div className='text-red-500'>{profileError && profileError}</div>
-            <form
-              className='flex flex-col gap-y-5 w-[560px]'
-              onKeyPress={handleKeyPress}
-              onSubmit={handleSignup}
-            >
-              <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
-                Personal Information
-              </span>
-              <div className='flex items-end gap-8 w-full'>
-                <InputField
-                  name='firstName'
-                  type='text'
-                  placeholder='First Name *'
-                  value={formState.firstName}
-                  onChange={handleChange}
-                  required
-                  error={formError.firstNameError}
-                />
 
-                <InputField
-                  name='middleName'
-                  type='text'
-                  placeholder='Middle Name'
-                  value={formState.middleName}
-                  onChange={handleChange}
-                  error={''}
-                />
-              </div>
+            <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
+              Personal Information
+            </span>
+            <div className='grid grid-cols-2 gap-8 w-full'>
+              <InputField
+                name='firstName'
+                type='text'
+                placeholder='First Name *'
+                value={formState.firstName}
+                onChange={handleChange}
+                required
+                error={formError.firstNameError}
+              />
+
+              <InputField
+                name='middleName'
+                type='text'
+                placeholder='Middle Name'
+                value={formState.middleName}
+                onChange={handleChange}
+                error={''}
+              />
               {inputFields.map((field) => (
                 <InputField
                   placeholder={field.label}
@@ -375,19 +465,22 @@ const Profile = () => {
                   error={field.error}
                 />
               ))}
-
-              <Input
-                type='password'
-                name='password'
-                value={formState.password}
-                onChange={handleChange}
-                placeholder='Password *'
-                required
-                className='input'
-                showIcon={VisibilityOutlined}
-                hideIcon={VisibilityOffOutlined}
-              />
-
+            </div>
+          </form>
+          <form
+            onKeyPress={handleKeyPress}
+            onSubmit={handlePasswordChange}
+            className='flex flex-col !mt-20 space-y-5 gap-y-5 w-[560px]'
+          >
+            <div className='flex items-center justify-between'>
+              <div className='flex flex-col my-7'>
+                <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
+                  Security Information
+                </span>
+                <span className='text-md text-subtext font-roboto'>
+                  Edit your personal security information.
+                </span>
+              </div>
               <Button
                 type='submit'
                 size='sm'
@@ -395,14 +488,56 @@ const Profile = () => {
                 className='!px-8'
                 disabled={isDisabled}
               >
-                Save
+                Edit password
               </Button>
-            </form>
-          </div>
+            </div>
+            {formError.internetError !== '' ? (
+              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
+                <Info sx={{ fontSize: '1.1rem' }} />
+                {formError.internetError}
+              </span>
+            ) : formError.successError !== '' ? (
+              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
+                <Info sx={{ fontSize: '1.1rem' }} />
+                {formError.successError}
+              </span>
+            ) : (
+              ''
+            )}
+            <div className='space-y-4'>
+              <Input
+                type='password'
+                name='password'
+                value={formState.password}
+                onChange={handleChange}
+                placeholder='Password *'
+                // required
+                className='input'
+                showIcon={VisibilityOutlined}
+                hideIcon={VisibilityOffOutlined}
+              />
+              {formState.password.length > 0 && (
+                <Button size='xs'>Generate OTP</Button>
+              )}
+              <Input
+                type='number'
+                name='OTP'
+                value={formState.password}
+                onChange={handleChange}
+                placeholder='OTP'
+                //required
+                className='input'
+                showIcon={VisibilityOutlined}
+                hideIcon={VisibilityOffOutlined}
+              />
+            </div>
+          </form>
         </div>
       </StudentWrapper>
     </>
   );
 };
+
+// export default Profile;
 
 export default withAuth('Student', Profile);

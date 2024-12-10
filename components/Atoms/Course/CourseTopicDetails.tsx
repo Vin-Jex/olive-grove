@@ -7,6 +7,7 @@ import {
   TSection,
   TSubSection,
 } from "@/components/utils/types";
+
 import {
   FC,
   ForwardRefExoticComponent,
@@ -322,16 +323,19 @@ export const TopicDetails: FC<{
       {topicDetails.topic ? (
         <div className="flex flex-col w-full gap-4">
           {/* BREADCRUMB */}
-          <div className="font-thin flex gap-1 w-full">
+          {/* <div className='font-thin flex gap-1 w-full'>
             {topicDetails.path?.map((crumb, i) => (
               <span key={i}>
-                {crumb} {i != (topicDetails.path?.length || 0) - 1 ? "/" : ""}
+                {crumb} {i != (topicDetails.path?.length || 0) - 1 ? '/' : ''}
               </span>
             ))}
-          </div>
+          </div> */}
           {/**I AM NOT SURE OF THE NEED OF THE BREADCRUMB, IT LOOKS ROUGH */}
           {/* TITLE */}
-          <div className="text-3xl font-bold">{topicDetails.topic?.title}</div>
+
+          <div className="text-2xl font-bold bg-primary bg-opacity-10 min-[1560px]:w-[64rem] rounded-lg px-3 py-4">
+            {topicDetails.topic?.title}
+          </div>
           {/* TAB */}
           {topicDetails.topic?.topicVideo ||
           topicDetails?.topic?.youtubeVideo ? (

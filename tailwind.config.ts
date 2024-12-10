@@ -8,11 +8,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      screens: {
-        smd: "1100px",
-        xs: "480px",
-        "3xl": "2500px",
-      },
+      screens: { xs: "480px", "2xl": "19200px", "3xl": "2500px", },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
