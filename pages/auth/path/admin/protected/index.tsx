@@ -1,18 +1,18 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import logo from "@/public/image/logo.png";
-import Button from "@/components/Atoms/Button";
-import { useRouter } from "next/router";
-import Input from "@/components/Atoms/Input";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import logo from '@/public/image/logo.png';
+import Button from '@/components/Atoms/Button';
+import { useRouter } from 'next/router';
+import Input from '@/components/Atoms/Input';
 import {
   Info,
   VisibilityOffOutlined,
   VisibilityOutlined,
-} from "@mui/icons-material";
-import { CircularProgress } from "@mui/material";
-import CustomCursor from "@/components/Molecules/CustomCursor";
-import { baseUrl } from "@/components/utils/baseURL";
+} from '@mui/icons-material';
+import { CircularProgress } from '@mui/material';
+import CustomCursor from '@/components/Molecules/CustomCursor';
+import { baseUrl } from '@/components/utils/baseURL';
 
 export type loginType = {
   username: string;
@@ -21,14 +21,14 @@ export type loginType = {
 
 const AdminAccess = () => {
   const [formState, setFormState] = useState<loginType>({
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
   const [formError, setFormError] = useState({
-    internetError: "",
-    usernameError: "",
-    passwordError: "",
-    successError: "",
+    internetError: '',
+    usernameError: '',
+    passwordError: '',
+    successError: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
@@ -45,22 +45,22 @@ const AdminAccess = () => {
   };
 
   const resetForm = () => {
-    setFormState({ username: "", password: "" });
+    setFormState({ username: '', password: '' });
     setFormError({
-      internetError: "",
-      usernameError: "",
-      passwordError: "",
-      successError: "",
+      internetError: '',
+      usernameError: '',
+      passwordError: '',
+      successError: '',
     });
   };
 
   const handleErrors = (data: any) => {
     if (!navigator.onLine) {
       setFormError({
-        internetError: "No internet connection",
-        usernameError: "",
-        passwordError: "",
-        successError: "",
+        internetError: 'No internet connection',
+        usernameError: '',
+        passwordError: '',
+        successError: '',
       });
       return;
     }
@@ -68,7 +68,7 @@ const AdminAccess = () => {
     if (!formState.username.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        usernameError: "Username field cannot be empty",
+        usernameError: 'Username field cannot be empty',
       }));
       return;
     }
@@ -76,7 +76,7 @@ const AdminAccess = () => {
     if (!formState.password.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        passwordError: "Password field cannot be empty",
+        passwordError: 'Password field cannot be empty',
       }));
       return;
     }
@@ -100,10 +100,10 @@ const AdminAccess = () => {
   const clearError = () => {
     setTimeout(() => {
       setFormError({
-        internetError: "",
-        usernameError: "",
-        passwordError: "",
-        successError: "",
+        internetError: '',
+        usernameError: '',
+        passwordError: '',
+        successError: '',
       });
     }, 7000);
   };
@@ -115,7 +115,7 @@ const AdminAccess = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       setIsLoading(false);
       clearError();
@@ -124,9 +124,9 @@ const AdminAccess = () => {
 
     try {
       const response = await fetch(`${baseUrl}/admin-login`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formState),
       });
 
@@ -139,13 +139,13 @@ const AdminAccess = () => {
       await response.json();
       setFormError((prevState) => ({
         ...prevState,
-        successError: "Successfully logged in!",
+        successError: 'Successfully logged in!',
       }));
 
       resetForm();
-      setTimeout(() => router.push("/"), 500);
+      setTimeout(() => router.push('/'), 500);
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Error:', error);
     } finally {
       setIsLoading(false);
       clearError();
@@ -154,7 +154,7 @@ const AdminAccess = () => {
 
   return (
     <div className='flex w-full h-screen justify-center items-center bg-gradient-to-r from-[#0078a8] to-[#32A8C4]'>
-      <CustomCursor />
+      {/*<customcursor />*/}
 
       <div className='bg-white rounded-lg shadow-lg px-6 py-8 w-full md:w-[480px] flex flex-col items-center gap-6'>
         <div className='flex flex-col items-center mb-6'>
@@ -181,25 +181,25 @@ const AdminAccess = () => {
         {/* Error Messages */}
         {formError.internetError && (
           <span className='text-yellow-600 text-sm flex items-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} />
+            <Info sx={{ fontSize: '1.1rem' }} />
             {formError.internetError}
           </span>
         )}
         {formError.successError && (
           <span className='text-green-600 text-sm flex items-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} />
+            <Info sx={{ fontSize: '1.1rem' }} />
             {formError.successError}
           </span>
         )}
         {formError.usernameError && (
           <span className='text-red-600 text-sm flex items-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} />
+            <Info sx={{ fontSize: '1.1rem' }} />
             {formError.usernameError}
           </span>
         )}
         {formError.passwordError && (
           <span className='text-red-600 text-sm flex items-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} />
+            <Info sx={{ fontSize: '1.1rem' }} />
             {formError.passwordError}
           </span>
         )}
@@ -234,7 +234,7 @@ const AdminAccess = () => {
             {isLoading ? (
               <CircularProgress size={20} color='inherit' />
             ) : (
-              "Sign In"
+              'Sign In'
             )}
           </Button>
         </form>

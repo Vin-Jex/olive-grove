@@ -10,18 +10,23 @@ import { handleLogout } from './Admin.Layout';
 
 interface AdminWrapperProps {
   children: ReactNode;
-  title: string;
+  title?: string;
+  firstTitle?: string;
+  remark?: string;
   metaTitle?: string;
   description?: string;
 }
 
 const StudentWrapper = ({
   title,
+  firstTitle,
+  remark,
   metaTitle,
   description,
   children,
 }: AdminWrapperProps) => {
-  const { active } = useSidebarContext();
+  // const { active } = useSidebarContext();
+  const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const router = useRouter();
@@ -35,8 +40,8 @@ const StudentWrapper = ({
   };
 
   return (
-    <div className='w-full h-full'>
-      <CustomCursor />
+    <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
+      {/*<customcursor />*/}
 
       <Meta title={metaTitle || 'Dashboard'} description={description} />
       <WarningModal
@@ -48,7 +53,7 @@ const StudentWrapper = ({
       />
 
       <aside
-        className={`fixed left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
+        className={`absolute left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
       >
@@ -58,7 +63,7 @@ const StudentWrapper = ({
         <div
           className={`${
             active ? '' : ''
-          } fixed right-0 top-0 w-full flex z-30 lg:z-20`}
+          } absolute right-0 top-0 w-full flex z-30 lg:z-20`}
         >
           <div
             className={`${
@@ -66,10 +71,14 @@ const StudentWrapper = ({
             } transition-all ease-in-out duration-500`}
           ></div>
           <nav className={`w-full bg-white px-4`}>
-            <AdminNav toggleSidenav={toggleSidenav} title={title} />
+            <AdminNav
+              toggleSidenav={toggleSidenav}
+              firstTitle={firstTitle}
+              remark={remark}
+            />
           </nav>
         </div>
-        <main className='w-full h-full flex mt-20'>
+        <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
           <div
             className={`${
               active ? 'w-0 lg:w-[15rem]' : 'w-0 lg:w-[98px]'

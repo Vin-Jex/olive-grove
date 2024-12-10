@@ -224,4 +224,5 @@ const SubjectDetailsPage: FC = () => {
   );
 };
 
+// export default SubjectDetailsPage;
 export default withAuth("Student", SubjectDetailsPage);

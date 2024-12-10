@@ -8,6 +8,7 @@ import ClassModal from '@/components/Molecules/Modal/ClassModal';
 import withAuth from '@/components/Molecules/WithAuth';
 import { baseUrl } from '@/components/utils/baseURL';
 import Calendar from '@/components/Molecules/Calendar';
+import axiosInstance from '@/components/utils/axiosInstance';
 
 const TodayClass = [
   {
@@ -50,7 +51,7 @@ type CardProps = {
 
 function Card({ header, main, footer = '' }: CardProps) {
   return (
-    <div className='flex flex-col justify-start text-start w-full border space-y-3 rounded-md shadow-lg py-4 px-6'>
+    <div className='flex flex-col justify-start text-start w-full  space-y-3 rounded-md shadow-card py-4 px-6'>
       <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
         {header}
       </h3>
@@ -70,23 +71,10 @@ const Dashboard = () => {
   });
   useEffect(() => {
     async function fetchStudentProfile() {
-      const refreshToken = Cookies.get('refreshToken');
-      const accessToken = Cookies.get('accessToken');
       try {
-        const response = await fetch(`${baseUrl}/student`, {
-          // credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer accessToken=${accessToken};requestToken=${refreshToken}`,
-          },
-        });
-        if (!response.ok) {
-          //handle this case.
-          //since formdata has default value I am not sure that we need to reset them here.
-          console.error(response);
-        }
-        const json = await response.json();
-        setStudentInfo({ firstName: json.firstName });
+        const response = await axiosInstance.get(`${baseUrl}/student`);
+
+        setStudentInfo({ firstName: response.data.firstName });
       } catch (err) {
         //how to display error.
       }
@@ -112,7 +100,7 @@ const Dashboard = () => {
         handleModalClose={handleModalAssignment}
         modalOpen={openModalAss}
       />
-      <StudentWrapper title='Dashboard' metaTitle='Olive Groove ~ Dashboard'>
+      <StudentWrapper firstTitle='Dashboard' remark='See overview and summary of your studies.' metaTitle='Olive Groove ~ Dashboard'>
         <div className='p-4 sm:p-6 md:p-8 lg:p-12 space-y-5'>
           {/* start */}
           <div className='xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
@@ -185,5 +173,6 @@ const Dashboard = () => {
     </>
   );
 };
+// export default Dashboard;
 
 export default withAuth('Student', Dashboard);
