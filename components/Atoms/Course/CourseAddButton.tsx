@@ -31,7 +31,7 @@ const Add: FC<{
         ? new FormData()
         : JSON.stringify({
             ...formState,
-            availableDate: new Date().toISOString(),
+            // availableDate: new Date().toISOString(),
           });
 
       if (["topic", "lesson"].includes(type) && typeof req_body === "object") {
@@ -48,7 +48,10 @@ const Add: FC<{
         }
 
         // if (!formState.topicVideo) {
-        //   req_body.append("topicVideo", undefined as any);
+        //   req_body.append("topicVideo", null as any);
+        // }
+        // if (!formState.topicImage) {
+        //   req_body.append("topicImage", null as any);
         // }
         // req_body.append("availableDate", new Date().toISOString());
       }
