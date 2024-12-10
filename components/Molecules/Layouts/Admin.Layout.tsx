@@ -79,7 +79,7 @@ const AdminsWrapper = ({
 
   return (
     <div className='w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center'>
-      <CustomCursor />
+      {/*<customcursor />*/}
 
       <Meta title={metaTitle || 'Dashboard'} description={description} />
       <WarningModal

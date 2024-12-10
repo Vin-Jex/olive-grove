@@ -323,13 +323,13 @@ export const TopicDetails: FC<{
       {topicDetails.topic ? (
         <div className='flex flex-col w-full gap-4'>
           {/* BREADCRUMB */}
-          <div className='font-thin flex gap-1 w-full'>
+          {/* <div className='font-thin flex gap-1 w-full'>
             {topicDetails.path?.map((crumb, i) => (
               <span key={i}>
                 {crumb} {i != (topicDetails.path?.length || 0) - 1 ? '/' : ''}
               </span>
             ))}
-          </div>
+          </div> */}
           {/**I AM NOT SURE OF THE NEED OF THE BREADCRUMB, IT LOOKS ROUGH */}
           {/* TITLE */}
 
@@ -373,7 +373,7 @@ export const TopicDetails: FC<{
             </div>
           )}
           {/* Previous and next button */}
-          <div className='flex w-full justify-between py-5'>
+          {/* <div className='flex w-full justify-between py-5'>
             <Button
               onClick={handlePreviousTab}
               size='md'
@@ -387,9 +387,9 @@ export const TopicDetails: FC<{
             <Button onClick={handleNextTab} size='md' color='blue' width='fit'>
               Next Topic
             </Button>
-          </div>
+          </div> */}
           {/* QA session */}
-          <CourseQA />
+          {/* <CourseQA /> */}
         </div>
       ) : (
         <>
