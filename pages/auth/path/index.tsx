@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import logo from "@/public/image/logo.png";
-import AuthBg1 from "@/public/image/auth__bg2.png";
-import AuthBg2 from "@/public/image/auth_bg.png";
-import Button from "@/components/Atoms/Button";
-import { useRouter } from "next/router";
-import CustomCursor from "@/components/Molecules/CustomCursor";
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import logo from '@/public/image/logo.png';
+import AuthBg1 from '@/public/image/auth__bg2.png';
+import AuthBg2 from '@/public/image/auth_bg.png';
+import Button from '@/components/Atoms/Button';
+import { useRouter } from 'next/router';
+import CustomCursor from '@/components/Molecules/CustomCursor';
 
 export type loginType = {
   username: string;
@@ -14,7 +14,7 @@ export type loginType = {
 };
 
 interface RoleCardProps {
-  role: "student" | "teacher";
+  role: 'student' | 'teacher';
   selectedRole: string;
   handleCardClick: (role: string) => void;
   description: string;
@@ -22,27 +22,27 @@ interface RoleCardProps {
 
 const LoginPath = () => {
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedRole, setSelectedRole] = useState('');
   const handleCardClick = (role: string) => {
     setSelectedRole(role);
   };
 
   const handleLogin = () => {
-    if (selectedRole === "teacher") {
-      router.push("/auth/path/teachers/login");
-    } else if (selectedRole === "student") {
-      router.push("/auth/path/students/login");
+    if (selectedRole === 'teacher') {
+      router.push('/auth/path/teachers/login');
+    } else if (selectedRole === 'student') {
+      router.push('/auth/path/students/login');
     }
   };
   const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
-    setIsDisabled(selectedRole === "");
+    setIsDisabled(selectedRole === '');
   }, [selectedRole]);
 
   return (
     <div className='flex w-full h-screen relative'>
-      <CustomCursor />
+      {/*<customcursor />*/}
 
       <Image
         src={AuthBg1}
@@ -124,8 +124,8 @@ const RoleCard: React.FC<RoleCardProps> = ({
   <div
     className={`flex-1 flex flex-col p-4 rounded-lg border-2 transition-all duration-300 ease-in-out ${
       selectedRole === role
-        ? "border-[#32A8C4] bg-[#32A8C4]/10 shadow-lg"
-        : "border-gray-300 hover:shadow-md cursor-pointer"
+        ? 'border-[#32A8C4] bg-[#32A8C4]/10 shadow-lg'
+        : 'border-gray-300 hover:shadow-md cursor-pointer'
     }`}
     onClick={() => handleCardClick(role)}
   >

@@ -420,7 +420,7 @@ const StudentSignup = () => {
 
   return (
     <div className='flex w-full h-screen relative'>
-      <CustomCursor />
+      {/*<customcursor />*/}
 
       <Image
         src={AuthBg1}

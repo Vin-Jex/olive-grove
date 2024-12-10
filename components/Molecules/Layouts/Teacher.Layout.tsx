@@ -38,8 +38,8 @@ const TeachersWrapper = ({
   };
 
   return (
-    <div className='w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center'>
-      <CustomCursor />
+    <div className='w-full h-[100dvh] container overflow-auto mx-auto flex flex-col items-center justify-center'>
+      {/*<customcursor />*/}
 
       <Meta title={metaTitle || 'Dashboard'} description={description} />
       <WarningModal
@@ -51,7 +51,7 @@ const TeachersWrapper = ({
       />
 
       <aside
-        className={`absolute left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
+        className={`absolute left-0 top-0 h-screen w-fit overflow-auto z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
       >

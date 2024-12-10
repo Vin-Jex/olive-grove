@@ -251,7 +251,7 @@ const Classes = () => {
               name=''
               reduceWidth
               onChange={() => {}}
-              options={['cowboy', 'mallen']}
+              options={['ascending', 'latest']}
               placeholder='filter'
               value=''
               required

@@ -29,16 +29,15 @@ export type loginType = {
 };
 
 const StudentLogin = () => {
-
   const { reCheckUser } = useAuth();
   const { sendRequest: loginStudent, loading: isLoading } = useAjaxRequest({
     instance: axiosInstance,
     config: {
       url: `/student-login`,
-      method: "POST",
-      credentials: "include",
+      method: 'POST',
+      credentials: 'include',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     },
   });
@@ -57,7 +56,6 @@ const StudentLogin = () => {
   // const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(true);
-  
 
   useEffect(() => {
     if (formState.username === '' || formState.password === '')
@@ -152,7 +150,7 @@ const StudentLogin = () => {
     }, 7000);
   };
 
-  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"teacher">> = ({
+  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<'teacher'>> = ({
     data,
   }) => {
     const accessToken = data.token.accessToken;
@@ -168,16 +166,16 @@ const StudentLogin = () => {
     // console.log("This is the userRole", userRole);
 
     accessToken !== undefined &&
-      Cookies.set("accessToken", accessToken, { expires: 1 });
+      Cookies.set('accessToken', accessToken, { expires: 1 });
     refreshToken !== undefined &&
-      Cookies.set("refreshToken", refreshToken, { expires: 1 });
-    userId !== undefined && Cookies.set("userId", userId, { expires: 1 });
-    userRole !== undefined && Cookies.set("role", userRole, { expires: 1 });
-    Cookies.set("userDetails", JSON.stringify(data.details), { expires: 1 });
+      Cookies.set('refreshToken', refreshToken, { expires: 1 });
+    userId !== undefined && Cookies.set('userId', userId, { expires: 1 });
+    userRole !== undefined && Cookies.set('role', userRole, { expires: 1 });
+    Cookies.set('userDetails', JSON.stringify(data.details), { expires: 1 });
 
     setFormError((prevState) => ({
       ...prevState,
-      successError: "Student successfully logged in.",
+      successError: 'Student successfully logged in.',
     }));
 
     resetForm();
@@ -185,7 +183,7 @@ const StudentLogin = () => {
     reCheckUser();
 
     setTimeout(() => {
-      router.push("/");
+      router.push('/');
     }, 500);
   };
 
@@ -200,7 +198,7 @@ const StudentLogin = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       clearError();
       return;
@@ -211,7 +209,7 @@ const StudentLogin = () => {
         data: formState,
       });
     } catch (error) {
-      console.log("Error:", error);
+      console.log('Error:', error);
     } finally {
       clearError();
     }
@@ -301,7 +299,7 @@ const StudentLogin = () => {
 
   return (
     <div className='flex w-full h-screen relative'>
-      <CustomCursor />
+      {/*<customcursor />*/}
 
       <Image
         src={AuthBg1}
