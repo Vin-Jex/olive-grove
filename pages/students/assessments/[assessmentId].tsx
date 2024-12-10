@@ -183,7 +183,7 @@ const AssessmentDetailsPage = () => {
             <Button
               onClick={() => setStartExercise((c) => !c)}
               color='blue'
-              size='md'
+              size='xs'
             >
               Start Exercise
             </Button>
@@ -482,5 +482,7 @@ const WrongCrossMark = () => {
     </svg>
   );
 };
+
+// export default AssessmentDetailsPage;
 
 export default withAuth('Student', AssessmentDetailsPage);

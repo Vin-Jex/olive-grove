@@ -25,7 +25,8 @@ const StudentWrapper = ({
   description,
   children,
 }: AdminWrapperProps) => {
-  const { active } = useSidebarContext();
+  // const { active } = useSidebarContext();
+  const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const router = useRouter();

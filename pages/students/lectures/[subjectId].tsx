@@ -255,4 +255,6 @@ export const BackButton = () => {
   );
 };
 
+// export default SubjectDetailsPage;
+
 export default withAuth('Student', SubjectDetailsPage);

@@ -14,6 +14,8 @@ import { useRouter } from 'next/router';
 import InputField from '@/components/Atoms/InputField';
 import CustomCursor from '@/components/Molecules/CustomCursor';
 import { CircularProgress } from '@mui/material';
+import { fetchCourses } from '@/components/utils/course';
+import { TCourse } from '@/components/utils/types';
 
 export type SignupType = {
   firstName: string;
@@ -22,13 +24,13 @@ export type SignupType = {
   department: string;
   email: string;
   dob: string;
-  class: string;
+  enrolledSubjects: string[];
   username: string;
   password: string;
 };
 
 type DeptData = {
-  _id: number;
+  _id: string;
   name: string;
   category: string;
   description: string;
@@ -41,6 +43,7 @@ const StudentSignup = () => {
   const [fileName, setFileName] = useState('');
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [fetchedDept, setFetchedDept] = useState<DeptData[]>([]);
+  const [availableCourse, setAvailableCourses] = useState<TCourse[]>([]);
   const [formState, setFormState] = useState<SignupType>({
     firstName: '',
     lastName: '',
@@ -48,15 +51,16 @@ const StudentSignup = () => {
     department: '',
     email: '',
     dob: '',
-    class: '',
+    enrolledSubjects: [],
     username: '',
     password: '',
   });
+  console.log(fetchedDept);
   const [formError, setFormError] = useState({
     internetError: '',
     firstNameError: '',
     lastNameError: '',
-    classError: '',
+    enrolledSubjectsError: '',
     dobError: '',
     emailError: '',
     departmentError: '',
@@ -108,13 +112,7 @@ const StudentSignup = () => {
       required: true,
       error: formError.dobError,
     },
-    {
-      label: 'Class *',
-      name: 'class',
-      type: 'text',
-      required: true,
-      error: formError.classError,
-    },
+
     {
       label: 'Username *',
       name: 'username',
@@ -133,12 +131,13 @@ const StudentSignup = () => {
 
   useEffect(() => {
     if (
-      formState.class === '' ||
+      // formState.class === '' ||
       formState.dob === '' ||
       formState.username === '' ||
       formState.password === '' ||
       formState.firstName === '' ||
       formState.lastName === '' ||
+      formState.enrolledSubjects.length == 0 ||
       formState.department === '' ||
       formState.email === '' ||
       selectedImage === null
@@ -146,11 +145,12 @@ const StudentSignup = () => {
       setIsDisabled(true);
     else setIsDisabled(false);
   }, [
-    formState.class,
+    // formState.class,
     formState.dob,
     formState.email,
     formState.firstName,
     formState.lastName,
+    formState.enrolledSubjects,
     formState.password,
     formState.department,
     formState.username,
@@ -177,6 +177,15 @@ const StudentSignup = () => {
     fetchDepartment();
   }, []);
 
+  useEffect(() => {
+    async function getCourses() {
+      const courses = await fetchCourses();
+      if (typeof courses === 'string') return;
+      else setAvailableCourses(courses.data);
+    }
+    getCourses();
+  }, []);
+
   const handleChange = ({
     target: { name, value },
   }: ChangeEvent<
@@ -186,6 +195,7 @@ const StudentSignup = () => {
       ...prevState,
       [name]: value,
     }));
+    console.log(value, 'this is the target');
   };
 
   const resetForm = () => {
@@ -196,7 +206,7 @@ const StudentSignup = () => {
       lastName: '',
       username: '',
       department: '',
-      class: '',
+      // class: '',
       dob: '',
       email: '',
       password: '',
@@ -259,11 +269,11 @@ const StudentSignup = () => {
         ...prevState,
         lastNameError: data.message.lastName,
       }));
-    } else if (data.message.class) {
-      setFormError((prevState) => ({
-        ...prevState,
-        classError: data.message.class,
-      }));
+      // } else if (data.message.class) {
+      //   setFormError((prevState) => ({
+      //     ...prevState,
+      //     classError: data.message.class,
+      //   }));
     } else if (data.message.dob) {
       setFormError((prevState) => ({
         ...prevState,
@@ -317,7 +327,7 @@ const StudentSignup = () => {
         internetError: '',
         firstNameError: '',
         lastNameError: '',
-        classError: '',
+        enrolledSubjectsError: '',
         departmentError: '',
         dobError: '',
         emailError: '',
@@ -330,6 +340,7 @@ const StudentSignup = () => {
     }, 7000);
   };
 
+  console.log(formState, 'formDtate');
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     event.preventDefault();
@@ -346,18 +357,26 @@ const StudentSignup = () => {
     }
 
     const formData = new FormData();
-    formData.append('image', selectedImage as Blob);
+    formData.append('profileImage', selectedImage as Blob);
 
     // Append other form fields to the FormData object
     Object.entries(formState).forEach(([key, value]) => {
-      formData.append(key, value);
+      if (key === 'enrolledSubjects') {
+        formData.append(key, JSON.stringify([value]));
+        console.log(
+          'this is the value of the enrolled subects',
+          JSON.stringify([value])
+        );
+      } else formData.append(key, value as string);
     });
+
+    console.log(formData, 'this is the formdata');
 
     try {
       setIsDisabled(true);
-      const response = await fetch(`${baseUrl}/student-signup/`, {
+      const response = await fetch(`${baseUrl}/student-signup`, {
         method: 'POST',
-        credentials: 'include',
+        // credentials: 'include',
         body: formData,
       });
 
@@ -453,7 +472,7 @@ const StudentSignup = () => {
             {formError.passwordError}
           </span>
         ) : formError.internetError ? (
-          <span className='text-yellow-600 text-sm flex items-center justify-center gap-1'>
+          <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
             <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
             {formError.internetError}
           </span>
@@ -474,7 +493,7 @@ const StudentSignup = () => {
           </span>
         ) : null}
         {formError.profileImageError !== '' && (
-          <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-[#F6CE46]'>
+          <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-red-600'>
             <Info sx={{ fontSize: '1.1rem' }} />
             {formError.profileImageError}
           </span>
@@ -504,33 +523,47 @@ const StudentSignup = () => {
               error={''}
             />
           </div>
-          <div className='w-full pb-5'>
-            <label className='block w-full' htmlFor='department'>
-              Department
-            </label>
+          <div className='w-full '>
             <select
               onChange={handleChange}
-              // value={formState.instituteType}
-              name='department'
+              value={formState.department} // Uncomment this to bind the value
               id='department'
+              name='department'
               required
-              className='flex items-center px-2 sm:px-2.5  py-2 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full h-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
+              className='flex mb-5 items-center h-12 px-2 sm:px-2.5 py-3 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
             >
-              {/* <option value='science' className='h-full'>
-                Science
+              <option value='' disabled selected>
+                Select Department
               </option>
-              <option value='art' className='h-full'>
-                Art
-              </option>
-              <option value='commercial' className='h-full'>
-                Commercial
-              </option> */}
-              {fetchedDept?.map((dept) => (
-                <option value={dept.name} key={dept._id}>
-                  {dept.name}
+              {fetchedDept?.map((course) => (
+                <option value={course._id} key={course._id}>
+                  {course.name}
                 </option>
               ))}
             </select>
+
+            <select
+              onChange={handleChange}
+              value={formState.enrolledSubjects} // Uncomment this to bind the value
+              name='enrolledSubjects'
+              id='enrolledSubjects'
+              required
+              // multiple
+              className='flex items-center px-2 sm:px-2.5 py-3 rounded-xl h-12 bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full  outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
+            >
+              <option value='' disabled selected>
+                Select Enrolled courses
+              </option>
+              {availableCourse?.map((dept) => (
+                <option value={dept._id} key={dept._id}>
+                  {dept.title}
+                </option>
+              ))}
+            </select>
+            <div>
+              {/* <label htmlFor='remember' className='text-subtext text-xs'>Select Enrolled Course</label>
+              <input type='checkbox' name='enrolledSubjects' id='remember' /> */}
+            </div>
           </div>
           {inputFields.map((field) => (
             <InputField
@@ -538,6 +571,23 @@ const StudentSignup = () => {
               key={field.name}
               name={field.name}
               type={field.type}
+              // pattern={field.name === 'username' ? '[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,}$' : ''}
+              pattern={
+                field.name === 'username'
+                  ? '[a-zA-Z0-9!@#$_%].{5,}$'
+                  : field.name === 'password'
+                  ? '(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$'
+                  : undefined
+              }
+              title={
+                field.name === 'email'
+                  ? 'Please enter a valid email address'
+                  : field.name === 'username'
+                  ? 'Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$._%+-)'
+                  : field.name === 'password'
+                  ? 'Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$._%+-)'
+                  : ''
+              }
               value={formState[field.name as keyof SignupType]}
               onChange={handleChange}
               required={field.required}
