@@ -193,6 +193,7 @@ const Classes = () => {
         modalOpen={lectureInfoModal!}
       />
       <StudentWrapper
+        title='Courses'
         firstTitle='Courses'
         remark='Manage and get updates on your courses'
         metaTitle='Olive Groove ~ Classes'
@@ -277,5 +278,6 @@ const Classes = () => {
     </>
   );
 };
+// export default Classes;
 
 export default withAuth('Student', Classes);

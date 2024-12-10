@@ -100,7 +100,7 @@ const Dashboard = () => {
         handleModalClose={handleModalAssignment}
         modalOpen={openModalAss}
       />
-      <StudentWrapper title='Dashboard' metaTitle='Olive Groove ~ Dashboard'>
+      <StudentWrapper firstTitle='Dashboard' remark='See overview and summary of your studies.' metaTitle='Olive Groove ~ Dashboard'>
         <div className='p-4 sm:p-6 md:p-8 lg:p-12 space-y-5'>
           {/* start */}
           <div className='xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
@@ -173,5 +173,6 @@ const Dashboard = () => {
     </>
   );
 };
+// export default Dashboard;
 
 export default withAuth('Student', Dashboard);

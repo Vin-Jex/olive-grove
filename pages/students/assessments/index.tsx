@@ -20,17 +20,22 @@ const Assessments = () => {
     };
   }, []);
   return (
-    <StudentWrapper title='Assessments' metaTitle='Olive Groove ~ Assessments'>
+    <StudentWrapper
+      firstTitle='Assessments'
+      remark='Manage, submit and access your assessments.'
+      title='Assessments'
+      metaTitle='Olive Groove ~ Assessments'
+    >
       <div className='p-6 sm:p-8 md:p-12 space-y-5'>
         {/* Title */}
-        <div className='flex flex-col'>
+        {/* <div className='flex flex-col'>
           <span className='text-base lg:text-3xl  sm:text-lg font-medium text-dark font-roboto'>
             Access your Assessments
           </span>
           <span className='text-sm sm:text-md text-subtext font-roboto'>
             Manage, submit and access your assessments.
           </span>
-        </div>
+        </div> */}
 
         <div className='grid max-md:place-items-center  md:grid-cols-2 lg:grid-cols-3  h-fit w-full gap-8 !mt-8'>
           {subjectData.map((subject, index) => (
@@ -52,5 +57,7 @@ const Assessments = () => {
     </StudentWrapper>
   );
 };
+
+// export default Assessments;
 
 export default withAuth('Student', Assessments);

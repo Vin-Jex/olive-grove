@@ -18,6 +18,10 @@ import CustomCursor from '@/components/Molecules/CustomCursor';
 import { CircularProgress } from '@mui/material';
 import { baseUrl } from '@/components/utils/baseURL';
 import exp from 'constants';
+import axiosInstance from '@/components/utils/axiosInstance';
+import { useAuth } from '@/contexts/AuthContext';
+import useAjaxRequest, { TAxiosError, TAxiosSuccess } from 'use-ajax-request';
+import { TLoginResponse } from '@/components/utils/types';
 
 export type loginType = {
   username: string;
@@ -25,6 +29,19 @@ export type loginType = {
 };
 
 const StudentLogin = () => {
+
+  const { reCheckUser } = useAuth();
+  const { sendRequest: loginStudent, loading: isLoading } = useAjaxRequest({
+    instance: axiosInstance,
+    config: {
+      url: `/student-login`,
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  });
   const [formState, setFormState] = useState<loginType>({
     username: '',
     password: '',
@@ -37,9 +54,10 @@ const StudentLogin = () => {
     generalError: '',
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(true);
+  
 
   useEffect(() => {
     if (formState.username === '' || formState.password === '')
@@ -134,81 +152,146 @@ const StudentLogin = () => {
     }, 7000);
   };
 
-  const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
-    // Reset previous error messages
-    event.preventDefault();
+  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"teacher">> = ({
+    data,
+  }) => {
+    const accessToken = data.token.accessToken;
+    const refreshToken = data.token.refreshToken;
+    const userId = data.details._id;
+    const userRole = data.details.role;
+
+    const expiryDate = new Date().setDate(new Date().getDate() + 1);
+
+    // console.log("Tihs is the accessToken", accessToken);
+    // console.log("This is the refreshToken", refreshToken);
+    // console.log("Tihs is the userId", userId);
+    // console.log("This is the userRole", userRole);
+
+    accessToken !== undefined &&
+      Cookies.set("accessToken", accessToken, { expires: 1 });
+    refreshToken !== undefined &&
+      Cookies.set("refreshToken", refreshToken, { expires: 1 });
+    userId !== undefined && Cookies.set("userId", userId, { expires: 1 });
+    userRole !== undefined && Cookies.set("role", userRole, { expires: 1 });
+    Cookies.set("userDetails", JSON.stringify(data.details), { expires: 1 });
+
+    setFormError((prevState) => ({
+      ...prevState,
+      successError: "Student successfully logged in.",
+    }));
+
     resetForm();
 
-    setIsLoading(true);
+    reCheckUser();
+
+    setTimeout(() => {
+      router.push("/");
+    }, 500);
+  };
+
+  const handleErrorLogin: TAxiosError<any> = (res) => {
+    handleErrors(res.response.data);
+    return;
+  };
+
+  const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: 'No internet connection',
+        internetError: "No internet connection",
       }));
-      setIsLoading(false);
       clearError();
       return;
     }
 
     try {
-      if (formState.username === '' || formState.password === '')
-        setIsDisabled(true);
-      else setIsDisabled(false);
-      const response = await fetch(`${baseUrl}/student-login`, {
-        method: 'POST',
-        // credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: formState.username,
-          password: formState.password,
-        }),
+      await loginStudent(handleSuccessLogin as any, handleErrorLogin, {
+        data: formState,
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        console.log(data, 'Logoin data');
-        handleErrors(data);
-        return;
-      }
-      // const json = await response.json();
-      // console.log(json, 'this is the login json');
-      const expiryDate = new Date().setDate(new Date().getDate() + 1);
-
-      const {
-        details: { role, studentID, _id },
-        token: { accessToken, refreshToken },
-      } = await response.json();
-      Cookies.set('role', role, { expires: expiryDate });
-      Cookies.set('studentID', studentID), { expires: expiryDate };
-      Cookies.set('userId', _id, {
-        expires: expiryDate,
-      });
-      Cookies.set('accessToken', accessToken);
-      Cookies.set('refreshToken', refreshToken);
-      setFormError((prevState) => ({
-        ...prevState,
-        successError: 'Student successfully logged in.',
-      }));
-
-      // Reset the form after successful submission
-      resetForm();
-
-      // Wait for 5 miliseconds before redirecting to login
-      setTimeout(() => {
-        router.push('/');
-      }, 500);
     } catch (error) {
-      console.log('Status: ', error);
+      console.log("Error:", error);
     } finally {
-      setIsDisabled(false);
-      setIsLoading(false);
-
       clearError();
     }
   };
+
+  // const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
+  //   // Reset previous error messages
+  //   event.preventDefault();
+  //   resetForm();
+
+  //   setIsLoading(true);
+
+  //   if (!navigator.onLine) {
+  //     setFormError((prevState) => ({
+  //       ...prevState,
+  //       internetError: 'No internet connection',
+  //     }));
+  //     setIsLoading(false);
+  //     clearError();
+  //     return;
+  //   }
+
+  //   try {
+  //     if (formState.username === '' || formState.password === '')
+  //       setIsDisabled(true);
+  //     else setIsDisabled(false);
+  //     const response = await fetch(`${baseUrl}/student-login`, {
+  //       method: 'POST',
+  //       // credentials: 'include',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         username: formState.username,
+  //         password: formState.password,
+  //       }),
+  //     });
+
+  //     if (!response.ok) {
+  //       const data = await response.json();
+  //       console.log(data, 'Logoin data');
+  //       handleErrors(data);
+  //       return;
+  //     }
+  //     // const json = await response.json();
+  //     // console.log(json, 'this is the login json');
+  //     const expiryDate = new Date().setDate(new Date().getDate() + 1);
+
+  //     const {
+  //       details: { role, studentID, _id },
+  //       token: { accessToken, refreshToken },
+  //     } = await response.json();
+  //     Cookies.set('role', role, { expires: expiryDate });
+  //     Cookies.set('studentID', studentID), { expires: expiryDate };
+  //     Cookies.set('userId', _id, {
+  //       expires: expiryDate,
+  //     });
+  //     Cookies.set('accessToken', accessToken);
+  //     Cookies.set('refreshToken', refreshToken);
+  //     setFormError((prevState) => ({
+  //       ...prevState,
+  //       successError: 'Student successfully logged in.',
+  //     }));
+
+  //     // Reset the form after successful submission
+  //     resetForm();
+
+  //     // Wait for 5 miliseconds before redirecting to login
+  //     setTimeout(() => {
+  //       router.push('/');
+  //     }, 500);
+  //   } catch (error) {
+  //     console.log('Status: ', error);
+  //   } finally {
+  //     setIsDisabled(false);
+  //     setIsLoading(false);
+
+  //     clearError();
+  //   }
+  // };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
     if (isDisabled && event.key === 'Enter') {

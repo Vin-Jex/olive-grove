@@ -43,6 +43,7 @@ const Profile = () => {
   });
   const [isDisabled, setIsDisabled] = useState(true);
   const [profileImage, setProfileImage] = useState('');
+  const [justUpdatedProfile, setJustUpdatedProfile] = useState(false);
   const [studentName, setStudentName] = useState('');
   const { user } = useAuth();
   const role = user?.role;
@@ -198,6 +199,7 @@ const Profile = () => {
 
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
+    const cacheKey = `profileInfo_${role}_${user?.id}`;
     event.preventDefault();
     resetForm();
 
@@ -226,6 +228,8 @@ const Profile = () => {
       }
 
       const data = await response.json();
+      localStorage.removeItem(cacheKey);
+      fetchProfile();
       setFormError((prevState) => ({
         ...prevState,
         successError: 'Information updated successfully.',
@@ -257,13 +261,6 @@ const Profile = () => {
     try {
       setIsDisabled(true);
       let response = await fetch(`{}`); //* simulate endpoint for password update
-      // const response = await fetch(
-      //   `${baseUrl}/student-user/${formState.username}`,
-      //   {
-      //     method: 'PUT',
-      //     body: formData,
-      //   }
-      // );
 
       if (!response.ok) {
         const data = await response.json();
@@ -289,6 +286,27 @@ const Profile = () => {
   };
 
   const fetchProfile = useCallback(async () => {
+    const cacheKey = `profileInfo_${role}_${user?.id}`;
+
+    const cachedData = localStorage.getItem(cacheKey);
+    if (cachedData) {
+      const { data, timestamp } = JSON.parse(cachedData);
+
+      if (Date.now() - timestamp < 60 * 60 * 1000) {
+        setFormState({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          middleName: data.middleName,
+          email: data.email,
+          username: data.username,
+          password: '',
+          otp: '',
+        });
+        setProfileImage(data.profileImage);
+        setStudentName(data.firstName + ' ' + data.lastName);
+        return;
+      }
+    }
     try {
       const response = await axiosInstance.get(`${baseUrl}/student`);
       // if (!response.ok) {
@@ -310,13 +328,22 @@ const Profile = () => {
       });
       setProfileImage(json.profileImage);
       setStudentName(json.firstName + ' ' + json.lastName);
+      console.log('tell me that this lo')
+
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify({
+          data: json,
+          timestamp: Date.now(),
+        })
+      );
     } catch (err) {
       //how to display error.
       setProfileError('Error occured in fetching user profile');
     }
-  }, []);
+  }, [user?.id, role]);
   useEffect(() => {
-    fetchProfile();
+    if (user) fetchProfile();
     // department: "science";
     // dob: "2024-10-31T00:00:00.000Z";
     // email: "henryabayomi12@gmail.com";
@@ -332,7 +359,7 @@ const Profile = () => {
     // username: "olive";
     // __v: 0;
     // _id: "673ca6b347a34dee9993a503";
-  }, [fetchProfile]);
+  }, [fetchProfile, user]);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
     if (isDisabled && event.key === 'Enter') {
@@ -342,7 +369,12 @@ const Profile = () => {
 
   return (
     <>
-      <StudentWrapper title='Profile' metaTitle='Olive Groove ~ Profile'>
+      <StudentWrapper
+        firstTitle='Profile'
+        remark='Manage and edit your profile settings.'
+        title='Profile'
+        metaTitle='Olive Groove ~ Profile'
+      >
         <div className='p-12 space-y-5'>
           {/* Title */}
           <div className='flex gap-4'>
@@ -420,7 +452,9 @@ const Profile = () => {
                 showIcon={VisibilityOutlined}
                 hideIcon={VisibilityOffOutlined}
               />
-              {formState.password.length > 0 && <Button size='xs'>Generate OTP</Button>}
+              {formState.password.length > 0 && (
+                <Button size='xs'>Generate OTP</Button>
+              )}
               <Input
                 type='number'
                 name='OTP'
@@ -439,5 +473,7 @@ const Profile = () => {
     </>
   );
 };
+
+// export default Profile;
 
 export default withAuth('Student', Profile);

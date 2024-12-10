@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Class, ClassOutlined, Close, Logout, Menu } from "@mui/icons-material";
-import { useRouter } from "next/router";
-import Link from "next/link";
-import Image from "next/image";
-import Logo from "@/public/image/logo.png";
-import { useSidebarContext } from "@/contexts/SidebarContext";
-import { useAuth } from "@/contexts/AuthContext";
+import React, { useEffect, useRef, useState } from 'react';
+import { Class, ClassOutlined, Close, Logout, Menu } from '@mui/icons-material';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import Image from 'next/image';
+import Logo from '@/public/image/logo.png';
+import { useSidebarContext } from '@/contexts/SidebarContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 type NavItemProps = {
   href: string;
@@ -18,9 +18,9 @@ type NavItemProps = {
 // isSidenavOpen;
 const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
   const { active, setActive } = useSidebarContext();
-  const [activeClass, setActiveClass] = useState<string>("dashboard");
-  const navRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [activeClass, setActiveClass] = useState<string>(router.pathname.split('/')[1]);
+  const navRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState<boolean>(false);
   const { user } = useAuth();
   const role = user?.role;
@@ -34,7 +34,7 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
   };
 
   useEffect(() => {
-    const baseRoute = router.pathname.split("/")[2];
+    const baseRoute = router.pathname.split('/')[2];
     setActiveClass(baseRoute);
   }, [router.pathname]);
 
@@ -45,9 +45,9 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
       }
     };
     handleResize();
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, [setActive]);
 
@@ -55,23 +55,25 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
     <div
       className={`lg:block transition-transform transform flex-col h-full w-full`}
     >
-      <div className={`sidebar-nav ${active && "active"}`} ref={navRef}>
+      {/* <div className={`sidebar-nav ${active && 'active'}`} ref={navRef}> */}
+      <div className={`sidebar-nav active`} ref={navRef}>
         <div className='flex justify-between items-center'>
           <Image
             onClick={() => {
               window.scrollTo(0, 0);
-              router.push("/");
+              router.push('/');
             }}
             src={Logo}
             alt='Logo'
             className={`w-12 h-12 ml-4 cursor-pointer object-cover transition-all ease-in-out duration-500 ${
-              active ? "flex" : "hidden"
+              // active ? 'flex' : 'hidden'
+              `flex`
             }`}
           />
 
-          {active ? (
+          {/* {active ? (
             <Close
-              sx={{ color: "#fff", cursor: "pointer" }}
+              sx={{ color: '#fff', cursor: 'pointer' }}
               id='btn-bars'
               onClick={toggleClass}
               className='transition-all ease-in-out duration-500 hidden lg:flex'
@@ -80,22 +82,22 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             <Menu
               onClick={toggleClass}
               id='btn-bars'
-              sx={{ fontSize: "1rem", cursor: "pointer" }}
+              sx={{ fontSize: '1rem', cursor: 'pointer' }}
               className='transition-all ease-in-out duration-500  hidden lg:flex'
             />
-          )}
+          )} */}
         </div>
 
         <ul className='nav_list space-y-3.5 md:space-y-6 flex-1'>
           <NavItem
             href={`${
-              isClient && role === "Teacher"
-                ? "/teachers"
-                : role === "Student"
-                ? "/students"
-                : role === "Admin"
-                ? "/admins"
-                : ""
+              isClient && role === 'Teacher'
+                ? '/teachers'
+                : role === 'Student'
+                ? '/students'
+                : role === 'Admin'
+                ? '/admins'
+                : ''
             }/dashboard`}
             activeClass={activeClass}
             setActiveClass={setActiveClass}
@@ -128,14 +130,14 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             }
           />
 
-          {isClient && role !== "Admin" && (
+          {isClient && role !== 'Admin' && (
             <NavItem
               href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Student"
-                  ? "/students"
-                  : ""
+                isClient && role === 'Teacher'
+                  ? '/teachers'
+                  : role === 'Student'
+                  ? '/students'
+                  : ''
               }/lectures`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -187,10 +189,10 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             />
           )}
 
-          {isClient && role !== "Admin" && role !== "Student" && (
+          {isClient && role !== 'Admin' && role !== 'Student' && (
             <NavItem
               href={`${
-                isClient && role === "Teacher" ? "/teachers" : ""
+                isClient && role === 'Teacher' ? '/teachers' : ''
               }/classes`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -200,14 +202,14 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             />
           )}
 
-          {isClient && role !== "Admin" && (
+          {isClient && role !== 'Admin' && (
             <NavItem
               href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Student"
-                  ? "/students"
-                  : ""
+                isClient && role === 'Teacher'
+                  ? '/teachers'
+                  : role === 'Student'
+                  ? '/students'
+                  : ''
               }/assessments`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -243,7 +245,7 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             />
           )}
 
-          {isClient && role === "Admin" && (
+          {isClient && role === 'Admin' && (
             <NavItem
               href={`/admins/teachers`}
               activeClass={activeClass}
@@ -282,14 +284,14 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             />
           )}
 
-          {isClient && role !== "Student" && (
+          {isClient && role !== 'Student' && (
             <NavItem
               href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Admin"
-                  ? "/admins"
-                  : ""
+                isClient && role === 'Teacher'
+                  ? '/teachers'
+                  : role === 'Admin'
+                  ? '/admins'
+                  : ''
               }/students`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -327,14 +329,14 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             />
           )}
 
-          {isClient && role !== "Teacher" && (
+          {isClient && role !== 'Teacher' && (
             <NavItem
               href={`${
-                isClient && role === "Student"
-                  ? "/students"
-                  : role === "Admin"
-                  ? "/admins"
-                  : ""
+                isClient && role === 'Student'
+                  ? '/students'
+                  : role === 'Admin'
+                  ? '/admins'
+                  : ''
               }/profile`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -375,14 +377,14 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             />
           )}
 
-          {isClient && role !== "Student" && (
+          {isClient && role !== 'Student' && (
             <NavItem
               href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Admin"
-                  ? "/admins"
-                  : ""
+                isClient && role === 'Teacher'
+                  ? '/teachers'
+                  : role === 'Admin'
+                  ? '/admins'
+                  : ''
               }/subjects`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -449,25 +451,25 @@ const NavItem: React.FC<NavItemProps> = ({
     <li>
       <Link
         href={href}
-        className='px-5 py-3 space-x-2'
+        className={`px-5 py-1.5 space-x-2 ${
+          activeClass === label ? 'bg-primary rounded-tr-lg rounded-br-lg' : ''
+        }`}
         onClick={() => setActiveClass(label)}
       >
         <div
-          className={`${
-            activeClass === label ? "bg-primary" : "border border-dark/70"
-          } flex items-center justify-center rounded-lg p-1.5 md:p-2 min-w-[40px] min-h-[40px]`}
+          className={` flex items-center justify-center rounded-lg p-1.5 md:p-2 min-w-[40px] min-h-[40px]`}
         >
           {activeClass === label ? activeIcon : icon}
         </div>
         <span
           className={`links_name capitalize !text-sm md:text-base ${
-            activeClass !== label && "text-subtext/60"
+            activeClass !== label ? 'text-subtext/60' : 'text-white'
           }`}
         >
           {label}
         </span>
       </Link>
-      <span className='toolkit capitalize'>{label}</span>
+      {/* <span className='toolkit capitalize'>{label}</span> */}
     </li>
   );
 };
