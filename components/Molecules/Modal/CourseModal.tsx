@@ -107,8 +107,11 @@ export default function CourseModal({
 
       // * If the user added the embed url direcly
       if (value.includes("/embed/")) {
+        console.log("Here...");
+        console.log("Value", value);
         // * Update the youtube video with the entered URL
         updateYTURL(value);
+        return;
       }
 
       const ytEmbedURL = `https://www.youtube.com/embed/${ytVideoId}`;

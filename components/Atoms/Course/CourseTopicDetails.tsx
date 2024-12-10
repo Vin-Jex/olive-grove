@@ -372,15 +372,15 @@ export const TopicDetails: FC<{
           <div className="flex w-full justify-between py-5">
             <Button
               onClick={handlePreviousTab}
-              size="md"
-              className="text-primary !border-primary border"
+              size="xs"
+              // className="text-primary !border-primary border"
               color="outline"
               width="fit"
             >
               Previous Topic
             </Button>
 
-            <Button onClick={handleNextTab} size="md" color="blue" width="fit">
+            <Button onClick={handleNextTab} size="xs" color="blue" width="fit">
               Next Topic
             </Button>
           </div>
