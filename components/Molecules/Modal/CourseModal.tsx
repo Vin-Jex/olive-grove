@@ -43,6 +43,8 @@ export default function CourseModal({
     saving: false,
     deleting: false,
   });
+  const [topicYouTubeUrl, setTopicYouTubeUrl] = useState("");
+  const [topicYouTubeVideoId, setTopicYouTubeVideoId] = useState("");
 
   const textEditorValue =
     type === "topic" ? "topicNote" : type === "course" ? "description" : "";
@@ -86,6 +88,39 @@ export default function CourseModal({
       ...prevState,
       [name]: value,
     }));
+  };
+
+  const modifyYouTubeLink: React.ChangeEventHandler<HTMLInputElement> = ({
+    target: { name, value },
+  }) => {
+    const updateYTURL = (ytEmbedURL: string) => {
+      // * Update the youtube video with the correct embed URL
+      handleChange({
+        target: { name: "youtubeVideo", value: ytEmbedURL || "" },
+      } as React.ChangeEvent<HTMLInputElement>);
+    };
+
+    try {
+      setTopicYouTubeUrl(value);
+
+      const ytVideoId = new URL(value).searchParams.get("v");
+
+      // * If the user added the embed url direcly
+      if (value.includes("/embed/")) {
+        console.log("Here...");
+        console.log("Value", value);
+        // * Update the youtube video with the entered URL
+        updateYTURL(value);
+        return;
+      }
+
+      const ytEmbedURL = `https://www.youtube.com/embed/${ytVideoId}`;
+
+      // * Update the youtube video with the correct embed URL
+      updateYTURL(ytEmbedURL);
+    } catch (error) {
+      console.log("Error", error);
+    }
   };
 
   const actionProps: Omit<ButtonProps, "children"> = {
@@ -257,15 +292,22 @@ export default function CourseModal({
                   fileName={fileName}
                 />
               ) : (
-                <Input
-                  type="url"
-                  name="youtubeVideo"
-                  value={formState.youtubeVideo}
-                  onChange={handleChange}
-                  placeholder={`Youtube video URL`}
-                  required
-                  className="input !rounded-lg"
-                />
+                <div className="flex w-full flex-col gap-2 text-subtext">
+                  <Input
+                    type="url"
+                    name="youtubeVideo"
+                    value={topicYouTubeUrl}
+                    onChange={modifyYouTubeLink}
+                    placeholder={`Youtube video URL`}
+                    required
+                    className="w-full input !rounded-lg"
+                  />
+                  <div className="bg-primary/10 rounded-lg p-4">
+                    {/* eslint-disable-next-line react/no-unescaped-entities */}
+                    Here's the YouTube Embed URL that will be used:{" "}
+                    {formState.youtubeVideo}
+                  </div>
+                </div>
               )}
             </div>
           )}

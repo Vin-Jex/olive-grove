@@ -73,6 +73,23 @@ const Subjects: FC = () => {
           });
           setSearchResults(courses.data);
         } else {
+          const status = isNaN(Number(courses))
+            ? "Error retrieving courses"
+            : Number(courses);
+
+          console.log("STATUS RES", status);
+
+          // * If courses were not found
+          if (status === 404) {
+            setCourses({
+              data: [],
+              loading: false,
+              error: { status: 404, message: "No courses found", state: true },
+            });
+            setSearchResults([]);
+            return;
+          }
+
           setCourses({
             data: [],
             loading: false,
@@ -209,13 +226,16 @@ const Subjects: FC = () => {
 
       // * Add the newly created course to the list of courses
       setCourses((prev) => ({
-        ...prev,
+        error: undefined,
+        loading: false,
         data: newCourses,
       }));
       setSearchResults(newCourses);
 
       return true;
     } catch (error: any) {
+      console.log("Error", error);
+
       // * If it's a 400 error, display message that the input details are incomplete
       if (error?.response?.status == 400) {
         // const data = (await response.json()) as TResponse<any>;
@@ -279,27 +299,6 @@ const Subjects: FC = () => {
         <div className="h-full ">
           {courses.loading ? (
             <Loader />
-          ) : courses.error ? (
-            <div className="w-full h-full flex items-center justify-center">
-              {typeof courses.error === "object" &&
-                (courses.error.status === 404 ? (
-                  <>
-                    <NotFoundError msg={courses.error.message} />
-                  </>
-                ) : (
-                  <>
-                    <ServerError msg={courses.error.message} />
-                  </>
-                ))}
-              {typeof courses.error === "string" && (
-                <ServerError msg={courses.error} />
-              )}
-            </div>
-          ) : searchResults.length < 1 ? (
-            // 404 image
-            <div className="w-full h-full flex items-center justify-center">
-              <NotFoundError msg="No courses found" />
-            </div>
           ) : (
             <>
               {/* Title */}
@@ -323,53 +322,78 @@ const Subjects: FC = () => {
                 </Button>
               </div>
 
-              {/* Content */}
-              <div className="h-full mt-4">
-                {/* Searchbars and select fields */}
-                <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
-                  <div className="flex justify-start items-center gap-4 w-full md:w-auto">
-                    <Select
-                      options={[
-                        "jss 1",
-                        "jss 2",
-                        "jss 3",
-                        "ss 1",
-                        "ss 2",
-                        "ss 3",
-                      ]}
-                      name="class"
-                      required
-                      onChange={() => {}}
-                      placeholder="Select class"
-                    />
-                    <Select
-                      options={["physics", "further mathematics"]}
-                      name="subject"
-                      required
-                      onChange={() => {}}
-                      placeholder="Select subject"
-                    />
-                  </div>
-
-                  <div className="w-full md:w-[400px]">
-                    <SearchInput
-                      shape="rounded-lg"
-                      placeholder="Search for Subjects"
-                      searchResults={searchResults}
-                      setSearchResults={setSearchResults}
-                      initialData={courses.data}
-                      handleInputChange={handleSearchChange}
-                    />
-                  </div>
-                </div>
-                {/* Courses */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4">
-                  {searchResults &&
-                    searchResults.map((course, i) => (
-                      <Course course={course} key={i + course.title} />
+              {courses.error ? (
+                <div className="w-full h-full flex items-center justify-center">
+                  {typeof courses.error === "object" &&
+                    (courses.error.status === 404 ? (
+                      <>
+                        <NotFoundError msg={courses.error.message} />
+                      </>
+                    ) : (
+                      <>
+                        <ServerError msg={courses.error.message} />
+                      </>
                     ))}
+                  {typeof courses.error === "string" && (
+                    <ServerError msg={courses.error} />
+                  )}
                 </div>
-              </div>
+              ) : searchResults.length < 1 ? (
+                // 404 image
+                <div className="w-full h-full flex items-center justify-center">
+                  <NotFoundError msg="No courses found" />
+                </div>
+              ) : (
+                <>
+                  {/* Content */}
+                  <div className="h-full mt-4">
+                    {/* Searchbars and select fields */}
+                    <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
+                      <div className="flex justify-start items-center gap-4 w-full md:w-auto">
+                        <Select
+                          options={[
+                            "jss 1",
+                            "jss 2",
+                            "jss 3",
+                            "ss 1",
+                            "ss 2",
+                            "ss 3",
+                          ]}
+                          name="class"
+                          required
+                          onChange={() => {}}
+                          placeholder="Select class"
+                        />
+                        <Select
+                          options={["physics", "further mathematics"]}
+                          name="subject"
+                          required
+                          onChange={() => {}}
+                          placeholder="Select subject"
+                        />
+                      </div>
+
+                      <div className="w-full md:w-[400px]">
+                        <SearchInput
+                          shape="rounded-lg"
+                          placeholder="Search for Subjects"
+                          searchResults={searchResults}
+                          setSearchResults={setSearchResults}
+                          initialData={courses.data}
+                          handleInputChange={handleSearchChange}
+                        />
+                      </div>
+                    </div>
+                    {/* Courses */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4">
+                      {searchResults &&
+                        searchResults.map((course, i) => (
+                          <Course course={course} key={i + course.title} />
+                        ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>
