@@ -47,12 +47,12 @@ const Add: FC<{
           req_body.append(key, value as string);
         }
 
-        if (!formState.topicVideo) {
-          req_body.append("topicVideo", null as any);
-        }
-        if (!formState.topicImage) {
-          req_body.append("topicImage", undefined as any);
-        }
+        // if (!formState.topicVideo) {
+        //   req_body.append("topicVideo", null as any);
+        // }
+        // if (!formState.topicImage) {
+        //   req_body.append("topicImage", null as any);
+        // }
         // req_body.append("availableDate", new Date().toISOString());
       }
 
