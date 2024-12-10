@@ -44,10 +44,12 @@ export default function CourseModal({
     deleting: false,
   });
   const [topicYouTubeUrl, setTopicYouTubeUrl] = useState("");
-  const [topicYouTubeVideoId, setTopicYouTubeVideoId] = useState("");
 
-  const textEditorValue =
-    type === "topic" ? "topicNote" : type === "course" ? "description" : "";
+  const textEditorValue = ["topic", "lesson"].includes(type)
+    ? "topicNote"
+    : type === "course"
+    ? "description"
+    : "";
 
   const resetImageField = () => {
     setSelectedImage(null);

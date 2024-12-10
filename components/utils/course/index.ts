@@ -48,7 +48,7 @@ export const editItem = async (
       ? new FormData()
       : JSON.stringify({
           ...reqData,
-          availableDate: new Date().toISOString(),
+          // availableDate: new Date().toISOString(),
         });
 
     if (["topic", "lesson"].includes(type) && typeof req_body === "object") {
