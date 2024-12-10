@@ -73,6 +73,23 @@ const Subjects: FC = () => {
           });
           setSearchResults(courses.data);
         } else {
+          const status = isNaN(Number(courses))
+            ? "Error retrieving courses"
+            : Number(courses);
+
+          console.log("STATUS RES", status);
+
+          // * If courses were not found
+          if (status === 404) {
+            setCourses({
+              data: [],
+              loading: false,
+              error: { status: 404, message: "No courses found", state: true },
+            });
+            setSearchResults([]);
+            return;
+          }
+
           setCourses({
             data: [],
             loading: false,
@@ -209,13 +226,16 @@ const Subjects: FC = () => {
 
       // * Add the newly created course to the list of courses
       setCourses((prev) => ({
-        ...prev,
+        error: undefined,
+        loading: false,
         data: newCourses,
       }));
       setSearchResults(newCourses);
 
       return true;
     } catch (error: any) {
+      console.log("Error", error);
+
       // * If it's a 400 error, display message that the input details are incomplete
       if (error?.response?.status == 400) {
         // const data = (await response.json()) as TResponse<any>;

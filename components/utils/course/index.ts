@@ -239,9 +239,9 @@ export const fetchCourses = async (filter?: {
     // const responseData = (await response.json()) as TResponse<TCourse[]>;
 
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     // Return error message on exception
-    return "An error occurred while retrieving courses";
+    return error.response?.status?.toString() || "500";
   }
 };
