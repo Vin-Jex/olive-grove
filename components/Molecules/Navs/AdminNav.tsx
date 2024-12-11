@@ -17,6 +17,7 @@ interface AdminNavType {
   title?: string;
   firstTitle?: string;
   remark?: string;
+  isOpen: boolean;
   toggleSidenav: () => void;
 }
 
@@ -24,6 +25,7 @@ const AdminNav: React.FC<AdminNavType> = ({
   firstTitle,
   remark,
   title,
+  isOpen,
   toggleSidenav,
 }) => {
   const [profileImage, setProfileImage] = useState(dummyImage.src);
@@ -33,15 +35,15 @@ const AdminNav: React.FC<AdminNavType> = ({
     async function fetchProfileImage() {
       const userRole = user?.role;
       const userId = user?.id;
-      
+
       // Create a cache key based on user role and ID
       const cacheKey = `profileImage_${userRole}_${userId}`;
-      
+
       // Check if cached image exists and is still valid
       const cachedData = localStorage.getItem(cacheKey);
       if (cachedData) {
         const { image, timestamp } = JSON.parse(cachedData);
-        
+
         // Check if cache is less than 1 hour old
         if (Date.now() - timestamp < 60 * 60 * 1000) {
           setProfileImage(image);
@@ -67,12 +69,15 @@ const AdminNav: React.FC<AdminNavType> = ({
         }
 
         const imageUrl = response.data.profileImage;
-        
+
         // Cache the image with timestamp
-        localStorage.setItem(cacheKey, JSON.stringify({
-          image: imageUrl,
-          timestamp: Date.now()
-        }));
+        localStorage.setItem(
+          cacheKey,
+          JSON.stringify({
+            image: imageUrl,
+            timestamp: Date.now(),
+          })
+        );
 
         setProfileImage(imageUrl);
       } catch (err) {
@@ -86,45 +91,47 @@ const AdminNav: React.FC<AdminNavType> = ({
   }, [user]);
 
   return (
-    <div className='flex items-center justify-between w-full h-fit py-2 md:py-3 bg-light border-b space-x-2'>
-    <div className='flex md:!hidden'>
-      <Menu className='!text-2xl cursor-pointer' onClick={toggleSidenav} />
-    </div>
-
-    <div className='flex flex-col md:flex-row items-center md:justify-between w-fit md:w-full'>
-      <div className='flex flex-col order-2 space-y-1 md:order-1 w-full'>
-        <span className='leading-4 font-roboto font-medium text-md md:text-xl text-dark  w-full my-auto'>
-          {title ? title : firstTitle}
-        </span>
-        {remark && (
-          <span className='leading-4 font-roboto text-xs md:text-sm text-gray-400'>
-            {remark}
-          </span>
-        )}
+    <div className='flex relative items-center justify-between w-full max-sm:border-none border-b custom-height max-sm:py-2 my-2 md:my-3   '>
+      {/* <div className={` md:!hidden ${isOpen ? 'hidden' : 'flex'}`}> */}
+      <div className='flex md:!hidden'>
+        <Menu className='!text-2xl cursor-pointer' onClick={toggleSidenav} />
       </div>
-      <div className='flex items-center space-x-3 md:space-x-5 xl:space-x-7 order-1 md:order-2'>
-        {firstTitle !== 'Courses' && (
+
+      <div className='flex flex-col md:flex-row items-center md:justify-between w-fit md:w-full'>
+        <div className='max-sm:hidden flex flex-col order-2 space-y-1 pb-2 md:order-1 w-full'>
+          <span className='leading-4 font-roboto font-medium text-md md:text-xl text-dark  w-full my-auto'>
+            {title ? title : firstTitle}
+          </span>
+          {remark && (
+            <span className='leading-4 font-roboto text-xs md:text-sm text-gray-400'>
+              {remark}
+            </span>
+          )}
+        </div>
+        <div className='flex items-center space-x-3 md:space-x-5 xl:space-x-7 order-1 md:order-2'>
+          {/* {firstTitle !== 'Courses' && (
           <SearchLayout onChange={() => {}} value='' />
-        )}
-        <span className='font-roboto text-xs sm:text-sm md:text-[16px] lg:text-[18px] text-subtext leading-4 whitespace-nowrap'>
+        )} */}
+          {/* <span className='font-roboto text-xs sm:text-sm md:text-[16px] lg:text-[18px] text-subtext leading-4 whitespace-nowrap'>
           {DateFormatter(generateDateString())}
-        </span>
-        <button className='flex items-center justify-center'>
-          <NotificationsOutlined className='!text-xl md:!text-2xl text-subtext' />
-        </button>
-        <div className='w-7 h-7 md:w-9 md:h-9 overflow-hidden'>
-          <Image
-            src={!profileImage ? dummyImage : profileImage}
-            width={300}
-            height={300}
-            alt='Profile Pics'
-            className='shadow w-full h-full object-cover rounded-full'
-          />
-          {/* we're supposed to add a fallback image */}
+        </span> */}
+          <button className='flex items-center justify-center'>
+            <NotificationsOutlined className='!text-xl md:!text-2xl text-subtext' />
+          </button>
+          <div className='w-7 h-7 md:w-9 md:h-9 overflow-hidden'>
+            <Image
+              src={!profileImage ? dummyImage : profileImage}
+              width={300}
+              height={300}
+              alt='Profile Pics'
+              className='shadow w-full h-full object-cover rounded-full'
+            />
+            {/* we're supposed to add a fallback image */}
+          </div>
         </div>
       </div>
+      {/* <div className='w-full absolute h-[1px] bottom-0 mt-5 bg-gray-500'></div> */}
     </div>
-  </div>
   );
 };
 

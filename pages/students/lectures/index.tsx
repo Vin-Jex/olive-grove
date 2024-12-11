@@ -114,7 +114,7 @@ const Classes = () => {
       }
       setCourses({ data: [], loading: false, error: 'No courses found' });
     }
-  }, []); // Empty dependency array
+  }, [router.query.search]); // Empty dependency array
 
   const getFilteredCourses = useCallback(async () => {
     const searched = router.query.search as string;
@@ -172,14 +172,19 @@ const Classes = () => {
     if (searched && searched.length > 0) {
       debouncedSearch(searched as string);
     }
-    console.log('this effect can"t just keep running infinitely, can it?');
-    console.log(searched, 'this is searched');
 
     if (searched.length === 0) {
       router.push(router.pathname);
+      // const { query } = router;
+      // const newQuery = { ...query };
+      // delete newQuery.search;
+      // router.push({
+      //   pathname: router.pathname,
+      //   query: newQuery,
+      // });
       setFilteredCourses({ data: [], loading: false, error: undefined });
     }
-  }, [searched]);
+  }, [searched, debouncedSearch, router]);
 
   useEffect(() => {
     debouncedGetFilteredCourses();
@@ -199,33 +204,28 @@ const Classes = () => {
       >
         <div className='p-12 space-y-5'>
           {/* Title */}
-          {/* <div className='flex flex-col'>
-            <span className='text-lg lg:text-3xl font-medium text-dark font-roboto'>
-              Explore your classes
-            </span>
-            <span className='text-md text-subtext font-roboto'>
-              Manage and join your classes.
-            </span>
-          </div> */}
+
           <div className='flex items-center justify-between'>
             <div className='relative'>
               <SearchLayout value={searched as string} onChange={setSearched} />
-              <div className=' w-[20rem] bg-white border-b border-r border-l rounded-br-md rounded-bl-md  z-20'>
-                {filteredCourses.loading && <p>Loading...</p>}
-                {filteredCourses.error && (
-                  <p className='h-8 absolute'>
-                    Failed to fetch searched courses
-                  </p>
-                )}
-                {/**border-b border-r border-l rounded-br-md rounded-bl-md */}
-                <div className='flex flex-col gap-1 w-[20rem] absolute bg-white  border z-20'>
-                  {filteredCourses.data.length > 0 &&
-                    searched.length > 0 &&
-                    filteredCourses.data.map((subject, index) => (
-                      <div
-                        className='flex items-center px-3 py-3 gap-5  left-0 w-full h-8'
-                        key={index}
-                      >
+
+              {filteredCourses.loading && (
+                <p className='w-[20rem] bg-white z-20 border-b border-r border-t-0 border-l rounded-br-md rounded-bl-md'>
+                  Loading...
+                </p>
+              )}
+
+              <div
+                className={`flex flex-col gap-1 w-[20rem] absolute bg-white  z-20 ${
+                  filteredCourses.data.length > 0 &&
+                  'border border-b border-r border-t-0 border-l rounded-br-md rounded-bl-md'
+                }`}
+              >
+                {filteredCourses.data.length > 0 &&
+                  searched.length > 0 &&
+                  filteredCourses.data.map((subject, index) => (
+                    <Link href='#' key={index}>
+                      <div className='flex items-center px-3 py-4 gap-5  left-0 w-full h-10'>
                         <div className='w-[26px] h-[26px] overflow-hidden rounded-full'>
                           <Image
                             width={300}
@@ -236,12 +236,12 @@ const Classes = () => {
                           />
                         </div>
                         <div className=' flex-shrink-0'>
-                          {subject?.classId?.description?.slice(0, 20) ||
+                          {subject.title.slice(0, 20) ||
                             'no description available'}
                         </div>
                       </div>
-                    ))}
-                </div>
+                    </Link>
+                  ))}
               </div>
             </div>
             <Select

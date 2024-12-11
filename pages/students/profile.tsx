@@ -42,8 +42,8 @@ const Profile = () => {
     successError: '',
   });
   const [isDisabled, setIsDisabled] = useState(true);
+  const [isDisabledPassword, setIsDisabledPassword] = useState(true);
   const [profileImage, setProfileImage] = useState('');
-  const [justUpdatedProfile, setJustUpdatedProfile] = useState(false);
   const [studentName, setStudentName] = useState('');
   const { user } = useAuth();
   const role = user?.role;
@@ -79,13 +79,6 @@ const Profile = () => {
       required: true,
       error: formError.emailError,
     },
-    // {
-    //   label: 'Username *',
-    //   name: 'username',
-    //   type: 'text',
-    //   required: true,
-    //   error: formError.usernameError,
-    // },
   ];
 
   useEffect(() => {
@@ -94,11 +87,13 @@ const Profile = () => {
       formState.firstName === '' ||
       formState.lastName === '' ||
       formState.email === '' //||
-      // formState.password === '' ||
-      // formState.otp === ''
     )
       setIsDisabled(true);
-    else setIsDisabled(false);
+   // else setIsDisabled(false);
+
+    if (formState.password === '' || formState.otp === '')
+      setIsDisabledPassword(true);
+    else setIsDisabledPassword(false);
   }, [
     formState.email,
     formState.firstName,
@@ -127,6 +122,21 @@ const Profile = () => {
       email: '',
       password: '',
     }));
+  };
+
+  // Clear errors after 10 seconds
+  const ClearErrors = () => {
+    setTimeout(() => {
+      setFormError({
+        internetError: '',
+        firstNameError: '',
+        lastNameError: '',
+        emailError: '',
+        usernameError: '',
+        passwordError: '',
+        successError: '',
+      });
+    }, 10000);
   };
 
   const handleErrors = (data: any) => {
@@ -183,25 +193,14 @@ const Profile = () => {
       console.error('Error Message: ', data.error);
     }
 
-    // Clear errors after 10 seconds
-    setTimeout(() => {
-      setFormError({
-        internetError: '',
-        firstNameError: '',
-        lastNameError: '',
-        emailError: '',
-        usernameError: '',
-        passwordError: '',
-        successError: '',
-      });
-    }, 10000);
+    ClearErrors();
   };
 
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     const cacheKey = `profileInfo_${role}_${user?.id}`;
     event.preventDefault();
-    resetForm();
+    // resetForm();
 
     const formData = new FormData();
 
@@ -235,20 +234,21 @@ const Profile = () => {
       }));
 
       // Reset the form after successful submission
-      resetForm();
+      // resetForm();
 
       console.log('Response: ', JSON.stringify(data));
     } catch (error) {
       console.log('Status: ', error);
     } finally {
-      setIsDisabled(false);
+      ClearErrors();
+      // setIsDisabled(true);
     }
   };
 
   const handlePasswordChange = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     event.preventDefault();
-    resetForm();
+    // resetForm();
 
     const formData = new FormData();
 
@@ -258,7 +258,7 @@ const Profile = () => {
     });
 
     try {
-      setIsDisabled(true);
+      setIsDisabledPassword(true);
       let response = await fetch(`{}`); //* simulate endpoint for password update
 
       if (!response.ok) {
@@ -274,13 +274,13 @@ const Profile = () => {
       }));
 
       // Reset the form after successful submission
-      resetForm();
+      // resetForm();
 
       console.log('Response: ', JSON.stringify(data));
     } catch (error) {
       console.log('Status: ', error);
     } finally {
-      setIsDisabled(false);
+      setIsDisabledPassword(false);
     }
   };
 
@@ -306,14 +306,9 @@ const Profile = () => {
         return;
       }
     }
+
     try {
       const response = await axiosInstance.get(`${baseUrl}/student`);
-      // if (!response.ok) {
-      //   //handle this case.
-      //   setProfileError('failed to fetch profile');
-      //   console.log(response, 'the profile fo the current user');
-      //   //since formdata has default value I am not sure that we need to reset them here.
-      // }
 
       const json = response.data;
       setFormState({
@@ -327,7 +322,7 @@ const Profile = () => {
       });
       setProfileImage(json.profileImage);
       setStudentName(json.firstName + ' ' + json.lastName);
-      console.log('tell me that this lo')
+      console.log('tell me that this lo');
 
       localStorage.setItem(
         cacheKey,
@@ -341,29 +336,17 @@ const Profile = () => {
       setProfileError('Error occured in fetching user profile');
     }
   }, [user?.id, role]);
+
   useEffect(() => {
     if (user) fetchProfile();
-    // department: "science";
-    // dob: "2024-10-31T00:00:00.000Z";
-    // email: "henryabayomi12@gmail.com";
-    // enrolledSubjects: [];
-    // firstName: "Jakande";
-    // lastName: "Isheri";
-    // middleName: "Estate";
-    // password: "$2b$10$ASSaz448Doz5rvhge3be1OfTD1ysAjnTbokYYCjRto6erqkfp8Ik.";
-    // profileImage: "https://res.cloudinary.com/difc1xy6v/image/upload/v1732028085/student-files/ximyskjgd8vsyxcoks0o.jpg";
-    // repeated: [];
-    // role: "Student";
-    // studentID: "AQ1LJO2PRSXU";
-    // username: "olive";
-    // __v: 0;
-    // _id: "673ca6b347a34dee9993a503";
   }, [fetchProfile, user]);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
     if (isDisabled && event.key === 'Enter') {
       handleSignup(event);
     }
+    setIsDisabled(false);
+    // setIsDisabled;
   };
 
   return (
@@ -392,145 +375,139 @@ const Profile = () => {
             </div>
           </div>
           <form
-            className='flex flex-col !mt-20 space-y-5 gap-y-5 w-[560px]'
+            className=' flex justify-between !mt-20 items-start'
             onKeyPress={handleKeyPress}
             onSubmit={handleSignup}
           >
-            {/* <div className='> */}
-            <div className='flex items-center justify-between'>
-              <div className='flex flex-col'>
-                <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
-                  Account Information
-                </span>
-                <span className='text-md text-subtext font-roboto'>
-                  Edit your personal account information.
-                </span>
+            <div className='w-[560px] flex flex-col  space-y-5 gap-y-5'>
+              <div className='flex items-center justify-between'>
+                <div className='flex flex-col'>
+                  <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
+                    Account Information
+                  </span>
+                  <span className='text-md text-subtext font-roboto'>
+                    Edit your personal account information.
+                  </span>
+                </div>
               </div>
-              <Button
-                type='submit'
-                size='sm'
-                width='fit'
-                className='!px-8'
-                disabled={isDisabled}
-              >
-                Edit Personal Info
-              </Button>
-            </div>
-            {formError.internetError !== '' ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
-                <Info sx={{ fontSize: '1.1rem' }} />
-                {formError.internetError}
-              </span>
-            ) : formError.successError !== '' ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
-                <Info sx={{ fontSize: '1.1rem' }} />
-                {formError.successError}
-              </span>
-            ) : (
-              ''
-            )}
-            <div className='text-red-500'>{profileError && profileError}</div>
+              {formError.internetError !== '' ? (
+                <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
+                  <Info sx={{ fontSize: '1.1rem' }} />
+                  {formError.internetError}
+                </span>
+              ) : formError.successError !== '' ? (
+                <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
+                  <Info sx={{ fontSize: '1.1rem' }} />
+                  {formError.successError}
+                </span>
+              ) : (
+                ''
+              )}
+              <div className='text-red-500'>{profileError && profileError}</div>
 
-            <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
-              Personal Information
-            </span>
-            <div className='grid grid-cols-2 gap-8 w-full'>
-              <InputField
-                name='firstName'
-                type='text'
-                placeholder='First Name *'
-                value={formState.firstName}
-                onChange={handleChange}
-                required
-                error={formError.firstNameError}
-              />
-
-              <InputField
-                name='middleName'
-                type='text'
-                placeholder='Middle Name'
-                value={formState.middleName}
-                onChange={handleChange}
-                error={''}
-              />
-              {inputFields.map((field) => (
+              <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
+                Personal Information
+              </span>
+              <div className='grid grid-cols-2 gap-8 w-full'>
                 <InputField
-                  placeholder={field.label}
-                  key={field.name}
-                  name={field.name}
-                  type={field.type}
-                  value={formState[field.name as keyof typeof formState]}
+                  name='firstName'
+                  type='text'
+                  placeholder='First Name *'
+                  value={formState.firstName}
                   onChange={handleChange}
-                  required={field.required}
-                  error={field.error}
+                  required
+                  error={formError.firstNameError}
                 />
-              ))}
+
+                <InputField
+                  name='middleName'
+                  type='text'
+                  placeholder='Middle Name'
+                  value={formState.middleName}
+                  onChange={handleChange}
+                  error={''}
+                />
+                {inputFields.map((field) => (
+                  <InputField
+                    placeholder={field.label}
+                    key={field.name}
+                    name={field.name}
+                    type={field.type}
+                    value={formState[field.name as keyof typeof formState]}
+                    onChange={handleChange}
+                    required={field.required}
+                    error={field.error}
+                  />
+                ))}
+              </div>
             </div>
+            <Button
+              type='submit'
+              size='sm'
+              width='fit'
+              className='!px-8'
+              disabled={isDisabled}
+            >
+              Edit Personal Info
+            </Button>
           </form>
           <form
-            onKeyPress={handleKeyPress}
+            className=' flex justify-between !mt-20 items-start'
+            // onKeyPress={handleKeyPress}
             onSubmit={handlePasswordChange}
-            className='flex flex-col !mt-20 space-y-5 gap-y-5 w-[560px]'
           >
-            <div className='flex items-center justify-between'>
-              <div className='flex flex-col my-7'>
-                <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
-                  Security Information
-                </span>
-                <span className='text-md text-subtext font-roboto'>
-                  Edit your personal security information.
-                </span>
+            <div className='w-[560px] flex flex-col  space-y-5 gap-y-5'>
+              <div className='flex items-center justify-between'>
+                <div className='flex flex-col my-7'>
+                  <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
+                    Security Information
+                  </span>
+                  <span className='text-md text-subtext font-roboto'>
+                    Edit your personal security information.
+                  </span>
+                </div>
               </div>
-              <Button
-                type='submit'
-                size='sm'
-                width='fit'
-                className='!px-8'
-                disabled={isDisabled}
-              >
-                Edit password
-              </Button>
-            </div>
-            {formError.internetError !== '' ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
-                <Info sx={{ fontSize: '1.1rem' }} />
-                {formError.internetError}
-              </span>
-            ) : formError.successError !== '' ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
-                <Info sx={{ fontSize: '1.1rem' }} />
-                {formError.successError}
-              </span>
-            ) : (
-              ''
-            )}
-            <div className='space-y-4'>
-              <Input
-                type='password'
-                name='password'
-                value={formState.password}
-                onChange={handleChange}
-                placeholder='Password *'
-                // required
-                className='input'
-                showIcon={VisibilityOutlined}
-                hideIcon={VisibilityOffOutlined}
-              />
-              {formState.password.length > 0 && (
-                <Button size='xs'>Generate OTP</Button>
+              {formError.passwordError && (
+                <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600 capitalize -mb-3'>
+                  <Info sx={{ fontSize: '1.1rem' }} />
+                  {formError.passwordError}
+                </span>
               )}
-              <Input
-                type='number'
-                name='OTP'
-                value={formState.password}
-                onChange={handleChange}
-                placeholder='OTP'
-                //required
-                className='input'
-                showIcon={VisibilityOutlined}
-                hideIcon={VisibilityOffOutlined}
-              />
+              <div className='space-y-4'>
+                <Input
+                  type='password'
+                  name='password'
+                  value={formState.password}
+                  onChange={handleChange}
+                  placeholder='Password *'
+                  // required
+                  className='input'
+                  showIcon={VisibilityOutlined}
+                  hideIcon={VisibilityOffOutlined}
+                />
+                {formState.password.length > 0 && (
+                  <Button size='xs'>Generate OTP</Button>
+                )}
+                <Input
+                  type='number'
+                  name='otp'
+                  value={formState.otp}
+                  onChange={handleChange}
+                  placeholder='OTP'
+                  //required
+                  className='input'
+                />
+              </div>
             </div>
+            <Button
+              type='submit'
+              size='sm'
+              width='fit'
+              className='!px-8'
+              disabled={isDisabledPassword}
+            >
+              Edit password
+            </Button>
           </form>
         </div>
       </StudentWrapper>

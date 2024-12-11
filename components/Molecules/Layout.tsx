@@ -13,7 +13,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ title, description, children }) => {
   return (
     <div className='relative'>
-      {/*<customcursor />*/}
+      {/* {/*<customcursor />*/} 
 
       <Meta title={title} description={description} />
       <header className='sticky top-0 w-full z-50'>
