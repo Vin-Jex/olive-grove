@@ -59,7 +59,7 @@ const Calendar = () => {
     );
   }
   return (
-    <div className='bg-white border p-6 rounded-md'>
+    <div className='bg-white border p-6 h-full rounded-md'>
       <header className='flex justify-between items-center'>
         <button onClick={handlePreviousMonth}>
           <ChevronLeft />
