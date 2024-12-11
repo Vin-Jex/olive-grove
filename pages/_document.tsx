@@ -9,7 +9,7 @@ export default function Document() {
           href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css'
         />
       </Head>
-      <body className='relative container h-screen w-screen mx-auto flex flex-col items-center justify-center'>
+      <body className='relative container  w-screen mx-auto flex flex-col items-center justify-center'>
         <Main />
         <NextScript />
       </body>
