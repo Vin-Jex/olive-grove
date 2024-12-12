@@ -1,12 +1,12 @@
-import React, { ReactNode, useState } from 'react';
-import SideNav from '../Navs/SideNav';
-import AdminNav from '../Navs/AdminNav';
-import { useSidebarContext } from '@/contexts/SidebarContext';
-import Meta from '@/components/Atoms/Meta';
-import WarningModal from '../Modal/WarningModal';
-import { useRouter } from 'next/router';
-import CustomCursor from '../CustomCursor';
-import { handleLogout } from './Admin.Layout';
+import React, { ReactNode, useState } from "react";
+import SideNav from "../Navs/SideNav";
+import AdminNav from "../Navs/AdminNav";
+import { useSidebarContext } from "@/contexts/SidebarContext";
+import Meta from "@/components/Atoms/Meta";
+import WarningModal from "../Modal/WarningModal";
+import { useRouter } from "next/router";
+import CustomCursor from "../CustomCursor";
+import { handleLogout } from "./Admin.Layout";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -27,6 +27,8 @@ const StudentWrapper = ({
 }: AdminWrapperProps) => {
   // const { active } = useSidebarContext();
   const active = true;
+  // const { active } = useSidebarContext();
+  const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const router = useRouter();
@@ -40,59 +42,51 @@ const StudentWrapper = ({
   };
 
   return (
-    <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
-<<<<<<< HEAD
+    <div className="w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center">
       {/*<customcursor />*/}
-=======
-      <CustomCursor />
->>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
 
-      <Meta title={metaTitle || 'Dashboard'} description={description} />
+      <Meta title={metaTitle || "Dashboard"} description={description} />
       <WarningModal
         handleModalClose={handleWarning}
         handleConfirm={() => {
-          handleLogout().then(() => router.push('/auth/path/students/login/'));
+          handleLogout().then(() => router.push("/auth/path/students/login/"));
         }}
         modalOpen={warningModal}
       />
 
       <aside
         className={`absolute left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
-          isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
+          isSidenavOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         <SideNav handleOpen={handleWarning} />
       </aside>
-      <div className='w-full'>
+      <div className="w-full">
         <div
           className={`${
-            active ? '' : ''
+            active ? "" : ""
           } absolute right-0 top-0 w-full flex z-30 lg:z-20`}
         >
           <div
             className={`${
-              active ? 'w-0 lg:w-[15rem]' : 'w-0 lg:w-[98px]'
+              active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
           <nav className={`w-full bg-white px-4`}>
-<<<<<<< HEAD
             <AdminNav
               toggleSidenav={toggleSidenav}
               firstTitle={firstTitle}
               remark={remark}
             />
-=======
-            <AdminNav toggleSidenav={toggleSidenav} firstTitle={firstTitle} remark={remark}  />
->>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
           </nav>
         </div>
-        <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
+        <main className="w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20">
           <div
             className={`${
-              active ? 'w-0 lg:w-[15rem]' : 'w-0 lg:w-[98px]'
+              active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
-          <div className='min-h-screen w-full z-10'>{children}</div>
+          <div className="min-h-screen w-full z-10">{children}</div>
         </main>
       </div>
     </div>

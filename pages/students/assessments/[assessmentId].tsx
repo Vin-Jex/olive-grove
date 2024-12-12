@@ -45,7 +45,7 @@ const AssessmentDetailsPage = () => {
         const response = await axiosInstance(
           `${baseUrl}/student/assessments/{assessmentId}`
         );
-        setQuizQuestions(response.data)
+        setQuizQuestions(response.data);
       } catch (err) {
         //error fetching quiz questions
         console.error(err);
@@ -183,11 +183,7 @@ const AssessmentDetailsPage = () => {
             <Button
               onClick={() => setStartExercise((c) => !c)}
               color='blue'
-<<<<<<< HEAD
               size='xs'
-=======
-              size='md'
->>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
             >
               Start Exercise
             </Button>
@@ -252,6 +248,7 @@ function QuestionCard({
   i,
   value,
   review,
+
   setCurrentQxtIndex,
   setAnsweredQxts,
 }: {
@@ -259,6 +256,7 @@ function QuestionCard({
   value: string;
   i: number;
   review: boolean;
+
   setCurrentQxtIndex: React.Dispatch<React.SetStateAction<string>>;
   setAnsweredQxts: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }) {
@@ -486,6 +484,8 @@ const WrongCrossMark = () => {
     </svg>
   );
 };
+
+// export default AssessmentDetailsPage;
 
 <<<<<<< HEAD
 // export default AssessmentDetailsPage;

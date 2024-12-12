@@ -20,7 +20,6 @@ const Assessments = () => {
     };
   }, []);
   return (
-<<<<<<< HEAD
     <StudentWrapper
       firstTitle='Assessments'
       remark='Manage, submit and access your assessments.'
@@ -30,12 +29,6 @@ const Assessments = () => {
       <div className='p-6 sm:p-8 md:p-12 space-y-5'>
         {/* Title */}
         {/* <div className='flex flex-col'>
-=======
-    <StudentWrapper title='Assessments' metaTitle='Olive Groove ~ Assessments'>
-      <div className='p-6 sm:p-8 md:p-12 space-y-5'>
-        {/* Title */}
-        <div className='flex flex-col'>
->>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
           <span className='text-base lg:text-3xl  sm:text-lg font-medium text-dark font-roboto'>
             Access your Assessments
           </span>
@@ -64,6 +57,8 @@ const Assessments = () => {
     </StudentWrapper>
   );
 };
+
+// export default Assessments;
 
 <<<<<<< HEAD
 // export default Assessments;
