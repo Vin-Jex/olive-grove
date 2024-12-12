@@ -336,14 +336,19 @@ const Assessments = () => {
         loading: false,
         error: undefined,
       }));
-    } catch (err) {
+    } catch (err: any) {
+      const status = err?.response?.status;
+
       // Display error state
       setFetchAssessmentsState((prev) => ({
         ...prev,
         loading: false,
         error: {
-          message: "Failed to load assessments.",
-          status: 500,
+          message:
+            status === 404
+              ? "No Assessments found"
+              : "Failed to load assessments.",
+          status: status || 500,
           state: true,
         },
       }));
