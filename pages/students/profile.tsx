@@ -1,45 +1,45 @@
-import Cookies from 'js-cookie';
-import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import Image from 'next/image';
+import Cookies from "js-cookie";
+import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
+import Image from "next/image";
 import React, {
   ChangeEvent,
   FormEvent,
   useCallback,
   useEffect,
   useState,
-} from 'react';
-import dummyImage from '@/images/dummy-img.jpg';
-import Button from '@/components/Atoms/Button';
-import InputField from '@/components/Atoms/InputField';
-import Input, { InputType } from '@/components/Atoms/Input';
+} from "react";
+import dummyImage from "@/images/dummy-img.jpg";
+import Button from "@/components/Atoms/Button";
+import InputField from "@/components/Atoms/InputField";
+import Input, { InputType } from "@/components/Atoms/Input";
 import {
   Info,
   VisibilityOffOutlined,
   VisibilityOutlined,
-} from '@mui/icons-material';
-import withAuth from '@/components/Molecules/WithAuth';
-import { baseUrl } from '@/components/utils/baseURL';
-import { useAuth } from '@/contexts/AuthContext';
-import axiosInstance from '@/components/utils/axiosInstance';
+} from "@mui/icons-material";
+import withAuth from "@/components/Molecules/WithAuth";
+import { baseUrl } from "@/components/utils/baseURL";
+import { useAuth } from "@/contexts/AuthContext";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const Profile = () => {
   const [formState, setFormState] = useState({
-    firstName: '',
-    lastName: '',
-    middleName: '',
-    email: '',
-    username: '',
-    password: '',
-    otp: '',
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    email: "",
+    username: "",
+    password: "",
+    otp: "",
   });
   const [formError, setFormError] = useState({
-    internetError: '',
-    firstNameError: '',
-    lastNameError: '',
-    emailError: '',
-    usernameError: '',
-    passwordError: '',
-    successError: '',
+    internetError: "",
+    firstNameError: "",
+    lastNameError: "",
+    emailError: "",
+    usernameError: "",
+    passwordError: "",
+    successError: "",
   });
   const [isDisabled, setIsDisabled] = useState(true);
   const [isDisabledPassword, setIsDisabledPassword] = useState(true);
@@ -47,7 +47,7 @@ const Profile = () => {
   const [studentName, setStudentName] = useState('');
   const { user } = useAuth();
   const role = user?.role;
-  const [profileError, setProfileError] = useState('');
+  const [profileError, setProfileError] = useState("");
 
   const inputFields: (
     | {
@@ -66,16 +66,16 @@ const Profile = () => {
       }
   )[] = [
     {
-      label: 'Last Name *',
-      name: 'lastName',
-      type: 'text',
+      label: "Last Name *",
+      name: "lastName",
+      type: "text",
       required: true,
       error: formError.lastNameError,
     },
     {
-      label: 'Email Address *',
-      name: 'email',
-      type: 'email',
+      label: "Email Address *",
+      name: "email",
+      type: "email",
       required: true,
       error: formError.emailError,
     },
@@ -115,12 +115,12 @@ const Profile = () => {
   const resetForm = () => {
     setFormState((prevState) => ({
       ...prevState,
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      username: '',
-      email: '',
-      password: '',
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      username: "",
+      email: "",
+      password: "",
     }));
   };
 
@@ -144,7 +144,7 @@ const Profile = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: 'No internet connection',
+        internetError: "No internet connection",
       }));
       return;
     }
@@ -153,7 +153,7 @@ const Profile = () => {
     if (!formState.email.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        emailError: 'Email field cannot be empty',
+        emailError: "Email field cannot be empty",
       }));
       return;
     }
@@ -190,7 +190,7 @@ const Profile = () => {
         lastNameError: data.message.lastName,
       }));
     } else {
-      console.error('Error Message: ', data.error);
+      console.error("Error Message: ", data.error);
     }
 
     ClearErrors();
@@ -203,6 +203,7 @@ const Profile = () => {
     // resetForm();
 
     const formData = new FormData();
+    console.log(Object.entries(formState));
 
     // Append other form fields to the FormData object
     Object.entries(formState).forEach(([key, value]) => {
@@ -214,7 +215,7 @@ const Profile = () => {
       const response = await fetch(
         `${baseUrl}/student-user/${formState.username}`,
         {
-          method: 'PUT',
+          method: "PUT",
           body: formData,
         }
       );
@@ -230,15 +231,15 @@ const Profile = () => {
       fetchProfile();
       setFormError((prevState) => ({
         ...prevState,
-        successError: 'Information updated successfully.',
+        successError: "Information updated successfully.",
       }));
 
       // Reset the form after successful submission
       // resetForm();
 
-      console.log('Response: ', JSON.stringify(data));
+      console.log("Response: ", JSON.stringify(data));
     } catch (error) {
-      console.log('Status: ', error);
+      console.log("Status: ", error);
     } finally {
       ClearErrors();
       // setIsDisabled(true);
@@ -270,15 +271,15 @@ const Profile = () => {
       const data = await response.json();
       setFormError((prevState) => ({
         ...prevState,
-        successError: 'Password updated successfully.',
+        successError: "Password updated successfully.",
       }));
 
       // Reset the form after successful submission
       // resetForm();
 
-      console.log('Response: ', JSON.stringify(data));
+      console.log("Response: ", JSON.stringify(data));
     } catch (error) {
-      console.log('Status: ', error);
+      console.log("Status: ", error);
     } finally {
       setIsDisabledPassword(false);
     }
@@ -298,11 +299,11 @@ const Profile = () => {
           middleName: data.middleName,
           email: data.email,
           username: data.username,
-          password: '',
-          otp: '',
+          password: "",
+          otp: "",
         });
         setProfileImage(data.profileImage);
-        setStudentName(data.firstName + ' ' + data.lastName);
+        setStudentName(data.firstName + " " + data.lastName);
         return;
       }
     }
@@ -317,8 +318,8 @@ const Profile = () => {
         middleName: json.middleName,
         email: json.email,
         username: json.username,
-        password: '',
-        otp: '',
+        password: "",
+        otp: "",
       });
       setProfileImage(json.profileImage);
       setStudentName(json.firstName + ' ' + json.lastName);
@@ -333,7 +334,7 @@ const Profile = () => {
       );
     } catch (err) {
       //how to display error.
-      setProfileError('Error occured in fetching user profile');
+      setProfileError("Error occured in fetching user profile");
     }
   }, [user?.id, role]);
 
@@ -342,7 +343,7 @@ const Profile = () => {
   }, [fetchProfile, user]);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === 'Enter') {
+    if (isDisabled && event.key === "Enter") {
       handleSignup(event);
     }
     setIsDisabled(false);
@@ -352,26 +353,26 @@ const Profile = () => {
   return (
     <>
       <StudentWrapper
-        firstTitle='Profile'
-        remark='Manage and edit your profile settings.'
-        title='Profile'
-        metaTitle='Olive Groove ~ Profile'
+        firstTitle="Profile"
+        remark="Manage and edit your profile settings."
+        title="Profile"
+        metaTitle="Olive Groove ~ Profile"
       >
-        <div className='p-12 space-y-5'>
+        <div className="p-12 space-y-5">
           {/* Title */}
-          <div className='flex gap-4'>
+          <div className="flex gap-4">
             <Image
               src={!profileImage ? dummyImage : profileImage}
               width={300}
               height={300}
-              alt='Profile Pics'
-              className='shadow w-16 h-16 object-cover rounded-full'
+              alt="Profile Pics"
+              className="shadow w-16 h-16 object-cover rounded-full"
             />
-            <div className='flex flex-col justify-center'>
-              <span className='text-dark text-lg font-roboto leading-5'>
+            <div className="flex flex-col justify-center">
+              <span className="text-dark text-lg font-roboto leading-5">
                 {studentName}
               </span>
-              <span className='text-subtext'>Student</span>
+              <span className="text-subtext">Student</span>
             </div>
           </div>
           <form
@@ -517,4 +518,4 @@ const Profile = () => {
 
 // export default Profile;
 
-export default withAuth('Student', Profile);
+export default withAuth("Student", Profile);

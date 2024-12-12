@@ -1,55 +1,55 @@
-import Cookies from 'js-cookie';
-import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import React, { useCallback, useEffect, useState } from 'react';
-import SubjectCard from '@/components/Molecules/Card/SubjectCard';
-import Link from 'next/link';
-import withAuth from '@/components/Molecules/WithAuth';
-import { TFetchState } from '@/components/utils/types';
+import Cookies from "js-cookie";
+import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
+import React, { useCallback, useEffect, useState } from "react";
+import SubjectCard from "@/components/Molecules/Card/SubjectCard";
+import Link from "next/link";
+import withAuth from "@/components/Molecules/WithAuth";
+import { TFetchState } from "@/components/utils/types";
 // import { fetchCourses } from "@/components/utils/course";
-import dummyImage from '@/images/dummy-img.jpg';
-import ClassModal from '@/components/Molecules/Modal/ClassModal';
-import { baseUrl } from '@/components/utils/baseURL';
-import axiosInstance from '@/components/utils/axiosInstance';
-import { AxiosError } from 'axios';
-import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
-import { useRouter } from 'next/router';
-import SearchLayout from '@/components/Molecules/SearchLayout';
-import Select from '@/components/Atoms/Select';
-import Image from 'next/image';
-import useDebounce from '@/components/utils/useDebounce';
+import dummyImage from "@/images/dummy-img.jpg";
+import ClassModal from "@/components/Molecules/Modal/ClassModal";
+import { baseUrl } from "@/components/utils/baseURL";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { AxiosError } from "axios";
+import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
+import { useRouter } from "next/router";
+import SearchLayout from "@/components/Molecules/SearchLayout";
+import Select from "@/components/Atoms/Select";
+import Image from "next/image";
+import useDebounce from "@/components/utils/useDebounce";
 
 export const subjectData = [
   {
-    subject: 'Further Mathematics',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Calculus',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
+    subject: "Further Mathematics",
+    role: "Teacher",
+    time: "09:00AM - 10:30AM",
+    topic: "Calculus",
+    name: "Dr. Ayodeji Emmanuel",
+    btnLink1: "#",
   },
   {
-    subject: 'Chemistry',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Organic Chemistry',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
+    subject: "Chemistry",
+    role: "Teacher",
+    time: "09:00AM - 10:30AM",
+    topic: "Organic Chemistry",
+    name: "Dr. Ayodeji Emmanuel",
+    btnLink1: "#",
   },
   {
-    subject: 'Physics',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Motion',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
+    subject: "Physics",
+    role: "Teacher",
+    time: "09:00AM - 10:30AM",
+    topic: "Motion",
+    name: "Dr. Ayodeji Emmanuel",
+    btnLink1: "#",
   },
   {
-    subject: 'Mathematics',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Trigonomentry',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
+    subject: "Mathematics",
+    role: "Teacher",
+    time: "09:00AM - 10:30AM",
+    topic: "Trigonomentry",
+    name: "Dr. Ayodeji Emmanuel",
+    btnLink1: "#",
   },
 ];
 
@@ -78,11 +78,10 @@ const Classes = () => {
   });
   const [lectureInfoModal, setLectureInfoModal] = useState(false);
   const router = useRouter();
-  const [searched, setSearched] = useState(router.query.search ?? '');
+  const [searched, setSearched] = useState(router.query.search ?? "");
   useEffect(() => {
-    setSearched(router.query.search ?? '');
+    setSearched(router.query.search ?? "");
   }, [router.query.search]);
-
   //  courses;
   const getCourses = useCallback(async () => {
     setCourses({
@@ -105,14 +104,14 @@ const Classes = () => {
         setCourses({
           data: [],
           loading: false,
-          error: 'Wrong course data format',
+          error: "Wrong course data format",
         });
       }
     } catch (error: AxiosError | any) {
       if (error.response && error.response.status === 401) {
-        handleLogout().then(() => router.push('/auth/path/students/login/'));
+        handleLogout().then(() => router.push("/auth/path/students/login/"));
       }
-      setCourses({ data: [], loading: false, error: 'No courses found' });
+      setCourses({ data: [], loading: false, error: "No courses found" });
     }
   }, [router.query.search]); // Empty dependency array
 
@@ -135,14 +134,14 @@ const Classes = () => {
         setFilteredCourses({
           data: [],
           loading: false,
-          error: 'No filtered courses found',
+          error: "No filtered courses found",
         });
       }
     } catch (error) {
       setFilteredCourses({
         data: [],
         loading: false,
-        error: 'Error fetching filtered courses',
+        error: "Error fetching filtered courses",
       });
     }
   }, [router.query.search]);
@@ -155,7 +154,7 @@ const Classes = () => {
   const patToUrl = useCallback(
     (searchValue: string) => {
       const pathName = router.pathname;
-      const query = searchValue ? `?search=${searchValue}` : '';
+      const query = searchValue ? `?search=${searchValue}` : "";
       router.push(`${pathName}${query}`);
     },
     [router]
@@ -192,17 +191,17 @@ const Classes = () => {
   return (
     <>
       <ClassModal
-        type='class'
+        type="class"
         handleModalClose={handleModal}
         modalOpen={lectureInfoModal!}
       />
       <StudentWrapper
-        title='Courses'
-        firstTitle='Courses'
-        remark='Manage and get updates on your courses'
-        metaTitle='Olive Groove ~ Classes'
+        title="Courses"
+        firstTitle="Courses"
+        remark="Manage and get updates on your courses"
+        metaTitle="Olive Groove ~ Classes"
       >
-        <div className='p-12 space-y-5'>
+        <div className="p-12 space-y-5">
           {/* Title */}
 
           <div className='flex items-center justify-between'>
@@ -230,9 +229,9 @@ const Classes = () => {
                           <Image
                             width={300}
                             height={300}
-                            className='h-full w-full object-cover'
+                            className="h-full w-full object-cover"
                             src={(subject.courseCover as string) || dummyImage}
-                            alt={subject.description || 'course searched'}
+                            alt={subject.description || "course searched"}
                           />
                         </div>
                         <div className=' flex-shrink-0'>
@@ -245,24 +244,24 @@ const Classes = () => {
               </div>
             </div>
             <Select
-              name=''
+              name=""
               reduceWidth
               onChange={() => {}}
-              options={['ascending', 'latest']}
-              placeholder='filter'
-              value=''
+              options={["ascending", "latest"]}
+              placeholder="filter"
+              value=""
               required
             />
           </div>
 
-          <div className='grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-fit w-full gap-3 !mt-8'>
+          <div className="grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-fit w-full gap-3 !mt-8">
             {courses.data.map((subject, index) => (
               <SubjectCard
                 key={subject._id}
-                name={'No Teacher Name'}
-                role={'Teacher'}
+                name={"No Teacher Name"}
+                role={"Teacher"}
                 // type="lecture"
-                time={'time'}
+                time={"time"}
                 topic={subject.title as string}
                 subject={subject.title}
                 toggleModal={handleModal}
@@ -277,4 +276,4 @@ const Classes = () => {
 };
 // export default Classes;
 
-export default withAuth('Student', Classes);
+export default withAuth("Student", Classes);

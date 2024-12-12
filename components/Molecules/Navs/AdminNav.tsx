@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import { Menu, NotificationsOutlined, Search } from '@mui/icons-material';
-import dummyImage from '@/images/dummy-img.jpg';
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { Menu, NotificationsOutlined, Search } from "@mui/icons-material";
+import dummyImage from "@/images/dummy-img.jpg";
 import {
   DateFormatter,
   generateDateString,
-} from '@/components/Functions/DateFormatter';
-import Image, { StaticImageData } from 'next/image';
-import { baseUrl } from '@/components/utils/baseURL';
-import { useAuth } from '@/contexts/AuthContext';
-import axiosInstance from '@/components/utils/axiosInstance';
-import Input from '@/components/Atoms/Input';
-import SearchLayout from '../SearchLayout';
+} from "@/components/Functions/DateFormatter";
+import Image, { StaticImageData } from "next/image";
+import { baseUrl } from "@/components/utils/baseURL";
+import { useAuth } from "@/contexts/AuthContext";
+import axiosInstance from "@/components/utils/axiosInstance";
+import Input from "@/components/Atoms/Input";
+import SearchLayout from "../SearchLayout";
 
 interface AdminNavType {
   title?: string;
@@ -55,13 +55,13 @@ const AdminNav: React.FC<AdminNavType> = ({
       try {
         let response;
         switch (userRole) {
-          case 'Student':
+          case "Student":
             response = await axiosInstance.get(`${baseUrl}/student`);
             break;
-          case 'Teacher':
+          case "Teacher":
             response = await axiosInstance.get(`${baseUrl}/teacher`);
             break;
-          case 'Admin':
+          case "Admin":
             response = await axiosInstance.get(`${baseUrl}/admin`);
             break;
           default:
@@ -104,6 +104,7 @@ const AdminNav: React.FC<AdminNavType> = ({
           </span>
           {remark && (
             <span className='leading-4 font-roboto text-xs md:text-sm text-gray-400'>
+
               {remark}
             </span>
           )}
@@ -119,12 +120,14 @@ const AdminNav: React.FC<AdminNavType> = ({
             <NotificationsOutlined className='!text-xl md:!text-2xl text-subtext' />
           </button>
           <div className='w-7 h-7 md:w-9 md:h-9 overflow-hidden'>
+
             <Image
               src={!profileImage ? dummyImage : profileImage}
               width={300}
               height={300}
               alt='Profile Pics'
               className='shadow w-full h-full object-cover rounded-full'
+
             />
             {/* we're supposed to add a fallback image */}
           </div>

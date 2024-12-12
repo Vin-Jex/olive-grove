@@ -152,6 +152,65 @@ const Subject: FC = () => {
     }
   };
 
+  const handleDeleteCourse = async () => {
+    try {
+      // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
+      setModalRequestState({
+        data: undefined,
+        loading: true,
+        error: undefined,
+      });
+
+      // * Make an API request to delete this course
+      const response = await axiosInstance.delete(
+        `/courses/${course.data?._id}`
+      );
+
+      // * Update the existing data with that returned by the API request
+      const responseData = response.data as TResponse<TCourse>;
+      setModalRequestState({
+        data: responseData.data,
+        loading: false,
+        error: undefined,
+      });
+
+      router.push("/teachers/subjects");
+
+      return true;
+    } catch (error: any) {
+      if (error?.response?.status == 404) {
+        // const data = (await response.json()) as TResponse<any>;
+        setModalRequestState({
+          data: undefined,
+          loading: false,
+          error: "Course not found",
+        });
+        router.push("/teachers/subjects");
+        return false;
+      }
+
+      // * If it's a 400 error, display message that the input details are incomplete
+      if (error?.response?.status == 400) {
+        // const data = (await response.json()) as TResponse<any>;
+        setModalRequestState({
+          data: undefined,
+          loading: false,
+          error: "Error deleting course",
+        });
+        return false;
+      }
+
+      // * If it's any other error code, display default error msg
+      setModalRequestState({
+        data: undefined,
+        loading: false,
+        error: "An error occurred while updating the course",
+      });
+
+      return false;
+    }
+  };
+
   /**
    * * Function responsible for opening the course modal to edit the course
    * */
@@ -167,6 +226,7 @@ const Subject: FC = () => {
         mode: "edit",
         type: "course",
         handleAction: handleEditCourse,
+        handleDelete: handleDeleteCourse,
       },
     });
   };
@@ -319,6 +379,7 @@ const Subject: FC = () => {
                       size="xs"
                       color="outline"
                       onClick={openEditCourseModal}
+                      className="flex gap-1"
                     >
                       <i className="fas fa-pencil"></i> <span>Edit Course</span>
                     </Button>
