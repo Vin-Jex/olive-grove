@@ -33,7 +33,7 @@ import CourseQA from "./CourseQA";
 import YouTubeEmbed from "./CourseTopicYouTubeVideo";
 
 // Function to collect IDs of lessons, sections, and subsections in a linear array
-function collectLinearContentIds(data: TCourse): string[] {
+export function collectLinearContentIds(data: TCourse): string[] {
   const ids: string[] = [];
 
   // Helper function to traverse chapters, lessons, sections, and subsections
