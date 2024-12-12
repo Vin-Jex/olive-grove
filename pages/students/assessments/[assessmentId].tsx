@@ -183,7 +183,11 @@ const AssessmentDetailsPage = () => {
             <Button
               onClick={() => setStartExercise((c) => !c)}
               color='blue'
+<<<<<<< HEAD
               size='xs'
+=======
+              size='md'
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
             >
               Start Exercise
             </Button>
@@ -483,6 +487,9 @@ const WrongCrossMark = () => {
   );
 };
 
+<<<<<<< HEAD
 // export default AssessmentDetailsPage;
 
+=======
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
 export default withAuth('Student', AssessmentDetailsPage);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import Tab, { TTabBody } from "@/components/Molecules/Tab/Tab";
 import { VideoProps } from "next-video";
 import {
@@ -8,6 +9,11 @@ import {
   TSubSection,
 } from "@/components/utils/types";
 
+=======
+import Tab, { TTabBody } from '@/components/Molecules/Tab/Tab';
+import { VideoProps } from 'next-video';
+import { TCourse } from '@/components/utils/types';
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
 import {
   FC,
   ForwardRefExoticComponent,
@@ -17,6 +23,7 @@ import {
   useMemo,
   useRef,
   useState,
+<<<<<<< HEAD
 } from "react";
 import TopicVideo from "./CourseTopicVideo";
 import NotFoundError from "../NotFoundError";
@@ -76,6 +83,16 @@ function getNextId(currentId: string, linearIds: string[]): string | null {
   }
   return null; // Return null if there's no previous item
 }
+=======
+} from 'react';
+import TopicVideo from './CourseTopicVideo';
+import NotFoundError from '../NotFoundError';
+import { useTopicContext } from '@/contexts/TopicContext';
+import img404 from '@/images/olive-notes-404.png';
+import { Alert, Checkbox, FormControlLabel, Snackbar } from '@mui/material';
+import { useRouter } from 'next/router';
+import { baseUrl } from '@/components/utils/baseURL';
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
 
 export const TopicDetails: FC<{
   course: TCourse;
@@ -156,9 +173,9 @@ export const TopicDetails: FC<{
       setVideoCompletedIsTriggered(true);
     }
 
-    console.log("VIDEO DURATION", duration);
-    console.log("VIDEO TIMESTAMP", currentTime);
-    console.log("PERCENTAGE", percentage);
+    console.log('VIDEO DURATION', duration);
+    console.log('VIDEO TIMESTAMP', currentTime);
+    console.log('PERCENTAGE', percentage);
   };
 
   /**
@@ -193,11 +210,16 @@ export const TopicDetails: FC<{
         topicDetails.topic?._id
       }`,
       {
-        method: "POST",
-        credentials: "include",
+        method: 'POST',
+        credentials: 'include',
         body: JSON.stringify({
+<<<<<<< HEAD
           currentDate: new Date().toISOString(),
           nextId: "6739522037923060e34feabd",
+=======
+          currentDate: Date.now(),
+          nextId: '6739522037923060e34feabd',
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
         }),
       }
     );
@@ -210,7 +232,7 @@ export const TopicDetails: FC<{
       return false;
     }
 
-    console.log("TOPIC CHECKED SUCCESSFULLY");
+    console.log('TOPIC CHECKED SUCCESSFULLY');
 
     return true;
   }, [topicDetails.topic?._id, topicDetails.type]);
@@ -260,8 +282,9 @@ export const TopicDetails: FC<{
     ...(topicDetails?.topic?.topicVideo || topicDetails?.topic?.youtubeVideo
       ? [
           {
-            slug: "video",
+            slug: 'video',
             content: (
+<<<<<<< HEAD
               <>
                 {topicDetails?.topic?.topicVideo ? (
                   <TopicVideo
@@ -283,6 +306,17 @@ export const TopicDetails: FC<{
                   />
                 )}
               </>
+=======
+              <TopicVideo
+                ref={videoRef}
+                markVideoCompleted={markVideoCompleted}
+                url={
+                  // topicDetails?.topic?.topicVideo ||
+                  // topicDetails?.topic?.youtubeVideo ||
+                  'https://videos.pexels.com/video-files/4203954/4203954-hd_1920_1080_24fps.mp4'
+                }
+              />
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
             ),
           },
         ]
@@ -290,13 +324,13 @@ export const TopicDetails: FC<{
     ...(topicDetails?.topic?.topicNote
       ? [
           {
-            slug: "notes",
+            slug: 'notes',
             content: (
               <div className="flex w-full gap-2 flex-col">
                 <div
                   className="lg:max-h-[80vh] w-full overflow-y-auto rounded-sm px-2"
                   dangerouslySetInnerHTML={{
-                    __html: topicDetails?.topic.topicNote || "",
+                    __html: topicDetails?.topic.topicNote || '',
                   }}
                 ></div>
                 <div className="w-full">
@@ -320,11 +354,27 @@ export const TopicDetails: FC<{
 
   return (
     <>
+<<<<<<< HEAD
       {topicDetails.topic ? (
         <div className="flex flex-col w-full gap-4">
           {/* TITLE */}
 
           <div className="text-2xl font-bold bg-primary bg-opacity-10 min-[1560px]:w-[64rem] rounded-lg px-3 py-4">
+=======
+      {topicDetails ? (
+        <div className='flex flex-col w-full gap-4'>
+          {/* BREADCRUMB */}
+          <div className='font-thin flex gap-1 w-full'>
+            {topicDetails.path?.map((crumb, i) => (
+              <span key={i}>
+                {crumb} {i != (topicDetails.path?.length || 0) - 1 ? '/' : ''}
+              </span>
+            ))}
+          </div>
+          {/**I AM NOT SURE OF THE NEED OF THE BREADCRUMB, IT LOOKS ROUGH */}
+          {/* TITLE */}
+          <div className='text-2xl font-bold bg-primary bg-opacity-10 min-[1560px]:w-[64rem] rounded-lg px-3 py-4'>
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
             {topicDetails.topic?.title}
           </div>
           {/* TAB */}
@@ -334,9 +384,9 @@ export const TopicDetails: FC<{
               slugs={[
                 ...(topicDetails.topic.topicVideo ||
                 topicDetails?.topic.youtubeVideo
-                  ? [{ name: "topic video", key: "video" }]
+                  ? [{ name: 'topic video', key: 'video' }]
                   : []),
-                { name: "topic notes", key: "notes" },
+                { name: 'topic notes', key: 'notes' },
               ]}
               body={tabBody}
             />
@@ -345,9 +395,9 @@ export const TopicDetails: FC<{
               slugs={[
                 ...(topicDetails.topic.topicVideo ||
                 topicDetails?.topic.youtubeVideo
-                  ? [{ name: "topic video", key: "video" }]
+                  ? [{ name: 'topic video', key: 'video' }]
                   : []),
-                { name: "topic notes", key: "notes" },
+                { name: 'topic notes', key: 'notes' },
               ]}
               body={tabBody}
             />
@@ -384,7 +434,7 @@ export const TopicDetails: FC<{
         </div>
       ) : (
         <>
-          <NotFoundError msg={"No topic found"} />
+          <NotFoundError msg={'No topic found'} />
         </>
       )}
       {topicIsCompleted && (
@@ -392,8 +442,13 @@ export const TopicDetails: FC<{
           open={topicIsCompleted}
           onClose={() => setTopicIsCompleted(false)}
           autoHideDuration={6000}
+<<<<<<< HEAD
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           className="!z-[999]"
+=======
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          className='!z-[999]'
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
         >
           <Alert severity="success" onClose={() => setTopicIsCompleted(false)}>
             Topic completed!

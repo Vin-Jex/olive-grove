@@ -140,8 +140,11 @@ const SubjectDetailsPage: FC = () => {
       )}
       <TopicContextProvider course={course.data}>
         <StudentWrapper
+<<<<<<< HEAD
           firstTitle='Courses'
           remark='Manage and get updates on your courses'
+=======
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
           title={`Courses`}
           metaTitle={`Olive Groove ~ ${subjectId}`}
         >
@@ -250,13 +253,22 @@ export const BackButton = () => {
     <Button
       onClick={() => router.back()}
       size='xs'
+<<<<<<< HEAD
       className='p-2 rouded-md !w-6 !h-6 !bg-white'
     >
       <ChevronLeft className='text-black' />
+=======
+      className='p-2 rouded-md !w-6 !h-6 !bg-black/[0.2]'
+    >
+      <ChevronLeft />
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
     </Button>
   );
 };
 
+<<<<<<< HEAD
 // export default SubjectDetailsPage;
 
+=======
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
 export default withAuth('Student', SubjectDetailsPage);

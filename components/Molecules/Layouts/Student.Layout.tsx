@@ -41,7 +41,11 @@ const StudentWrapper = ({
 
   return (
     <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
+<<<<<<< HEAD
       {/*<customcursor />*/}
+=======
+      <CustomCursor />
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
 
       <Meta title={metaTitle || 'Dashboard'} description={description} />
       <WarningModal
@@ -71,11 +75,15 @@ const StudentWrapper = ({
             } transition-all ease-in-out duration-500`}
           ></div>
           <nav className={`w-full bg-white px-4`}>
+<<<<<<< HEAD
             <AdminNav
               toggleSidenav={toggleSidenav}
               firstTitle={firstTitle}
               remark={remark}
             />
+=======
+            <AdminNav toggleSidenav={toggleSidenav} firstTitle={firstTitle} remark={remark}  />
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
           </nav>
         </div>
         <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>

@@ -208,6 +208,43 @@ const StudentLogin = () => {
       await loginStudent(handleSuccessLogin as any, handleErrorLogin, {
         data: formState,
       });
+<<<<<<< HEAD
+=======
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data, 'Logoin data');
+        handleErrors(data);
+        return;
+      }
+      // const json = await response.json();
+      // console.log(json, 'this is the login json');
+      const expiryDate = new Date().setDate(new Date().getDate() + 1);
+
+      const {
+        details: { role, studentID, _id },
+        token: { accessToken, refreshToken },
+      } = await response.json();
+      Cookies.set('role', role, { expires: expiryDate });
+      Cookies.set('studentID', studentID), { expires: expiryDate };
+      Cookies.set('userId', _id, {
+        expires: expiryDate,
+      });
+      Cookies.set('accessToken', accessToken);
+      Cookies.set('refreshToken', refreshToken);
+      setFormError((prevState) => ({
+        ...prevState,
+        successError: 'Student successfully logged in.',
+      }));
+
+      // Reset the form after successful submission
+      resetForm();
+
+      // Wait for 5 miliseconds before redirecting to login
+      setTimeout(() => {
+        router.push('/');
+      }, 500);
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
     } catch (error) {
       console.log('Error:', error);
     } finally {

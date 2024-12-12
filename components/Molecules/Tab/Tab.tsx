@@ -105,7 +105,10 @@ const Tab: FC<{
   body: TTabBody[];
 }> = ({ slugs, body }) => {
   const [activeTab, setActiveTab] = useState(slugs[0].key);
+<<<<<<< HEAD
 
+=======
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
   const [contentIds, setContentIds] = useState<TContentId>([]);
   const [comment, setComment] = useState('');
   const [commentError, setCommentError] = useState('');
@@ -351,7 +354,10 @@ const Tab: FC<{
   );
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
 function DisplayComment({ comment, i }: { comment: TComment; i: number }) {
   const [showReply, setShowReply] = useState(false);
   return (

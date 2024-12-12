@@ -257,6 +257,7 @@ const Profile = () => {
       formData.append(key, value);
     });
 
+<<<<<<< HEAD
     try {
       setIsDisabled(true);
       let response = await fetch(`{}`); //* simulate endpoint for password update
@@ -307,6 +308,44 @@ const Profile = () => {
       }
     }
     try {
+=======
+    try {
+      setIsDisabled(true);
+      let response = await fetch(`{}`); //* simulate endpoint for password update
+      // const response = await fetch(
+      //   `${baseUrl}/student-user/${formState.username}`,
+      //   {
+      //     method: 'PUT',
+      //     body: formData,
+      //   }
+      // );
+
+      if (!response.ok) {
+        const data = await response.json();
+        handleErrors(data);
+        return;
+      }
+
+      const data = await response.json();
+      setFormError((prevState) => ({
+        ...prevState,
+        successError: 'Password updated successfully.',
+      }));
+
+      // Reset the form after successful submission
+      resetForm();
+
+      console.log('Response: ', JSON.stringify(data));
+    } catch (error) {
+      console.log('Status: ', error);
+    } finally {
+      setIsDisabled(false);
+    }
+  };
+
+  const fetchProfile = useCallback(async () => {
+    try {
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
       const response = await axiosInstance.get(`${baseUrl}/student`);
       // if (!response.ok) {
       //   //handle this case.
@@ -516,9 +555,13 @@ const Profile = () => {
                 showIcon={VisibilityOutlined}
                 hideIcon={VisibilityOffOutlined}
               />
+<<<<<<< HEAD
               {formState.password.length > 0 && (
                 <Button size='xs'>Generate OTP</Button>
               )}
+=======
+              {formState.password.length > 0 && <Button size='xs'>Generate OTP</Button>}
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
               <Input
                 type='number'
                 name='OTP'

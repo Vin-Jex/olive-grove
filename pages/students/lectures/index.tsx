@@ -192,7 +192,10 @@ const Classes = () => {
         modalOpen={lectureInfoModal!}
       />
       <StudentWrapper
+<<<<<<< HEAD
         title='Courses'
+=======
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
         firstTitle='Courses'
         remark='Manage and get updates on your courses'
         metaTitle='Olive Groove ~ Classes'
@@ -248,7 +251,11 @@ const Classes = () => {
               name=''
               reduceWidth
               onChange={() => {}}
+<<<<<<< HEAD
               options={['ascending', 'latest']}
+=======
+              options={['cowboy', 'mallen']}
+>>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
               placeholder='filter'
               value=''
               required
