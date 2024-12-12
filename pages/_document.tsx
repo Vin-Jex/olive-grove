@@ -10,6 +10,7 @@ export default function Document() {
         />
       </Head>
       <body className='relative container w-screen mx-auto flex flex-col items-center justify-center'>
+        <Main />
         <NextScript />
       </body>
     </Html>
