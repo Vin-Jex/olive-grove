@@ -42,9 +42,10 @@ export const handleLogout = async () => {
     Cookies.remove("role");
     Cookies.remove("userId");
 
-    setTimeout(() => {
-      window.location.href = "/auth/path/teachers/login/";
-    }, 500);
+
+    // setTimeout(() => {
+    //   window.location.href = '/auth/path/teachers/login/';
+    // }, 500);
   } catch (error) {
     console.log("Status: ", error);
   }
@@ -93,9 +94,10 @@ const AdminsWrapper = ({
       <aside
         className={`absolute left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? "translate-x-0" : "-translate-x-full"
+
         } lg:translate-x-0`}
       >
-        <SideNav handleOpen={handleWarning} />
+        <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
       <div className="w-full">
         <div
@@ -109,7 +111,11 @@ const AdminsWrapper = ({
             } transition-all ease-in-out duration-500`}
           ></div>
           <nav className={`w-full md:px-4 lg:px-12`}>
-            <AdminNav toggleSidenav={toggleSidenav} title={title} />
+            <AdminNav
+              isOpen={isSidenavOpen}
+              toggleSidenav={toggleSidenav}
+              title={title}
+            />
           </nav>
         </div>
         <main className="w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20">

@@ -28,14 +28,6 @@ const Assessments = () => {
     >
       <div className='p-6 sm:p-8 md:p-12 space-y-5'>
         {/* Title */}
-        {/* <div className='flex flex-col'>
-          <span className='text-base lg:text-3xl  sm:text-lg font-medium text-dark font-roboto'>
-            Access your Assessments
-          </span>
-          <span className='text-sm sm:text-md text-subtext font-roboto'>
-            Manage, submit and access your assessments.
-          </span>
-        </div> */}
 
         <div className='grid max-md:place-items-center  md:grid-cols-2 lg:grid-cols-3  h-fit w-full gap-8 !mt-8'>
           {subjectData.map((subject, index) => (
@@ -60,9 +52,4 @@ const Assessments = () => {
 
 // export default Assessments;
 
-<<<<<<< HEAD
-// export default Assessments;
-
-=======
->>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
 export default withAuth('Student', Assessments);

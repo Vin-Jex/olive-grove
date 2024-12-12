@@ -576,16 +576,16 @@ const StudentSignup = () => {
                 field.name === 'username'
                   ? '[a-zA-Z0-9!@#$_%].{5,}$'
                   : field.name === 'password'
-                  ? '(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$'
+                  ? '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$'
                   : undefined
               }
               title={
                 field.name === 'email'
                   ? 'Please enter a valid email address'
                   : field.name === 'username'
-                  ? 'Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$._%+-)'
+                  ? 'Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
                   : field.name === 'password'
-                  ? 'Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$._%+-)'
+                  ? 'Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
                   : ''
               }
               value={formState[field.name as keyof SignupType]}
