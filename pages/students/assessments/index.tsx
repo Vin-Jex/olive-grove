@@ -52,9 +52,4 @@ const Assessments = () => {
 
 // export default Assessments;
 
-<<<<<<< HEAD
-// export default Assessments;
-
-=======
->>>>>>> c1fd303a214c794c115c8f42fb1b56b5281f3123
 export default withAuth('Student', Assessments);
