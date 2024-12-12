@@ -33,7 +33,7 @@ import CourseQA from "./CourseQA";
 import YouTubeEmbed from "./CourseTopicYouTubeVideo";
 
 // Function to collect IDs of lessons, sections, and subsections in a linear array
-function collectLinearContentIds(data: TCourse): string[] {
+export function collectLinearContentIds(data: TCourse): string[] {
   const ids: string[] = [];
 
   // Helper function to traverse chapters, lessons, sections, and subsections
@@ -221,6 +221,7 @@ export const TopicDetails: FC<{
     setNoteCompletedIsTriggered(topicDetails.topic?.viewed || false);
     setCheckedState(topicDetails.topic?.viewed || false);
     fetchNavigate();
+
     console.log(
       "NEW TOPIC",
       topicDetails.topic?.title,
@@ -322,15 +323,6 @@ export const TopicDetails: FC<{
     <>
       {topicDetails.topic ? (
         <div className="flex flex-col w-full gap-4">
-          {/* BREADCRUMB */}
-          {/* <div className='font-thin flex gap-1 w-full'>
-            {topicDetails.path?.map((crumb, i) => (
-              <span key={i}>
-                {crumb} {i != (topicDetails.path?.length || 0) - 1 ? '/' : ''}
-              </span>
-            ))}
-          </div> */}
-          {/**I AM NOT SURE OF THE NEED OF THE BREADCRUMB, IT LOOKS ROUGH */}
           {/* TITLE */}
 
           <div className="text-2xl font-bold bg-primary bg-opacity-10 min-[1560px]:w-[64rem] rounded-lg px-3 py-4">

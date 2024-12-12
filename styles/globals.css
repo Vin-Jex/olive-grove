@@ -28,7 +28,15 @@ body {
   }
 }
 
-@layer components { .container { @apply w-full 3xl:!max-w-[1400px] 2xl:!max-w-[1000px] xl:!max-w-[1700px] lg:!max-w-full md:!max-w-full sm:!max-w-full xs:!max-w-full; } }
+.custom-height {
+  height: calc(fit-content + 40px);
+}
+
+@layer components {
+  .container {
+    @apply w-full 3xl:!max-w-[1400px] 2xl:!max-w-[1000px] xl:!max-w-[1700px] lg:!max-w-full md:!max-w-full sm:!max-w-full xs:!max-w-full;
+  }
+}
 
 .input {
   @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
@@ -44,11 +52,11 @@ body {
 
 /* Sidenav */
 .sidebar-nav {
-  @apply relative flex flex-col w-[88px] h-full bg-light text-subtext/60 shadow-[0_.4rem_.7rem_rgba(0,0,0,0.2)] py-[.3rem] transition-all ease-in-out duration-500 opacity-90 pb-6;
+  @apply relative flex flex-col w-full h-full bg-light text-subtext/60  py-[.3rem] transition-all ease-in-out duration-500 opacity-90 pb-6;
 }
 
 .sidebar-nav.active {
-  @apply w-52 opacity-100;
+  @apply w-full opacity-100;
 }
 
 .sidebar-nav #btn-bars {

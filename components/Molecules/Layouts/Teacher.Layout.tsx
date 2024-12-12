@@ -51,11 +51,11 @@ const TeachersWrapper = ({
       />
 
       <aside
-        className={`absolute left-0 top-0 h-screen w-fit overflow-auto z-30 !bg-white lg:block transition-transform transform ${
+        className={`absolute left-0 top-0 h-screen w-[18.5rem] overflow-auto z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
       >
-        <SideNav handleOpen={handleWarning} />
+        <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
       <div className='w-full'>
         <div
@@ -68,11 +68,15 @@ const TeachersWrapper = ({
               active ? 'w-0 lg:w-[15rem]' : 'w-0 lg:w-[98px]'
             } transition-all ease-in-out duration-500`}
           ></div>
-          <nav className={`w-full bg-white px-4`}>
-            <AdminNav toggleSidenav={toggleSidenav} title={title} />
+          <nav className={`w-full bg-white border-b px-4`}>
+            <AdminNav
+              isOpen={isSidenavOpen}
+              toggleSidenav={toggleSidenav}
+              title={title}
+            />
           </nav>
         </div>
-        <main className='w-full h-full flex mt-16 overflow-x-hidden'>
+        <main className='w-full h-full overflow-auto flex mt-16 overflow-x-hidden'>
           <div
             className={`${
               active ? 'w-0 lg:w-[15rem]' : 'w-0 lg:w-[98px]'
