@@ -1,53 +1,54 @@
-import Cookies from "js-cookie";
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import Image from "next/image";
+import Cookies from 'js-cookie';
+import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
+import Image from 'next/image';
 import React, {
   ChangeEvent,
   FormEvent,
   useCallback,
   useEffect,
   useState,
-} from "react";
-import dummyImage from "@/images/dummy-img.jpg";
-import Button from "@/components/Atoms/Button";
-import InputField from "@/components/Atoms/InputField";
-import Input, { InputType } from "@/components/Atoms/Input";
+} from 'react';
+import dummyImage from '@/images/dummy-img.jpg';
+import Button from '@/components/Atoms/Button';
+import InputField from '@/components/Atoms/InputField';
+import Input, { InputType } from '@/components/Atoms/Input';
 import {
   Info,
   VisibilityOffOutlined,
   VisibilityOutlined,
-} from "@mui/icons-material";
-import withAuth from "@/components/Molecules/WithAuth";
-import { baseUrl } from "@/components/utils/baseURL";
-import { useAuth } from "@/contexts/AuthContext";
-import axiosInstance from "@/components/utils/axiosInstance";
+} from '@mui/icons-material';
+import withAuth from '@/components/Molecules/WithAuth';
+import { baseUrl } from '@/components/utils/baseURL';
+import { useAuth } from '@/contexts/AuthContext';
+import axiosInstance from '@/components/utils/axiosInstance';
 
 const Profile = () => {
   const [formState, setFormState] = useState({
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    email: "",
-    username: "",
-    password: "",
-    otp: "",
+    firstName: '',
+    lastName: '',
+    middleName: '',
+    email: '',
+    username: '',
+    password: '',
+    otp: '',
   });
   const [formError, setFormError] = useState({
-    internetError: "",
-    firstNameError: "",
-    lastNameError: "",
-    emailError: "",
-    usernameError: "",
-    passwordError: "",
-    successError: "",
+    internetError: '',
+    firstNameError: '',
+    lastNameError: '',
+    emailError: '',
+    usernameError: '',
+    passwordError: '',
+    successError: '',
   });
   const [isDisabled, setIsDisabled] = useState(true);
-  const [profileImage, setProfileImage] = useState("");
-  const [justUpdatedProfile, setJustUpdatedProfile] = useState(false);
-  const [studentName, setStudentName] = useState("");
+
+  const [isDisabledPassword, setIsDisabledPassword] = useState(true);
+  const [profileImage, setProfileImage] = useState('');
+  const [studentName, setStudentName] = useState('');
   const { user } = useAuth();
   const role = user?.role;
-  const [profileError, setProfileError] = useState("");
+  const [profileError, setProfileError] = useState('');
 
   const inputFields: (
     | {
@@ -66,39 +67,34 @@ const Profile = () => {
       }
   )[] = [
     {
-      label: "Last Name *",
-      name: "lastName",
-      type: "text",
+      label: 'Last Name *',
+      name: 'lastName',
+      type: 'text',
       required: true,
       error: formError.lastNameError,
     },
     {
-      label: "Email Address *",
-      name: "email",
-      type: "email",
+      label: 'Email Address *',
+      name: 'email',
+      type: 'email',
       required: true,
       error: formError.emailError,
     },
-    // {
-    //   label: 'Username *',
-    //   name: 'username',
-    //   type: 'text',
-    //   required: true,
-    //   error: formError.usernameError,
-    // },
   ];
 
   useEffect(() => {
     if (
-      formState.username === "" ||
-      formState.firstName === "" ||
-      formState.lastName === "" ||
-      formState.email === "" //||
-      // formState.password === '' ||
-      // formState.otp === ''
+      formState.username === '' ||
+      formState.firstName === '' ||
+      formState.lastName === '' ||
+      formState.email === '' //||
     )
       setIsDisabled(true);
-    else setIsDisabled(false);
+    // else setIsDisabled(false);
+
+    if (formState.password === '' || formState.otp === '')
+      setIsDisabledPassword(true);
+    else setIsDisabledPassword(false);
   }, [
     formState.email,
     formState.firstName,
@@ -120,13 +116,28 @@ const Profile = () => {
   const resetForm = () => {
     setFormState((prevState) => ({
       ...prevState,
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      username: "",
-      email: "",
-      password: "",
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      password: '',
     }));
+  };
+
+  // Clear errors after 10 seconds
+  const ClearErrors = () => {
+    setTimeout(() => {
+      setFormError({
+        internetError: '',
+        firstNameError: '',
+        lastNameError: '',
+        emailError: '',
+        usernameError: '',
+        passwordError: '',
+        successError: '',
+      });
+    }, 10000);
   };
 
   const handleErrors = (data: any) => {
@@ -134,7 +145,7 @@ const Profile = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       return;
     }
@@ -143,7 +154,7 @@ const Profile = () => {
     if (!formState.email.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        emailError: "Email field cannot be empty",
+        emailError: 'Email field cannot be empty',
       }));
       return;
     }
@@ -180,28 +191,17 @@ const Profile = () => {
         lastNameError: data.message.lastName,
       }));
     } else {
-      console.error("Error Message: ", data.error);
+      console.error('Error Message: ', data.error);
     }
 
-    // Clear errors after 10 seconds
-    setTimeout(() => {
-      setFormError({
-        internetError: "",
-        firstNameError: "",
-        lastNameError: "",
-        emailError: "",
-        usernameError: "",
-        passwordError: "",
-        successError: "",
-      });
-    }, 10000);
+    ClearErrors();
   };
 
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     const cacheKey = `profileInfo_${role}_${user?.id}`;
     event.preventDefault();
-    resetForm();
+    // resetForm();
 
     const formData = new FormData();
     console.log(Object.entries(formState));
@@ -216,7 +216,7 @@ const Profile = () => {
       const response = await fetch(
         `${baseUrl}/student-user/${formState.username}`,
         {
-          method: "PUT",
+          method: 'PUT',
           body: formData,
         }
       );
@@ -232,24 +232,25 @@ const Profile = () => {
       fetchProfile();
       setFormError((prevState) => ({
         ...prevState,
-        successError: "Information updated successfully.",
+        successError: 'Information updated successfully.',
       }));
 
       // Reset the form after successful submission
-      resetForm();
+      // resetForm();
 
-      console.log("Response: ", JSON.stringify(data));
+      console.log('Response: ', JSON.stringify(data));
     } catch (error) {
-      console.log("Status: ", error);
+      console.log('Status: ', error);
     } finally {
-      setIsDisabled(false);
+      ClearErrors();
+      // setIsDisabled(true);
     }
   };
 
   const handlePasswordChange = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     event.preventDefault();
-    resetForm();
+    // resetForm();
 
     const formData = new FormData();
 
@@ -259,7 +260,7 @@ const Profile = () => {
     });
 
     try {
-      setIsDisabled(true);
+      setIsDisabledPassword(true);
       let response = await fetch(`{}`); //* simulate endpoint for password update
 
       if (!response.ok) {
@@ -271,17 +272,17 @@ const Profile = () => {
       const data = await response.json();
       setFormError((prevState) => ({
         ...prevState,
-        successError: "Password updated successfully.",
+        successError: 'Password updated successfully.',
       }));
 
       // Reset the form after successful submission
-      resetForm();
+      // resetForm();
 
-      console.log("Response: ", JSON.stringify(data));
+      console.log('Response: ', JSON.stringify(data));
     } catch (error) {
-      console.log("Status: ", error);
+      console.log('Status: ', error);
     } finally {
-      setIsDisabled(false);
+      setIsDisabledPassword(false);
     }
   };
 
@@ -299,22 +300,17 @@ const Profile = () => {
           middleName: data.middleName,
           email: data.email,
           username: data.username,
-          password: "",
-          otp: "",
+          password: '',
+          otp: '',
         });
         setProfileImage(data.profileImage);
-        setStudentName(data.firstName + " " + data.lastName);
+        setStudentName(data.firstName + ' ' + data.lastName);
         return;
       }
     }
+
     try {
       const response = await axiosInstance.get(`${baseUrl}/student`);
-      // if (!response.ok) {
-      //   //handle this case.
-      //   setProfileError('failed to fetch profile');
-      //   console.log(response, 'the profile fo the current user');
-      //   //since formdata has default value I am not sure that we need to reset them here.
-      // }
 
       const json = response.data;
       setFormState({
@@ -323,12 +319,13 @@ const Profile = () => {
         middleName: json.middleName,
         email: json.email,
         username: json.username,
-        password: "",
-        otp: "",
+        password: '',
+        otp: '',
       });
       setProfileImage(json.profileImage);
-      setStudentName(json.firstName + " " + json.lastName);
-      console.log("tell me that this lo");
+
+      setStudentName(json.firstName + ' ' + json.lastName);
+      console.log('tell me that this lo');
 
       localStorage.setItem(
         cacheKey,
@@ -339,134 +336,181 @@ const Profile = () => {
       );
     } catch (err) {
       //how to display error.
-      setProfileError("Error occured in fetching user profile");
+      setProfileError('Error occured in fetching user profile');
     }
   }, [user?.id, role]);
+
   useEffect(() => {
     if (user) fetchProfile();
-    // department: "science";
-    // dob: "2024-10-31T00:00:00.000Z";
-    // email: "henryabayomi12@gmail.com";
-    // enrolledSubjects: [];
-    // firstName: "Jakande";
-    // lastName: "Isheri";
-    // middleName: "Estate";
-    // password: "$2b$10$ASSaz448Doz5rvhge3be1OfTD1ysAjnTbokYYCjRto6erqkfp8Ik.";
-    // profileImage: "https://res.cloudinary.com/difc1xy6v/image/upload/v1732028085/student-files/ximyskjgd8vsyxcoks0o.jpg";
-    // repeated: [];
-    // role: "Student";
-    // studentID: "AQ1LJO2PRSXU";
-    // username: "olive";
-    // __v: 0;
-    // _id: "673ca6b347a34dee9993a503";
   }, [fetchProfile, user]);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === "Enter") {
+    if (isDisabled && event.key === 'Enter') {
       handleSignup(event);
     }
+    setIsDisabled(false);
+    // setIsDisabled;
   };
 
   return (
     <>
       <StudentWrapper
-        firstTitle="Profile"
-        remark="Manage and edit your profile settings."
-        title="Profile"
-        metaTitle="Olive Groove ~ Profile"
+        firstTitle='Profile'
+        remark='Manage and edit your profile settings.'
+        title='Profile'
+        metaTitle='Olive Groove ~ Profile'
       >
-        <div className="p-12 space-y-5">
+        <div className='p-12 space-y-5'>
           {/* Title */}
-          <div className="flex gap-4">
+          <div className='flex gap-4'>
             <Image
               src={!profileImage ? dummyImage : profileImage}
               width={300}
               height={300}
-              alt="Profile Pics"
-              className="shadow w-16 h-16 object-cover rounded-full"
+              alt='Profile Pics'
+              className='shadow w-16 h-16 object-cover rounded-full'
             />
-            <div className="flex flex-col justify-center">
-              <span className="text-dark text-lg font-roboto leading-5">
+            <div className='flex flex-col justify-center'>
+              <span className='text-dark text-lg font-roboto leading-5'>
                 {studentName}
               </span>
-              <span className="text-subtext">Student</span>
+              <span className='text-subtext'>Student</span>
             </div>
           </div>
           <form
-            className="flex flex-col !mt-20 space-y-5 gap-y-5 w-[560px]"
+            className=' flex justify-between !mt-20 items-start'
             onKeyPress={handleKeyPress}
             onSubmit={handleSignup}
           >
-            {/* <div className='> */}
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-lg lg:text-2xl font-normal text-dark font-roboto">
-                  Account Information
-                </span>
-                <span className="text-md text-subtext font-roboto">
-                  Edit your personal account information.
-                </span>
+            <div className='w-[560px] flex flex-col  space-y-5 gap-y-5'>
+              <div className='flex items-center justify-between'>
+                <div className='flex flex-col'>
+                  <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
+                    Account Information
+                  </span>
+                  <span className='text-md text-subtext font-roboto'>
+                    Edit your personal account information.
+                  </span>
+                </div>
               </div>
-              <Button
-                type="submit"
-                size="sm"
-                width="fit"
-                className="!px-8"
-                disabled={isDisabled}
-              >
-                Edit Personal Info
-              </Button>
-
-              <Button
-                type="submit"
-                size="sm"
-                width="fit"
-                className="!px-8"
-                disabled={isDisabled}
-              >
-                Edit password
-              </Button>
-            </div>
-            {formError.internetError !== "" ? (
-              <span className="flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3">
-                <Info sx={{ fontSize: "1.1rem" }} />
-                {formError.internetError}
-              </span>
-            ) : formError.successError !== "" ? (
-              <span className="flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3">
-                <Info sx={{ fontSize: "1.1rem" }} />
-                {formError.successError}
-              </span>
-            ) : (
-              ""
-            )}
-            <div className="space-y-4">
-              <Input
-                type="password"
-                name="password"
-                value={formState.password}
-                onChange={handleChange}
-                placeholder="Password *"
-                // required
-                className="input"
-                showIcon={VisibilityOutlined}
-                hideIcon={VisibilityOffOutlined}
-              />
-              {formState.password.length > 0 && (
-                <Button size="xs">Generate OTP</Button>
+              {formError.internetError !== '' ? (
+                <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
+                  <Info sx={{ fontSize: '1.1rem' }} />
+                  {formError.internetError}
+                </span>
+              ) : formError.successError !== '' ? (
+                <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
+                  <Info sx={{ fontSize: '1.1rem' }} />
+                  {formError.successError}
+                </span>
+              ) : (
+                ''
               )}
-              <Input
-                type="number"
-                name="OTP"
-                value={formState.password}
-                onChange={handleChange}
-                placeholder="OTP"
-                //required
-                className="input"
-                showIcon={VisibilityOutlined}
-                hideIcon={VisibilityOffOutlined}
-              />
+              <div className='text-red-500'>{profileError && profileError}</div>
+
+              <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
+                Personal Information
+              </span>
+              <div className='grid grid-cols-2 gap-8 w-full'>
+                <InputField
+                  name='firstName'
+                  type='text'
+                  placeholder='First Name *'
+                  value={formState.firstName}
+                  onChange={handleChange}
+                  required
+                  error={formError.firstNameError}
+                />
+
+                <InputField
+                  name='middleName'
+                  type='text'
+                  placeholder='Middle Name'
+                  value={formState.middleName}
+                  onChange={handleChange}
+                  error={''}
+                />
+                {inputFields.map((field) => (
+                  <InputField
+                    placeholder={field.label}
+                    key={field.name}
+                    name={field.name}
+                    type={field.type}
+                    value={formState[field.name as keyof typeof formState]}
+                    onChange={handleChange}
+                    required={field.required}
+                    error={field.error}
+                  />
+                ))}
+              </div>
             </div>
+            <Button
+              type='submit'
+              size='sm'
+              width='fit'
+              className='!px-8'
+              disabled={isDisabled}
+            >
+              Edit Personal Info
+            </Button>
+          </form>
+          <form
+            className=' flex justify-between !mt-20 items-start'
+            // onKeyPress={handleKeyPress}
+            onSubmit={handlePasswordChange}
+          >
+            <div className='w-[560px] flex flex-col  space-y-5 gap-y-5'>
+              <div className='flex items-center justify-between'>
+                <div className='flex flex-col my-7'>
+                  <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
+                    Security Information
+                  </span>
+                  <span className='text-md text-subtext font-roboto'>
+                    Edit your personal security information.
+                  </span>
+                </div>
+              </div>
+              {formError.passwordError && (
+                <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600 capitalize -mb-3'>
+                  <Info sx={{ fontSize: '1.1rem' }} />
+                  {formError.passwordError}
+                </span>
+              )}
+              <div className='space-y-4'>
+                <Input
+                  type='password'
+                  name='password'
+                  value={formState.password}
+                  onChange={handleChange}
+                  placeholder='Password *'
+                  // required
+                  className='input'
+                  showIcon={VisibilityOutlined}
+                  hideIcon={VisibilityOffOutlined}
+                />
+                {formState.password.length > 0 && (
+                  <Button size='xs'>Generate OTP</Button>
+                )}
+                <Input
+                  type='number'
+                  name='otp'
+                  value={formState.otp}
+                  onChange={handleChange}
+                  placeholder='OTP'
+                  //required
+                  className='input'
+                />
+              </div>
+            </div>
+            <Button
+              type='submit'
+              size='sm'
+              width='fit'
+              className='!px-8'
+              disabled={isDisabledPassword}
+            >
+              Edit password
+            </Button>
           </form>
         </div>
       </StudentWrapper>
@@ -476,4 +520,4 @@ const Profile = () => {
 
 // export default Profile;
 
-export default withAuth("Student", Profile);
+export default withAuth('Student', Profile);

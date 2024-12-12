@@ -16,10 +16,15 @@ type NavItemProps = {
   activeIcon: JSX.Element;
 };
 // isSidenavOpen;
-const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
+const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
+  isOpen,
+  handleOpen,
+}) => {
   const { active, setActive } = useSidebarContext();
   const router = useRouter();
-  const [activeClass, setActiveClass] = useState<string>(router.pathname.split('/')[1]);
+  const [activeClass, setActiveClass] = useState<string>(
+    router.pathname.split('/')[1]
+  );
   const navRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState<boolean>(false);
   const { user } = useAuth();
@@ -65,11 +70,20 @@ const SideNav: React.FC<{ handleOpen: () => void }> = ({ handleOpen }) => {
             }}
             src={Logo}
             alt='Logo'
-            className={`w-12 h-12 ml-4 cursor-pointer object-cover transition-all ease-in-out duration-500 ${
+            className={`w-14 h-14 ml-4 cursor-pointer object-cover transition-all ease-in-out duration-500 ${
               // active ? 'flex' : 'hidden'
               `flex`
             }`}
           />
+
+          {/* {isOpen && (
+            <Close
+              sx={{ color: '#fff', cursor: 'pointer' }}
+              id='btn-bars'
+              onClick={handleOpen}
+              className='transition-all ease-in-out duration-500 hidden lg:flex'
+            />
+          )} */}
 
           {/* {active ? (
             <Close
@@ -462,7 +476,7 @@ const NavItem: React.FC<NavItemProps> = ({
           {activeClass === label ? activeIcon : icon}
         </div>
         <span
-          className={`links_name capitalize !text-sm md:text-base ${
+          className={`links_name capitalize !text-md md:text-base ${
             activeClass !== label ? 'text-subtext/60' : 'text-white'
           }`}
         >

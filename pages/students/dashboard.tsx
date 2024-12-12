@@ -100,10 +100,14 @@ const Dashboard = () => {
         handleModalClose={handleModalAssignment}
         modalOpen={openModalAss}
       />
-      <StudentWrapper firstTitle='Dashboard' remark='See overview and summary of your studies.' metaTitle='Olive Groove ~ Dashboard'>
-        <div className='p-4 sm:p-6 md:p-8 lg:p-12 space-y-5'>
+      <StudentWrapper
+        firstTitle='Dashboard'
+        remark='See overview and summary of your studies.'
+        metaTitle='Olive Groove ~ Dashboard'
+      >
+        <div className='p-4 sm:p-6 md:p-8 lg:p-12 space-y-11'>
           {/* start */}
-          <div className='xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
+          <div className='max-sm:space-y-5 xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
             <div className='bg-primary w-full rounded-3xl font-roboto relative overflow-hidden h-full '>
               <div className='flex flex-col h-full justify-center my-auto px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
                 <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
@@ -126,13 +130,13 @@ const Dashboard = () => {
                 />
               </div>
             </div>
-            <div className=' h-full rounded-lg p-2'>
+            <div className=' relative rounded-lg h-max'>
               <Calendar />
             </div>
           </div>
           {/* <div className="flex flex-col px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 md:py-6 lg:py-7 border-2 w-full rounded-3xl font-roboto gap-4 sm:gap-5 md:gap-6"> */}
 
-          <div className='grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 backdrop-blur-md'>
+          <div className='grid  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 '>
             <Card
               header='CGPA'
               main='3.42'
@@ -156,15 +160,15 @@ const Dashboard = () => {
           </div>
           {/* </div> */}
 
-          <div className='flex flex-col sm:flex-row w-full gap-4 sm:gap-6 md:gap-8 mt-4 rounded-xl sm:mt-6 md:mt-8 '>
-            <div className='w-full sm:w-1/2 shadow-2xl rounded-xl'>
+          <div className='flex flex-col sm:flex-row w-full gap-10 sm:gap-6 md:gap-8 mt-4 rounded-xl sm:mt-6 md:mt-8 '>
+            <div className='w-full sm:w-1/2 shadow-card rounded-xl'>
               <ClassCard
                 modalOpen={handleModal}
                 data={TodayClass}
                 title='class'
               />
             </div>
-            <div className='w-full sm:w-1/2 mt-4 sm:mt-0 shadow-2xl rounded-xl'>
+            <div className='w-full sm:w-1/2 mt-4 sm:mt-0 shadow-card rounded-xl'>
               <ClassCard modalOpen={handleModalAssignment} title='assignment' />
             </div>
           </div>

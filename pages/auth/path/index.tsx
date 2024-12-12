@@ -42,7 +42,7 @@ const LoginPath = () => {
 
   return (
     <div className='flex w-full h-screen relative'>
-      {/*<customcursor />*/}
+      {/* {/*<customcursor />*/}
 
       <Image
         src={AuthBg1}
