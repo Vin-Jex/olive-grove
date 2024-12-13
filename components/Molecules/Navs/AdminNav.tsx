@@ -92,7 +92,7 @@ const AdminNav: React.FC<AdminNavType> = ({
 
   return (
 
-    <div className='flex relative items-center justify-between w-full max-sm:border-none border-b custom-height max-sm:py-2 my-2 md:my-3   '>
+    <div className='flex relative items-center justify-between w-full max-sm:border-none border-b custom-height max-sm:py-2 my-2 md:my-3'>
       {/* <div className={` md:!hidden ${isOpen ? 'hidden' : 'flex'}`}> */}
       <div className='flex md:!hidden'>
         <Menu className='!text-2xl cursor-pointer' onClick={toggleSidenav} />

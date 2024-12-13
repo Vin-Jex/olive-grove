@@ -27,7 +27,7 @@ function SearchIcon() {
       width='16'
       height='16'
       viewBox='0 0 16 16'
-      className='text-gray-400 w-[14px]'
+      className='text-gray-200 w-[14px]'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
     >
