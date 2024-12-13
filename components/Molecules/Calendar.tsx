@@ -81,7 +81,7 @@ const Calendar = () => {
           <ChevronRight />
         </button>
       </header>
-      <div className='grid grid-cols-7 py-5'>
+      <div className='grid grid-cols-7 text-sm py-5'>
         <span>SUN</span>
         <span>MON</span>
         <span>TUE</span>
@@ -115,11 +115,16 @@ const Calendar = () => {
 };
 
 function markToday(currentDate: Date, i: number) {
+  const currentMonthFirstDay = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    1
+  );
   const isSameYear = currentDate.getFullYear() === new Date().getFullYear();
   const isSameMonth = currentDate.getMonth() === new Date().getMonth();
   const currentIndexIsToday =
-    i + 1 - currentDate.getDay() === new Date().getDate();
-  return isSameMonth && isSameMonth && currentIndexIsToday;
+    i + 1 - currentMonthFirstDay.getDay() === new Date().getDate();
+  return isSameYear && isSameMonth && currentIndexIsToday;
 }
 
 export default Calendar;

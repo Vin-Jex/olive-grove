@@ -462,7 +462,7 @@ const NavItem: React.FC<NavItemProps> = ({
   activeIcon,
 }) => {
   return (
-    <li>
+    <li className='pr-8'>
       <Link
         href={href}
         className={`px-5 py-1.5 space-x-2 ${
