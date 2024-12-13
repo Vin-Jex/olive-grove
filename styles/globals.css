@@ -28,9 +28,27 @@ body {
   }
 }
 
-.custom-height {
-  height: calc(fit-content + 40px);
+.MuiFormControlLabel-label {
+  font-size: 13px !important;
 }
+
+.MuiButtonBase-root {
+  padding-inline-start: 0px;
+}
+
+/* [data-testid='RadioButtonUncheckedIcon'] {
+  width: 1.3em !important;
+  height: 1.3rem !important;
+}
+
+[data-testid='RadioButtonCheckedIcon'] {
+  left: 3px !important;
+  top: -1px !important;
+} */
+
+/* .custom-height {
+  height: calc(fit-content + 10px);
+} */
 
 @layer components {
   .container {
