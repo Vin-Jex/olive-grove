@@ -18,11 +18,12 @@ import {
 import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import AsssessmentModal from "@/components/Molecules/Modal/AsssessmentModal";
 import { fetchCourses } from "@/components/utils/course";
-import { baseUrl } from "@/components/utils/baseURL";
 import axiosInstance from "@/components/utils/axiosInstance";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Assessments = () => {
   const router = useRouter();
+  const { user } = useAuth();
   const [openModalEdit, setOpenModalEdit] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
@@ -327,7 +328,7 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const response = await axiosInstance.get(`/teacher/assessments`);
+      const response = await axiosInstance.get(`/api/v2/assessments`);
 
       const { data } = response;
       // Display data
@@ -373,8 +374,9 @@ const Assessments = () => {
 
         delete formState._id;
 
-        const response = await axiosInstance.post(`/assessment`, {
+        const response = await axiosInstance.post(`/api/v2/assessments`, {
           ...formState,
+          teacher: user?.id,
         });
 
         const { data } = response;
