@@ -1,19 +1,20 @@
-import { TCourseModalFormData } from "@/components/utils/types";
-import { editItem } from "@/components/utils/course";
-import { TChapter, TCourse, TLesson, TSection } from "@/components/utils/types";
-import { useCourseContext } from "@/contexts/CourseContext";
-import { FC, ReactNode, useCallback, useEffect, useState } from "react";
-import AddItemSVG from "./AddItemSVG";
-import { useTopicContext } from "@/contexts/TopicContext";
-import { useAuth } from "@/contexts/AuthContext";
+import { TCourseModalFormData } from '@/components/utils/types';
+import { editItem } from '@/components/utils/course';
+import { TChapter, TCourse, TLesson, TSection } from '@/components/utils/types';
+import { useCourseContext } from '@/contexts/CourseContext';
+import { FC, ReactNode, useCallback, useEffect, useState } from 'react';
+import AddItemSVG from './AddItemSVG';
+import { useTopicContext } from '@/contexts/TopicContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Wrapper: FC<{
-  type: "section" | "add";
+  type: 'section' | 'add';
   title?: string;
   children?: ReactNode;
+  isCurrentLesson?: boolean;
   onAdd?: Function;
   existingDetails?: TCourse | TChapter | TLesson | TSection;
-  sectionType?: "chapter" | "lesson" | "topic";
+  sectionType?: 'chapter' | 'lesson' | 'topic';
   sectionId?: string;
   parentId?: string;
 }> = ({
@@ -21,6 +22,7 @@ const Wrapper: FC<{
   title,
   children,
   onAdd,
+  isCurrentLesson,
   existingDetails,
   sectionType,
   sectionId,
@@ -30,10 +32,10 @@ const Wrapper: FC<{
   const { topicDetails } = useTopicContext();
   const [hideChildren, setHideChildren] = useState(true);
   const initialFormData: TCourseModalFormData = {
-    _id: existingDetails?._id || "",
-    title: existingDetails?.title || "",
-    description: existingDetails?.description || "",
-    ...(sectionType === "lesson" ? { chapterId: parentId || "" } : {}),
+    _id: existingDetails?._id || '',
+    title: existingDetails?.title || '',
+    description: existingDetails?.description || '',
+    ...(sectionType === 'lesson' ? { chapterId: parentId || '' } : {}),
   };
   const { user } = useAuth();
   const userRole = user?.role;
@@ -45,23 +47,23 @@ const Wrapper: FC<{
     openModal({
       modalMetadata: {
         formData: initialFormData,
-        mode: "edit",
+        mode: 'edit',
         type: sectionType,
         handleAction: (formState) =>
           editItem(
-            sectionType || "chapter",
+            sectionType || 'chapter',
             setModalRequestState,
             formState,
             dispatch,
-            "PUT"
+            'PUT'
           ),
         handleDelete: (formState) =>
           editItem(
-            sectionType || "chapter",
+            sectionType || 'chapter',
             setModalRequestState,
             formState,
             dispatch,
-            "DELETE"
+            'DELETE'
           ),
       },
     });
@@ -71,9 +73,9 @@ const Wrapper: FC<{
    * * Function responsible for automatically displaying or hiding the children based on the current topic/lesson
    */
   const toggleChildren = useCallback(() => {
-    if (sectionType === "chapter" && topicDetails.topicChapter === sectionId)
+    if (sectionType === 'chapter' && topicDetails.topicChapter === sectionId)
       setHideChildren(false);
-    if (sectionType === "lesson" && topicDetails.topicLesson === sectionId)
+    if (sectionType === 'lesson' && topicDetails.topicLesson === sectionId)
       setHideChildren(false);
   }, [
     sectionId,
@@ -88,21 +90,27 @@ const Wrapper: FC<{
 
   return (
     <div
-      className='w-full rounded border border-[#1E1E1E26] p-3'
-      {...(type === "add" && onAdd ? { onClick: () => onAdd() } : {})}
+      className={`w-full rounded-xl ${
+        sectionType === 'topic' ? 'pl-4 py-4' : 'p-4'
+      }  ${
+        isCurrentLesson
+          ? 'bg-[#32A8C4] bg-opacity-[5%]'
+          : 'border border-[#1E1E1E26]'
+      }`}
+      {...(type === 'add' && onAdd ? { onClick: () => onAdd() } : {})}
     >
       {/* CLICKABLE SECTION */}
       <div
         className='flex  w-full justify-between items-center cursor-pointer'
-        {...(type !== "add"
+        {...(type !== 'add'
           ? { onClick: () => setHideChildren((prev) => !prev) }
           : {})}
       >
         <div className='flex gap-4 items-center justify-start'>
           {/* ADD ICON */}
-          {type == "add" && <AddItemSVG />}
+          {type == 'add' && <AddItemSVG />}
           {/* EDIT ICON - CHAPTER, LESSON, OR TITLE */}
-          {type == "section" && userRole === "Teacher" && (
+          {type == 'section' && userRole === 'Teacher' && (
             <svg
               width='15'
               height='16'
@@ -118,17 +126,17 @@ const Wrapper: FC<{
               />
             </svg>
           )}
-          {type == "add" ? children : title}
+          {type == 'add' ? children : title}
         </div>
         {/* CARAT ICON */}
-        {type == "section" && (
+        {type == 'section' && (
           <svg
             width='10'
             height='16'
             viewBox='0 0 10 16'
             fill='none'
             className={`transition ${
-              hideChildren ? "rotate-0" : "rotate-90"
+              hideChildren ? 'rotate-0' : 'rotate-90'
             } px-2 box-content`}
             xmlns='http://www.w3.org/2000/svg'
           >
@@ -141,7 +149,7 @@ const Wrapper: FC<{
         )}
       </div>
       {/* CHAPTER, LESSON CHILDREN, E.G. CHAPTER LESSONS, LESSON TOPICS */}
-      {type == "section" && !hideChildren && (
+      {type == 'section' && !hideChildren && (
         <div className='mt-3 flex flex-col gap-4'>{children}</div>
       )}
     </div>

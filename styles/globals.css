@@ -36,19 +36,23 @@ body {
   padding-inline-start: 0px;
 }
 
-/* [data-testid='RadioButtonUncheckedIcon'] {
+[data-testid='RadioButtonUncheckedIcon'] {
   width: 1.3em !important;
   height: 1.3rem !important;
 }
 
-[data-testid='RadioButtonCheckedIcon'] {
-  left: 3px !important;
-  top: -1px !important;
-} */
+.css-hyxlzm {
+  margin-inline-start: -9px !important;
+}
 
-/* .custom-height {
+[data-testid='RadioButtonCheckedIcon'] {
+  left: 4px !important;
+  top: -2px !important;
+}
+
+.custom-height {
   height: calc(fit-content + 10px);
-} */
+}
 
 @layer components {
   .container {
@@ -57,7 +61,7 @@ body {
 }
 
 .input {
-  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
+  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
 }
 
 .textarea {

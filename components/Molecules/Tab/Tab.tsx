@@ -87,7 +87,7 @@ const Tab: FC<{
             <div
               className={`px-7 py-2 font-medium text-sm cursor-pointer transition ${
                 activeTab === slug.key
-                  ? "border-primary border-b-2 bg-[#32A8C41A] text-primary"
+                  ? "border-primary border-opacity-70 border-b-2 bg-[#32A8C41A] text-primary"
                   : ""
               }`}
               onClick={() => setActiveTab(slug.key)}

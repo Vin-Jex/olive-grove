@@ -150,7 +150,7 @@ const AssessmentDetailsPage = () => {
       title={`Assessment`}
       metaTitle={`Olive Groove ~ ${assessmentId} assessment`}
     >
-      <div className='mx-11 max-w-[60vw]'>
+      <div className='mx-11 font-roboto max-w-[60vw]'>
         <div className='flex gap-4 items-center'>
           <div className='mt-4'>
             <BackButton />
@@ -266,7 +266,7 @@ function QuestionCard({
     <div className='bg-white p-10 rounded-2xl'>
       <FormControl>
         <FormLabel
-          style={{ fontSize: 18, fontWeight: 'normal', color: 'black' }}
+          style={{ fontSize: 18, fontWeight: 'normal', color: 'black', marginBlockEnd: 24 }}
           id='demo-radio-buttons-group-label'
         >
           {i + 1}. {question.question}
@@ -285,7 +285,7 @@ function QuestionCard({
           name='radio-buttons-group'
         >
           {question.options.map((option, i) => (
-            <div key={option + i} className='flex items-center'>
+            <div key={option + i} className='flex items-center !text-subtext'>
               <FormControlLabel
                 style={
                   review
@@ -314,8 +314,8 @@ function QuestionCard({
                           borderRadius: 5,
                           marginBlock: 7,
                         }
-                      : {}
-                    : {}
+                      : {marginInline: -10}
+                    : {marginInline: -10}
                 }
                 value={option}
                 control={

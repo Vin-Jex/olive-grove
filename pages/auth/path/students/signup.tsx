@@ -5,9 +5,13 @@ import logo from '@/public/image/logo.png';
 import AuthBg1 from '@/public/image/auth__bg.png';
 import AuthBg2 from '@/public/image/auth_bg.png';
 import AuthBg3 from '@/public/image/Frame 5.png';
-import { InputType } from '@/components/Atoms/Input';
+import Input, { InputType } from '@/components/Atoms/Input';
 import Button from '@/components/Atoms/Button';
-import { Info } from '@mui/icons-material';
+import {
+  Info,
+  VisibilityOffOutlined,
+  VisibilityOutlined,
+} from '@mui/icons-material';
 import File from '@/components/Atoms/File';
 import { baseUrl } from '@/components/utils/baseURL';
 import { useRouter } from 'next/router';
@@ -565,35 +569,47 @@ const StudentSignup = () => {
               <input type='checkbox' name='enrolledSubjects' id='remember' /> */}
             </div>
           </div>
-          {inputFields.map((field) => (
-            <InputField
-              placeholder={field.label}
-              key={field.name}
-              name={field.name}
-              type={field.type}
-              // pattern={field.name === 'username' ? '[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,}$' : ''}
-              pattern={
-                field.name === 'username'
-                  ? '[a-zA-Z0-9!@#$_%].{5,}$'
-                  : field.name === 'password'
-                  ? '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$'
-                  : undefined
-              }
-              title={
-                field.name === 'email'
-                  ? 'Please enter a valid email address'
-                  : field.name === 'username'
-                  ? 'Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
-                  : field.name === 'password'
-                  ? 'Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
-                  : ''
-              }
-              value={formState[field.name as keyof SignupType]}
-              onChange={handleChange}
-              required={field.required}
-              error={field.error}
-            />
-          ))}
+          {inputFields.map((field) =>
+            field.name !== 'password' ? (
+              <InputField
+                placeholder={field.label}
+                key={field.name}
+                name={field.name}
+                type={field.type}
+                pattern={
+                  field.name === 'username'
+                    ? '[a-zA-Z0-9!@#$_%].{5,}$'
+                    : undefined
+                }
+                title={
+                  field.name === 'email'
+                    ? 'Please enter a valid email address'
+                    : field.name === 'username'
+                    ? 'Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
+                    : ''
+                }
+                value={formState[field.name as keyof SignupType]}
+                onChange={handleChange}
+                required={field.required}
+                error={field.error}
+              />
+            ) : (
+              <Input
+                key={field.name}
+                pattern='^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$'
+                title='Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
+                type='password'
+                name='password'
+                value={formState[field.name as keyof SignupType]}
+                onChange={handleChange}
+                placeholder='Password'
+                showIcon={VisibilityOutlined}
+                hideIcon={VisibilityOffOutlined}
+                required={field.required}
+                className='input rounded-lg p-3'
+              />
+            )
+          )}
 
           <div className='w-full flex flex-col gap-1 cursor-pointer'>
             <File
