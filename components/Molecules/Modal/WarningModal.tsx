@@ -27,7 +27,7 @@ export default function WarningModal({
           <strong className='font-roboto text-[19px] sm:text-[23px] text-center text-dark w-full'>
             Are you sure you want to logout
           </strong>
-          <span className='text-center max-w-[300px] text-gray-400'>
+          <span className='text-center max-w-[300px] text-gray-500'>
             You will be redirected to the login page to enter your login
             information
           </span>

@@ -378,13 +378,13 @@ const Profile = () => {
             </div>
           </div>
           <form
-            className=' flex justify-between !mt-20 items-start'
+            className='w-full flex justify-between !mt-20'
             onKeyPress={handleKeyPress}
             onSubmit={handleSignup}
           >
-            <div className='w-[560px] flex flex-col  space-y-5 gap-y-5'>
-              <div className='flex items-center justify-between'>
-                <div className='flex flex-col'>
+            <div className='w-full flex flex-col space-y-5 gap-y-5'>
+              <div className='flex w-full items-center justify-between'>
+                <div className='flex flex-col '>
                   <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
                     Account Information
                   </span>
@@ -392,6 +392,15 @@ const Profile = () => {
                     Edit your personal account information.
                   </span>
                 </div>
+                <Button
+                  type='submit'
+                  size='sm'
+                  width='fit'
+                  className='!px-8'
+                  disabled={isDisabled}
+                >
+                  Edit Personal Info
+                </Button>
               </div>
               {formError.internetError !== '' ? (
                 <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
@@ -444,23 +453,14 @@ const Profile = () => {
                 ))}
               </div>
             </div>
-            <Button
-              type='submit'
-              size='sm'
-              width='fit'
-              className='!px-8'
-              disabled={isDisabled}
-            >
-              Edit Personal Info
-            </Button>
           </form>
           <form
-            className=' flex justify-between !mt-20 items-start'
+            className='w-full flex justify-between !mt-20 items-start'
             // onKeyPress={handleKeyPress}
             onSubmit={handlePasswordChange}
           >
-            <div className='w-[560px] flex flex-col  space-y-5 gap-y-5'>
-              <div className='flex items-center justify-between'>
+            <div className='w-full space-y-5 gap-y-5'>
+              <div className='w-full flex items-center justify-between'>
                 <div className='flex flex-col my-7'>
                   <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
                     Security Information
@@ -469,6 +469,15 @@ const Profile = () => {
                     Edit your personal security information.
                   </span>
                 </div>
+                <Button
+                  type='submit'
+                  size='sm'
+                  width='fit'
+                  className='!px-8'
+                  disabled={isDisabledPassword}
+                >
+                  Edit password
+                </Button>
               </div>
               {formError.passwordError && (
                 <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600 capitalize -mb-3'>
@@ -476,7 +485,7 @@ const Profile = () => {
                   {formError.passwordError}
                 </span>
               )}
-              <div className='space-y-4'>
+              <div className='flex items-center gap-7'>
                 <Input
                   type='password'
                   name='password'
@@ -502,15 +511,6 @@ const Profile = () => {
                 />
               </div>
             </div>
-            <Button
-              type='submit'
-              size='sm'
-              width='fit'
-              className='!px-8'
-              disabled={isDisabledPassword}
-            >
-              Edit password
-            </Button>
           </form>
         </div>
       </StudentWrapper>

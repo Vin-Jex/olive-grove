@@ -1,14 +1,15 @@
-import { TChapter } from "@/components/utils/types";
-import { FC } from "react";
-import Add from "./CourseAddButton";
-import Wrapper from "./CourseWrapper";
-import Lesson from "./CourseLesson";
-import { useAuth } from "@/contexts/AuthContext";
+import { TChapter } from '@/components/utils/types';
+import { FC } from 'react';
+import Add from './CourseAddButton';
+import Wrapper from './CourseWrapper';
+import Lesson from './CourseLesson';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Chapter: FC<{
   chapter: TChapter;
 }> = ({ chapter }) => {
   const { user } = useAuth();
+
   return (
     <>
       <Wrapper
@@ -20,11 +21,11 @@ const Chapter: FC<{
       >
         {chapter.lessons.map((lesson) => (
           <>
-            <Lesson lesson={lesson} chapterId={chapter._id || ""} />
+            <Lesson lesson={lesson} chapterId={chapter._id || ''} />
           </>
         ))}
-        {user?.role === "Teacher" && (
-          <Add type='lesson' parentId={chapter._id || ""} />
+        {user?.role === 'Teacher' && (
+          <Add type='lesson' parentId={chapter._id || ''} />
         )}
       </Wrapper>
     </>

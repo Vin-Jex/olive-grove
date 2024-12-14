@@ -36,19 +36,23 @@ body {
   padding-inline-start: 0px;
 }
 
-/* [data-testid='RadioButtonUncheckedIcon'] {
+[data-testid='RadioButtonUncheckedIcon'] {
   width: 1.3em !important;
   height: 1.3rem !important;
 }
 
-[data-testid='RadioButtonCheckedIcon'] {
-  left: 3px !important;
-  top: -1px !important;
-} */
+.css-hyxlzm {
+  margin-inline-start: -9px !important;
+}
 
-/* .custom-height {
+[data-testid='RadioButtonCheckedIcon'] {
+  left: 4px !important;
+  top: -2px !important;
+}
+
+.custom-height {
   height: calc(fit-content + 10px);
-} */
+}
 
 @layer components {
   .container {
@@ -98,6 +102,7 @@ input[type="number"] {
   content: "✔"; /* Checkmark symbol */
   font-size: 12px;
   color: white !important;
+
 }
 
 .textarea {

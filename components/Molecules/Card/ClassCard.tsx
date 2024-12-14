@@ -32,7 +32,7 @@ const ClassCard: React.FC<ClassCardType> = ({
   };
 
   return (
-    <div className="flex flex-col flex-wrap gap-y-3 lg:gap-y-4 border-gray-300 !z-20 relative px-4 py-5 lg:px-7 lg:py-8 w-full h-fit min-h-[528px] rounded-xl">
+    <div className="flex flex-col flex-wrap gap-y-3 lg:gap-y-4 border-gray-300 !z-20 relative px-4 py-5 lg:px-7 lg:py-8 w-full h-fit min-h-[350px] rounded-xl">
       <div className="flex items-center justify-between">
         <span className="text-dark text-xl lg:text-2xl font-roboto font-medium">
           {title === "class" ? "Today's Class" : "Assignments"}

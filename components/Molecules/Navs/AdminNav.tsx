@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import { Menu, NotificationsOutlined, Search } from "@mui/icons-material";
-import dummyImage from "@/images/dummy-img.jpg";
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import { Menu, NotificationsOutlined, Search } from '@mui/icons-material';
+import dummyImage from '@/images/dummy-img.jpg';
 import {
   DateFormatter,
   generateDateString,
-} from "@/components/Functions/DateFormatter";
-import Image, { StaticImageData } from "next/image";
-import { baseUrl } from "@/components/utils/baseURL";
-import { useAuth } from "@/contexts/AuthContext";
-import axiosInstance from "@/components/utils/axiosInstance";
-import Input from "@/components/Atoms/Input";
-import SearchLayout from "../SearchLayout";
+} from '@/components/Functions/DateFormatter';
+import Image, { StaticImageData } from 'next/image';
+import { baseUrl } from '@/components/utils/baseURL';
+import { useAuth } from '@/contexts/AuthContext';
+import axiosInstance from '@/components/utils/axiosInstance';
+import Input from '@/components/Atoms/Input';
+import SearchLayout from '../SearchLayout';
 
 interface AdminNavType {
   title?: string;
@@ -55,13 +55,13 @@ const AdminNav: React.FC<AdminNavType> = ({
       try {
         let response;
         switch (userRole) {
-          case "Student":
+          case 'Student':
             response = await axiosInstance.get(`${baseUrl}/student`);
             break;
-          case "Teacher":
+          case 'Teacher':
             response = await axiosInstance.get(`${baseUrl}/teacher`);
             break;
-          case "Admin":
+          case 'Admin':
             response = await axiosInstance.get(`${baseUrl}/admin`);
             break;
           default:
@@ -91,7 +91,7 @@ const AdminNav: React.FC<AdminNavType> = ({
   }, [user]);
 
   return (
-    <div className="flex relative items-center justify-between w-full max-sm:border-none border-b custom-height max-sm:py-2 py-4">
+    <div className='flex relative mx-2 items-center bg-[#fafafa] justify-between w-full max-sm:border-none border-b custom-height max-sm:py-2 my-2 md:my-3'>
       {/* <div className={` md:!hidden ${isOpen ? 'hidden' : 'flex'}`}> */}
       <div className="flex md:!hidden">
         <Menu className="!text-2xl cursor-pointer" onClick={toggleSidenav} />
@@ -116,24 +116,51 @@ const AdminNav: React.FC<AdminNavType> = ({
           {/* <span className='font-roboto text-xs sm:text-sm md:text-[16px] lg:text-[18px] text-subtext leading-4 whitespace-nowrap'>
           {DateFormatter(generateDateString())}
         </span> */}
-          <button className="flex items-center justify-center">
-            <NotificationsOutlined className="!text-xl md:!text-2xl text-subtext" />
+          <button className='flex items-center justify-center'>
+            <NotificationIcon />
           </button>
           <div className="w-7 h-7 md:w-9 md:h-9 overflow-hidden">
             <Image
               src={!profileImage ? dummyImage : profileImage}
               width={300}
               height={300}
-              alt="Profile Pics"
-              className="shadow w-full h-full object-cover rounded-full"
+              alt='Profile Pics'
+              className='shadow w-full h-full object-cover rounded-full'
             />
             {/* we're supposed to add a fallback image */}
           </div>
         </div>
       </div>
-      {/* <div className='w-full absolute h-[1px] bottom-0 mt-5 bg-gray-500'></div> */}
     </div>
   );
 };
+
+function NotificationIcon() {
+  return (
+    <svg
+      width='28'
+      height='28'
+      viewBox='0 0 28 28'
+      fill='none'
+      className='w-6'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <path
+        d='M2.952 17.2316C2.7035 18.8579 3.813 19.9861 5.171 20.5484C10.3778 22.7068 17.6228 22.7068 22.8297 20.5484C24.1877 19.9861 25.2972 18.8568 25.0487 17.2316C24.897 16.2318 24.1422 15.3999 23.5833 14.5868C22.8518 13.5088 22.7795 12.3339 22.7783 11.0833C22.7795 6.25092 18.8502 2.33325 14.0003 2.33325C9.1505 2.33325 5.22116 6.25092 5.22116 11.0833C5.22116 12.3339 5.14883 13.5099 4.41617 14.5868C3.8585 15.3999 3.10483 16.2318 2.952 17.2316Z'
+        stroke='#1E1E1E'
+        stroke-width='1.5'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+      <path
+        d='M9.33398 22.1665C9.86832 24.179 11.756 25.6665 14.0007 25.6665C16.2465 25.6665 18.1318 24.179 18.6673 22.1665'
+        stroke='#1E1E1E'
+        stroke-width='1.5'
+        stroke-linecap='round'
+        stroke-linejoin='round'
+      />
+    </svg>
+  );
+}
 
 export default AdminNav;
