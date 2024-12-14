@@ -237,9 +237,14 @@ export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
 export type TAssessmnentQuestionProp = {};
 
 export type TAssessmentQuestionType =
-  | "multiple choice"
+  | "multiple_choice"
   | "paragraph"
-  | "file upload"
-  | "select many";
+  | "file_upload"
+  | "select_many";
 
 export type TContentId = { id: string; isViewed: boolean }[];
+
+export type TAsseessmentQuestionOption = {
+  content: string | undefined;
+  _id: string;
+};

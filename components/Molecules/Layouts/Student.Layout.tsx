@@ -53,7 +53,7 @@ const StudentWrapper = ({
       />
 
       <aside
-        className={`absolute left-0 top-0 h-screen w-[18.5rem] z-30 !bg-white lg:block transition-transform transform ${
+        className={`absolute left-0 top-0 h-screen w-[15rem] z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
       >
@@ -70,7 +70,7 @@ const StudentWrapper = ({
               active ? 'w-0 lg:w-[22rem]' : 'w-0 lg:w-[98px]'
             } transition-all ease-in-out duration-500`}
           ></div>
-          <nav className={`w-full  mx-8  px-4`}>
+          <nav className={`w-full  mr-8  pr-4 pl-3`}>
             <AdminNav
               isOpen={isSidenavOpen}
               toggleSidenav={toggleSidenav}
@@ -82,10 +82,10 @@ const StudentWrapper = ({
         <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
           <div
             className={`${
-              active ? 'w-0 lg:w-[20rem]' : 'w-0 lg:w-[98px]'
+              active ? 'w-0 lg:w-[18rem]' : 'w-0 lg:w-[98px]'
             } transition-all ease-in-out duration-500`}
           ></div>
-          <div className='min-h-screen w-full  z-10'>{children}</div>
+          <div className='min-h-screen w-full z-10'>{children}</div>
         </main>
       </div>
     </div>

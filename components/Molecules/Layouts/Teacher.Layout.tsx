@@ -38,54 +38,58 @@ const TeachersWrapper = ({
   };
 
   return (
-    <div className="relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row">
-      {/*<customcursor />*/}
+    <>
+      <div className="relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row">
+        {/*<customcursor />*/}
 
-      <Meta title={metaTitle || "Dashboard"} description={description} />
-      <WarningModal
-        handleModalClose={handleWarning}
-        handleConfirm={() => {
-          handleLogout().then(() => router.push("/auth/path/teachers/login/"));
-        }}
-        modalOpen={warningModal}
-      />
+        <Meta title={metaTitle || "Dashboard"} description={description} />
+        <WarningModal
+          handleModalClose={handleWarning}
+          handleConfirm={() => {
+            handleLogout().then(() =>
+              router.push("/auth/path/teachers/login/")
+            );
+          }}
+          modalOpen={warningModal}
+        />
 
-      <div
-        className={`flex-0 h-screen w-[18.5rem] overflow-auto z-30 !bg-white lg:block`}
-      >
-        <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
-      </div>
-      <div className="flex-1 w-full">
-        <div
-          className={`${
-            active ? "" : ""
-          } absolute right-0 top-0 w-full flex z-40 lg:z-20`}
+        <aside
+          className={`absolute left-0 top-0 h-screen w-[16.5rem] overflow-auto z-30 !bg-white lg:block transition-transform transform ${
+            isSidenavOpen ? "translate-x-0" : "-translate-x-full"
+          } lg:translate-x-0`}
         >
+          <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
+        </aside>
+        <div className="flex-1 w-full">
           <div
             className={`${
-              active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
-            } transition-all ease-in-out duration-500`}
-          ></div>
-          <nav className={`w-full bg-white border-b px-4`}>
-            <AdminNav
-              isOpen={isSidenavOpen}
-              toggleSidenav={toggleSidenav}
-              title={title}
-            />
-          </nav>
-        </div>
-        <main className="w-full h-full overflow-auto flex mt-16 overflow-x-hidden">
-          <div
-            className={`${
-              active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
-            } transition-all ease-in-out duration-500`}
-          ></div>
-          <div className="h-[93vh] box-border w-full z-10 px-4 py-4 lg:py-6">
-            {children}
+              active ? "" : ""
+            } absolute right-0 top-0 w-full flex z-40 lg:z-20`}
+          >
+            <div
+              className={`${
+                active ? "w-0 lg:w-[22rem]" : "w-0 lg:w-[98px]"
+              } transition-all ease-in-out duration-500`}
+            ></div>
+            <nav className={`w-full mr-[2rem] ml-4`}>
+              <AdminNav
+                isOpen={isSidenavOpen}
+                toggleSidenav={toggleSidenav}
+                title={title}
+              />
+            </nav>
           </div>
-        </main>
+          <main className="w-full h-full max-h-[calc(100dvh-5rem)] overflow-auto flex mt-16 pt-5">
+            <div
+              className={`${
+                active ? "w-0 lg:w-[20rem]" : "w-0 lg:w-[98px]"
+              } transition-all ease-in-out duration-500`}
+            ></div>
+            <div className="min-h-screen w-full z-10 px-[2rem]">{children}</div>
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

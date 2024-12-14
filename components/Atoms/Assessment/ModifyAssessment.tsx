@@ -12,7 +12,7 @@ const ModifyAssessment = () => {
       </AssessmentTitleHeader>
       <div className="w-full flex flex-col gap-6">
         {[1, 2, 3].map((_) => (
-          <AssessmentQuestion key={_} />
+          <AssessmentQuestion key={_} question_id={_.toString()} />
         ))}
       </div>
     </div>

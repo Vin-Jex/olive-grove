@@ -21,6 +21,49 @@ import { fetchCourses } from "@/components/utils/course";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { useAuth } from "@/contexts/AuthContext";
 
+const demo_assessments = [
+  {
+    _id: "assessmentId123",
+    class: {
+      _id: "",
+      name: "Class A",
+      category: "Primary",
+      description: "A primary-level class.",
+    },
+    subject: {
+      _id: "courseId456",
+      title: "Mathematics 101",
+    },
+    type: {
+      _id: "",
+      name: "Quiz",
+    },
+    teacher: {
+      _id: "",
+      name: "John Doe",
+      password: "",
+      teacherID: "teacher123",
+      email: "johndoe@example.com",
+      tel: 1234567890,
+      address: "123 Main Street, City, Country",
+      profileImage:
+        "https://images.unsplash.com/photo-1721332155484-5aa73a54c6d2?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      role: "Teacher",
+    },
+    academicWeek: {
+      _id: "",
+      weekNumber: 1,
+      startDate: new Date().toISOString(),
+      endDate: new Date().setDate(Date.now() + 7).toString(),
+      academicYear: "2024/2025",
+      isActive: true,
+    },
+    timeline: new Date().toISOString(),
+    description: "Demo assessment",
+    createdAt: "2024-09-01T10:00:00Z",
+  },
+];
+
 const Assessments = () => {
   const router = useRouter();
   const { user } = useAuth();
@@ -331,11 +374,25 @@ const Assessments = () => {
       const response = await axiosInstance.get(`/api/v2/assessments`);
 
       const { data } = response;
-      // Display data
+
+      // If the list is not epty
+      if (data?.data?.length > 0)
+        // Display data
+        return setFetchAssessmentsState((prev) => ({
+          data: data?.data,
+          loading: false,
+          error: undefined,
+        }));
+
+      // Display 404 error state
       setFetchAssessmentsState((prev) => ({
-        data: data?.data,
+        ...prev,
         loading: false,
-        error: undefined,
+        error: {
+          message: "No Assessments found",
+          status: 404,
+          state: true,
+        },
       }));
     } catch (err: any) {
       const status = err?.response?.status;
@@ -374,16 +431,34 @@ const Assessments = () => {
 
         delete formState._id;
 
-        const response = await axiosInstance.post(`/api/v2/assessments`, {
-          ...formState,
-          teacher: user?.id,
-        });
+        const form_data = new FormData();
+
+        form_data.append("teacher", user?.id || "");
+        form_data.append("course", formState.subject);
+        form_data.append("class", formState.class);
+        form_data.append("assessmentType", formState.type);
+        form_data.append("academicWeek", formState.academicWeek);
+        form_data.append("dueDate", formState.timeline as string);
+        form_data.append("description", formState.description);
+        form_data.append("active", true as any);
+
+        const response = await axiosInstance.post(
+          `/api/v2/assessments`,
+          form_data,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
 
         const { data } = response;
         // Display data
         setCreateAssessmentState((prev) => ({
           data: data?.data,
           loading: false,
+          error: undefined,
+        }));
+
+        // * Reset the fetch assessment error state
+        setFetchAssessmentsState((prev) => ({
+          ...prev,
           error: undefined,
         }));
 
@@ -654,6 +729,45 @@ const Assessments = () => {
               </Button>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
+              {demo_assessments.map((assessment, index) => (
+                <div key={index} className="mt-4 w-full space-y-2">
+                  <TeacherCard
+                    academicWeekDate={
+                      (assessment.academicWeek as TAcademicWeek).weekNumber
+                    }
+                    key={index}
+                    type="assessment"
+                    teacher={assessment.teacher}
+                    assessmentType={(assessment.type as TAssessmentType).name}
+                    timeline={assessment.timeline}
+                    assessmentClass={(assessment.class as TClass).name}
+                    subject={(assessment.subject as TCourse)?.title || ""}
+                    actionClick={() =>
+                      toogleModalEdit({
+                        ...assessment,
+                        academicWeek: assessment.academicWeek._id!,
+                        class: assessment.class._id!,
+                        subject: assessment.subject._id!,
+                        type: assessment.type._id!,
+                        teacher: assessment.teacher._id!,
+                      })
+                    }
+                    btnLink1={() => {
+                      router.push(
+                        `/teachers/assessments/submissions/${assessment._id}`
+                      );
+                    }}
+                    btnLink2={() =>
+                      router.push(
+                        `/teachers/assessments/questions/${assessment._id}`
+                      )
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+            {/* 
             {fetchAssessmentsState.loading ? (
               <div className="h-full w-full">
                 <Loader />
@@ -710,7 +824,7 @@ const Assessments = () => {
                   ))}
                 </div>
               </>
-            )}
+            )} */}
           </>
         </div>
       </TeachersWrapper>
