@@ -1,16 +1,26 @@
-import { ChangeEvent, FC } from "react";
+import {
+  ChangeEvent,
+  DetailedHTMLProps,
+  FC,
+  SelectHTMLAttributes,
+} from "react";
 import { TSelectOptions } from "../utils/types";
 
-const Select: FC<{
-  options: TSelectOptions;
-  name: string;
-  required?: boolean;
-  placeholder?: string;
-  reduceWidth?: boolean;
-  value?: string;
-  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-  size?: "xs" | "sm";
-}> = ({
+const Select: FC<
+  {
+    options: TSelectOptions;
+    name: string;
+    required?: boolean;
+    placeholder?: string;
+    reduceWidth?: boolean;
+    value?: string;
+    onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+    inputSize?: "xs" | "sm";
+  } & DetailedHTMLProps<
+    SelectHTMLAttributes<HTMLSelectElement>,
+    HTMLSelectElement
+  >
+> = ({
   options,
   name,
   required,
@@ -18,7 +28,7 @@ const Select: FC<{
   placeholder,
   reduceWidth,
   value,
-  size,
+  inputSize: size,
 }) => {
   return (
     <select

@@ -152,7 +152,7 @@ const Add: FC<{
   if (type === "topic") {
     return (
       <span
-        className="text-greyed flex items-center gap-2  transition hover:text-primary"
+        className="text-greyed flex items-center gap-2 cursor-pointer transition hover:text-primary"
         onClick={onAdd}
       >
         <i className="fas fa-plus"></i>{" "}

@@ -60,7 +60,7 @@ const TeachersWrapper = ({
         >
           <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
         </aside>
-        <div className="flex-1 w-full h-screen overflow-y-auto relative">
+        <div className="flex-1 w-full h-full overflow-y-auto relative flex flex-col">
           {/* <div
             className={`${
               active ? "" : ""
@@ -90,7 +90,7 @@ const TeachersWrapper = ({
           <div
             className={`${
               active ? "" : ""
-            } w-full flex z-40 lg:z-20 sticky top-0 right-0 bg-milky mb-2`}
+            } w-full flex-0 flex z-40 lg:z-20 sticky top-0 right-0 bg-milky mb-2`}
           >
             <nav className={`w-full mr-[2rem] ml-4`}>
               <AdminNav
@@ -100,7 +100,9 @@ const TeachersWrapper = ({
               />
             </nav>
           </div>
-          <main className="w-full overflow-x-hidden px-4">{children}</main>
+          <main className="w-full overflow-x-hidden px-4 flex-1">
+            {children}
+          </main>
         </div>
       </div>
     </>

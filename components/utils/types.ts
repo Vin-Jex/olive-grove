@@ -6,8 +6,8 @@ export type TSubject = {
   lessons_no: number;
 };
 
-type OptionalFields = {
-  classId?: string;
+type OptionalFields<T extends "get" | "post" = "get"> = {
+  classId?: T extends "post" ? string : TClass;
   // courseInfo?: { description: string };
   chapterId?: string;
   topicNote?: string;
@@ -20,38 +20,38 @@ type OptionalFields = {
   availableDate?: string;
 };
 
-export type TCourse = {
+export type TCourse<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   description?: string;
   image?: string;
   chapters?: TChapter[];
   courseCover?: string | File | undefined;
-} & OptionalFields;
+} & OptionalFields<T>;
 
-export type TChapter = {
+export type TChapter<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   lessons: TLesson[];
-} & OptionalFields;
+} & OptionalFields<T>;
 
-export type TLesson = {
+export type TLesson<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   sections: TSection[];
-} & OptionalFields;
+} & OptionalFields<T>;
 
-export type TSection = {
+export type TSection<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   subsections: TSubSection[];
-} & OptionalFields;
+} & OptionalFields<T>;
 
-export type TSubSection = {
+export type TSubSection<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   description?: string;
-} & OptionalFields;
+} & OptionalFields<T>;
 
 export type TResponse<T> = {
   status: number;
@@ -121,10 +121,10 @@ export type TSelectOptions = (
 )[];
 
 export type TCourseModalFormData =
-  | Omit<TCourse, "chapters">
-  | Omit<TChapter, "lessons">
-  | Omit<TLesson, "sections">
-  | Omit<TSection, "subsections">;
+  | Omit<TCourse<"post">, "chapters">
+  | Omit<TChapter<"post">, "lessons">
+  | Omit<TLesson<"post">, "sections">
+  | Omit<TSection<"post">, "subsections">;
 
 export type TCourseModalProps = {
   modalOpen: boolean;

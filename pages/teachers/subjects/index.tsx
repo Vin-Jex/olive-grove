@@ -34,12 +34,14 @@ const Subjects: FC = () => {
     error: undefined,
   });
   const [openModalCreate, setOpenModalCreate] = useState(false);
-  const [formState, setFormState] = useState<Omit<TCourse, "chapters">>({
-    title: "",
-    description: "",
-    classId: "",
-    courseCover: undefined,
-  });
+  const [formState, setFormState] = useState<Omit<TCourse<"post">, "chapters">>(
+    {
+      title: "",
+      description: "",
+      classId: "",
+      courseCover: undefined,
+    }
+  );
   const [createCourseRes, setCreateCourseRes] = useState<
     TFetchState<TCourse | undefined>
   >({
@@ -93,13 +95,13 @@ const Subjects: FC = () => {
           setCourses({
             data: [],
             loading: false,
-            error: courses,
+            error: status === 500 ? "Error retrieving courses" : courses,
           });
           setSearchResults([]);
         }
         console.log(courses);
       } catch (error) {
-        console.error("Error fetching classes:", error);
+        console.error("Error fetching courses:", error);
       }
     },
     []
@@ -170,6 +172,27 @@ const Subjects: FC = () => {
 
       return courseName.includes(inputValue?.trim());
     });
+
+    setSearchResults(filteredResults);
+  };
+
+  /**
+   * * Function responsible for filtering the courses by class
+   * @param e The DOM change event
+   * @param config The object ontaining functions and variables like, all the courses, function to update the courses list with filtered courses, <etc styleName={}></etc>
+   */
+  const handleClassFilter: (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => void = ({ target: { value } }) => {
+    console.log("Filtered class value", value);
+
+    if (!value || value.includes("Select class"))
+      return setSearchResults(courses.data);
+
+    // Perform filtering based on class filter
+    const filteredResults = courses.data.filter(
+      (result) => result?.classId?._id === value
+    );
 
     setSearchResults(filteredResults);
   };
@@ -296,7 +319,7 @@ const Subjects: FC = () => {
       />
 
       <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
-        <div className="h-full ">
+        <div className="h-full">
           {courses.loading ? (
             <Loader />
           ) : (
@@ -321,7 +344,35 @@ const Subjects: FC = () => {
                   <span>Create new subject</span>
                 </Button>
               </div>
-
+              {/* Searchbars and select fields */}
+              {!courses.error && (
+                <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
+                  <div className="flex justify-start items-center gap-4 w-full md:w-auto">
+                    <Select
+                      options={
+                        classes.data?.map((type) => ({
+                          display_value: type.name,
+                          value: type._id || "",
+                        })) || []
+                      }
+                      name="class"
+                      required
+                      onChange={handleClassFilter}
+                      placeholder="Select class"
+                    />
+                  </div>
+                  <div className="w-full md:w-[400px]">
+                    <SearchInput
+                      shape="rounded-lg"
+                      placeholder="Search for Subjects"
+                      searchResults={searchResults}
+                      setSearchResults={setSearchResults}
+                      initialData={courses.data}
+                      handleInputChange={handleSearchChange}
+                    />
+                  </div>
+                </div>
+              )}
               {courses.error ? (
                 <div className="w-full h-full flex items-center justify-center">
                   {typeof courses.error === "object" &&
@@ -346,44 +397,7 @@ const Subjects: FC = () => {
               ) : (
                 <>
                   {/* Content */}
-                  <div className="h-full mt-4">
-                    {/* Searchbars and select fields */}
-                    <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
-                      <div className="flex justify-start items-center gap-4 w-full md:w-auto">
-                        <Select
-                          options={[
-                            "jss 1",
-                            "jss 2",
-                            "jss 3",
-                            "ss 1",
-                            "ss 2",
-                            "ss 3",
-                          ]}
-                          name="class"
-                          required
-                          onChange={() => {}}
-                          placeholder="Select class"
-                        />
-                        <Select
-                          options={["physics", "further mathematics"]}
-                          name="subject"
-                          required
-                          onChange={() => {}}
-                          placeholder="Select subject"
-                        />
-                      </div>
-
-                      <div className="w-full md:w-[400px]">
-                        <SearchInput
-                          shape="rounded-lg"
-                          placeholder="Search for Subjects"
-                          searchResults={searchResults}
-                          setSearchResults={setSearchResults}
-                          initialData={courses.data}
-                          handleInputChange={handleSearchChange}
-                        />
-                      </div>
-                    </div>
+                  <div className="mt-4">
                     {/* Courses */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4">
                       {searchResults &&

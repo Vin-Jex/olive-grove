@@ -105,7 +105,7 @@ const AssessmentQuestion: FC<{ question_id: string }> = ({ question_id }) => {
           <div className="h-[2.5rem] ">
             <Select
               name="questionType"
-              size="xs"
+              inputSize="xs"
               options={question_type_options}
               value={formState.questionType}
               onChange={(e) =>
