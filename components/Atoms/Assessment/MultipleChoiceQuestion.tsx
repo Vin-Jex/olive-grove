@@ -47,10 +47,7 @@ const MultipleChoiceQuestion: FC<{
       ))}
       <div className="flex gap-4 justify-between">
         {/* Add Option */}
-        <span
-          className="text-primary text-lg cursor-pointer"
-          onClick={add_option}
-        >
+        <span className="text-primary cursor-pointer" onClick={add_option}>
           Add option
         </span>
       </div>

@@ -54,17 +54,17 @@ const TeachersWrapper = ({
         />
 
         <aside
-          className={`absolute left-0 top-0 h-screen w-[16.5rem] overflow-auto z-30 !bg-white lg:block transition-transform transform ${
+          className={` left-0 top-0 h-screen w-[16.5rem] overflow-auto z-30 !bg-white lg:block transition-transform transform ${
             isSidenavOpen ? "translate-x-0" : "-translate-x-full"
           } lg:translate-x-0`}
         >
           <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
         </aside>
-        <div className="flex-1 w-full">
-          <div
+        <div className="flex-1 w-full h-screen overflow-y-auto relative">
+          {/* <div
             className={`${
               active ? "" : ""
-            } absolute right-0 top-0 w-full flex z-40 lg:z-20`}
+            } absolute right-0 top-0 w-full flex z-40 lg:z-20 bg-milky`}
           >
             <div
               className={`${
@@ -79,14 +79,28 @@ const TeachersWrapper = ({
               />
             </nav>
           </div>
-          <main className="w-full h-full max-h-[calc(100dvh-5rem)] overflow-auto flex mt-16 pt-5">
+          <main className="w-full h-full max-h-[calc(100dvh-5rem)] overflow-y-auto overflow-x-hidden flex mt-[6rem] pt-5">
             <div
               className={`${
                 active ? "w-0 lg:w-[20rem]" : "w-0 lg:w-[98px]"
               } transition-all ease-in-out duration-500`}
             ></div>
             <div className="min-h-screen w-full z-10 px-[2rem]">{children}</div>
-          </main>
+          </main> */}
+          <div
+            className={`${
+              active ? "" : ""
+            } w-full flex z-40 lg:z-20 sticky top-0 right-0 bg-milky mb-2`}
+          >
+            <nav className={`w-full mr-[2rem] ml-4`}>
+              <AdminNav
+                isOpen={isSidenavOpen}
+                toggleSidenav={toggleSidenav}
+                title={title}
+              />
+            </nav>
+          </div>
+          <main className="w-full overflow-x-hidden px-4">{children}</main>
         </div>
       </div>
     </>
