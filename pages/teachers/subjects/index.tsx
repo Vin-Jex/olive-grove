@@ -374,7 +374,7 @@ const Subjects: FC = () => {
                 </div>
               )}
               {courses.error ? (
-                <div className="w-full h-full flex items-center justify-center">
+                <div className="w-full flex items-center justify-center">
                   {typeof courses.error === "object" &&
                     (courses.error.status === 404 ? (
                       <>
@@ -391,7 +391,7 @@ const Subjects: FC = () => {
                 </div>
               ) : searchResults.length < 1 ? (
                 // 404 image
-                <div className="w-full h-full flex items-center justify-center">
+                <div className="w-full flex items-center justify-center">
                   <NotFoundError msg="No courses found" />
                 </div>
               ) : (
