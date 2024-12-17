@@ -58,7 +58,10 @@ const SubjectCard: React.FC<SubjectProps> = ({
             }`}
           >
             <b className='font-roboto font-medium block text-dark'>Topic:</b>
-            <span className='block'>{topic.slice(0, 11) + '...'} </span>
+            <span className='sm:block hidden'>
+              {topic.slice(0, 11) + '...'}{' '}
+            </span>
+            <span className='max-sm:block hidden'>{topic.slice(0, 7) + '...'} </span>
           </span>
           {assessments && (
             <span
@@ -84,7 +87,7 @@ const SubjectCard: React.FC<SubjectProps> = ({
             <span className='block'>Test</span>
           </span>
         )}
-        <span className='flex gap-1 text-base max-w-[88%] text-sm text-wrap text-subtext'>
+        <span className='flex gap-1  max-w-[88%] text-sm text-wrap text-subtext'>
           little introduction into the course (sort of summary)
         </span>
       </div>

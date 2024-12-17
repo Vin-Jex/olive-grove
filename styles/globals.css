@@ -37,8 +37,8 @@ body {
 }
 
 [data-testid='RadioButtonUncheckedIcon'] {
-  width: 1.3em !important;
-  height: 1.3rem !important;
+  width: 1.4em !important;
+  height: 1.4rem !important;
 }
 
 .css-hyxlzm {
@@ -47,7 +47,10 @@ body {
 
 [data-testid='RadioButtonCheckedIcon'] {
   left: 4px !important;
-  top: -2px !important;
+  right: -2px !important;
+  bottom: 1px !important;
+  top: -1px !important;
+  /* width: 0px !important; */
 }
 
 .custom-height {

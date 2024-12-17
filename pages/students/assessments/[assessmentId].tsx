@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import img from '@/public/image/tutor.png';
 import Link from 'next/link';
@@ -16,18 +16,87 @@ import {
 import { BackButton } from '../lectures/[subjectId]';
 import axiosInstance from '@/components/utils/axiosInstance';
 import { baseUrl } from '@/components/utils/baseURL';
+import { createNewSvg } from '@/components/Atoms/Svgs';
+
+const CustomWrongIcon = () => {
+  return (
+    <svg
+      className='h-4'
+      width='22'
+      height='22'
+      viewBox='0 0 22 22'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <rect
+        x='1'
+        y='1'
+        width='20'
+        height='20'
+        rx='10'
+        stroke='#FF3B3B'
+        strokeWidth='2'
+      />
+      <rect
+        x='3'
+        y='3'
+        width='16'
+        height='16'
+        rx='8'
+        fill='#FF3B3B'
+        fillOpacity='0.4'
+      />
+    </svg>
+  );
+};
+
+const CustomRightIcon = () => {
+  return (
+    <svg
+      className='h-4'
+      width='22'
+      height='22'
+      viewBox='0 0 22 22'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <rect
+        x='1'
+        y='1'
+        width='20'
+        height='20'
+        rx='10'
+        stroke='#32A8C4'
+        strokeWidth='2'
+      />
+      <rect x='4' y='4' width='14' height='14' rx='7' fill='#32A8C4' />
+      <rect
+        x='4'
+        y='4'
+        width='14'
+        height='14'
+        rx='7'
+        stroke='#32A8C4'
+        strokeWidth='2'
+      />
+    </svg>
+  );
+};
 
 const AssessmentDetailsPage = () => {
   const router = useRouter();
   const [startExercise, setStartExercise] = useState(false);
   const [answersReview, setAnswersReview] = useState(true);
   const [quizQuestions, setQuizQuestions] = useState<TQuestionCard[]>([]);
+  const [assessmentType, setAssessmentType] = useState('');
 
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [currentQxtIndex, setCurrentQxtIndex] = useState(() => {
     const index = localStorage.getItem('currentQxtIndex');
     return index ? index : '';
   });
+
+  const { assessmentId } = router.query;
 
   const [answeredQxts, setAnsweredQxts] = useState<Record<string, string>>(
     () => {
@@ -40,10 +109,23 @@ const AssessmentDetailsPage = () => {
   );
 
   useEffect(() => {
+    async function fetchQuestionType() {
+      try {
+        const response = await axiosInstance(`${baseUrl}/assessment/type`);
+        setAssessmentType(response.data);
+        console.log(response.data, 'question type');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchQuestionType();
+  }, []);
+
+  useEffect(() => {
     const fetchQuestions = async () => {
       try {
         const response = await axiosInstance(
-          `${baseUrl}/student/assessments/{assessmentId}`
+          `${baseUrl}/api/v2/assessments/${assessmentId}`
         );
         setQuizQuestions(response.data);
       } catch (err) {
@@ -51,7 +133,7 @@ const AssessmentDetailsPage = () => {
         console.error(err);
       }
     };
-  }, []);
+  }, [assessmentId]);
 
   // const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -141,8 +223,6 @@ const AssessmentDetailsPage = () => {
     setIsQuizComplete(false);
   };
 
-  const { assessmentId } = router.query;
-
   return (
     <StudentWrapper
       firstTitle='Assessment'
@@ -150,7 +230,7 @@ const AssessmentDetailsPage = () => {
       title={`Assessment`}
       metaTitle={`Olive Groove ~ ${assessmentId} assessment`}
     >
-      <div className='mx-11 font-roboto max-w-[60vw]'>
+      <div className='sm:mx-11 mx-5 font-roboto sm:max-w-[60vw]'>
         <div className='flex gap-4 items-center'>
           <div className='mt-4'>
             <BackButton />
@@ -165,7 +245,7 @@ const AssessmentDetailsPage = () => {
         </div>
         <div className=' py-8 px-6  rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
           <h2 className='text-3xl py-5'>Physics Class Exercise</h2>
-          <div className='flex justify-between'>
+          <div className='max-sm:flex-col max-sm:gap-3 flex justify-between'>
             <span>
               <strong>Topic:</strong> Fundamentals of Motion
             </span>
@@ -250,13 +330,14 @@ function QuestionCard({
   i,
   value,
   review,
-
+  // ref,
   setCurrentQxtIndex,
   setAnsweredQxts,
 }: {
   question: TQuestionCard;
   value: string;
   i: number;
+  // ref: React.RefObject<HTMLDivElement>;
   review: boolean;
 
   setCurrentQxtIndex: React.Dispatch<React.SetStateAction<string>>;
@@ -264,14 +345,21 @@ function QuestionCard({
 }) {
   return (
     <div className='bg-white p-10 rounded-2xl'>
-      <FormControl>
+      <FormControl style={{ width: '100%' }}>
         <FormLabel
-          style={{ fontSize: 18, fontWeight: 'normal', color: 'black', marginBlockEnd: 24 }}
+          style={{
+            fontSize: 18,
+            fontWeight: 'normal',
+            width: '100%',
+            color: 'black',
+            marginBlockEnd: 24,
+          }}
           id='demo-radio-buttons-group-label'
         >
           {i + 1}. {question.question}
         </FormLabel>
         <RadioGroup
+          style={{ width: '100%' }}
           value={value}
           onChange={(e) => {
             const selected = { [question.id.toString()]: e.target.value };
@@ -285,15 +373,19 @@ function QuestionCard({
           name='radio-buttons-group'
         >
           {question.options.map((option, i) => (
-            <div key={option + i} className='flex items-center !text-subtext'>
+            <div
+              key={option + i}
+              className='flex w-full items-center !text-subtext'
+            >
               <FormControlLabel
                 style={
                   review
                     ? option === question.correctAnswer
                       ? {
-                          height: '28px',
-                          width: 'fit-content',
+                          height: '32px',
+                          width: '50%',
                           paddingInlineEnd: 17,
+                          textOverflow: 'ellipsis',
                           paddingBlock: 2,
                           backgroundColor: '#cbf5ff',
                           marginLeft: -3,
@@ -304,8 +396,8 @@ function QuestionCard({
                       : option === question.yourAnswer &&
                         option !== question.correctAnswer
                       ? {
-                          height: '28px',
-                          width: 'fit-content',
+                          height: '32px',
+                          width: '50%',
                           paddingInlineEnd: 17,
                           paddingBlock: 2,
                           marginLeft: -3,
@@ -314,17 +406,21 @@ function QuestionCard({
                           borderRadius: 5,
                           marginBlock: 7,
                         }
-                      : {marginInline: -10}
-                    : {marginInline: -10}
+                      : { marginInline: -10 }
+                    : { marginInline: -10 }
                 }
                 value={option}
                 control={
                   <Radio
-                    // disabled={review}
-                    color={
-                      review && option === question.correctAnswer
-                        ? undefined
-                        : 'error'
+                    checkedIcon={
+                      option === question.correctAnswer ? (
+                        <CustomRightIcon />
+                      ) : option === question.yourAnswer &&
+                        option !== question.correctAnswer ? (
+                        <CustomWrongIcon />
+                      ) : (
+                        <></>
+                      )
                     }
                   />
                 }
@@ -485,10 +581,10 @@ const WrongCrossMark = () => {
       <path
         d='M1.13672 16.8645L9.00122 9L16.8657 16.8645M16.8657 1.1355L8.99972 9L1.13672 1.1355'
         stroke='#FF3B3B'
-        stroke-opacity='0.4'
-        stroke-width='2'
-        stroke-linecap='round'
-        stroke-linejoin='round'
+        strokeOpacity='0.4'
+        strokeWidth='2'
+        strokeLinecap='round'
+        strokeLinejoin='round'
       />
     </svg>
   );

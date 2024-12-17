@@ -108,19 +108,19 @@ const Dashboard = () => {
         <div className='p-4 sm:p-6 md:p-8 lg:p-12 space-y-11'>
           {/* start */}
           <div className='max-sm:space-y-5 xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
-            <div className='bg-primary w-full rounded-3xl font-roboto relative overflow-hidden h-full '>
+            <div className='bg-primary max-sm:mt-4 max-sm:min-h-[170px] w-full rounded-3xl font-roboto relative overflow-hidden h-full '>
               <div className='flex flex-col h-full justify-center my-auto px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
                 <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
                   Welcome back, {studentInfo.firstName}
                 </h3>
-                <span className='text-sm sm:text-base text-light/80 font-roboto'>
+                <span className='text-base text-light/80 font-roboto'>
                   You have 3 classes and 2 assignments to attend to.
                 </span>
                 <span className='text-sm sm:text-base text-light/80 font-roboto mt-1'>
                   Continue learning to become the best!
                 </span>
               </div>
-              <div className='w-[80px] sm:w-[130px] md:w-[160px] lg:w-[400px]  absolute right-0 bottom-0'>
+              <div className='w-[130px] md:w-[160px] lg:w-[400px]  absolute right-0 bottom-0'>
                 <Image
                   src={Img}
                   alt={`${Img} Pics`}
@@ -136,7 +136,7 @@ const Dashboard = () => {
           </div>
           {/* <div className="flex flex-col px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 md:py-6 lg:py-7 border-2 w-full rounded-3xl font-roboto gap-4 sm:gap-5 md:gap-6"> */}
 
-          <div className='grid  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 '>
+          <div className='grid  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 max-sm:gap-5 gap-10 '>
             <Card
               header='CGPA'
               main='3.42'
@@ -160,7 +160,7 @@ const Dashboard = () => {
           </div>
           {/* </div> */}
 
-          <div className='flex flex-col sm:flex-row w-full gap-10 sm:gap-6 md:gap-8 mt-4 rounded-xl sm:mt-6 md:mt-8 '>
+          <div className='flex flex-col sm:flex-row w-full max-sm:gap-5 gap-10 sm:gap-6 md:gap-8 mt-4 rounded-xl sm:mt-6 md:mt-8 '>
             <div className='w-full sm:w-1/2 shadow-card rounded-xl'>
               <ClassCard
                 modalOpen={handleModal}

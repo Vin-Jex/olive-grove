@@ -1,10 +1,10 @@
-import SubjectCard from "@/components/Molecules/Card/SubjectCard";
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import React, { useEffect, useState } from "react";
-import { subjectData } from "../lectures";
-import withAuth from "@/components/Molecules/WithAuth";
-import axiosInstance from "@/components/utils/axiosInstance";
-import { baseUrl } from "@/components/utils/baseURL";
+import SubjectCard from '@/components/Molecules/Card/SubjectCard';
+import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
+import React, { useEffect, useState } from 'react';
+import { subjectData } from '../lectures';
+import withAuth from '@/components/Molecules/WithAuth';
+import axiosInstance from '@/components/utils/axiosInstance';
+import { baseUrl } from '@/components/utils/baseURL';
 
 const Assessments = () => {
   const [currentAssessments, setCurrentAssessments] = useState(); //properly type this.
@@ -12,24 +12,26 @@ const Assessments = () => {
   useEffect(() => {
     const fethchAssessments = async () => {
       try {
-        const response = await axiosInstance(`${baseUrl}/student/assessments`);
+        const response = await axiosInstance(`${baseUrl}/api/v2/assessments`);
+        console.log(response.data, 'currentAssessment data');
         setCurrentAssessments(response.data);
       } catch (err) {
         console.error(err);
       }
     };
+    fethchAssessments();
   }, []);
   return (
     <StudentWrapper
-      firstTitle="Assessments"
-      remark="Manage, submit and access your assessments."
-      title="Assessments"
-      metaTitle="Olive Groove ~ Assessments"
+      firstTitle='Assessments'
+      remark='Manage, submit and access your assessments.'
+      title='Assessments'
+      metaTitle='Olive Groove ~ Assessments'
     >
-      <div className="p-6 sm:p-8 md:p-12 space-y-5">
+      <div className='p-6 sm:p-8 md:p-12 space-y-5'>
         {/* Title */}
 
-        <div className="grid max-md:place-items-center  md:grid-cols-2 lg:grid-cols-3  h-fit w-full gap-8 !mt-8">
+        <div className='grid max-md:place-items-center  md:grid-cols-2 lg:grid-cols-3  h-fit w-full gap-8 !mt-8'>
           {subjectData.map((subject, index) => (
             <SubjectCard
               key={index}
@@ -51,4 +53,4 @@ const Assessments = () => {
 };
 
 // export default Assessments;
-export default withAuth("Student", Assessments);
+export default withAuth('Student', Assessments);
