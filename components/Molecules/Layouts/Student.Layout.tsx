@@ -70,7 +70,7 @@ const StudentWrapper = ({
               active ? 'w-0 lg:w-[22rem]' : 'w-0 lg:w-[98px]'
             } transition-all ease-in-out duration-500`}
           ></div>
-          <nav className={`w-full mr-[3.9rem]`}>
+          <nav className={`w-full sm:mr-[3.9rem]`}>
             <AdminNav
               isOpen={isSidenavOpen}
               toggleSidenav={toggleSidenav}

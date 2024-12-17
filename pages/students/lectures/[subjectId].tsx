@@ -6,6 +6,7 @@ import {
   TChapter,
   TContentId,
   TCourse,
+  TErrorState,
   TLesson,
   TResponse,
   TSection,
@@ -28,6 +29,9 @@ import { AxiosError } from 'axios';
 import { TopicContextProvider } from '@/contexts/TopicContext';
 import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
 import { ChevronLeft, ConstructionOutlined } from '@mui/icons-material';
+import { Alert, Snackbar } from '@mui/material';
+import PageNotFound from '../PageNotFound';
+import EmailVerifyModal from '@/components/Molecules/Modal/EmailVerifyModal';
 
 function collectLinearContentIds(data: TCourse): TContentId {
   const contentIds = [] as TContentId;
@@ -39,17 +43,17 @@ function collectLinearContentIds(data: TCourse): TContentId {
       item.lessons.forEach((lesson: TLesson) => {
         lesson._id &&
           // contentIds.push({ id: lesson._id, isViewed: lesson.viewed! }); // Add lesson ID
-        lesson.sections.forEach((section: TSection) => {
-          section._id &&
-            contentIds.push({ id: section._id, isViewed: section.viewed! }); // Add section ID
-          section.subsections.forEach((subsection: TSubSection) => {
-            subsection._id &&
-              contentIds.push({
-                id: subsection._id,
-                isViewed: subsection.viewed!,
-              }); // Add subsection ID
+          lesson.sections.forEach((section: TSection) => {
+            section._id &&
+              contentIds.push({ id: section._id, isViewed: section.viewed! }); // Add section ID
+            section.subsections.forEach((subsection: TSubSection) => {
+              subsection._id &&
+                contentIds.push({
+                  id: subsection._id,
+                  isViewed: subsection.viewed!,
+                }); // Add subsection ID
+            });
           });
-        });
       });
     }
   }
@@ -62,29 +66,6 @@ function collectLinearContentIds(data: TCourse): TContentId {
 
   return contentIds;
 }
-
-// function findLessonTopicBelongs({topicId, currentTopic}: {topicId: string,}) {
-//   function traverseLessons(item: TChapter) {
-//     if (item.lessons) {
-//       // Traverse lessons
-//       item.lessons.forEach((lesson: TLesson, index: number) => {
-//         lesson._id &&
-//           // contentIds.push({ id: lesson._id, isViewed: lesson.viewed! }); // Add lesson ID
-//         lesson.sections.forEach((section: TSection) => {
-//           section._id &&
-//             contentIds.push({ id: section._id, isViewed: section.viewed! }); // Add section ID
-//           section.subsections.forEach((subsection: TSubSection) => {
-//             subsection._id &&
-//               contentIds.push({
-//                 id: subsection._id,
-//                 isViewed: subsection.viewed!,
-//               }); // Add subsection ID
-//           });
-//         });
-//       });
-//     }
-//   }
-// }
 
 const SubjectDetailsPage: FC = () => {
   const router = useRouter();
@@ -101,6 +82,8 @@ const SubjectDetailsPage: FC = () => {
     modalRequestState,
     modalMetadata: { type, mode, handleAction, handleDelete },
   } = useCourseContext();
+  const [errorOccured, setErrorOccured] = useState(false);
+  const [emailVerifyModal, setEmailVerifyMoadl] = useState(false);
 
   const { user } = useAuth();
   const userRole = user?.role;
@@ -128,8 +111,9 @@ const SubjectDetailsPage: FC = () => {
       if (error.status == 404) {
         dispatch({
           type: 'ERROR_FETCHING_COURSE',
-          payload: { status: 404, message: error.message },
+          payload: { status: 404, message: error.response.data.message },
         });
+        setErrorOccured(true);
         return;
       } else if (error.status == 401) {
         // * if the error status is 401, it means the user is not authenticated, hence redirect the user to the login page
@@ -141,9 +125,11 @@ const SubjectDetailsPage: FC = () => {
         type: 'ERROR_FETCHING_COURSE',
         payload: {
           status: error.status,
-          message: 'An error occurred while retrieving courses',
+          message: error.response.data.message,
         },
       });
+      if (error.status === 403) setEmailVerifyMoadl(true);
+      setErrorOccured(true);
     }
   }, []);
 
@@ -221,7 +207,7 @@ const SubjectDetailsPage: FC = () => {
                     <NotFoundError msg={course.error.message} />
                   </>
                 ) : (
-                  course.error.toString()
+                  <PageNotFound />
                 )}
               </div>
             ) : course.data ? (
@@ -304,8 +290,28 @@ const SubjectDetailsPage: FC = () => {
               <>Nothing...</>
             )}
           </div>
+
+          {course.error && (
+            <Snackbar
+              open={errorOccured}
+              onClose={() => setErrorOccured(false)}
+              autoHideDuration={6000}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              className='!z-[999]'
+            >
+              <Alert severity='info' onClose={() => setErrorOccured(false)}>
+                {(course.error as TErrorState).message.toString()}
+              </Alert>
+            </Snackbar>
+          )}
         </StudentWrapper>
       </TopicContextProvider>
+      {emailVerifyModal && (
+        <EmailVerifyModal
+          handleModalClose={() => setEmailVerifyMoadl(false)}
+          modalOpen={emailVerifyModal}
+        />
+      )}
     </>
   );
 };
@@ -322,7 +328,5 @@ export const BackButton = () => {
     </Button>
   );
 };
-
-// export default SubjectDetailsPage;
 
 export default withAuth('Student', SubjectDetailsPage);

@@ -46,6 +46,9 @@ const Profile = () => {
   const [isDisabledPassword, setIsDisabledPassword] = useState(true);
   const [profileImage, setProfileImage] = useState('');
   const [studentName, setStudentName] = useState('');
+  const [currentTab, setCurrentTab] = useState<'Account' | 'Security'>(
+    'Account'
+  );
   const { user } = useAuth();
   const role = user?.role;
   const [profileError, setProfileError] = useState('');
@@ -361,117 +364,163 @@ const Profile = () => {
         metaTitle='Olive Groove ~ Profile'
       >
         <div className='p-12 space-y-5'>
-          {/* Title */}
-          <div className='flex gap-4'>
-            <Image
-              src={!profileImage ? dummyImage : profileImage}
-              width={300}
-              height={300}
-              alt='Profile Pics'
-              className='shadow w-16 h-16 object-cover rounded-full'
-            />
-            <div className='flex flex-col justify-center'>
-              <span className='text-dark text-lg font-roboto leading-5'>
-                {studentName}
-              </span>
-              <span className='text-subtext'>Student</span>
-            </div>
-          </div>
-          <form
-            className='w-full flex justify-between !mt-20'
-            onKeyPress={handleKeyPress}
-            onSubmit={handleSignup}
-          >
-            <div className='w-full flex flex-col space-y-5 gap-y-5'>
-              <div className='flex w-full items-center justify-between'>
-                <div className='flex flex-col '>
-                  <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
-                    Account Information
-                  </span>
-                  <span className='text-md text-subtext font-roboto'>
-                    Edit your personal account information.
-                  </span>
-                </div>
-                <Button
-                  type='submit'
-                  size='sm'
-                  width='fit'
-                  className='!px-8'
-                  disabled={isDisabled}
+          <div className='w-full max-w-[10rem] flex gap-0'>
+            {['Account', 'Security'].map((slug, i) => (
+              <>
+                <div
+                  className={`px-7 py-2 font-medium text-sm border-b-2 cursor-pointer transition ${
+                    currentTab === slug
+                      ? 'border-primary border-opacity-70  bg-[#32A8C41A] text-primary'
+                      : ''
+                  }`}
+                  onClick={() => setCurrentTab(slug as 'Account' | 'Security')}
+                  key={i}
                 >
-                  Edit Personal Info
-                </Button>
-              </div>
-              {formError.internetError !== '' ? (
-                <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
-                  <Info sx={{ fontSize: '1.1rem' }} />
-                  {formError.internetError}
-                </span>
-              ) : formError.successError !== '' ? (
-                <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
-                  <Info sx={{ fontSize: '1.1rem' }} />
-                  {formError.successError}
-                </span>
-              ) : (
-                ''
-              )}
-              <div className='text-red-500'>{profileError && profileError}</div>
+                  {slug}
+                </div>
+              </>
+            ))}
+          </div>
+          {/* Title */}
 
-              <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
-                Personal Information
-              </span>
-              <div className='grid grid-cols-2 gap-8 w-full'>
-                <InputField
-                  name='firstName'
-                  type='text'
-                  placeholder='First Name *'
-                  value={formState.firstName}
-                  onChange={handleChange}
-                  required
-                  error={formError.firstNameError}
-                />
+          {currentTab === 'Account' && (
+            <form
+              className='w-full flex justify-between !mt-20 bg-white px-8 rounded-xl py-10 shadow-card'
+              onKeyPress={handleKeyPress}
+              onSubmit={handleSignup}
+            >
+              <div className='w-full flex flex-col space-y-5 gap-y-5'>
+                <Header profileImage={profileImage} studentName={studentName} />
+                <div className='flex w-full items-center justify-between'>
+                  <div className='flex flex-col '>
+                    <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
+                      Account Information
+                    </span>
+                    <span className='text-md text-subtext font-roboto'>
+                      Edit your personal account information.
+                    </span>
+                  </div>
+                  <Button
+                    type='submit'
+                    size='sm'
+                    width='fit'
+                    className='!px-8'
+                    disabled={isDisabled}
+                  >
+                    Edit Personal Info
+                  </Button>
+                </div>
+                {formError.internetError !== '' ? (
+                  <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
+                    <Info sx={{ fontSize: '1.1rem' }} />
+                    {formError.internetError}
+                  </span>
+                ) : formError.successError !== '' ? (
+                  <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
+                    <Info sx={{ fontSize: '1.1rem' }} />
+                    {formError.successError}
+                  </span>
+                ) : (
+                  ''
+                )}
+                <div className='text-red-500'>
+                  {profileError && profileError}
+                </div>
 
-                <InputField
-                  name='middleName'
-                  type='text'
-                  placeholder='Middle Name'
-                  value={formState.middleName}
-                  onChange={handleChange}
-                  error={''}
-                />
-                {inputFields.map((field) => (
+                <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
+                  Personal Information
+                </span>
+                <div className='grid grid-cols-2 gap-8 w-full'>
                   <InputField
-                    placeholder={field.label}
-                    key={field.name}
-                    name={field.name}
-                    type={field.type}
-                    value={formState[field.name as keyof typeof formState]}
+                    name='firstName'
+                    type='text'
+                    placeholder='First Name *'
+                    value={formState.firstName}
                     onChange={handleChange}
-                    required={field.required}
-                    error={field.error}
+                    required
+                    error={formError.firstNameError}
                   />
-                ))}
+
+                  <InputField
+                    name='middleName'
+                    type='text'
+                    placeholder='Middle Name'
+                    value={formState.middleName}
+                    onChange={handleChange}
+                    error={''}
+                  />
+                  {inputFields.map((field) => (
+                    <InputField
+                      placeholder={field.label}
+                      key={field.name}
+                      name={field.name}
+                      type={field.type}
+                      value={formState[field.name as keyof typeof formState]}
+                      onChange={handleChange}
+                      required={field.required}
+                      error={field.error}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          </form>
-          <form
-            className='w-full flex justify-between !mt-20 items-start'
-            // onKeyPress={handleKeyPress}
-            onSubmit={handlePasswordChange}
-          >
-            <div className='w-full space-y-5 gap-y-5'>
-              <div className='w-full flex items-center justify-between'>
-                <div className='flex flex-col my-7'>
-                  <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
-                    Security Information
+            </form>
+          )}
+          {currentTab === 'Security' && (
+            <form
+              className='w-full flex justify-between !mt-20 items-start bg-white px-8 rounded-xl py-10 shadow-card'
+              // onKeyPress={handleKeyPress}
+              onSubmit={handlePasswordChange}
+            >
+              <div className='w-full space-y-5 gap-y-5'>
+                <Header profileImage={profileImage} studentName={studentName} />
+                <div className='w-full flex items-center justify-between'>
+                  <div className='flex flex-col my-7'>
+                    <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
+                      Security Information
+                    </span>
+                    <span className='text-md text-subtext font-roboto'>
+                      Edit your personal security information.
+                    </span>
+                  </div>
+                </div>
+                {formError.passwordError && (
+                  <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600 capitalize -mb-3'>
+                    <Info sx={{ fontSize: '1.1rem' }} />
+                    {formError.passwordError}
                   </span>
-                  <span className='text-md text-subtext font-roboto'>
-                    Edit your personal security information.
-                  </span>
+                )}
+                <div className='flex flex-col max-w-[30rem] items-center gap-5'>
+                  <Input
+                    type='password'
+                    name='password'
+                    value={formState.password}
+                    onChange={handleChange}
+                    placeholder='Password *'
+                    // required
+                    className='input'
+                    showIcon={VisibilityOutlined}
+                    hideIcon={VisibilityOffOutlined}
+                  />
+                  {formState.password.length > 0 && (
+                    <Button size='xs'>Generate OTP</Button>
+                  )}
+                  <Input
+                    type='number'
+                    name='otp'
+                    value={formState.otp}
+                    onChange={handleChange}
+                    placeholder='OTP'
+                    //required
+                    className='input'
+                  />
+                </div>
+                <div className='font-roboto text-subtext'>
+                  To change your password,{' '}
+                  <span className='text-primary'>Request OTP</span>
                 </div>
                 <Button
                   type='submit'
-                  size='sm'
+                  size='xs'
                   width='fit'
                   className='!px-8'
                   disabled={isDisabledPassword}
@@ -479,45 +528,38 @@ const Profile = () => {
                   Edit password
                 </Button>
               </div>
-              {formError.passwordError && (
-                <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600 capitalize -mb-3'>
-                  <Info sx={{ fontSize: '1.1rem' }} />
-                  {formError.passwordError}
-                </span>
-              )}
-              <div className='flex items-center gap-7'>
-                <Input
-                  type='password'
-                  name='password'
-                  value={formState.password}
-                  onChange={handleChange}
-                  placeholder='Password *'
-                  // required
-                  className='input'
-                  showIcon={VisibilityOutlined}
-                  hideIcon={VisibilityOffOutlined}
-                />
-                {formState.password.length > 0 && (
-                  <Button size='xs'>Generate OTP</Button>
-                )}
-                <Input
-                  type='number'
-                  name='otp'
-                  value={formState.otp}
-                  onChange={handleChange}
-                  placeholder='OTP'
-                  //required
-                  className='input'
-                />
-              </div>
-            </div>
-          </form>
+            </form>
+          )}
         </div>
       </StudentWrapper>
     </>
   );
 };
 
+interface HeaderProps {
+  profileImage: string;
+  studentName: string;
+}
+
+function Header({ profileImage, studentName }: HeaderProps) {
+  return (
+    <div className='flex gap-4'>
+      <Image
+        src={!profileImage ? dummyImage : profileImage}
+        width={300}
+        height={300}
+        alt='Profile Pics'
+        className='shadow w-16 h-16 object-cover rounded-full'
+      />
+      <div className='flex flex-col justify-center'>
+        <span className='text-dark text-lg font-roboto leading-5'>
+          {studentName}
+        </span>
+        <span className='text-subtext'>Student</span>
+      </div>
+    </div>
+  );
+}
 // export default Profile;
 
 export default withAuth('Student', Profile);

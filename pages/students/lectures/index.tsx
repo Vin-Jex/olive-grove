@@ -202,10 +202,10 @@ const Classes = () => {
         remark='Manage and get updates on your courses'
         metaTitle='Olive Groove ~ Classes'
       >
-        <div className='p-12 space-y-5'>
+        <div className='sm:p-12 p-5 space-y-5'>
           {/* Title */}
 
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center max-sm:gap-5 justify-between'>
             <div className='relative'>
               <SearchLayout value={searched as string} onChange={setSearched} />
 
@@ -247,7 +247,7 @@ const Classes = () => {
             </div>
             <Select
               name=''
-              className='max-w-[120px]'
+              className='max-w-[120px] max-sm:max-w-[180px]'
               onChange={() => {}}
               options={['ascending', 'latest']}
               placeholder='filter'

@@ -67,19 +67,13 @@ const WarningSVG = () => {
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
     >
-      <rect
-        width='130'
-        height='130'
-        rx='65'
-        fill='#FF3B3B'
-        fill-opacity='0.2'
-      />
+      <rect width='130' height='130' rx='65' fill='#FF3B3B' fillOpacity='0.2' />
       <path
         d='M64.9993 34.8462V75.0513M65.2506 95.1539V95.6565H64.748V95.1539H65.2506Z'
         stroke='#FF3B3B'
-        stroke-width='6'
-        stroke-linecap='round'
-        stroke-linejoin='round'
+        strokeWidth='6'
+        strokeLinecap='round'
+        strokeLinejoin='round'
       />
     </svg>
   );
