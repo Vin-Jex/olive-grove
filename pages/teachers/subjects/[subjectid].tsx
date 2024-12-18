@@ -219,7 +219,7 @@ const Subject: FC = () => {
       modalMetadata: {
         formData: {
           title: course.data?.title || "",
-          classId: course.data?.classId || "",
+          classId: (course.data?.classId as any) || "",
           description: course.data?.description || "",
           courseCover: course.data?.courseCover || "",
         },

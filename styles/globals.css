@@ -60,6 +60,46 @@ body {
   @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* For Firefox */
+}
+.radio {
+  position: relative;
+}
+
+.radio input[type="radio"] {
+  display: none; /* Hide the default radio button */
+}
+
+.radio .checkmark {
+  width: 20px; /* Size of the radio button */
+  height: 20px;
+  border: 2px solid gray; /* Gray border for unselected */
+  border-radius: 50%; /* Circular shape */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.radio input:checked + .checkmark {
+  border-color: transparent; /* Remove border when selected */
+  background-color: #00a7d9; /* Blue background for selected */
+  color: white !important; /* White color for the checkmark */
+}
+
+.radio input:checked + .checkmark::before {
+  content: "✔"; /* Checkmark symbol */
+  font-size: 12px;
+  color: white !important;
+}
+
 .textarea {
   @apply !rounded-lg border !border-[#1E1E1E60];
 }

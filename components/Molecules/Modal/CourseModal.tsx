@@ -37,13 +37,15 @@ export default function CourseModal({
   const [fileName, setFileName] = useState("");
   const [topicVideoType, setTopicVideoType] = useState<
     "topicVideo" | "youtubeVideo"
-  >("topicVideo");
+  >(formState.topicVideo ? "topicVideo" : "youtubeVideo");
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [is_loading, setIsLoading] = useState({
     saving: false,
     deleting: false,
   });
-  const [topicYouTubeUrl, setTopicYouTubeUrl] = useState("");
+  const [topicYouTubeUrl, setTopicYouTubeUrl] = useState(
+    formState.youtubeVideo
+  );
 
   const textEditorValue = ["topic", "lesson"].includes(type)
     ? "topicNote"

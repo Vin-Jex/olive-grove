@@ -381,7 +381,7 @@ export const TopicDetails: FC<{
             </Button>
           </div>
           {/* QA session */}
-          <CourseQA />
+          {/* <CourseQA /> */}
         </div>
       ) : (
         <>
