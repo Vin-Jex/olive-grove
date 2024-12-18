@@ -1,15 +1,26 @@
-import { ChangeEvent, FC } from "react";
+import {
+  ChangeEvent,
+  DetailedHTMLProps,
+  FC,
+  SelectHTMLAttributes,
+} from "react";
 import { TSelectOptions } from "../utils/types";
 
-const Select: FC<{
-  options: TSelectOptions;
-  name: string;
-  required: boolean;
-  placeholder: string;
-  reduceWidth?: boolean;
-  value?: string;
-  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-}> = ({
+const Select: FC<
+  {
+    options: TSelectOptions;
+    name: string;
+    required?: boolean;
+    placeholder?: string;
+    reduceWidth?: boolean;
+    value?: string;
+    onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+    inputSize?: "xs" | "sm";
+  } & DetailedHTMLProps<
+    SelectHTMLAttributes<HTMLSelectElement>,
+    HTMLSelectElement
+  >
+> = ({
   options,
   name,
   required,
@@ -17,6 +28,7 @@ const Select: FC<{
   placeholder,
   reduceWidth,
   value,
+  inputSize: size,
 }) => {
   return (
     <select
@@ -25,11 +37,13 @@ const Select: FC<{
       onChange={(e) => onChange(e)}
       placeholder={placeholder}
       {...(value ? { value: value } : {})}
-      className={`input px-2 sm:px-2.5 py-3.5 !rounded-lg capitalize ${
+      className={`input px-2 sm:px-2.5 ${
+        size === "xs" ? "!py-0" : size === "sm" ? "!py-2.5" : "!py-3.5"
+      } !rounded-lg capitalize ${
         reduceWidth ? "md:w-[200px]" : ""
       } h-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext`}
     >
-      <option value={undefined}>{placeholder}</option>
+      {placeholder && <option value={undefined}>{placeholder}</option>}
       {options.map((each_option, index) => (
         <option
           key={index}

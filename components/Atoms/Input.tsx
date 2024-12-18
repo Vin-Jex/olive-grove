@@ -42,6 +42,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   inputWidth?: number | string;
   status?: string;
   type?: InputType;
+  inputSize?: "xs" | "sm";
 }
 
 const Input: React.FC<InputProps> = ({
@@ -53,6 +54,7 @@ const Input: React.FC<InputProps> = ({
   showIcon: ShowIcon, // Icon (HTML Element)
   status, // Accepts warning, error, success strings only
   type: Type, // Input Type
+  inputSize,
   ...inputProps // Other properties
 }) => {
   // const [isValid, setIsValid] = useState<boolean | undefined>(undefined);

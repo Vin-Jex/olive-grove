@@ -8,7 +8,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      screens: { xs: "480px", "2xl": "19200px", "3xl": "2500px", },
+      screens: { xs: "480px", "2xl": "19200px", "3xl": "2500px" },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -26,6 +26,7 @@ const config: Config = {
         light: "#FFF",
         dark: "#1E1E1E",
         greyed: "#1E1E1E80",
+        milky: "#FAFAFA",
       },
       borderColor: {
         primary: "#32A8C4",
