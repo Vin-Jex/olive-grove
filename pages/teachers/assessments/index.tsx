@@ -767,8 +767,8 @@ const Assessments = () => {
                 </div>
               ))}
             </div>
-            {/* 
-            {fetchAssessmentsState.loading ? (
+
+            {/* {fetchAssessmentsState.loading ? (
               <div className="h-full w-full">
                 <Loader />
               </div>

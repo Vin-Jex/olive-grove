@@ -236,6 +236,8 @@ export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
 
 export type TAssessmnentQuestionProp = {};
 
+export type TAssessmnentQuestion = { _id: string };
+
 export type TAssessmentQuestionType =
   | "multiple_choice"
   | "paragraph"
