@@ -8,6 +8,9 @@ import React, { FC, useState } from "react";
 import Select from "../Select";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 import Input from "../Input";
+import ParagrahQuestion from "./ParagrahQuestion";
+import FileUploadQuestion from "./FileUploadQuestion";
+import { useAssessmentQuestionsContext } from "@/contexts/AssessmentQuestionsContext";
 
 const question_type_options: TSelectOptions = [
   { value: "multiple_choice", display_value: "Multiple Choice" },
@@ -15,6 +18,7 @@ const question_type_options: TSelectOptions = [
   { value: "file_upload", display_value: "File Upload" },
 ];
 const AssessmentQuestion: FC<{ question_id: string }> = ({ question_id }) => {
+  const { dispatch } = useAssessmentQuestionsContext();
   const [formState, setFormState] = useState<{
     question: string;
     questionType: TAssessmentQuestionType;
@@ -51,6 +55,11 @@ const AssessmentQuestion: FC<{ question_id: string }> = ({ question_id }) => {
     handleInputChange("attachment", file, setFormState);
   };
 
+  const handleDeleteQuestion = () => {
+    // * Delete the question from the assessment questions state
+    dispatch({ type: "REMOVE_QUESTION", payload: question_id });
+  };
+
   return (
     <div className="p-6 rounded-xl flex flex-col gap-4 text-subtext bg-white border-t-2 border-primary">
       {/* Question  */}
@@ -64,7 +73,10 @@ const AssessmentQuestion: FC<{ question_id: string }> = ({ question_id }) => {
         {/* Question config */}
         <div className="flex gap-4 items-end text-subtext text-lg">
           {/* Delete Icon */}
-          <div className="cursor-pointer transition hover:text-red-400">
+          <div
+            onClick={handleDeleteQuestion}
+            className="cursor-pointer transition hover:text-red-400"
+          >
             <i className="fas fa-trash"></i>
           </div>
           {/* Upload Icon */}
@@ -132,8 +144,10 @@ const AssessmentQuestion: FC<{ question_id: string }> = ({ question_id }) => {
       <div className="w-full">
         {formState.questionType === "multiple_choice" ? (
           <MultipleChoiceQuestion assessment_id="" question_id={question_id} />
+        ) : formState.questionType === "paragraph" ? (
+          <ParagrahQuestion />
         ) : (
-          "any"
+          <FileUploadQuestion />
         )}
       </div>
     </div>

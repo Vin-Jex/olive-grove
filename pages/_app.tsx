@@ -1,3 +1,4 @@
+import AssessmentQuestionsContextProvider from "@/contexts/AssessmentQuestionsContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import CourseContextProvider from "@/contexts/CourseContext";
 import { SidebarContextProvider } from "@/contexts/SidebarContext";
@@ -15,11 +16,13 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <main className={`${roboto.variable} bg-[#FAFAFA]`}>
       <AuthProvider>
-        <CourseContextProvider>
-          <SidebarContextProvider>
-            <Component {...pageProps} />
-          </SidebarContextProvider>
-        </CourseContextProvider>
+        <AssessmentQuestionsContextProvider>
+          <CourseContextProvider>
+            <SidebarContextProvider>
+              <Component {...pageProps} />
+            </SidebarContextProvider>
+          </CourseContextProvider>
+        </AssessmentQuestionsContextProvider>
       </AuthProvider>
     </main>
   );
