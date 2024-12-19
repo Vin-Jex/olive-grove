@@ -13,7 +13,7 @@ import {
   useState,
 } from "react";
 
-type courseReducerActionTypes =
+type TCourseReducerAction =
   | "FETCHING_COURSE"
   | "ERROR_FETCHING_COURSE"
   | "ADD_COURSE"
@@ -45,7 +45,7 @@ type TOpenModalParam = {
   modalMetadata: TModalMetadata;
 };
 export type TCourseDispatch = React.Dispatch<{
-  type: courseReducerActionTypes;
+  type: TCourseReducerAction;
   payload?: any;
 }>;
 
@@ -68,7 +68,7 @@ const CourseContext = createContext<TCourseContext | undefined>(undefined);
 
 const courseReducer: Reducer<
   TFetchState<TCourse | undefined>,
-  { type: courseReducerActionTypes; payload?: any }
+  { type: TCourseReducerAction; payload?: any }
 > = (state, action) => {
   if (action.type === "ADD_COURSE") {
     return {

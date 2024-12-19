@@ -7,9 +7,6 @@ import AssessmentResponses from "@/components/Atoms/Assessment/AssessmentRespons
 import { useRouter } from "next/router";
 import { useAuth } from "@/contexts/AuthContext";
 import Button from "@/components/Atoms/Button";
-import axiosInstance from "@/components/utils/axiosInstance";
-import { useParams } from "next/navigation";
-import useAjaxRequest from "use-ajax-request";
 import Loader from "@/components/Atoms/Loader";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import ServerError from "@/components/Atoms/ServerError";

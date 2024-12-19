@@ -151,9 +151,9 @@ export type TAcademicWeek = {
 export type TAssessment<T extends "post" | "get"> = {
   _id?: string;
   subject: T extends "post" ? string : TCourse;
-  type: T extends "post" ? string : TAssessmentType;
+  assessmentType: T extends "post" ? string : TAssessmentType;
   description: string;
-  timeline: string | Date;
+  dueDate: string | Date;
   teacher: T extends "post" ? string : TTeacher;
   academicWeek: T extends "post" ? string : TAcademicWeek;
   class: T extends "post" ? string : TClass;
@@ -235,6 +235,8 @@ export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
 };
 
 export type TAssessmnentQuestionProp = {};
+
+export type TAssessmnentQuestion = { _id: string };
 
 export type TAssessmentQuestionType =
   | "multiple_choice"

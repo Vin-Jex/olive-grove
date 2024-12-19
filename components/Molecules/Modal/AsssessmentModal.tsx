@@ -120,7 +120,7 @@ const AsssessmentModal: FC<
           <Select
             name="type"
             onChange={handleChange}
-            value={(formState.type as string).toLowerCase()}
+            value={(formState.assessmentType as string).toLowerCase()}
             options={assessmentTypes}
             placeholder="Assessment type"
             required
@@ -148,7 +148,7 @@ const AsssessmentModal: FC<
             type="datetime-local"
             name="timeline"
             value={
-              new Date(formState.timeline || Date.now())
+              new Date(formState.dueDate || Date.now())
                 ?.toISOString()
                 ?.slice(
                   0,

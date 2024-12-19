@@ -72,9 +72,9 @@ const Assessments = () => {
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [formState, setFormState] = useState<TAssessment<"post">>({
     subject: "",
-    type: "",
+    assessmentType: "",
     description: "",
-    timeline: "",
+    dueDate: "",
     teacher: "",
     academicWeek: "",
     _id: "",
@@ -129,9 +129,9 @@ const Assessments = () => {
   const clearFormState = () => {
     setFormState({
       subject: "",
-      type: "",
+      assessmentType: "",
       description: "",
-      timeline: "",
+      dueDate: "",
       teacher: "",
       academicWeek: "",
       _id: "",
@@ -196,8 +196,8 @@ const Assessments = () => {
         class: fetchClassesState.data?.find(
           (class_) => class_._id === data.class
         )!,
-        type: fetchAssessmentTypesState.data?.find(
-          (type) => type._id === data.type
+        assessmentType: fetchAssessmentTypesState.data?.find(
+          (type) => type._id === data.assessmentType
         )!,
         teacher: { name: "Dummy" } as TTeacher,
       };
@@ -436,9 +436,9 @@ const Assessments = () => {
         form_data.append("teacher", user?.id || "");
         form_data.append("course", formState.subject);
         form_data.append("class", formState.class);
-        form_data.append("assessmentType", formState.type);
+        form_data.append("assessmentType", formState.assessmentType);
         form_data.append("academicWeek", formState.academicWeek);
-        form_data.append("dueDate", formState.timeline as string);
+        form_data.append("dueDate", formState.dueDate as string);
         form_data.append("description", formState.description);
         form_data.append("active", true as any);
 
@@ -729,7 +729,7 @@ const Assessments = () => {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
               {demo_assessments.map((assessment, index) => (
                 <div key={index} className="mt-4 w-full space-y-2">
                   <TeacherCard
@@ -766,8 +766,8 @@ const Assessments = () => {
                   />
                 </div>
               ))}
-            </div>
-            {/* 
+            </div> */}
+
             {fetchAssessmentsState.loading ? (
               <div className="h-full w-full">
                 <Loader />
@@ -794,9 +794,9 @@ const Assessments = () => {
                         type="assessment"
                         teacher={assessment.teacher}
                         assessmentType={
-                          (assessment.type as TAssessmentType).name
+                          (assessment.assessmentType as TAssessmentType).name
                         }
-                        timeline={assessment.timeline}
+                        timeline={assessment.dueDate}
                         assessmentClass={(assessment.class as TClass).name}
                         subject={(assessment.subject as TCourse)?.title || ""}
                         actionClick={() =>
@@ -805,7 +805,7 @@ const Assessments = () => {
                             academicWeek: assessment.academicWeek._id!,
                             class: assessment.class._id!,
                             subject: assessment.subject._id!,
-                            type: assessment.type._id!,
+                            assessmentType: assessment.assessmentType._id!,
                             teacher: assessment.teacher._id!,
                           })
                         }
@@ -824,7 +824,7 @@ const Assessments = () => {
                   ))}
                 </div>
               </>
-            )} */}
+            )}
           </>
         </div>
       </TeachersWrapper>
