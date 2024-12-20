@@ -31,6 +31,9 @@ const config: Config = {
       borderColor: {
         primary: "#32A8C4",
       },
+      fontSize: {
+        "2xs": "0.65rem",
+      },
     },
   },
   plugins: [],
