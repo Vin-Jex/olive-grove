@@ -53,7 +53,7 @@ const StudentWrapper = ({
       />
 
       <aside
-        className={`absolute left-0 top-0 h-screen w-[16rem] z-30 !bg-white lg:block transition-transform transform ${
+        className={`absolute left-0 top-0 h-screen overflow-auto w-[16rem] z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
       >
