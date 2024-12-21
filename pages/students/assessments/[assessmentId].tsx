@@ -1,8 +1,9 @@
 import { useRouter } from 'next/router';
 import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import React, { useCallback, useEffect, useState } from 'react';
-import Image from 'next/image';
+import React, { FormEvent, useCallback, useEffect, useState } from 'react';
+import Image, { StaticImageData } from 'next/image';
 import img from '@/public/image/tutor.png';
+import TestImage from '@/images/test-assessment-testing.png';
 import Link from 'next/link';
 import Button from '@/components/Atoms/Button';
 import withAuth from '@/components/Molecules/WithAuth';
@@ -16,7 +17,8 @@ import {
 import { BackButton } from '../lectures/[subjectId]';
 import axiosInstance from '@/components/utils/axiosInstance';
 import { baseUrl } from '@/components/utils/baseURL';
-import { createNewSvg } from '@/components/Atoms/Svgs';
+import Input from '@/components/Atoms/Input';
+import Loader from '@/components/Atoms/Loader';
 
 const CustomWrongIcon = () => {
   return (
@@ -50,10 +52,14 @@ const CustomWrongIcon = () => {
   );
 };
 
-const CustomRightIcon = () => {
+enum QuestionType {
+  MULTIPLE_CHOICE = 'multiple_choice',
+}
+
+const CustomRightIcon = (props: { className?: string }) => {
   return (
     <svg
-      className='h-4'
+      className={`${props.className} h-4`}
       width='22'
       height='22'
       viewBox='0 0 22 22'
@@ -83,12 +89,97 @@ const CustomRightIcon = () => {
   );
 };
 
+type TQuestionCard = {
+  _id: string;
+  teacher: {
+    _id: string;
+    name: string;
+    email: string;
+    tel: number;
+    address: string;
+    password: string;
+    profileImage: string;
+    role: string;
+    teacherID: string;
+    __v: number;
+    archivedAt: string | null;
+    deletedAt: string | null;
+    isActive: boolean;
+    isArchived: boolean;
+    isDeleted: boolean;
+    isVerified: boolean;
+    lastLoginAt: string;
+    updatedAt: string;
+  };
+  class: {
+    _id: string;
+    name: string;
+    category: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  academicWeek: {
+    _id: string;
+    startDate: string;
+    endDate: string;
+    weekNumber: number;
+    academicYear: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  course: {
+    startDate: string;
+    endDate: string | null;
+    isActive: boolean;
+    _id: string;
+    classId: string;
+    title: string;
+    courseCover: string;
+    chapters: string[];
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  assessmentType: {
+    _id: string;
+    name: string;
+    __v: number;
+  };
+  description: string;
+  dueDate: string;
+  active: boolean;
+  questions: {
+    fileRequirements: {
+      maxSizeMB: number;
+      allowedExtensions: string[];
+    };
+    questionText: string;
+    questionType: string;
+    options: string[];
+    yourAnswer: string;
+    correctAnswer: string;
+    maxMarks: number;
+    _id: string;
+  }[];
+  submissions: any[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
 const AssessmentDetailsPage = () => {
   const router = useRouter();
   const [startExercise, setStartExercise] = useState(false);
-  const [answersReview, setAnswersReview] = useState(true);
-  const [quizQuestions, setQuizQuestions] = useState<TQuestionCard[]>([]);
-  const [assessmentType, setAssessmentType] = useState('');
+  const [answersReview, setAnswersReview] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState<TQuestionCard | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  // const [assessmentType, setAssessmentType] = useState('');
 
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [currentQxtIndex, setCurrentQxtIndex] = useState(() => {
@@ -107,32 +198,27 @@ const AssessmentDetailsPage = () => {
         : {};
     }
   );
-
-  useEffect(() => {
-    async function fetchQuestionType() {
-      try {
-        const response = await axiosInstance(`${baseUrl}/assessment/type`);
-        setAssessmentType(response.data);
-        console.log(response.data, 'question type');
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchQuestionType();
-  }, []);
+  const [fileUploadAnswers, setFileUploadAnswers] = useState<Record<
+    string,
+    Blob | File
+  > | null>(null);
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
+        setIsLoading(true);
         const response = await axiosInstance(
           `${baseUrl}/api/v2/assessments/${assessmentId}`
         );
-        setQuizQuestions(response.data);
+        setQuizQuestions(response.data.data);
       } catch (err) {
         //error fetching quiz questions
         console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     };
+    fetchQuestions();
   }, [assessmentId]);
 
   // const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -153,12 +239,29 @@ const AssessmentDetailsPage = () => {
     };
   }, []);
 
-  async function handleSubmit() {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    const formData = new FormData();
     // Check if all questions are answered
-    if (Object.keys(answeredQxts).length !== questions.length) {
+    if (!fileUploadAnswers) {
       alert('Please answer all questions before submitting');
       return;
     }
+    if (
+      Object.keys(answeredQxts).length +
+        Object.keys(fileUploadAnswers).length !==
+        quizQuestions?.questions?.length
+    ) {
+      alert('Please answer all questions before submitting');
+      return;
+    }
+
+    Object.entries(answeredQxts).forEach(([qxtId, answer]) => {
+      formData.append(qxtId, answer);
+    });
+
+    Object.entries(fileUploadAnswers).forEach(([qxtId, file]) => {
+      formData.append(qxtId, file);
+    });
 
     //* Functionality to submit the answers to the server
 
@@ -230,53 +333,70 @@ const AssessmentDetailsPage = () => {
       title={`Assessment`}
       metaTitle={`Olive Groove ~ ${assessmentId} assessment`}
     >
-      <div className='sm:mx-11 mx-5 font-roboto sm:max-w-[60vw]'>
-        <div className='flex gap-4 items-center'>
-          <div className='mt-4'>
-            <BackButton />
+      {isLoading && <Loader />}
+      {isQuizComplete && <SubmissionCard />}
+      {quizQuestions && !isQuizComplete && (
+        <div className='sm:mx-11 mx-5 py-4 font-roboto sm:max-w-[60vw]'>
+          <div className='flex gap-4 items-center'>
+            <div className='mt-4'>
+              <BackButton />
+            </div>
+            {/* bread crumb */}
+            <div className='flex py-7 mt-4 items-center space-x-2'>
+              <Link href='/students/assessments'>
+                <span className='text-gray pr-2'>Assessments </span>
+              </Link>{' '}
+              /{' '}
+              <span className='text-primary'>
+                {quizQuestions?.course.title}
+              </span>
+            </div>
           </div>
-          {/* bread crumb */}
-          <div className='flex py-7 mt-4 items-center space-x-2'>
-            <Link href='/students/assessments'>
-              <span className='text-gray pr-2'>Assessments </span>
-            </Link>{' '}
-            / <span className='text-primary'>{assessmentId}</span>
+          <div className=' py-8 px-6  rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
+            <h2 className='text-3xl py-5'>
+              {quizQuestions?.course.title} Class Exercise
+            </h2>
+            <div className='max-sm:flex-col max-sm:gap-3 flex justify-between'>
+              <span>
+                <strong>Topic:</strong> {quizQuestions?.course.chapters[0]}
+              </span>
+              <span>
+                <strong>Due:</strong>{' '}
+                {new Date(quizQuestions?.dueDate)
+                  .toLocaleDateString([], {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                  })
+                  .replaceAll('/', '-')}
+                ,{' '}
+                {new Date(quizQuestions?.dueDate).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </span>
+            </div>
           </div>
-        </div>
-        <div className=' py-8 px-6  rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
-          <h2 className='text-3xl py-5'>Physics Class Exercise</h2>
-          <div className='max-sm:flex-col max-sm:gap-3 flex justify-between'>
-            <span>
-              <strong>Topic:</strong> Fundamentals of Motion
-            </span>
-            <span>
-              <strong>Due:</strong> 20-11-2024, 9:30AM
-            </span>
-          </div>
-        </div>
-        {!startExercise ? (
-          <div className=' px-5'>
-            <p className='py-6'>
-              This midterm test is a multiple-choice type of exam made up of 5
-              questions with options. Ensure to attempt all questions and finish
-              before the time is up. You have 25minutes.
-            </p>
-            <p className='py-6'>Click on the button below to begin.</p>
-            <Button
-              onClick={() => setStartExercise((c) => !c)}
-              color='blue'
-              size='xs'
-            >
-              Start Exercise
-            </Button>
-          </div>
-        ) : (
-          <div className='mt-10'>
-            <div className='py-5 flex flex-col space-y-10'>
-              {answersReview &&
+          {!startExercise ? (
+            <div className=' px-5'>
+              <p className='py-6'>{quizQuestions?.description}</p>
+              <p className='py-6'>Click on the button below to begin.</p>
+              <Button
+                onClick={() => setStartExercise((c) => !c)}
+                color='blue'
+                size='xs'
+              >
+                Start Exercise
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className='mt-10'>
+              <div className='py-5 flex flex-col space-y-10'>
+                {/* {answersReview &&
                 markedQuestions.map((question, i) => (
                   <QuestionCard
                     review={true}
+                    saveUpload={setFileUploadAnswers}
                     value={question.yourAnswer!}
                     setCurrentQxtIndex={setCurrentQxtIndex}
                     setAnsweredQxts={setAnsweredQxts}
@@ -284,46 +404,36 @@ const AssessmentDetailsPage = () => {
                     i={i}
                     question={question}
                   />
-                ))}
+                ))} */}
 
-              {!answersReview &&
-                questions.map((question, i) => (
-                  <QuestionCard
-                    review={false}
-                    value={answeredQxts[question.id.toString()] ?? ''}
-                    setCurrentQxtIndex={setCurrentQxtIndex}
-                    setAnsweredQxts={setAnsweredQxts}
-                    key={i}
-                    i={i}
-                    question={question}
-                  />
-                ))}
-            </div>
-            {!answersReview && (
-              <Button
-                onClick={handleSubmit}
-                size='sm'
-                className='text-left my-4 mb-7'
-              >
-                Submit
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
+                {!answersReview &&
+                  quizQuestions?.questions?.map((question, i) => (
+                    <QuestionCard
+                      saveUpload={setFileUploadAnswers}
+                      review={false}
+                      value={answeredQxts[question._id.toString()] ?? null}
+                      setCurrentQxtIndex={setCurrentQxtIndex}
+                      setAnsweredQxts={setAnsweredQxts}
+                      key={i}
+                      i={i}
+                      question={question}
+                    />
+                  ))}
+              </div>
+              {!answersReview && (
+                <Button type='submit' size='sm' className='text-left my-4 mb-7'>
+                  Submit
+                </Button>
+              )}
+            </form>
+          )}
+        </div>
+      )}
       {/* <SubmissionCard /> */}
     </StudentWrapper>
   );
 };
 //* This is me assuming the strucure of the returned assessment object
-type TQuestionCard = {
-  id: number;
-  question: string;
-  options: string[];
-  yourAnswer?: string;
-  correctAnswer?: string;
-  answer?: string;
-};
 
 function QuestionCard({
   question,
@@ -331,15 +441,18 @@ function QuestionCard({
   value,
   review,
   // ref,
+  saveUpload,
   setCurrentQxtIndex,
   setAnsweredQxts,
 }: {
-  question: TQuestionCard;
+  // question: TQuestionCard;
+  question: TQuestionCard['questions'][0];
   value: string;
   i: number;
-  // ref: React.RefObject<HTMLDivElement>;
+  saveUpload: React.Dispatch<
+    React.SetStateAction<Record<string, Blob | File> | null>
+  >;
   review: boolean;
-
   setCurrentQxtIndex: React.Dispatch<React.SetStateAction<string>>;
   setAnsweredQxts: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }) {
@@ -356,14 +469,25 @@ function QuestionCard({
           }}
           id='demo-radio-buttons-group-label'
         >
-          {i + 1}. {question.question}
+          {i + 1}.
+          {/* {question.img && (
+            <div className='pb-2'>
+              <Image
+                src={question.img}
+                width={300}
+                height={300}
+                alt={question.question}
+              />
+            </div>
+          )} */}
+          {question.questionText}
         </FormLabel>
         <RadioGroup
           style={{ width: '100%' }}
           value={value}
           onChange={(e) => {
-            const selected = { [question.id.toString()]: e.target.value };
-            setCurrentQxtIndex(question.id.toString());
+            const selected = { [question._id.toString()]: e.target.value };
+            setCurrentQxtIndex(question._id.toString());
             setAnsweredQxts((prev) => ({
               ...prev,
               ...selected,
@@ -372,78 +496,129 @@ function QuestionCard({
           aria-labelledby='demo-radio-buttons-group-label'
           name='radio-buttons-group'
         >
-          {question.options.map((option, i) => (
-            <div
-              key={option + i}
-              className='flex w-full items-center !text-subtext'
-            >
-              <FormControlLabel
-                style={
-                  review
-                    ? option === question.correctAnswer
-                      ? {
-                          height: '32px',
-                          width: '50%',
-                          paddingInlineEnd: 17,
-                          textOverflow: 'ellipsis',
-                          paddingBlock: 2,
-                          backgroundColor: '#cbf5ff',
-                          marginLeft: -3,
-                          fillOpacity: 0.6,
-                          borderRadius: 5,
-                          marginBlock: 7,
+          {question.questionType === QuestionType.MULTIPLE_CHOICE &&
+            question.options.map((option, i) => (
+              <div
+                key={option + i}
+                className='flex w-full items-center !text-subtext'
+              >
+                <FormControlLabel
+                  style={
+                    review
+                      ? option === question.correctAnswer
+                        ? {
+                            height: '32px',
+                            width: '50%',
+                            paddingInlineEnd: 17,
+                            textOverflow: 'ellipsis',
+                            paddingBlock: 2,
+                            backgroundColor: '#cbf5ff',
+                            marginLeft: -3,
+                            fillOpacity: 0.6,
+                            borderRadius: 5,
+                            marginBlock: 7,
+                          }
+                        : option === question.yourAnswer &&
+                          option !== question.correctAnswer
+                        ? {
+                            height: '32px',
+                            width: '50%',
+                            paddingInlineEnd: 17,
+                            paddingBlock: 2,
+                            marginLeft: -3,
+                            backgroundColor: '#fdd9d9',
+                            fillOpacity: 0.6,
+                            borderRadius: 5,
+                            marginBlock: 7,
+                          }
+                        : { marginInline: review ? -10 : -15 }
+                      : {
+                          marginInline: review
+                            ? -10
+                            : option === question.yourAnswer
+                            ? -15
+                            : 0,
                         }
-                      : option === question.yourAnswer &&
-                        option !== question.correctAnswer
-                      ? {
-                          height: '32px',
-                          width: '50%',
-                          paddingInlineEnd: 17,
-                          paddingBlock: 2,
-                          marginLeft: -3,
-                          backgroundColor: '#fdd9d9',
-                          fillOpacity: 0.6,
-                          borderRadius: 5,
-                          marginBlock: 7,
-                        }
-                      : { marginInline: -10 }
-                    : { marginInline: -10 }
-                }
-                value={option}
-                control={
-                  <Radio
-                    checkedIcon={
-                      option === question.correctAnswer ? (
-                        <CustomRightIcon />
-                      ) : option === question.yourAnswer &&
-                        option !== question.correctAnswer ? (
-                        <CustomWrongIcon />
-                      ) : (
-                        <></>
-                      )
-                    }
-                  />
-                }
-                key={i}
-                label={option}
-              />
-              <span className='-ml-3'>
-                {review &&
-                question.yourAnswer === question.correctAnswer &&
-                option === question.correctAnswer ? (
-                  <CorrectCheckMark />
-                ) : null}
-              </span>
-              <span>
-                {review &&
-                question.yourAnswer !== question.correctAnswer &&
-                option === question.yourAnswer ? (
-                  <WrongCrossMark />
-                ) : null}
-              </span>
-            </div>
-          ))}
+                  }
+                  value={option}
+                  control={
+                    <Radio
+                      checkedIcon={
+                        option === question.correctAnswer ? (
+                          <CustomRightIcon />
+                        ) : option === question.yourAnswer &&
+                          option !== question.correctAnswer ? (
+                          <CustomWrongIcon />
+                        ) : (
+                          !review && <CustomRightIcon className='!h-5' />
+                        )
+                      }
+                    />
+                  }
+                  key={question._id}
+                  label={option}
+                />
+                <span className='-ml-3'>
+                  {review &&
+                  question.yourAnswer === question.correctAnswer &&
+                  option === question.correctAnswer ? (
+                    <CorrectCheckMark />
+                  ) : null}
+                </span>
+                <span>
+                  {review &&
+                  question.yourAnswer !== question.correctAnswer &&
+                  option === question.yourAnswer ? (
+                    <WrongCrossMark />
+                  ) : null}
+                </span>
+              </div>
+            ))}
         </RadioGroup>
+        {question.questionType === 'german' && (
+          <Input
+            type='text'
+            disabled={review}
+            value={review ? question.yourAnswer : undefined}
+            className='!border-b !border-l-0 !border-r-0 !border-t-0 rounded-none w-1/2 border-black bg-white py-1'
+            onChange={(e) => {
+              const selected = { [question._id.toString()]: e.target.value };
+              setCurrentQxtIndex(question._id.toString());
+              setAnsweredQxts((prev) => ({
+                ...prev,
+                ...selected,
+              }));
+            }}
+          />
+        )}
+        {question.questionType === 'image_upload' && (
+          <>
+            <label
+              htmlFor={question._id.toString()}
+              className='rounded-lg cursor-pointer border px-4 text-subtext w-fit py-2'
+            >
+              Choose a file
+            </label>
+            <Input
+              type='file'
+              id={question._id.toString()}
+              accept='image/*'
+              disabled={review}
+              value={review ? question.yourAnswer : undefined}
+              className=' w-1/2 border-black bg-white py-1 hidden'
+              onChange={(e) => {
+                const selected = {
+                  [question._id.toString()]: e.target.files?.[0]!,
+                };
+                setCurrentQxtIndex(question._id.toString());
+                saveUpload((prev) => ({
+                  ...prev,
+                  ...selected,
+                }));
+              }}
+            />
+          </>
+        )}
       </FormControl>
     </div>
   );
@@ -479,83 +654,107 @@ function SubmissionCard() {
   );
 }
 
-const questions: TQuestionCard[] = [
-  {
-    id: 1,
-    question: 'What is Displacement',
-    options: ['HTML', 'CSS', 'JavaScript'],
-    answer: 'HTML',
-  },
-  {
-    id: 2,
-    question: 'What is Velocity',
-    options: ['Python', 'Java', 'C++'],
-    answer: 'Java',
-  },
-  {
-    id: 3,
-    question: 'What is Acceleration',
-    options: ['Ruby', 'PHP', 'Swift'],
-    answer: 'Swift',
-  },
-  {
-    id: 4,
-    question: 'What is Force',
-    options: ['C#', 'TypeScript', 'Go'],
-    answer: 'TypeScript',
-  },
-  {
-    id: 5,
-    question: 'What is Energy',
-    options: ['Rust', 'Kotlin', 'Scala'],
-    answer: 'Kotlin',
-  },
-];
+// const questions: TQuestionCard[] = [
+//   {
+//     id: 1,
+//     questionType: 'mcq',
+//     question: 'What is Displacement',
+//     options: ['HTML', 'CSS', 'JavaScript'],
+//   },
+//   {
+//     id: 2,
+//     questionType: 'mcq',
+//     question: 'What is Velocity',
+//     options: ['Python', 'Java', 'C++'],
+//   },
+//   {
+//     id: 3,
+//     img: TestImage,
+//     questionType: 'mcq',
+//     question: 'What is Acceleration',
+//     options: ['Ruby', 'PHP', 'Swift'],
+//   },
+//   {
+//     id: 4,
+//     question: 'What is Force',
+//     questionType: 'mcq',
+//     options: ['C#', 'TypeScript', 'Go'],
+//   },
+//   {
+//     id: 5,
+//     questionType: 'mcq',
+//     question: 'What is Energy',
+//     options: ['Rust', 'Kotlin', 'Scala'],
+//   },
+//   {
+//     id: 6,
+//     questionType: 'german',
+//     question: 'Why did your parents give you your name?',
+//   },
+//   {
+//     id: 7,
+//     questionType: 'image_upload',
+//     question:
+//       'With the aid of a diagram explain the process of photosynthesis?',
+//   },
+// ];
 
-const markedQuestions: TQuestionCard[] = [
-  {
-    id: 1,
-    question: 'What is Displacement',
-    options: ['HTML', 'CSS', 'JavaScript'],
-    yourAnswer: 'HTML',
-    correctAnswer: 'HTML',
-  },
-  {
-    id: 2,
-    question: 'What is Velocity',
-    options: ['Python', 'Java', 'C++'],
-    yourAnswer: 'Python',
-    correctAnswer: 'Java',
-  },
-  {
-    id: 3,
-    question: 'What is Acceleration',
-    options: ['Ruby', 'PHP', 'Swift'],
-    yourAnswer: 'Swift',
-    correctAnswer: 'Swift',
-  },
-  {
-    id: 4,
-    question: 'What is Force',
-    options: ['C#', 'TypeScript', 'Go'],
-    yourAnswer: 'C#',
-    correctAnswer: 'TypeScript',
-  },
-  {
-    id: 5,
-    question: 'What is Energy',
-    options: ['Rust', 'Kotlin', 'Scala'],
-    yourAnswer: 'Kotlin',
-    correctAnswer: 'Scala',
-  },
-];
+// const markedQuestions: TQuestionCard[] = [
+//   {
+//     id: 1,
+//     questionType: 'mcq',
+//     question: 'What is Displacement',
+//     options: ['HTML', 'CSS', 'JavaScript'],
+//     yourAnswer: 'HTML',
+//     correctAnswer: 'HTML',
+//   },
+//   {
+//     id: 2,
+//     questionType: 'mcq',
+//     question: 'What is Velocity',
+//     options: ['Python', 'Java', 'C++'],
+//     yourAnswer: 'Python',
+//     correctAnswer: 'Java',
+//   },
+//   {
+//     id: 3,
+//     questionType: 'mcq',
+//     question: 'What is Acceleration',
+//     img: TestImage,
+//     options: ['Ruby', 'PHP', 'Swift'],
+//     yourAnswer: 'Swift',
+//     correctAnswer: 'Swift',
+//   },
+//   {
+//     id: 4,
+//     questionType: 'mcq',
+//     question: 'What is Force',
+//     options: ['C#', 'TypeScript', 'Go'],
+//     yourAnswer: 'C#',
+//     correctAnswer: 'TypeScript',
+//   },
+//   {
+//     id: 5,
+//     questionType: 'mcq',
+//     question: 'What is Energy',
+//     options: ['Rust', 'Kotlin', 'Scala'],
+//     yourAnswer: 'Kotlin',
+//     correctAnswer: 'Scala',
+//   },
+//   {
+//     id: 6,
+//     questionType: 'german',
+//     question: 'Why did your parents give you your name?',
+//     yourAnswer: 'Man of Money',
+//   },
+// ];
 
 const CorrectCheckMark = () => {
   return (
     <svg
       width='36'
       height='36'
-      className='h-6'
+      className={`h-6 `}
       viewBox='0 0 36 36'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'

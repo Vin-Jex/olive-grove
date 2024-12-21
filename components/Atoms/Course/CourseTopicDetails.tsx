@@ -326,7 +326,7 @@ export const TopicDetails: FC<{
         <div className='flex flex-col w-full gap-4'>
           {/* TITLE */}
 
-          <div className='text-xl font-medium font-roboto bg-primary bg-opacity-10  rounded-lg px-5 py-4'>
+          <div className='text-xl max-sm:text-lg font-medium font-roboto bg-primary bg-opacity-10  rounded-lg px-5 py-4'>
             {topicDetails.topic?.title}
           </div>
           {/* TAB */}

@@ -3,9 +3,10 @@ import React, { useState } from 'react';
 interface OTPInputProps {
   length: number;
   onChange: (otp: string) => void;
+  className?: string;
 }
 
-const OTPInput: React.FC<OTPInputProps> = ({ length, onChange }) => {
+const OTPInput: React.FC<OTPInputProps> = ({ length, onChange, className }) => {
   const [otp, setOtp] = useState<string[]>(Array(length).fill(''));
 
   const handleChange = (value: string, index: number) => {
@@ -18,7 +19,10 @@ const OTPInput: React.FC<OTPInputProps> = ({ length, onChange }) => {
   };
 
   return (
-    <div style={{ display: 'flex', gap: '8px', marginBlock: '20px' }}>
+    <div
+      className={className}
+      style={{ display: 'flex', gap: '8px', marginBlock: '20px' }}
+    >
       {otp.map((digit, index) => (
         <input
           className='border rounded-md'

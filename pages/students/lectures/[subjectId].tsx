@@ -83,7 +83,8 @@ const SubjectDetailsPage: FC = () => {
     modalMetadata: { type, mode, handleAction, handleDelete },
   } = useCourseContext();
   const [errorOccured, setErrorOccured] = useState(false);
-  const [emailVerifyModal, setEmailVerifyMoadl] = useState(false);
+  const [emailVerifyModal, setEmailVerifyModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('Course Contents');
 
   const { user } = useAuth();
   const userRole = user?.role;
@@ -128,7 +129,11 @@ const SubjectDetailsPage: FC = () => {
           message: error.response.data.message,
         },
       });
-      if (error.status === 403) setEmailVerifyMoadl(true);
+      if (
+        error.response.data.message ===
+        'Your account is not verified. Please check your email for the verification code.'
+      )
+        setEmailVerifyModal(true);
       setErrorOccured(true);
     }
   }, []);
@@ -196,7 +201,7 @@ const SubjectDetailsPage: FC = () => {
           title={`Courses`}
           metaTitle={`Olive Groove ~ ${subjectId}`}
         >
-          <div className='space-y-5 px-12 h-full'>
+          <div className='space-y-5 max-sm:px-6 max-sm:pt-3 px-12 h-full'>
             {course.loading ? (
               <Loader />
             ) : course.error ? (
@@ -217,7 +222,7 @@ const SubjectDetailsPage: FC = () => {
                   <div className='flex gap-4 mt-6 items-center'>
                     <BackButton />
 
-                    <span className='text-2xl font-medium text-dark font-roboto'>
+                    <span className='text-2xl max-sm:text-lg font-medium text-dark font-roboto'>
                       {course.data?.title || 'Loading...'}
                     </span>
                   </div>
@@ -269,19 +274,42 @@ const SubjectDetailsPage: FC = () => {
                     </div>
                   )}
                 </div>
-                <div className='flex items-stretch gap-4 relative'>
+                <div className='flex items-stretch max-sm:flex-col pb-7 gap-4 relative'>
                   {/* SIDEBAR */}
-                  <div className='flex-none hidden xl:block'>
-                    <SideBar courseId={(subjectId as string) || ''} />
+                  <div className='max-md:space-y-6 relative'>
+                    <div className='w-full flex gap-0 md:hidden'>
+                      {['Course Contents', 'Q/A Section'].map((slug, i) => (
+                        <>
+                          <div
+                            className={`px-7 py-2 font-medium text-sm cursor-pointer transition ${
+                              activeTab === slug
+                                ? 'border-primary border-opacity-70 border-b-2 bg-[#32A8C41A] text-primary'
+                                : ''
+                            }`}
+                            onClick={() => setActiveTab(slug)}
+                            key={i}
+                          >
+                            {slug}
+                          </div>
+                        </>
+                      ))}
+                    </div>
+                    <div className='relative'>
+                      <div className='flex-none relative w-full block'>
+                        <SideBar courseId={(subjectId as string) || ''} />
+                      </div>
+                      {/* MOBILE SIDEBAR */}
+                      <AnimatePresence>
+                        {showSideBar && (
+                          <MobileSideBar
+                            subjectid={(subjectId as string) || ''}
+                          />
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
-                  {/* MOBILE SIDEBAR */}
-                  <AnimatePresence>
-                    {showSideBar && (
-                      <MobileSideBar subjectid={(subjectId as string) || ''} />
-                    )}
-                  </AnimatePresence>
                   {/* COURSE */}
-                  <div className='flex-1'>
+                  <div className='flex-1 max-sm:-order-2'>
                     <TopicDetails course={course.data} />
                   </div>
                 </div>
@@ -308,7 +336,7 @@ const SubjectDetailsPage: FC = () => {
       </TopicContextProvider>
       {emailVerifyModal && (
         <EmailVerifyModal
-          handleModalClose={() => setEmailVerifyMoadl(false)}
+          handleModalClose={() => setEmailVerifyModal(false)}
           modalOpen={emailVerifyModal}
         />
       )}

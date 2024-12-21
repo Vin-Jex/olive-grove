@@ -1,14 +1,18 @@
-import React, { SetStateAction } from 'react';
-import Image from 'next/image';
+import React, { SetStateAction, useEffect } from 'react';
+import Image, { StaticImageData } from 'next/image';
 import Button from '@/components/Atoms/Button';
-import img from '@/public/image/tutor.png';
+import dummyImage from '@/public/image/tutor.png';
 import Link from 'next/link';
+import { baseUrl } from '@/components/utils/baseURL';
+import axiosInstance from '@/components/utils/axiosInstance';
 
 interface SubjectProps {
   assessments?: boolean;
   name: string;
   role: string;
+  img?: string | StaticImageData;
   // type: "lecture" | "assessment";
+  category?: string;
   subject: string;
   topic: string;
   time: string;
@@ -21,12 +25,15 @@ const SubjectCard: React.FC<SubjectProps> = ({
   name,
   role,
   subject,
+  category,
   topic,
   time,
-  // type,
+  img,
   toggleModal,
   btnLink2,
 }) => {
+  //name, suubejct
+
   return (
     <div
       className={`flex flex-col  justify-center gap-6 ${
@@ -35,7 +42,9 @@ const SubjectCard: React.FC<SubjectProps> = ({
     >
       <div className='flex items-center gap-3'>
         <Image
-          src={img}
+          src={img ?? dummyImage}
+          width={50}
+          height={50}
           alt='Profile Pics'
           className='shadow w-12 h-12 object-cover rounded-full'
         />
@@ -61,7 +70,9 @@ const SubjectCard: React.FC<SubjectProps> = ({
             <span className='sm:block hidden'>
               {topic.slice(0, 11) + '...'}{' '}
             </span>
-            <span className='max-sm:block hidden'>{topic.slice(0, 7) + '...'} </span>
+            <span className='max-sm:block hidden'>
+              {topic.slice(0, 7) + '...'}{' '}
+            </span>
           </span>
           {assessments && (
             <span
@@ -84,7 +95,7 @@ const SubjectCard: React.FC<SubjectProps> = ({
             <b className='font-roboto font-medium block text-dark'>
               Category:{' '}
             </b>
-            <span className='block'>Test</span>
+            <span className='block'>{category}</span>
           </span>
         )}
         <span className='flex gap-1  max-w-[88%] text-sm text-wrap text-subtext'>
