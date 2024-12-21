@@ -18,9 +18,9 @@ export default function WarningModal({
       <Modal
         isOpen={modalOpen}
         onClose={handleModalClose}
-        className='w-[80%] sm:w-[70%] md:w-[602px] bg-white backdrop-blur-[10px] rounded-3xl'
+        className='w-[60%] sm:w-[70%] md:w-[450px] bg-white backdrop-blur-[10px] rounded-3xl'
       >
-        <div className='flex flex-col items-center justify-center py-5 md:py-[40px] px-4 md:px-6 w-full gap-y-6 md:gap-y-6'>
+        <div className='flex flex-col items-center justify-center py-5 md:py-[40px] px-4 w-full gap-y-6 md:gap-y-6'>
           <div className='text-center'>
             <WarningSVG />
           </div>

@@ -46,7 +46,8 @@ const AdminNav: React.FC<AdminNavType> = ({
         const { image, timestamp } = JSON.parse(cachedData);
 
         // Check if cache is less than 1 hour old
-        if (Date.now() - timestamp < 60 * 60 * 1000) {
+        //this time check might not be necessary if we are invalidatino the json in localstorage on every profile update
+        if (Date.now() - timestamp < 24 * 60 * 60 * 1000) {
           setProfileImage(image);
           return;
         }

@@ -6,6 +6,9 @@ import axiosInstance from '@/components/utils/axiosInstance';
 import { baseUrl } from '@/components/utils/baseURL';
 import { Alert, Snackbar } from '@mui/material';
 import OTPInput from '../OTPInput';
+import { BarLoader } from 'react-spinners';
+import { useRouter } from 'next/router';
+import useUserVerify from '@/components/utils/hooks/useUserVerify';
 
 type WarningModalProps = {
   modalOpen: boolean;
@@ -16,34 +19,41 @@ export default function EmailVerifyModal({
   modalOpen,
   handleModalClose,
 }: WarningModalProps) {
-  const [response, setResponse] = useState('');
-  const [request, setRequest] = useState(false);
+  // const [response, setResponse] = useState('');
+  // const [request, setRequest] = useState(false);
+  const [OTPVerifyLoading, setOTPVerifyLoading] = useState(false);
+  const {
+    otpRequestLoading,
+    handleRequestOTP,
+    somethingOccured,
+    setSomethingOccured,
+    verifyOTP,
+    OTPTimer,
+  } = useUserVerify();
   const [otp, setOtp] = useState('');
+  const router = useRouter();
 
-  async function handleVerify() {
-    console.log('Verify email');
+  async function handleEmailVerify(otp: string) {
+    console.log('Verify OTP');
     try {
-      const request_body = JSON.stringify({ type: 'email_verification' });
+      setOTPVerifyLoading(true);
+      const request_body = JSON.stringify({ otp });
       const response = await axiosInstance.post(
-        `${baseUrl}/otp/request`,
+        `${baseUrl}/email/verify`,
         request_body
       );
-      setResponse(response.data.message);
-      setRequest(true);
+      setSomethingOccured({
+        success: true,
+        error: false,
+        message: response.data.message,
+      });
+      handleModalClose();
+      router.replace(router.asPath);
     } catch (err) {
-      console.error(err);
+      console.error('otp error', otp);
+    } finally {
+      setOTPVerifyLoading(false);
     }
-  }
-
-  async function handleOTPVefify(otp: string) {
-    console.log('Verify OTP');
-    const request_body = JSON.stringify({ otp });
-    const response = await axiosInstance.post(
-      `${baseUrl}/email/verify`,
-      request_body
-    );
-    setResponse(response.data.message);
-    setRequest(true);
   }
   return (
     <div>
@@ -63,39 +73,63 @@ export default function EmailVerifyModal({
           <div className='flex items-center justify-center gap-5 sm:gap-6 w-full'>
             <Button
               size='sm'
-              onClick={() => {
-                handleVerify();
-                // handleModalClose();
+              onClick={(e) => {
+                e.preventDefault();
+                handleRequestOTP('email_verification');
               }}
             >
-              Verify Email
+              {otpRequestLoading ? <BarLoader /> : 'Verify Email'}
             </Button>
           </div>
           <div>
             <OTPInput length={6} onChange={setOtp} />
-            <Button
-              size='sm'
-              className='mx-auto'
-              onClick={() => {
-                handleOTPVefify(otp);
-                // handleModalClose();
-              }}
-            >
-              send OTP
-            </Button>
+            <div>
+              <Button
+                size='sm'
+                className='mx-auto'
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleEmailVerify(otp);
+                  // handleModalClose();
+                }}
+              >
+                {OTPVerifyLoading ? (
+                  <BarLoader className='text-white' />
+                ) : (
+                  'send OTP'
+                )}
+              </Button>
+              <span>{OTPTimer}</span>
+            </div>
           </div>
         </div>
       </Modal>
-      {response && (
+      {(somethingOccured.error || somethingOccured.success) && (
         <Snackbar
-          open={request}
-          onClose={() => setRequest(false)}
+          open={somethingOccured.success || somethingOccured.error}
+          onClose={() =>
+            setSomethingOccured((err) => ({
+              ...err,
+              error: false,
+              success: false,
+            }))
+          }
           autoHideDuration={6000}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           className='!z-[999]'
         >
-          <Alert severity='info' onClose={() => setRequest(false)}>
-            {response.toString()}
+          <Alert
+            severity={somethingOccured.error ? 'error' : 'success'}
+            onClose={() =>
+              // setSomethingOccured((err) => ({ ...err, error: false }))
+              setSomethingOccured((err) => ({
+                ...err,
+                error: false,
+                success: false,
+              }))
+            }
+          >
+            {somethingOccured.message}
           </Alert>
         </Snackbar>
       )}
