@@ -152,7 +152,7 @@ const Dashboard = () => {
             <div className='bg-primary max-sm:mt-4 max-sm:min-h-[170px] w-full rounded-3xl font-roboto relative overflow-hidden h-full '>
               <div className='flex flex-col h-full justify-center my-auto px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
                 <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
-                  Welcome back, {JSON.parse(firstName!).data.firstName}
+                  Welcome back, {firstName && JSON.parse(firstName!).data.firstName}
                 </h3>
                 <span className='text-base text-light/80 font-roboto'>
                   You have 3 classes and 2 assignments to attend to.
