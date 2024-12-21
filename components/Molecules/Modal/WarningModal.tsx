@@ -18,16 +18,16 @@ export default function WarningModal({
       <Modal
         isOpen={modalOpen}
         onClose={handleModalClose}
-        className='w-[80%] sm:w-[70%] md:w-[602px] bg-white backdrop-blur-[10px] rounded-3xl'
+        className='w-[60%] sm:w-[70%] md:w-[450px] bg-white backdrop-blur-[10px] rounded-3xl'
       >
-        <div className='flex flex-col items-center justify-center py-5 md:py-[40px] px-4 md:px-6 w-full gap-y-6 md:gap-y-6'>
+        <div className='flex flex-col items-center justify-center py-5 md:py-[40px] px-4 w-full gap-y-6 md:gap-y-6'>
           <div className='text-center'>
             <WarningSVG />
           </div>
           <strong className='font-roboto text-[19px] sm:text-[23px] text-center text-dark w-full'>
             Are you sure you want to logout
           </strong>
-          <span className='text-center max-w-[300px] text-gray-400'>
+          <span className='text-center max-w-[300px] text-gray-500'>
             You will be redirected to the login page to enter your login
             information
           </span>
@@ -67,19 +67,13 @@ const WarningSVG = () => {
       fill='none'
       xmlns='http://www.w3.org/2000/svg'
     >
-      <rect
-        width='130'
-        height='130'
-        rx='65'
-        fill='#FF3B3B'
-        fill-opacity='0.2'
-      />
+      <rect width='130' height='130' rx='65' fill='#FF3B3B' fillOpacity='0.2' />
       <path
         d='M64.9993 34.8462V75.0513M65.2506 95.1539V95.6565H64.748V95.1539H65.2506Z'
         stroke='#FF3B3B'
-        stroke-width='6'
-        stroke-linecap='round'
-        stroke-linejoin='round'
+        strokeWidth='6'
+        strokeLinecap='round'
+        strokeLinejoin='round'
       />
     </svg>
   );

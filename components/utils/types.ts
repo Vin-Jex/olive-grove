@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes } from 'react';
 
 export type TSubject = {
   image_url: string;
@@ -59,13 +59,16 @@ export type TResponse<T> = {
   data: T;
 };
 
+export type TErrorState = {
+  state: boolean | string | undefined;
+  status: number;
+  message: string;
+};
+
 export type TFetchState<T> = {
   data: T;
   loading: boolean;
-  error:
-    | undefined
-    | string
-    | { state: boolean | string | undefined; status: number; message: string };
+  error: undefined | string | TErrorState;
 };
 
 export type TClass = {
@@ -131,8 +134,8 @@ export type TCourseModalProps = {
   handleModalClose: () => void;
   handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
   handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
-  type: "course" | "chapter" | "lesson" | "topic";
-  mode: "create" | "edit";
+  type: 'course' | 'chapter' | 'lesson' | 'topic';
+  mode: 'create' | 'edit';
   formState: TCourseModalFormData;
   setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
   requestState?: TFetchState<any>;
@@ -148,7 +151,7 @@ export type TAcademicWeek = {
   _id?: string;
 };
 
-export type TAssessment<T extends "post" | "get"> = {
+export type TAssessment<T extends 'post' | 'get'> = {
   _id?: string;
   subject: T extends "post" ? string : TCourse;
   assessmentType: T extends "post" ? string : TAssessmentType;
@@ -204,7 +207,7 @@ export type TModalProps<T> = {
   handleAction?: (formData: T) => Promise<boolean>;
   handleDelete?: (formData: T) => Promise<boolean>;
   requestState?: TFetchState<any>;
-  mode: "create" | "edit";
+  mode: 'create' | 'edit';
   formState: T;
   setFormState: React.Dispatch<React.SetStateAction<T>>;
 };
@@ -218,18 +221,18 @@ export type TTopicDetails = {
   path: [string, string, string] | undefined;
   topicChapter: string;
   topicLesson: string;
-  type: "section" | "lesson";
+  type: 'section' | 'lesson';
   topic: TSection | undefined;
 };
 
-export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
+export type TLoginResponse<T extends 'student' | 'teacher' | 'admin'> = {
   token: {
     accessToken: string;
     refreshToken: string;
   };
-  details: T extends "student"
+  details: T extends 'student'
     ? TStudent
-    : T extends "teacher"
+    : T extends 'teacher'
     ? TTeacher
     : TAdmin;
 };
