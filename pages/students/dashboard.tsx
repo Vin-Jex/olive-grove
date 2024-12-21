@@ -43,6 +43,18 @@ const TodayClass = [
   },
 ];
 
+type TCourseInfo = { courseId: string; courseName: string };
+type TAssessmentInfo = { assessmentId: string; title: string };
+type TResponse = {
+  data: {
+    department: string;
+    academicSection: string;
+    enrolledCourses: TCourseInfo[];
+    upcomingCourses: TCourseInfo[];
+    upcomingAssessments: TAssessmentInfo[];
+  };
+};
+
 type CardProps = {
   header: string;
   main: string;
@@ -51,7 +63,7 @@ type CardProps = {
 
 function Card({ header, main, footer = '' }: CardProps) {
   return (
-    <div className='flex flex-col justify-start text-start w-full  space-y-3 rounded-md shadow-card py-4 px-6'>
+    <div className='flex flex-col justify-between text-start w-full  space-y-3 rounded-md shadow-card py-4 px-6'>
       <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
         {header}
       </h3>
@@ -66,20 +78,49 @@ function Card({ header, main, footer = '' }: CardProps) {
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalAss, setOpenModalAss] = useState(false);
-  const [studentInfo, setStudentInfo] = useState({
-    firstName: '',
+  // const [studentInfo, setStudentInfo] = useState({
+  //   firstName: '',
+  // });
+  const [dashboardInfo, setDashboardInfo] = useState({
+    deparment: '',
+    accademicSession: '',
+    enrolledCourses: [] as TCourseInfo[],
+    upcomingCourses: [] as TCourseInfo[],
+    upcomingAssessments: [] as TAssessmentInfo[],
   });
+  const userId = Cookies.get('userId');
+  const firstName = localStorage.getItem(`profileInfo_Student_${userId}`);
   useEffect(() => {
-    async function fetchStudentProfile() {
-      try {
-        const response = await axiosInstance.get(`${baseUrl}/student`);
-
-        setStudentInfo({ firstName: response.data.firstName });
-      } catch (err) {
-        //how to display error.
+    async function getUserInfo() {
+      // async function fetchStudentProfile() {
+      //   try {
+      //     const response = await axiosInstance.get(`${baseUrl}/student`);
+      //     setStudentInfo({
+      //       firstName: response.data.firstName,
+      //     });
+      //   } catch (err) {
+      //     //how to display error.
+      //   }
+      // }
+      async function fetchDashboardContent() {
+        try {
+          const response = (await axiosInstance.get(
+            `${baseUrl}/student/dashboard`
+          )) as TResponse;
+          setDashboardInfo({
+            deparment: response.data.department,
+            accademicSession: response.data.academicSection,
+            enrolledCourses: response.data.enrolledCourses,
+            upcomingAssessments: response.data.upcomingAssessments,
+            upcomingCourses: response.data.upcomingCourses,
+          });
+        } catch (err) {
+          //how to display error.
+        }
       }
+      await Promise.all([fetchDashboardContent()]);
     }
-    fetchStudentProfile();
+    getUserInfo();
   }, []);
 
   const handleModal = () => {
@@ -108,19 +149,19 @@ const Dashboard = () => {
         <div className='p-4 sm:p-6 md:p-8 lg:p-12 space-y-11'>
           {/* start */}
           <div className='max-sm:space-y-5 xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
-            <div className='bg-primary w-full rounded-3xl font-roboto relative overflow-hidden h-full '>
+            <div className='bg-primary max-sm:mt-4 max-sm:min-h-[170px] w-full rounded-3xl font-roboto relative overflow-hidden h-full '>
               <div className='flex flex-col h-full justify-center my-auto px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
                 <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
-                  Welcome back, {studentInfo.firstName}
+                  Welcome back, {JSON.parse(firstName!).data.firstName}
                 </h3>
-                <span className='text-sm sm:text-base text-light/80 font-roboto'>
+                <span className='text-base text-light/80 font-roboto'>
                   You have 3 classes and 2 assignments to attend to.
                 </span>
                 <span className='text-sm sm:text-base text-light/80 font-roboto mt-1'>
                   Continue learning to become the best!
                 </span>
               </div>
-              <div className='w-[80px] sm:w-[130px] md:w-[160px] lg:w-[400px]  absolute right-0 bottom-0'>
+              <div className='w-[130px] md:w-[160px] lg:w-[400px]  absolute right-0 bottom-0'>
                 <Image
                   src={Img}
                   alt={`${Img} Pics`}
@@ -136,7 +177,7 @@ const Dashboard = () => {
           </div>
           {/* <div className="flex flex-col px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 md:py-6 lg:py-7 border-2 w-full rounded-3xl font-roboto gap-4 sm:gap-5 md:gap-6"> */}
 
-          <div className='grid  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10 '>
+          <div className='grid  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 max-sm:gap-5 gap-10 '>
             <Card
               header='CGPA'
               main='3.42'
@@ -149,18 +190,26 @@ const Dashboard = () => {
             />
             <Card
               header='No. of Courses'
-              main='8'
-              footer='Mathematics, English, Physics, Chemistry, Biology'
+              main={
+                !dashboardInfo.enrolledCourses
+                  ? '0'
+                  : dashboardInfo.enrolledCourses.length.toString()
+              }
+              footer={
+                !dashboardInfo.enrolledCourses
+                  ? ''
+                  : dashboardInfo.enrolledCourses.join(' ,')
+              }
             />
             <Card
               header='Current Session'
-              main='2021/2022'
+              main={dashboardInfo.accademicSession}
               footer='NExt session starts in 3 months'
             />
           </div>
           {/* </div> */}
 
-          <div className='flex flex-col sm:flex-row w-full gap-10 sm:gap-6 md:gap-8 mt-4 rounded-xl sm:mt-6 md:mt-8 '>
+          <div className='flex flex-col sm:flex-row w-full max-sm:gap-5 gap-10 sm:gap-6 md:gap-8 mt-4 rounded-xl sm:mt-6 md:mt-8 '>
             <div className='w-full sm:w-1/2 shadow-card rounded-xl'>
               <ClassCard
                 modalOpen={handleModal}

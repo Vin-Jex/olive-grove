@@ -36,19 +36,26 @@ body {
   padding-inline-start: 0px;
 }
 
-/* [data-testid='RadioButtonUncheckedIcon'] {
-  width: 1.3em !important;
-  height: 1.3rem !important;
+[data-testid='RadioButtonUncheckedIcon'] {
+  width: 1.4em !important;
+  height: 1.4rem !important;
+}
+
+.css-hyxlzm {
+  margin-inline-start: -9px !important;
 }
 
 [data-testid='RadioButtonCheckedIcon'] {
-  left: 3px !important;
+  left: 4px !important;
+  right: -2px !important;
+  bottom: 1px !important;
   top: -1px !important;
-} */
+  /* width: 0px !important; */
+}
 
-/* .custom-height {
+.custom-height {
   height: calc(fit-content + 10px);
-} */
+}
 
 @layer components {
   .container {
@@ -57,7 +64,7 @@ body {
 }
 
 .input {
-  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-[#1E1E1E60] text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
+  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-subtext/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -98,6 +105,7 @@ input[type="number"] {
   content: "✔"; /* Checkmark symbol */
   font-size: 12px;
   color: white !important;
+
 }
 
 .textarea {
