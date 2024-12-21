@@ -326,28 +326,30 @@ const Subjects: FC = () => {
             <>
               {/* Title */}
               <div className="flex justify-between items-start">
-                <div className="flex flex-col">
-                  <span className="text-lg font-medium text-dark font-roboto">
-                    Subjects
-                  </span>
-                  <span className="text-md text-subtext font-roboto">
-                    View and manage subjects
-                  </span>
-                </div>
-                <Button
-                  onClick={() => setOpenModalCreate((prev) => !prev)}
-                  width="fit"
-                  size="xs"
-                  color="outline"
-                >
-                  <Add />
-                  <span>Create new subject</span>
-                </Button>
+                {typeof courses.error === "object" &&
+                  courses.error.status === 404 && (
+                    <Button
+                      onClick={() => setOpenModalCreate((prev) => !prev)}
+                      width="fit"
+                      size="xs"
+                    >
+                      <Add />
+                      <span>Add subject</span>
+                    </Button>
+                  )}
               </div>
               {/* Searchbars and select fields */}
               {!courses.error && (
                 <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
                   <div className="flex justify-start items-center gap-4 w-full md:w-auto">
+                    <SearchInput
+                      shape="rounded-lg"
+                      placeholder="Search for Subjects"
+                      searchResults={searchResults}
+                      setSearchResults={setSearchResults}
+                      initialData={courses.data}
+                      handleInputChange={handleSearchChange}
+                    />
                     <Select
                       options={
                         classes.data?.map((type) => ({
@@ -359,17 +361,19 @@ const Subjects: FC = () => {
                       required
                       onChange={handleClassFilter}
                       placeholder="Select class"
+                      inputSize="sm"
+                      className="!py-3"
                     />
                   </div>
-                  <div className="w-full md:w-[400px]">
-                    <SearchInput
-                      shape="rounded-lg"
-                      placeholder="Search for Subjects"
-                      searchResults={searchResults}
-                      setSearchResults={setSearchResults}
-                      initialData={courses.data}
-                      handleInputChange={handleSearchChange}
-                    />
+                  <div>
+                    <Button
+                      onClick={() => setOpenModalCreate((prev) => !prev)}
+                      width="fit"
+                      size="xs"
+                    >
+                      <Add />
+                      <span>Add subject</span>
+                    </Button>
                   </div>
                 </div>
               )}
