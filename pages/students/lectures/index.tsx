@@ -1,58 +1,24 @@
-import Cookies from 'js-cookie';
-import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import React, { useCallback, useEffect, useState } from 'react';
-import SubjectCard from '@/components/Molecules/Card/SubjectCard';
-import Link from 'next/link';
-import withAuth from '@/components/Molecules/WithAuth';
-import { TFetchState } from '@/components/utils/types';
+import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
+import React, { useCallback, useEffect, useState } from "react";
+import SubjectCard from "@/components/Molecules/Card/SubjectCard";
+import Link from "next/link";
+import withAuth from "@/components/Molecules/WithAuth";
+import { TFetchState } from "@/components/utils/types";
 // import { fetchCourses } from "@/components/utils/course";
-import dummyImage from '@/images/dummy-img.jpg';
-import ClassModal from '@/components/Molecules/Modal/ClassModal';
-import { baseUrl } from '@/components/utils/baseURL';
-import axiosInstance from '@/components/utils/axiosInstance';
-import { AxiosError } from 'axios';
-import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
-import { useRouter } from 'next/router';
-import SearchLayout from '@/components/Molecules/SearchLayout';
-import Select from '@/components/Atoms/Select';
-import Image from 'next/image';
-import useDebounce from '@/components/utils/useDebounce';
-import Loader from '@/components/Atoms/Loader';
+import dummyImage from "@/images/dummy-img.jpg";
+import DepartmentModal from "@/components/Molecules/Modal/DepartmentModal";
+import { baseUrl } from "@/components/utils/baseURL";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { AxiosError } from "axios";
+import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
+import { useRouter } from "next/router";
+import SearchLayout from "@/components/Molecules/SearchLayout";
+import Select from "@/components/Atoms/Select";
+import Image from "next/image";
+import useDebounce from "@/components/utils/useDebounce";
+import Loader from "@/components/Atoms/Loader";
 
-export const subjectData = [
-  {
-    subject: 'Further Mathematics',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Calculus',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
-  },
-  {
-    subject: 'Chemistry',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Organic Chemistry',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
-  },
-  {
-    subject: 'Physics',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Motion',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
-  },
-  {
-    subject: 'Mathematics',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Trigonomentry',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
-  },
-];
+
 
 type TCourse = {
   _id: string;
@@ -64,7 +30,7 @@ type TCourse = {
   };
 };
 
-const Classes = () => {
+const Lectures = () => {
   const [courses, setCourses] = useState<TFetchState<TCourse[]>>({
     data: [],
     loading: false,
@@ -79,9 +45,9 @@ const Classes = () => {
   });
   const [lectureInfoModal, setLectureInfoModal] = useState(false);
   const router = useRouter();
-  const [searched, setSearched] = useState(router.query.search ?? '');
+  const [searched, setSearched] = useState(router.query.search ?? "");
   useEffect(() => {
-    setSearched(router.query.search ?? '');
+    setSearched(router.query.search ?? "");
   }, [router.query.search]);
   //  courses;
   const getCourses = useCallback(async () => {
@@ -105,16 +71,16 @@ const Classes = () => {
         setCourses({
           data: [],
           loading: false,
-          error: 'Wrong course data format',
+          error: "Wrong course data format",
         });
       }
     } catch (error: AxiosError | any) {
       if (error.response && error.response.status === 401) {
-        handleLogout().then(() => router.push('/auth/path/students/login/'));
+        handleLogout().then(() => router.push("/auth/path/students/login/"));
       }
-      setCourses({ data: [], loading: false, error: 'No courses found' });
+      setCourses({ data: [], loading: false, error: "No courses found" });
     }
-  }, [router.query.search]); // Empty dependency array
+  }, [router]);
 
   const getFilteredCourses = useCallback(async () => {
     const searched = router.query.search as string;
@@ -135,14 +101,14 @@ const Classes = () => {
         setFilteredCourses({
           data: [],
           loading: false,
-          error: 'No filtered courses found',
+          error: "No filtered courses found",
         });
       }
     } catch (error) {
       setFilteredCourses({
         data: [],
         loading: false,
-        error: 'Error fetching filtered courses',
+        error: "Error fetching filtered courses",
       });
     }
   }, [router.query.search]);
@@ -150,12 +116,12 @@ const Classes = () => {
   // Separate effects for different concerns
   useEffect(() => {
     getCourses();
-  }, []); // Only run once when component mounts
+  }, [getCourses]);
 
   const patToUrl = useCallback(
     (searchValue: string) => {
       const pathName = router.pathname;
-      const query = searchValue ? `?search=${searchValue}` : '';
+      const query = searchValue ? `?search=${searchValue}` : "";
       router.push(`${pathName}${query}`);
     },
     [router]
@@ -191,8 +157,8 @@ const Classes = () => {
   }, [router.query.search, debouncedGetFilteredCourses]);
   return (
     <>
-      <ClassModal
-        type='class'
+      <DepartmentModal
+        type='lecture'
         handleModalClose={handleModal}
         modalOpen={lectureInfoModal!}
       />
@@ -218,7 +184,7 @@ const Classes = () => {
               <div
                 className={`flex flex-col gap-1 w-[20rem] absolute bg-white  z-20 ${
                   filteredCourses.data.length > 0 &&
-                  'border border-b border-r border-t-0 border-l rounded-br-md rounded-bl-md'
+                  "border border-b border-r border-t-0 border-l rounded-br-md rounded-bl-md"
                 }`}
               >
                 {filteredCourses.data.length > 0 &&
@@ -232,13 +198,13 @@ const Classes = () => {
                             height={300}
                             className='h-full w-full object-cover'
                             src={(subject.courseCover as string) || dummyImage}
-                            alt={subject.description || 'course searched'}
+                            alt={subject.description || "course searched"}
                           />
                         </div>
 
                         <div className=' flex-shrink-0'>
                           {subject.title.slice(0, 20) ||
-                            'no description available'}
+                            "no description available"}
                         </div>
                       </div>
                     </Link>
@@ -249,7 +215,7 @@ const Classes = () => {
               name=''
               className='max-w-[120px] max-sm:max-w-[180px]'
               onChange={() => {}}
-              options={['ascending', 'latest']}
+              options={["ascending", "latest"]}
               placeholder='filter'
               value=''
               required
@@ -264,10 +230,10 @@ const Classes = () => {
               {courses.data.map((subject, index) => (
                 <SubjectCard
                   key={subject._id}
-                  name={'No Teacher Name'}
-                  role={'Teacher'}
+                  name={"No Teacher Name"}
+                  role={"Teacher"}
                   // type="lecture"
-                  time={'time'}
+                  time={"time"}
                   topic={subject.title as string}
                   subject={subject.title}
                   toggleModal={handleModal}
@@ -281,6 +247,5 @@ const Classes = () => {
     </>
   );
 };
-// export default Classes;
 
-export default withAuth('Student', Classes);
+export default withAuth("Student", Lectures);

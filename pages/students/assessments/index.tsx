@@ -1,11 +1,10 @@
-import SubjectCard from '@/components/Molecules/Card/SubjectCard';
-import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import React, { useEffect, useState } from 'react';
-import { subjectData } from '../lectures';
-import withAuth from '@/components/Molecules/WithAuth';
-import axiosInstance from '@/components/utils/axiosInstance';
-import { baseUrl } from '@/components/utils/baseURL';
-import Loader from '@/components/Atoms/Loader';
+import SubjectCard from "@/components/Molecules/Card/SubjectCard";
+import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
+import React, { useEffect, useState } from "react";
+import withAuth from "@/components/Molecules/WithAuth";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { baseUrl } from "@/components/utils/baseURL";
+import Loader from "@/components/Atoms/Loader";
 
 type TAssessment = {
   _id: string;
@@ -75,6 +74,7 @@ type TAssessment = {
   updatedAt: string;
   __v: number;
 };
+
 const Assessments = () => {
   const [currentAssessments, setCurrentAssessments] = useState<TAssessment[]>(
     []
@@ -157,7 +157,7 @@ const Assessments = () => {
       try {
         setIsLoading(true);
         const response = await axiosInstance(`${baseUrl}/api/v2/assessments`);
-        console.log(response.data, 'currentAssessment data');
+        console.log(response.data, "currentAssessment data");
         setCurrentAssessments(response.data.data);
       } catch (err) {
         console.error(err);
@@ -186,7 +186,7 @@ const Assessments = () => {
               // type="assessment"
               category={subject.assessmentType.name}
               name={subject.teacher.name}
-              role={'Teacher'}
+              role={"Teacher"}
               time={subject.dueDate}
               topic={subject.description}
               subject={subject.course.title}
@@ -200,4 +200,4 @@ const Assessments = () => {
 };
 
 // export default Assessments;
-export default withAuth('Student', Assessments);
+export default withAuth("Student", Assessments);

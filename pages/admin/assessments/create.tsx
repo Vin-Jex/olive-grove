@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { subjectData } from "../classes";
+import { subjectData } from "../lectures";
 import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
@@ -190,10 +190,12 @@ const ModifyAssessments = () => {
                             required={true}
                             className='input'
                           />
-                          {questions.length > 1 && <Close
-                            className='text-[#FF3B3B]'
-                            onClick={() => removeQuestion(index)}
-                          />}
+                          {questions.length > 1 && (
+                            <Close
+                              className='text-[#FF3B3B]'
+                              onClick={() => removeQuestion(index)}
+                            />
+                          )}
                         </div>
                       </div>
                       {answers[index].map((answer, answerIndex) => (

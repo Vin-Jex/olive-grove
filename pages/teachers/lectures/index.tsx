@@ -4,7 +4,6 @@ import SwitchContentNav from "@/components/Molecules/Navs/SwitchContentNav";
 import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import Button from "@/components/Atoms/Button";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
-import { baseUrl } from "@/components/utils/baseURL";
 import ServerError from "@/components/Atoms/ServerError";
 import NotFoundError from "@/components/Atoms/NotFoundError";
 import Loader from "@/components/Atoms/Loader";
@@ -72,7 +71,7 @@ const Lectures = () => {
       });
 
       try {
-        // Call the reusable getCourses function, passing the setClasses state updater
+        // Call the reusable getCourses function, passing the seTClasses state updater
         const courses = await fetchCourses(filter);
 
         if (typeof courses === "object") {
@@ -206,7 +205,7 @@ const Lectures = () => {
       <LectureModal
         formState={formState}
         setFormState={setFormState}
-        type="class"
+        type='lecture'
         handleModalClose={handleModalCreate}
         modalOpen={openModalCreate}
         mode={mode}
@@ -217,25 +216,25 @@ const Lectures = () => {
         courses={courses.data.map((item) => item.title.trim())}
       />
 
-      <TeachersWrapper title="Lectures" metaTitle="Olive Groove ~ Lectures">
-        <div className="space-y-5 h-full">
+      <TeachersWrapper title='Lectures' metaTitle='Olive Groove ~ Lectures'>
+        <div className='space-y-5 h-full'>
           <>
-            <div className="flex flex-row items-center justify-between gap-4">
-              <div className="flex flex-col">
-                <span className="text-lg font-medium text-dark font-roboto">
+            <div className='flex flex-row items-center justify-between gap-4'>
+              <div className='flex flex-col'>
+                <span className='text-lg font-medium text-dark font-roboto'>
                   Explore your available lectures.
                 </span>
-                <span className="text-md text-subtext font-roboto">
+                <span className='text-md text-subtext font-roboto'>
                   Manage, edit and create lecture.
                 </span>
               </div>
-              <Button size="xs" width="fit" onClick={handleModalCreate}>
+              <Button size='xs' width='fit' onClick={handleModalCreate}>
                 <span>Create Lecture</span>
               </Button>
             </div>
 
             {isLoading.fetching ? (
-              <div className="h-full w-full">
+              <div className='h-full w-full'>
                 <Loader />
               </div>
             ) : error ? (
@@ -253,11 +252,11 @@ const Lectures = () => {
                   setActiveItem={setActiveItem}
                   navLink={["all courses", "active courses"]}
                 />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6'>
                   {activeItem === "all courses"
                     ? lectures.map((lectureItem, index) => (
-                        <div key={index} className="mt-4 w-full space-y-2">
-                          <span className="text-dark text-xl font-medium capitalize">
+                        <div key={index} className='mt-4 w-full space-y-2'>
+                          <span className='text-dark text-xl font-medium capitalize'>
                             {new Date(
                               lectureItem.academicWeekDate
                             ).toDateString()}
@@ -265,7 +264,7 @@ const Lectures = () => {
                           <TeacherCard
                             key={index}
                             academicWeekDate={1}
-                            type="lecture"
+                            type='lecture'
                             time={new Date(
                               lectureItem.classTime
                             ).toLocaleString()}
@@ -284,8 +283,8 @@ const Lectures = () => {
                     : lectures
                         .filter((lectureItem) => lectureItem.isActive)
                         .map((lectureItem, index) => (
-                          <div key={index} className="mt-4 w-full space-y-2">
-                            <span className="text-dark text-xl font-medium capitalize">
+                          <div key={index} className='mt-4 w-full space-y-2'>
+                            <span className='text-dark text-xl font-medium capitalize'>
                               {new Date(
                                 lectureItem.academicWeekDate
                               ).toDateString()}
@@ -293,7 +292,7 @@ const Lectures = () => {
                             <TeacherCard
                               key={index}
                               academicWeekDate={1}
-                              type="lecture"
+                              type='lecture'
                               time={new Date(
                                 lectureItem.classTime
                               ).toLocaleString()}

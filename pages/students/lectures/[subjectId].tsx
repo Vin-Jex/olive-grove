@@ -1,7 +1,6 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import Cookies from 'js-cookie';
-import withAuth from '@/components/Molecules/WithAuth';
-import Button from '@/components/Atoms/Button';
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import withAuth from "@/components/Molecules/WithAuth";
+import Button from "@/components/Atoms/Button";
 import {
   TChapter,
   TContentId,
@@ -11,27 +10,27 @@ import {
   TResponse,
   TSection,
   TSubSection,
-} from '@/components/utils/types';
-import { useRouter } from 'next/router';
-import CourseModal from '@/components/Molecules/Modal/CourseModal';
-import { useCourseContext } from '@/contexts/CourseContext';
-import Loader from '@/components/Atoms/Loader';
-import NotFoundError from '@/components/Atoms/NotFoundError';
-import { AnimatePresence } from 'framer';
-import { TopicDetails } from '@/components/Atoms/Course/CourseTopicDetails';
-import SideBar from '@/components/Atoms/Course/CourseSidebar';
-import MobileSideBar from '@/components/Atoms/Course/CourseMobileSideBar';
-import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import { baseUrl } from '@/components/utils/baseURL';
-import { useAuth } from '@/contexts/AuthContext';
-import axiosInstance from '@/components/utils/axiosInstance';
-import { AxiosError } from 'axios';
-import { TopicContextProvider } from '@/contexts/TopicContext';
-import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
-import { ChevronLeft, ConstructionOutlined } from '@mui/icons-material';
-import { Alert, Snackbar } from '@mui/material';
-import PageNotFound from '../PageNotFound';
-import EmailVerifyModal from '@/components/Molecules/Modal/EmailVerifyModal';
+} from "@/components/utils/types";
+import { useRouter } from "next/router";
+import CourseModal from "@/components/Molecules/Modal/CourseModal";
+import { useCourseContext } from "@/contexts/CourseContext";
+import Loader from "@/components/Atoms/Loader";
+import NotFoundError from "@/components/Atoms/NotFoundError";
+import { AnimatePresence } from "framer";
+import { TopicDetails } from "@/components/Atoms/Course/CourseTopicDetails";
+import SideBar from "@/components/Atoms/Course/CourseSidebar";
+import MobileSideBar from "@/components/Atoms/Course/CourseMobileSideBar";
+import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
+import { baseUrl } from "@/components/utils/baseURL";
+import { useAuth } from "@/contexts/AuthContext";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { AxiosError } from "axios";
+import { TopicContextProvider } from "@/contexts/TopicContext";
+import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
+import { ChevronLeft } from "@mui/icons-material";
+import { Alert, Snackbar } from "@mui/material";
+import PageNotFound from "../PageNotFound";
+import EmailVerifyModal from "@/components/Molecules/Modal/EmailVerifyModal";
 
 function collectLinearContentIds(data: TCourse): TContentId {
   const contentIds = [] as TContentId;
@@ -84,7 +83,7 @@ const SubjectDetailsPage: FC = () => {
   } = useCourseContext();
   const [errorOccured, setErrorOccured] = useState(false);
   const [emailVerifyModal, setEmailVerifyModal] = useState(false);
-  const [activeTab, setActiveTab] = useState('Course Contents');
+  const [activeTab, setActiveTab] = useState("Course Contents");
 
   const { user } = useAuth();
   const userRole = user?.role;
@@ -98,32 +97,32 @@ const SubjectDetailsPage: FC = () => {
     try {
       // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
       dispatch({
-        type: 'FETCHING_COURSE',
+        type: "FETCHING_COURSE",
       });
 
       const response = await axiosInstance.get(`${baseUrl}/courses/${id}`);
-      console.log(response, 'response from axios');
+      console.log(response, "response from axios");
 
       // * Display the list of courses returned by the endpoint
       const responseData = response.data as TResponse<TCourse[]>;
-      console.log(responseData, 'this is the response data');
-      dispatch({ type: 'ADD_COURSE', payload: responseData.data });
+      console.log(responseData, "this is the response data");
+      dispatch({ type: "ADD_COURSE", payload: responseData.data });
     } catch (error: AxiosError | any) {
       if (error.status == 404) {
         dispatch({
-          type: 'ERROR_FETCHING_COURSE',
+          type: "ERROR_FETCHING_COURSE",
           payload: { status: 404, message: error.response.data.message },
         });
         setErrorOccured(true);
         return;
       } else if (error.status == 401) {
         // * if the error status is 401, it means the user is not authenticated, hence redirect the user to the login page
-        handleLogout().then(() => router.push('/auth/path/students/login/'));
+        handleLogout().then(() => router.push("/auth/path/students/login/"));
       }
       // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
       console.error(error);
       dispatch({
-        type: 'ERROR_FETCHING_COURSE',
+        type: "ERROR_FETCHING_COURSE",
         payload: {
           status: error.status,
           message: error.response.data.message,
@@ -131,16 +130,16 @@ const SubjectDetailsPage: FC = () => {
       });
       if (
         error.response.data.message ===
-        'Your account is not verified. Please check your email for the verification code.'
+        "Your account is not verified. Please check your email for the verification code."
       )
         setEmailVerifyModal(true);
       setErrorOccured(true);
     }
-  }, []);
+  }, [dispatch, router]);
 
   useEffect(() => {
     const newCourses = collectLinearContentIds(course.data!);
-    console.log(newCourses, 'linearIds');
+    console.log(newCourses, "linearIds");
 
     if (newCourses.length === 0) return;
 
@@ -153,18 +152,18 @@ const SubjectDetailsPage: FC = () => {
     //     .slice(lastViewedIndex + 1)
     //     .findIndex((course) => !course.isViewed);
 
-    console.log(newCourses, 'courses data');
+    console.log(newCourses, "courses data");
 
     // if (lastViewedIndex !== -1 && lastViewedIndex < newCourses.length - 1) {
     //   const nextCourse = newCourses[nextIndexToView];
     if (lastViewedIndex) {
-      router.push(`${router.asPath.split('?')[0]}?topic=${lastViewedIndex.id}`);
+      router.push(`${router.asPath.split("?")[0]}?topic=${lastViewedIndex.id}`);
     } else {
       //I think we should instead redirect to the first course that has not being viewed instead of the on after the last viewed one.
       newCourses.length > 1 &&
-        router.push(`${router.asPath.split('?')[0]}?topic=${newCourses[0].id}`);
+        router.push(`${router.asPath.split("?")[0]}?topic=${newCourses[0].id}`);
     }
-  }, [course.data]);
+  }, [course.data, router]);
 
   /**
    * * Function responsible for closing the modal and clearing the form state
@@ -174,7 +173,7 @@ const SubjectDetailsPage: FC = () => {
   };
 
   useEffect(() => {
-    if (subjectId) getCourse((subjectId as string) || 'nil');
+    if (subjectId) getCourse((subjectId as string) || "nil");
   }, [getCourse, subjectId]);
 
   return (
@@ -184,10 +183,10 @@ const SubjectDetailsPage: FC = () => {
           <CourseModal
             formState={modalFormState || ({} as any)}
             setFormState={setModalFormState || ((() => {}) as any)}
-            type={type || 'chapter'}
+            type={type || "chapter"}
             handleModalClose={handleCloseModal}
             modalOpen={true}
-            mode={mode || 'create'}
+            mode={mode || "create"}
             handleAction={handleAction || ((() => {}) as any)}
             handleDelete={handleDelete || ((() => {}) as any)}
             requestState={modalRequestState}
@@ -206,7 +205,7 @@ const SubjectDetailsPage: FC = () => {
               <Loader />
             ) : course.error ? (
               <div className='w-full h-full flex items-center justify-center'>
-                {typeof course.error === 'object' &&
+                {typeof course.error === "object" &&
                 course.error.status === 404 ? (
                   <>
                     <NotFoundError msg={course.error.message} />
@@ -223,10 +222,10 @@ const SubjectDetailsPage: FC = () => {
                     <BackButton />
 
                     <span className='text-2xl max-sm:text-lg font-medium text-dark font-roboto'>
-                      {course.data?.title || 'Loading...'}
+                      {course.data?.title || "Loading..."}
                     </span>
                   </div>
-                  {userRole === 'Teacher' && (
+                  {userRole === "Teacher" && (
                     <div className='flex gap-4 items-center'>
                       {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
                       <div
@@ -235,7 +234,7 @@ const SubjectDetailsPage: FC = () => {
                       >
                         <i
                           className={`fa fa-${
-                            showSideBar ? 'xmark' : 'bars'
+                            showSideBar ? "xmark" : "bars"
                           } text-primary`}
                         ></i>
                       </div>
@@ -278,13 +277,13 @@ const SubjectDetailsPage: FC = () => {
                   {/* SIDEBAR */}
                   <div className='max-md:space-y-6 relative'>
                     <div className='w-full flex gap-0 md:hidden'>
-                      {['Course Contents', 'Q/A Section'].map((slug, i) => (
+                      {["Course Contents", "Q/A Section"].map((slug, i) => (
                         <>
                           <div
                             className={`px-7 py-2 font-medium text-sm cursor-pointer transition ${
                               activeTab === slug
-                                ? 'border-primary border-opacity-70 border-b-2 bg-[#32A8C41A] text-primary'
-                                : ''
+                                ? "border-primary border-opacity-70 border-b-2 bg-[#32A8C41A] text-primary"
+                                : ""
                             }`}
                             onClick={() => setActiveTab(slug)}
                             key={i}
@@ -296,13 +295,13 @@ const SubjectDetailsPage: FC = () => {
                     </div>
                     <div className='relative'>
                       <div className='flex-none relative w-full block'>
-                        <SideBar courseId={(subjectId as string) || ''} />
+                        <SideBar courseId={(subjectId as string) || ""} />
                       </div>
                       {/* MOBILE SIDEBAR */}
                       <AnimatePresence>
                         {showSideBar && (
                           <MobileSideBar
-                            subjectid={(subjectId as string) || ''}
+                            subjectid={(subjectId as string) || ""}
                           />
                         )}
                       </AnimatePresence>
@@ -324,7 +323,7 @@ const SubjectDetailsPage: FC = () => {
               open={errorOccured}
               onClose={() => setErrorOccured(false)}
               autoHideDuration={6000}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               className='!z-[999]'
             >
               <Alert severity='info' onClose={() => setErrorOccured(false)}>
@@ -357,4 +356,4 @@ export const BackButton = () => {
   );
 };
 
-export default withAuth('Student', SubjectDetailsPage);
+export default withAuth("Student", SubjectDetailsPage);

@@ -100,11 +100,11 @@ const AdminNav: React.FC<AdminNavType> = ({
       </div>
       <div className='uppercase max-sm:flex hidden items-center font-semibold'>
         <div className=''>
-          <Image src={Logo} width={70} height={70} alt='school logo' />
+          <Image src={Logo} width={70} height={70} alt='Olive Grove' />
         </div>
-        <span>olive groove school</span>
+        <span>Olive Grove</span>
       </div>
-      <div className='flex flex-col md:flex-row items-center md:justify-between w-fit md:w-full'>
+      <div className='flex flex-col md:flex-row items-center md:justify-between w-fit md:w-full pb-2'>
         <div className='max-sm:hidden flex flex-col order-2 space-y-1 pb-2 md:order-1 w-full'>
           <span className='leading-4 font-roboto font-medium text-md md:text-xl text-dark  w-full my-auto'>
             {title ? title : firstTitle}
@@ -123,7 +123,7 @@ const AdminNav: React.FC<AdminNavType> = ({
           <button className='flex items-center  justify-center sm:justify-end'>
             <NotificationIcon />
           </button>
-          <div className='w-8 h-7 max-sm:hidden md:w-9 md:h-9 overflow-hidden'>
+          <div className='w-7 h-7 max-sm:hidden md:w-9 md:h-9 overflow-hidden'>
             <Image
               src={!profileImage ? dummyImage : profileImage}
               width={300}
@@ -141,8 +141,8 @@ const AdminNav: React.FC<AdminNavType> = ({
 function NotificationIcon() {
   return (
     <svg
-      width='28'
-      height='28'
+      width='21'
+      height='21'
       viewBox='0 0 28 28'
       fill='none'
       className='w-6'
