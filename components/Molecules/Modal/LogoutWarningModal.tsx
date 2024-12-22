@@ -1,22 +1,13 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
 import Button from "@/components/Atoms/Button";
-import { TFetchState, TWarningModalProps } from "@/components/utils/types";
-import { CircularProgress } from "@mui/material";
+import { TWarningModalProps } from "@/components/utils/types";
 
-export default function WarningModal({
+export default function LogoutWarningModal({
   modalOpen,
   handleModalClose,
   handleConfirm,
-  content,
-  subtext,
-  requestState,
-}: Omit<TWarningModalProps, "handleConfirm"> & {
-  content: string;
-  subtext: string;
-  requestState: TFetchState<any>;
-  handleConfirm: () => Promise<boolean> | undefined;
-}) {
+}: TWarningModalProps) {
   return (
     <div>
       <Modal
@@ -29,10 +20,11 @@ export default function WarningModal({
             <WarningSVG />
           </div>
           <strong className="font-roboto text-[19px] sm:text-[23px] text-center text-dark w-full">
-            {content}
+            Are you sure you want to logout
           </strong>
           <span className="text-center max-w-[300px] text-gray-400">
-            {subtext}
+            You will be redirected to the login page to enter your login
+            information
           </span>
           <div className="flex items-center justify-center gap-5 sm:gap-6 w-full">
             <Button
@@ -46,17 +38,12 @@ export default function WarningModal({
             </Button>
             <Button
               size="sm"
-              disabled={requestState.loading}
-              onClick={async () => {
-                const result = handleConfirm && (await handleConfirm());
-                result && handleModalClose();
+              onClick={() => {
+                handleConfirm && handleConfirm();
+                handleModalClose();
               }}
             >
-              {requestState.loading ? (
-                <CircularProgress size={15} color="inherit" />
-              ) : (
-                "Confirm"
-              )}
+              Confirm
             </Button>
           </div>
         </div>

@@ -3,7 +3,7 @@ import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
 import { useSidebarContext } from "@/contexts/SidebarContext";
 import Meta from "@/components/Atoms/Meta";
-import WarningModal from "../Modal/WarningModal";
+import LogoutWarningModal from "../Modal/LogoutWarningModal";
 import { useRouter } from "next/router";
 import CustomCursor from "../CustomCursor";
 import { handleLogout } from "./Admin.Layout";
@@ -43,7 +43,7 @@ const TeachersWrapper = ({
         {/*<customcursor />*/}
 
         <Meta title={metaTitle || "Dashboard"} description={description} />
-        <WarningModal
+        <LogoutWarningModal
           handleModalClose={handleWarning}
           handleConfirm={() => {
             handleLogout().then(() =>

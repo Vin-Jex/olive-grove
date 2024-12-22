@@ -29,7 +29,7 @@ export default function CourseModal({
   setFormState,
   requestState,
   mode,
-  classes,
+  departments,
 }: TCourseModalProps) {
   const [selectedImage, setSelectedImage] = useState<
     Blob | null | string | undefined
@@ -190,11 +190,11 @@ export default function CourseModal({
           {type === "course" && (
             <Select
               name="classId"
-              options={classes || []}
+              options={departments || []}
               required
               placeholder="Select class"
               onChange={handleChange}
-              {...(formState.classId ? { value: formState.classId } : {})}
+              {...(formState.department ? { value: formState.department } : {})}
             />
           )}
           <Input

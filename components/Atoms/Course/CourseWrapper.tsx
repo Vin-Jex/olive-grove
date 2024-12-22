@@ -59,7 +59,7 @@ const Wrapper: FC<{
           editItem(
             sectionType || "chapter",
             setModalRequestState,
-            formState,
+            formState || { title: "" },
             dispatch,
             "DELETE"
           ),

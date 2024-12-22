@@ -30,12 +30,12 @@ type TCourseReducerAction =
 
 type TModalMetadata = {
   type: "course" | "chapter" | "lesson" | "topic" | undefined;
-  mode: "create" | "edit" | undefined;
+  mode: "create" | "edit" | "delete" | undefined;
   handleAction?: (
     formData: TCourseModalFormData
   ) => Promise<boolean> | undefined;
   handleDelete?: (
-    formData: TCourseModalFormData
+    formData?: TCourseModalFormData
   ) => Promise<boolean> | undefined;
   formData: TCourseModalFormData | undefined;
 };
@@ -99,7 +99,7 @@ const courseReducer: Reducer<
       const newState = { ...state.data };
       newState.title = action.payload.title || "";
       newState.description = action.payload.description || "";
-      newState.classId = action.payload.classId || "";
+      newState.department = action.payload.classId || "";
       action.payload.courseCover &&
         (newState.courseCover = action.payload.courseCover);
 
@@ -417,7 +417,7 @@ const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const initialFormState: TCourseModalFormData = {
     title: "",
     _id: "",
-    classId: "",
+    department: "",
     description: "vvv",
     image: "",
     topicNote: "",

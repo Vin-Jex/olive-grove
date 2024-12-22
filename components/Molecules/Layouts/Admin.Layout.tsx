@@ -3,7 +3,7 @@ import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
 import { useSidebarContext } from "@/contexts/SidebarContext";
 import Meta from "@/components/Atoms/Meta";
-import WarningModal from "../Modal/WarningModal";
+import LogoutWarningModal from "../Modal/LogoutWarningModal";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import CustomCursor from "../CustomCursor";
@@ -41,7 +41,6 @@ export const handleLogout = async () => {
     Cookies.remove("refreshToken");
     Cookies.remove("role");
     Cookies.remove("userId");
-
 
     // setTimeout(() => {
     //   window.location.href = '/auth/path/teachers/login/';
@@ -83,7 +82,7 @@ const AdminsWrapper = ({
       {/*<customcursor />*/}
 
       <Meta title={metaTitle || "Dashboard"} description={description} />
-      <WarningModal
+      <LogoutWarningModal
         handleModalClose={handleWarning}
         handleConfirm={() => {
           handleLogout().then(() => router.push("/auth/path/teachers/login/"));
@@ -94,7 +93,6 @@ const AdminsWrapper = ({
       <aside
         className={`absolute left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? "translate-x-0" : "-translate-x-full"
-
         } lg:translate-x-0`}
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
