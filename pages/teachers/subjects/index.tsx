@@ -5,7 +5,7 @@ import SearchInput from "@/components/Atoms/SearchInput";
 import Button from "@/components/Atoms/Button";
 import Select from "@/components/Atoms/Select";
 import {
-  TClass,
+  TDepartment,
   TCourse,
   TFetchState,
   THandleSearchChange,
@@ -44,7 +44,7 @@ const Subjects: FC = () => {
     error: undefined,
   });
   const [departments, setDepartments] = useState<
-    TFetchState<TClass[] | undefined>
+    TFetchState<TDepartment[] | undefined>
   >({
     data: [],
     loading: false,
@@ -141,7 +141,7 @@ const Subjects: FC = () => {
       const response = await axiosInstance.get(`/department/all`);
 
       // * Display the list of departments returned by the endpoint
-      const responseData = response.data as TResponse<TClass[]>;
+      const responseData = response.data as TResponse<TDepartment[]>;
       setDepartments({
         data: responseData.data,
         loading: false,

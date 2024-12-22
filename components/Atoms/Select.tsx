@@ -21,8 +21,10 @@ const Select: FC<
     HTMLSelectElement
   >
 > = ({
+
   options,
   name,
+  className,
   required,
   onChange,
   placeholder,
@@ -75,7 +77,7 @@ const Select: FC<
         } !rounded-lg capitalize ${
           reduceWidth ? "md:w-[200px]" : ""
         } h-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext ${
-          otherAtributes.className || ""
+          className || ""
         } appearance-none focus:outline-none !pr-10`}
       >
         {placeholder && <option value={undefined}>{placeholder}</option>}
@@ -109,6 +111,7 @@ const Select: FC<
         </svg>
       </div>
     </div>
+
   );
 };
 

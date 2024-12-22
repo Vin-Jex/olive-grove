@@ -4,17 +4,8 @@ import Button, { ButtonProps } from "@/components/Atoms/Button";
 import Input from "@/components/Atoms/Input";
 import TextEditor from "@/components/Atoms/TextEditor";
 import File from "@/components/Atoms/File";
-import { title } from "process";
 import { capitalize } from "@/components/utils/utils";
-import {
-  TChapter,
-  TClass,
-  TCourse,
-  TCourseModalProps,
-  TFetchState,
-  TLesson,
-  TSection,
-} from "@/components/utils/types";
+import { TCourse, TCourseModalProps } from "@/components/utils/types";
 import Select from "@/components/Atoms/Select";
 import { CircularProgress } from "@mui/material";
 import { Info } from "@mui/icons-material";
@@ -163,7 +154,7 @@ export default function CourseModal({
 
   useEffect(() => {
     setPreviewImage((formState as TCourse).courseCover as string);
-  }, []);
+  }, [formState]);
 
   return (
     <div>

@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
 import React, { useCallback, useEffect, useState } from "react";
 import SubjectCard from "@/components/Molecules/Card/SubjectCard";
@@ -7,7 +6,7 @@ import withAuth from "@/components/Molecules/WithAuth";
 import { TFetchState } from "@/components/utils/types";
 // import { fetchCourses } from "@/components/utils/course";
 import dummyImage from "@/images/dummy-img.jpg";
-import ClassModal from "@/components/Molecules/Modal/ClassModal";
+import DepartmentModal from "@/components/Molecules/Modal/DepartmentModal";
 import { baseUrl } from "@/components/utils/baseURL";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { AxiosError } from "axios";
@@ -17,41 +16,9 @@ import SearchLayout from "@/components/Molecules/SearchLayout";
 import Select from "@/components/Atoms/Select";
 import Image from "next/image";
 import useDebounce from "@/components/utils/useDebounce";
+import Loader from "@/components/Atoms/Loader";
 
-export const subjectData = [
-  {
-    subject: "Further Mathematics",
-    role: "Teacher",
-    time: "09:00AM - 10:30AM",
-    topic: "Calculus",
-    name: "Dr. Ayodeji Emmanuel",
-    btnLink1: "#",
-  },
-  {
-    subject: "Chemistry",
-    role: "Teacher",
-    time: "09:00AM - 10:30AM",
-    topic: "Organic Chemistry",
-    name: "Dr. Ayodeji Emmanuel",
-    btnLink1: "#",
-  },
-  {
-    subject: "Physics",
-    role: "Teacher",
-    time: "09:00AM - 10:30AM",
-    topic: "Motion",
-    name: "Dr. Ayodeji Emmanuel",
-    btnLink1: "#",
-  },
-  {
-    subject: "Mathematics",
-    role: "Teacher",
-    time: "09:00AM - 10:30AM",
-    topic: "Trigonomentry",
-    name: "Dr. Ayodeji Emmanuel",
-    btnLink1: "#",
-  },
-];
+
 
 type TCourse = {
   _id: string;
@@ -63,7 +30,7 @@ type TCourse = {
   };
 };
 
-const Classes = () => {
+const Lectures = () => {
   const [courses, setCourses] = useState<TFetchState<TCourse[]>>({
     data: [],
     loading: false,
@@ -113,7 +80,7 @@ const Classes = () => {
       }
       setCourses({ data: [], loading: false, error: "No courses found" });
     }
-  }, [router.query.search]); // Empty dependency array
+  }, [router]);
 
   const getFilteredCourses = useCallback(async () => {
     const searched = router.query.search as string;
@@ -149,7 +116,7 @@ const Classes = () => {
   // Separate effects for different concerns
   useEffect(() => {
     getCourses();
-  }, []); // Only run once when component mounts
+  }, [getCourses]);
 
   const patToUrl = useCallback(
     (searchValue: string) => {
@@ -190,22 +157,21 @@ const Classes = () => {
   }, [router.query.search, debouncedGetFilteredCourses]);
   return (
     <>
-      <ClassModal
-        type="class"
+      <DepartmentModal
+        type='lecture'
         handleModalClose={handleModal}
         modalOpen={lectureInfoModal!}
       />
       <StudentWrapper
-        title="Courses"
-        firstTitle="Courses"
-        remark="Manage and get updates on your courses"
-        metaTitle="Olive Groove ~ Classes"
+        title='Courses'
+        firstTitle='Courses'
+        remark='Manage and get updates on your courses'
+        metaTitle='Olive Groove ~ Classes'
       >
-        <div className="p-12 space-y-5">
+        <div className='sm:p-12 p-5 space-y-5'>
           {/* Title */}
 
-
-          <div className='flex items-center justify-between'>
+          <div className='flex items-center max-sm:gap-5 justify-between'>
             <div className='relative'>
               <SearchLayout value={searched as string} onChange={setSearched} />
 
@@ -218,7 +184,7 @@ const Classes = () => {
               <div
                 className={`flex flex-col gap-1 w-[20rem] absolute bg-white  z-20 ${
                   filteredCourses.data.length > 0 &&
-                  'border border-b border-r border-t-0 border-l rounded-br-md rounded-bl-md'
+                  "border border-b border-r border-t-0 border-l rounded-br-md rounded-bl-md"
                 }`}
               >
                 {filteredCourses.data.length > 0 &&
@@ -230,7 +196,7 @@ const Classes = () => {
                           <Image
                             width={300}
                             height={300}
-                            className="h-full w-full object-cover"
+                            className='h-full w-full object-cover'
                             src={(subject.courseCover as string) || dummyImage}
                             alt={subject.description || "course searched"}
                           />
@@ -238,7 +204,7 @@ const Classes = () => {
 
                         <div className=' flex-shrink-0'>
                           {subject.title.slice(0, 20) ||
-                            'no description available'}
+                            "no description available"}
                         </div>
                       </div>
                     </Link>
@@ -246,36 +212,40 @@ const Classes = () => {
               </div>
             </div>
             <Select
-              name=""
-              reduceWidth
+              name=''
+              className='max-w-[120px] max-sm:max-w-[180px]'
               onChange={() => {}}
               options={["ascending", "latest"]}
-              placeholder="filter"
-              value=""
+              placeholder='filter'
+              value=''
               required
             />
           </div>
-
-          <div className="grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-fit w-full gap-3 !mt-8">
-            {courses.data.map((subject, index) => (
-              <SubjectCard
-                key={subject._id}
-                name={"No Teacher Name"}
-                role={"Teacher"}
-                // type="lecture"
-                time={"time"}
-                topic={subject.title as string}
-                subject={subject.title}
-                toggleModal={handleModal}
-                btnLink2={`/students/lectures/${subject._id}`}
-              />
-            ))}
-          </div>
+          {courses.loading ? (
+            <div className='h-[calc(100vh-20rem)]'>
+              <Loader />
+            </div>
+          ) : (
+            <div className='grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-fit w-full gap-3 !mt-8'>
+              {courses.data.map((subject, index) => (
+                <SubjectCard
+                  key={subject._id}
+                  name={"No Teacher Name"}
+                  role={"Teacher"}
+                  // type="lecture"
+                  time={"time"}
+                  topic={subject.title as string}
+                  subject={subject.title}
+                  toggleModal={handleModal}
+                  btnLink2={`/students/lectures/${subject._id}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </StudentWrapper>
     </>
   );
 };
-// export default Classes;
 
-export default withAuth("Student", Classes);
+export default withAuth("Student", Lectures);

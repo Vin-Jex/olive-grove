@@ -10,7 +10,7 @@ import {
   TAcademicWeek,
   TAssessment,
   TAssessmentType,
-  TClass,
+  TDepartment,
   TCourse,
   TFetchState,
   TTeacher,
@@ -20,49 +20,6 @@ import AsssessmentModal from "@/components/Molecules/Modal/AsssessmentModal";
 import { fetchCourses } from "@/components/utils/course";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { useAuth } from "@/contexts/AuthContext";
-
-const demo_assessments = [
-  {
-    _id: "assessmentId123",
-    class: {
-      _id: "",
-      name: "Class A",
-      category: "Primary",
-      description: "A primary-level class.",
-    },
-    subject: {
-      _id: "courseId456",
-      title: "Mathematics 101",
-    },
-    type: {
-      _id: "",
-      name: "Quiz",
-    },
-    teacher: {
-      _id: "",
-      name: "John Doe",
-      password: "",
-      teacherID: "teacher123",
-      email: "johndoe@example.com",
-      tel: 1234567890,
-      address: "123 Main Street, City, Country",
-      profileImage:
-        "https://images.unsplash.com/photo-1721332155484-5aa73a54c6d2?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      role: "Teacher",
-    },
-    academicWeek: {
-      _id: "",
-      weekNumber: 1,
-      startDate: new Date().toISOString(),
-      endDate: new Date().setDate(Date.now() + 7).toString(),
-      academicYear: "2024/2025",
-      isActive: true,
-    },
-    timeline: new Date().toISOString(),
-    description: "Demo assessment",
-    createdAt: "2024-09-01T10:00:00Z",
-  },
-];
 
 const Assessments = () => {
   const router = useRouter();
@@ -109,7 +66,7 @@ const Assessments = () => {
     error: undefined,
   });
   const [fetchClassesState, setFetchClassesState] = useState<
-    TFetchState<TClass[]>
+    TFetchState<TDepartment[]>
   >({
     data: [],
     loading: true,
@@ -324,7 +281,7 @@ const Assessments = () => {
   /**
    * Function to retrieve the list of classes
    */
-  const getClasses = useCallback(async () => {
+  const geTClasses = useCallback(async () => {
     try {
       // Display loading state
       setFetchClassesState((prev) => ({
@@ -333,7 +290,7 @@ const Assessments = () => {
         error: undefined,
       }));
 
-      const response = await axiosInstance.get(`/classes/all`);
+      const response = await axiosInstance.get(`/department/all`);
 
       const { data } = response;
       // Display data
@@ -481,7 +438,7 @@ const Assessments = () => {
         setCreateAssessmentState((prev) => ({ ...prev, loading: false }));
       }
     },
-    [updateAssessments]
+    [updateAssessments, user?.id]
   );
 
   /**
@@ -497,7 +454,7 @@ const Assessments = () => {
       });
 
       try {
-        // Call the reusable getCourses function, passing the setClasses state updater
+        // Call the reusable getCourses function, passing the seTClasses state updater
         const courses = await fetchCourses(filter);
 
         // console.log("Get courses res", courses);
@@ -624,13 +581,13 @@ const Assessments = () => {
     getAssessmentTypes();
     getCourses();
     getAcademicWeeks();
-    getClasses();
+    geTClasses();
   }, [
     fetchAssessments,
     getAssessmentTypes,
     getCourses,
     getAcademicWeeks,
-    getClasses,
+    geTClasses,
   ]);
 
   return (
@@ -638,7 +595,7 @@ const Assessments = () => {
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode="create"
+        mode='create'
         handleModalClose={toogleModalCreate}
         modalOpen={openModalCreate}
         handleAction={createAssessment}
@@ -665,7 +622,7 @@ const Assessments = () => {
             value: type._id || "",
           })) || []
         }
-        assessmentClasses={
+        assessmenTClasses={
           fetchClassesState.data?.map((type) => ({
             display_value: type.name,
             value: type._id || "",
@@ -675,7 +632,7 @@ const Assessments = () => {
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode="edit"
+        mode='edit'
         handleModalClose={toogleModalEdit}
         modalOpen={openModalEdit}
         handleAction={editAssessment}
@@ -702,7 +659,7 @@ const Assessments = () => {
             value: type._id || "",
           })) || []
         }
-        assessmentClasses={
+        assessmenTClasses={
           fetchClassesState.data?.map((type) => ({
             display_value: type.name,
             value: type._id || "",
@@ -710,21 +667,21 @@ const Assessments = () => {
         }
       />
       <TeachersWrapper
-        title="Assessments"
-        metaTitle="Olive Groove ~ Assessments"
+        title='Assessments'
+        metaTitle='Olive Groove ~ Assessments'
       >
-        <div className="space-y-5 h-full">
+        <div className='space-y-5 h-full'>
           <>
-            <div className="flex flex-row items-center justify-between gap-4">
-              <div className="flex flex-col">
-                <span className="text-lg font-medium text-dark font-roboto">
+            <div className='flex flex-row items-center justify-between gap-4'>
+              <div className='flex flex-col'>
+                <span className='text-lg font-medium text-dark font-roboto'>
                   Explore your available assessments.
                 </span>
-                <span className="text-md text-subtext font-roboto">
+                <span className='text-md text-subtext font-roboto'>
                   Manage, edit and create assessments.
                 </span>
               </div>
-              <Button size="xs" width="fit" onClick={toogleModalCreate}>
+              <Button size='xs' width='fit' onClick={toogleModalCreate}>
                 <span>Create Assessment</span>
               </Button>
             </div>
@@ -741,7 +698,7 @@ const Assessments = () => {
                     teacher={assessment.teacher}
                     assessmentType={(assessment.type as TAssessmentType).name}
                     timeline={assessment.timeline}
-                    assessmentClass={(assessment.class as TClass).name}
+                    assessmenTClass={(assessment.class as TClass).name}
                     subject={(assessment.subject as TCourse)?.title || ""}
                     actionClick={() =>
                       toogleModalEdit({
@@ -769,7 +726,7 @@ const Assessments = () => {
             </div> */}
 
             {fetchAssessmentsState.loading ? (
-              <div className="h-full w-full">
+              <div className='h-full w-full'>
                 <Loader />
               </div>
             ) : fetchAssessmentsState.error ? (
@@ -783,21 +740,21 @@ const Assessments = () => {
               </>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6'>
                   {fetchAssessmentsState.data.map((assessment, index) => (
-                    <div key={index} className="mt-4 w-full space-y-2">
+                    <div key={index} className='mt-4 w-full space-y-2'>
                       <TeacherCard
                         academicWeekDate={
                           (assessment.academicWeek as TAcademicWeek).weekNumber
                         }
                         key={index}
-                        type="assessment"
+                        type='assessment'
                         teacher={assessment.teacher}
                         assessmentType={
                           (assessment.assessmentType as TAssessmentType).name
                         }
                         timeline={assessment.dueDate}
-                        assessmentClass={(assessment.class as TClass).name}
+                        assessmenTClass={(assessment.class as TDepartment).name}
                         subject={(assessment.subject as TCourse)?.title || ""}
                         actionClick={() =>
                           toogleModalEdit({

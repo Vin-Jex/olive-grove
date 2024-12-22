@@ -7,7 +7,7 @@ export type TSubject = {
 };
 
 type OptionalFields<T extends "get" | "post" = "get"> = {
-  department?: T extends "post" ? string : TClass;
+  department?: T extends "post" ? string : TDepartment;
   // courseInfo?: { description: string };
   chapterId?: string;
   topicNote?: string;
@@ -59,16 +59,19 @@ export type TResponse<T> = {
   data: T;
 };
 
+export type TErrorState = {
+  state: boolean | string | undefined;
+  status: number;
+  message: string;
+};
+
 export type TFetchState<T> = {
   data: T;
   loading: boolean;
-  error:
-    | undefined
-    | string
-    | { state: boolean | string | undefined; status: number; message: string };
+  error: undefined | string | TErrorState;
 };
 
-export type TClass = {
+export type TDepartment = {
   _id?: string;
   name: string;
   category: string;
@@ -156,7 +159,7 @@ export type TAssessment<T extends "post" | "get"> = {
   dueDate: string | Date;
   teacher: T extends "post" ? string : TTeacher;
   academicWeek: T extends "post" ? string : TAcademicWeek;
-  class: T extends "post" ? string : TClass;
+  class: T extends "post" ? string : TDepartment;
 };
 
 export type TStudent = {

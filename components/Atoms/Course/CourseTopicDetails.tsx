@@ -41,7 +41,7 @@ export function collectLinearContentIds(data: TCourse): string[] {
     if (item.lessons) {
       // Traverse lessons
       item.lessons.forEach((lesson: TLesson) => {
-        lesson._id && ids.push(lesson._id); // Add lesson ID
+        // lesson._id && ids.push(lesson._id); // Add lesson ID
         lesson.sections.forEach((section: TSection) => {
           section._id && ids.push(section._id); // Add section ID
           section.subsections.forEach((subsection: TSubSection) => {
@@ -155,10 +155,6 @@ export const TopicDetails: FC<{
       // alert("Video completed!");
       setVideoCompletedIsTriggered(true);
     }
-
-    console.log("VIDEO DURATION", duration);
-    console.log("VIDEO TIMESTAMP", currentTime);
-    console.log("PERCENTAGE", percentage);
   };
 
   /**
@@ -184,9 +180,6 @@ export const TopicDetails: FC<{
   const markTopicAsRead = useCallback(async () => {
     // * Get the access token from the cookies
     const jwt = Cookies.get("jwt");
-
-    console.log("Marking Topic as read");
-
     // * Make an API request to retrieve the list of courses created by this teacher
     const response = await fetch(
       `${baseUrl}/courses/mark-as-viewed/${capitalize(topicDetails.type)}/${
@@ -210,8 +203,6 @@ export const TopicDetails: FC<{
       return false;
     }
 
-    console.log("TOPIC CHECKED SUCCESSFULLY");
-
     return true;
   }, [topicDetails.topic?._id, topicDetails.type]);
 
@@ -221,13 +212,7 @@ export const TopicDetails: FC<{
     setNoteCompletedIsTriggered(topicDetails.topic?.viewed || false);
     setCheckedState(topicDetails.topic?.viewed || false);
     fetchNavigate();
-
-    console.log(
-      "NEW TOPIC",
-      topicDetails.topic?.title,
-      topicDetails.topic?.viewed
-    );
-  }, [topicDetails.topic]);
+  }, [fetchNavigate, topicDetails.topic]);
 
   useEffect(() => {
     if (
@@ -293,14 +278,14 @@ export const TopicDetails: FC<{
           {
             slug: "notes",
             content: (
-              <div className="flex w-full gap-2 flex-col">
+              <div className='flex w-full gap-2 flex-col'>
                 <div
-                  className="lg:max-h-[80vh] w-full overflow-y-auto rounded-sm px-2"
+                  className='lg:max-h-[80vh] w-full overflow-y-auto rounded-sm px-2'
                   dangerouslySetInnerHTML={{
                     __html: topicDetails?.topic.topicNote || "",
                   }}
                 ></div>
-                <div className="w-full">
+                <div className='w-full'>
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -322,10 +307,10 @@ export const TopicDetails: FC<{
   return (
     <>
       {topicDetails.topic ? (
-        <div className="flex flex-col w-full gap-4">
+        <div className='flex flex-col w-full gap-4'>
           {/* TITLE */}
 
-          <div className="text-2xl font-bold bg-primary bg-opacity-10 min-[1560px]:w-[64rem] rounded-lg px-3 py-4">
+          <div className='text-xl max-sm:text-lg font-medium font-roboto bg-primary bg-opacity-10  rounded-lg px-5 py-4'>
             {topicDetails.topic?.title}
           </div>
           {/* TAB */}
@@ -356,7 +341,7 @@ export const TopicDetails: FC<{
             <div>
               {
                 <NotFoundError
-                  msg="No notes provided"
+                  msg='No notes provided'
                   width={320}
                   height={320}
                   img={img404.src}
@@ -365,18 +350,32 @@ export const TopicDetails: FC<{
             </div>
           )}
           {/* Previous and next button */}
-          <div className="flex w-full justify-between py-5">
+          <div className='flex w-full justify-between py-5'>
             <Button
               onClick={handlePreviousTab}
-              size="xs"
+              disabled={
+                getPreviousId &&
+                !getPreviousId(topicDetails.topic._id as string, contentIds)
+              }
+              size='xs'
+              className='disabled:!border-none'
               // className="text-primary !border-primary border"
-              color="outline"
-              width="fit"
+              color='outline'
+              width='fit'
             >
               Previous Topic
             </Button>
 
-            <Button onClick={handleNextTab} size="xs" color="blue" width="fit">
+            <Button
+              disabled={
+                getNextId &&
+                !getNextId(topicDetails.topic._id as string, contentIds)
+              }
+              onClick={handleNextTab}
+              size='xs'
+              color='blue'
+              width='fit'
+            >
               Next Topic
             </Button>
           </div>
@@ -394,9 +393,9 @@ export const TopicDetails: FC<{
           onClose={() => setTopicIsCompleted(false)}
           autoHideDuration={6000}
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          className="!z-[999]"
+          className='!z-[999]'
         >
-          <Alert severity="success" onClose={() => setTopicIsCompleted(false)}>
+          <Alert severity='success' onClose={() => setTopicIsCompleted(false)}>
             Topic completed!
           </Alert>
         </Snackbar>

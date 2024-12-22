@@ -59,15 +59,16 @@ const Calendar = () => {
     );
   }
   return (
-    <div className='bg-white border p-6 h-full rounded-md'>
-      <header className='flex justify-between items-center'>
-        <button onClick={handlePreviousMonth}>
+    <div className='bg-white border p-6 h-full rounded-lg'>
+      <header className='flex justify-between items-center w-full'>
+        <button className='' onClick={handlePreviousMonth}>
           <ChevronLeft />
         </button>
-        <span>
+        <span className=' text-center'>
           {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
         </span>
         <button
+          className=''
           disabled={
             currentDate.getTime() ===
             new Date(
@@ -81,7 +82,7 @@ const Calendar = () => {
           <ChevronRight />
         </button>
       </header>
-      <div className='grid grid-cols-7 text-sm py-5'>
+      <div className='grid grid-cols-7 text-[#B5BEC6] gap-x-8 text-[12px] py-5'>
         <span>SUN</span>
         <span>MON</span>
         <span>TUE</span>
@@ -90,22 +91,24 @@ const Calendar = () => {
         <span>FRI</span>
         <span>SAT</span>
       </div>
-      <main className='grid gap-y-4 grid-cols-7'>
+      <main className='grid gap-y-2 gap-x-5 grid-cols-7 text-[#4A5660]'>
         {Array(currentMontFirstDay.getDay() + lastDayOfCurrentMonth.getDate())
           .fill(0)
           .map((_, i) => (
-            <div key={i}>
+            <div
+              key={i}
+              className={`${
+                markToday(currentDate, i) && 'bg-[#3F51B5] text-white '
+              }  h-[35px] relative pb-2 pt-2 cursor-pointer  w-[35px] flex items-center justify-center px-2 rounded-full`}
+            >
               {i < 7 && i < currentMontFirstDay.getDay() ? (
                 <span></span>
               ) : (
-                <span
-                  className={`font-semibold ${
-                    markToday(currentDate, i) &&
-                    'bg-blue-600 rounded-full p-[4px] -ml-1 text-white '
-                  }`}
+                <div
+                  className={`font-semibold absolute -translate-y-1/2 top-1/2 text-center align-middle`}
                 >
                   {i + 1 - currentMontFirstDay.getDay()}
-                </span>
+                </div>
               )}
             </div>
           ))}
