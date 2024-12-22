@@ -5,7 +5,7 @@ import SearchInput from "@/components/Atoms/SearchInput";
 import Button from "@/components/Atoms/Button";
 import Select from "@/components/Atoms/Select";
 import {
-  TClass,
+  TDepartment,
   TCourse,
   TFetchState,
   THandleSearchChange,
@@ -28,7 +28,9 @@ const Subjects: FC = () => {
     loading: true,
     error: undefined,
   });
-  const [classes, setClasses] = useState<TFetchState<TClass[] | undefined>>({
+  const [classes, seTClasses] = useState<
+    TFetchState<TDepartment[] | undefined>
+  >({
     data: [],
     loading: false,
     error: undefined,
@@ -63,7 +65,7 @@ const Subjects: FC = () => {
       });
 
       try {
-        // Call the reusable getCourses function, passing the setClasses state updater
+        // Call the reusable getCourses function, passing the seTClasses state updater
         const courses = await fetchCourses(filter);
 
         if (typeof courses === "object") {
@@ -110,10 +112,10 @@ const Subjects: FC = () => {
   /**
    * * Function responsible from retrieving the classes on the platform
    */
-  const getClasses = async (filter?: { query: "title"; value: string }) => {
+  const geTClasses = async (filter?: { query: "title"; value: string }) => {
     try {
       // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
-      setClasses({
+      seTClasses({
         data: [],
         loading: true,
         error: undefined,
@@ -121,11 +123,11 @@ const Subjects: FC = () => {
 
       // * Get the access token from the cookies
       // * Make an API request to retrieve the list of classes created by this teacher
-      const response = await axiosInstance.get(`/classes/all`);
+      const response = await axiosInstance.get(`/department/all`);
 
       // * Display the list of classes returned by the endpoint
-      const responseData = response.data as TResponse<TClass[]>;
-      setClasses({
+      const responseData = response.data as TResponse<TDepartment[]>;
+      seTClasses({
         data: responseData.data,
         loading: false,
         error: undefined,
@@ -134,7 +136,7 @@ const Subjects: FC = () => {
       console.error(error);
       // * If it's a 404 error, display message that classes couldn't be found
       if (error?.response?.status == 404) {
-        setClasses({
+        seTClasses({
           data: [],
           loading: false,
           error: "No class found",
@@ -143,7 +145,7 @@ const Subjects: FC = () => {
       }
 
       // * If it's any other error code, display default error msg
-      setClasses({
+      seTClasses({
         data: [],
         loading: false,
         error: "An error occurred while retrieving classes",
@@ -298,7 +300,7 @@ const Subjects: FC = () => {
 
   useEffect(() => {
     getCourses();
-    getClasses();
+    geTClasses();
   }, [getCourses]);
 
   return (
@@ -306,10 +308,10 @@ const Subjects: FC = () => {
       <CourseModal
         formState={formState}
         setFormState={setFormState}
-        type="course"
+        type='course'
         handleModalClose={handleCloseModal}
         modalOpen={openModalCreate}
-        mode="create"
+        mode='create'
         handleAction={createCourse}
         requestState={createCourseRes}
         classes={classes.data?.map((each) => ({
@@ -318,20 +320,20 @@ const Subjects: FC = () => {
         }))}
       />
 
-      <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
-        <div className="h-full">
+      <TeachersWrapper title='Subjects' metaTitle='Olive Groove ~ Subjects'>
+        <div className='h-full'>
           {courses.loading ? (
             <Loader />
           ) : (
             <>
               {/* Title */}
-              <div className="flex justify-between items-start">
+              <div className='flex justify-between items-start'>
                 {typeof courses.error === "object" &&
                   courses.error.status === 404 && (
                     <Button
                       onClick={() => setOpenModalCreate((prev) => !prev)}
-                      width="fit"
-                      size="xs"
+                      width='fit'
+                      size='xs'
                     >
                       <Add />
                       <span>Add subject</span>
@@ -340,11 +342,11 @@ const Subjects: FC = () => {
               </div>
               {/* Searchbars and select fields */}
               {!courses.error && (
-                <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
-                  <div className="flex justify-start items-center gap-4 w-full md:w-auto">
+                <div className='flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center'>
+                  <div className='flex justify-start items-center gap-4 w-full md:w-auto'>
                     <SearchInput
-                      shape="rounded-lg"
-                      placeholder="Search for Subjects"
+                      shape='rounded-lg'
+                      placeholder='Search for Subjects'
                       searchResults={searchResults}
                       setSearchResults={setSearchResults}
                       initialData={courses.data}
@@ -357,19 +359,19 @@ const Subjects: FC = () => {
                           value: type._id || "",
                         })) || []
                       }
-                      name="class"
+                      name='class'
                       required
                       onChange={handleClassFilter}
-                      placeholder="Select class"
-                      inputSize="sm"
-                      className="!py-3"
+                      placeholder='Select class'
+                      inputSize='sm'
+                      className='!py-3'
                     />
                   </div>
                   <div>
                     <Button
                       onClick={() => setOpenModalCreate((prev) => !prev)}
-                      width="fit"
-                      size="xs"
+                      width='fit'
+                      size='xs'
                     >
                       <Add />
                       <span>Add subject</span>
@@ -378,7 +380,7 @@ const Subjects: FC = () => {
                 </div>
               )}
               {courses.error ? (
-                <div className="w-full flex items-center justify-center">
+                <div className='w-full flex items-center justify-center'>
                   {typeof courses.error === "object" &&
                     (courses.error.status === 404 ? (
                       <>
@@ -395,15 +397,15 @@ const Subjects: FC = () => {
                 </div>
               ) : searchResults.length < 1 ? (
                 // 404 image
-                <div className="w-full flex items-center justify-center">
-                  <NotFoundError msg="No courses found" />
+                <div className='w-full flex items-center justify-center'>
+                  <NotFoundError msg='No courses found' />
                 </div>
               ) : (
                 <>
                   {/* Content */}
-                  <div className="mt-4">
+                  <div className='mt-4'>
                     {/* Courses */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4">
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4'>
                       {searchResults &&
                         searchResults.map((course, i) => (
                           <Course course={course} key={i + course.title} />

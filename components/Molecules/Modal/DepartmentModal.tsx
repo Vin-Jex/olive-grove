@@ -2,19 +2,19 @@ import React from "react";
 import Modal from "./Modal";
 import Button from "@/components/Atoms/Button";
 
-type ClassModalProps = {
+type DepartmentModalProps = {
   modalOpen: boolean;
   handleModalClose: () => void;
   handleAction?: () => void;
-  type: "class" | "assignment";
+  type: "lecture" | "assessment";
 };
 
-export default function ClassModal({
+export default function DepartmentModal({
   modalOpen,
   handleModalClose,
   handleAction,
   type,
-}: ClassModalProps) {
+}: DepartmentModalProps) {
   return (
     <div>
       <Modal
@@ -25,7 +25,7 @@ export default function ClassModal({
         {/* Header Section */}
         <div className='flex flex-col items-center py-6 md:py-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-t-3xl'>
           <span className='text-4xl font-semibold font-roboto'>
-            {type === "class" ? "Physics Class" : "Physics Assignment"}
+            {type === "lecture" ? "Physics Lecture" : "Physics Assessment"}
           </span>
           <span className='text-lg mt-2'>
             Learn about Atomic Structure with Mr. Azure Johnson
@@ -70,7 +70,7 @@ export default function ClassModal({
               }}
               className='px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all'
             >
-              {type === "class" ? "Join Lecture" : "Submit Assignment"}
+              {type === "lecture" ? "Join Lecture" : "Submit Assessment"}
             </Button>
           </div>
         </div>

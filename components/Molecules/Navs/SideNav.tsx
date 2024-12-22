@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Class, ClassOutlined, Close, Logout, Menu } from '@mui/icons-material';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import Image from 'next/image';
-import Logo from '@/public/image/logo.png';
-import { useSidebarContext } from '@/contexts/SidebarContext';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useEffect, useRef, useState } from "react";
+import { Class, ClassOutlined, Close, Logout, Menu } from "@mui/icons-material";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import Image from "next/image";
+import Logo from "@/public/image/logo.png";
+import { useSidebarContext } from "@/contexts/SidebarContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 type NavItemProps = {
   href: string;
@@ -23,7 +23,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
   const { active, setActive } = useSidebarContext();
   const router = useRouter();
   const [activeClass, setActiveClass] = useState<string>(
-    router.pathname.split('/')[1]
+    router.pathname.split("/")[1]
   );
   const navRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState<boolean>(false);
@@ -39,7 +39,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
   };
 
   useEffect(() => {
-    const baseRoute = router.pathname.split('/')[2];
+    const baseRoute = router.pathname.split("/")[2];
     setActiveClass(baseRoute);
   }, [router.pathname]);
 
@@ -50,9 +50,9 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
       }
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [setActive]);
 
@@ -66,7 +66,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
           <Image
             onClick={() => {
               window.scrollTo(0, 0);
-              router.push('/');
+              router.push("/");
             }}
             src={Logo}
             alt='Logo'
@@ -105,13 +105,13 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
         <ul className='nav_list space-y-3.5 md:space-y-6 flex-1'>
           <NavItem
             href={`${
-              isClient && role === 'Teacher'
-                ? '/teachers'
-                : role === 'Student'
-                ? '/students'
-                : role === 'Admin'
-                ? '/admins'
-                : ''
+              isClient && role === "Teacher"
+                ? "/teachers"
+                : role === "Student"
+                ? "/students"
+                : role === "Admin"
+                ? "/admins"
+                : ""
             }/dashboard`}
             activeClass={activeClass}
             setActiveClass={setActiveClass}
@@ -125,11 +125,10 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
               >
                 <path
                   d='M17.6178 11.5H13.7428C13.2291 11.4995 12.7362 11.7027 12.3722 12.065C12.0081 12.4274 11.8027 12.9193 11.8008 13.433V17.308C11.8005 17.5631 11.8506 17.8158 11.9481 18.0515C12.0456 18.2872 12.1886 18.5014 12.369 18.6818C12.5494 18.8622 12.7636 19.0052 12.9993 19.1027C13.2351 19.2002 13.4877 19.2503 13.7428 19.25H17.6178C18.1313 19.2479 18.623 19.0423 18.9851 18.6783C19.3473 18.3142 19.5503 17.8215 19.5498 17.308V13.433C19.5501 13.1792 19.5003 12.9279 19.4033 12.6933C19.3063 12.4588 19.164 12.2457 18.9845 12.0663C18.8051 11.8868 18.592 11.7445 18.3575 11.6475C18.1229 11.5505 17.8716 11.5007 17.6178 11.501M6.85681 11.5H2.98181C2.4684 11.5029 1.97701 11.7089 1.615 12.073C1.253 12.437 1.0498 12.9296 1.04981 13.443V17.318C1.04954 17.5718 1.09934 17.8231 1.19633 18.0577C1.29333 18.2922 1.43563 18.5053 1.61509 18.6847C1.79454 18.8642 2.00763 19.0065 2.24215 19.1035C2.47667 19.2005 2.72802 19.2503 2.98181 19.25H6.85681C7.37029 19.2505 7.86304 19.0475 8.22706 18.6853C8.59109 18.3232 8.79669 17.8315 8.79881 17.318V13.443C8.79907 13.1879 8.74902 12.9353 8.65152 12.6995C8.55401 12.4638 8.41098 12.2496 8.23059 12.0692C8.05021 11.8888 7.83602 11.7458 7.60029 11.6483C7.36456 11.5508 7.11191 11.5007 6.85681 11.501M6.85681 0.750001H2.98181C2.72802 0.749738 2.47667 0.799531 2.24215 0.89653C2.00763 0.993529 1.79454 1.13583 1.61509 1.31528C1.43563 1.49474 1.29333 1.70783 1.19633 1.94235C1.09934 2.17687 1.04954 2.42821 1.04981 2.682V6.557C1.04927 7.07048 1.25233 7.56324 1.61448 7.92726C1.97663 8.29128 2.46833 8.49688 2.98181 8.499H6.85681C7.11191 8.49926 7.36456 8.44921 7.60029 8.35171C7.83602 8.25421 8.05021 8.11117 8.23059 7.93079C8.41098 7.75041 8.55401 7.53622 8.65152 7.30048C8.74902 7.06475 8.79907 6.8121 8.79881 6.557V2.682C8.79669 2.16852 8.59109 1.67683 8.22706 1.31468C7.86304 0.952527 7.37029 0.749467 6.85681 0.750001ZM17.6178 0.750001H13.7428C13.2293 0.749467 12.7366 0.952527 12.3725 1.31468C12.0085 1.67683 11.8029 2.16852 11.8008 2.682V6.557C11.8011 7.07197 12.0058 7.56577 12.3699 7.92991C12.734 8.29405 13.2278 8.49874 13.7428 8.499H17.6178C18.1313 8.49688 18.623 8.29128 18.9851 7.92726C19.3473 7.56324 19.5503 7.07048 19.5498 6.557V2.682C19.5501 2.42821 19.5003 2.17687 19.4033 1.94235C19.3063 1.70783 19.164 1.49474 18.9845 1.31528C18.8051 1.13583 18.592 0.993529 18.3575 0.89653C18.1229 0.799531 17.8716 0.749738 17.6178 0.750001Z'
-                  stroke='white'
-                  strokeOpacity='0.6'
-                  strokeWidth='1.5'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
+                  stroke='#F8F8F8'
+                  stroke-width='1.5'
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
                 />
               </svg>
             }
@@ -154,14 +153,15 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             }
           />
 
-          {isClient && role !== 'Admin' && (
+          {/* LECTURES */}
+          {isClient && role !== "Admin" && (
             <NavItem
               href={`${
-                isClient && role === 'Teacher'
-                  ? '/teachers'
-                  : role === 'Student'
-                  ? '/students'
-                  : ''
+                isClient && role === "Teacher"
+                  ? "/teachers"
+                  : role === "Student"
+                  ? "/students"
+                  : ""
               }/lectures`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -197,27 +197,94 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role !== 'Admin' && role !== 'Student' && (
+          {/* Departments */}
+          {isClient && (role === "Admin" || role === "Teacher") && (
             <NavItem
               href={`${
-                isClient && role === 'Teacher' ? '/teachers' : ''
-              }/classes`}
+                isClient && role === "Teacher"
+                  ? "/teachers"
+                  : role === "Admin"
+                  ? "/admin"
+                  : ""
+              }/departments`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
-              activeIcon={<Class className='text-white' />}
-              label='classes'
-              icon={<ClassOutlined />}
+              activeIcon={
+                <svg
+                  width='20'
+                  height='20'
+                  viewBox='0 0 20 20'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <g clip-path='url(#clip0_1726_8789)'>
+                    <path
+                      d='M9.07064 0.714355H18.0735C18.7435 0.714355 19.2864 1.25721 19.2864 1.92721V11.6101C19.2864 12.2815 18.7435 12.8244 18.0735 12.8244H10.7135M4.49778 5.71578C5.16102 5.71578 5.79708 5.45232 6.26606 4.98334C6.73503 4.51437 6.9985 3.8783 6.9985 3.21507C6.9985 2.55184 6.73503 1.91577 6.26606 1.4468C5.79708 0.977823 5.16102 0.714355 4.49778 0.714355C3.83455 0.714355 3.19849 0.977823 2.72951 1.4468C2.26054 1.91577 1.99707 2.55184 1.99707 3.8783 2.72951 4.51437C3.19849 5.45232 3.83455 5.71578 4.49778 5.71578Z'
+                      stroke='#FFFFFF'
+                      stroke-width='1.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                    <path
+                      d='M12.8567 7.89585C12.8567 7.08585 12.1996 6.42871 11.3896 6.42871H4.49815C3.49461 6.42909 2.53229 6.82791 1.82268 7.53752C1.11307 8.24713 0.714246 9.20946 0.713867 10.213V13.5716H2.3353L2.87672 19.2859H6.11958L7.3653 9.36442H11.3896C12.1996 9.36442 12.8567 8.70728 12.8567 7.89585Z'
+                      stroke='#FFFFFF'
+                      stroke-width='1.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id='clip0_1726_8789'>
+                      <rect width='20' height='20' fill='white' />
+                    </clipPath>
+                  </defs>
+                </svg>
+              }
+              label='departments'
+              icon={
+                <svg
+                  width='20'
+                  height='20'
+                  viewBox='0 0 20 20'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <g clip-path='url(#clip0_1726_8789)'>
+                    <path
+                      d='M9.07064 0.714355H18.0735C18.7435 0.714355 19.2864 1.25721 19.2864 1.92721V11.6101C19.2864 12.2815 18.7435 12.8244 18.0735 12.8244H10.7135M4.49778 5.71578C5.16102 5.71578 5.79708 5.45232 6.26606 4.98334C6.73503 4.51437 6.9985 3.8783 6.9985 3.21507C6.9985 2.55184 6.73503 1.91577 6.26606 1.4468C5.79708 0.977823 5.16102 0.714355 4.49778 0.714355C3.83455 0.714355 3.19849 0.977823 2.72951 1.4468C2.26054 1.91577 1.99707 2.55184 1.99707 3.21507C1.99707 3.8783 2.26054 4.51437 2.72951 4.98334C3.19849 5.45232 3.83455 5.71578 4.49778 5.71578Z'
+                      stroke='#1E1E1E'
+                      stroke-opacity='0.6'
+                      stroke-width='1.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                    <path
+                      d='M12.8567 7.89585C12.8567 7.08585 12.1996 6.42871 11.3896 6.42871H4.49815C3.49461 6.42909 2.53229 6.82791 1.82268 7.53752C1.11307 8.24713 0.714246 9.20946 0.713867 10.213V13.5716H2.3353L2.87672 19.2859H6.11958L7.3653 9.36442H11.3896C12.1996 9.36442 12.8567 8.70728 12.8567 7.89585Z'
+                      stroke='#1E1E1E'
+                      stroke-opacity='0.6'
+                      stroke-width='1.5'
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id='clip0_1726_8789'>
+                      <rect width='20' height='20' fill='white' />
+                    </clipPath>
+                  </defs>
+                </svg>
+              }
             />
           )}
 
-          {isClient && role !== 'Admin' && (
+          {isClient && role !== "Admin" && (
             <NavItem
               href={`${
-                isClient && role === 'Teacher'
-                  ? '/teachers'
-                  : role === 'Student'
-                  ? '/students'
-                  : ''
+                isClient && role === "Teacher"
+                  ? "/teachers"
+                  : role === "Student"
+                  ? "/students"
+                  : ""
               }/assessments`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -231,51 +298,45 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                 >
                   <path
                     d='M13.05 4H7.5C7.10218 4 6.72064 4.16857 6.43934 4.46863C6.15804 4.76869 6 5.17565 6 5.6V18.4C6 18.8243 6.15804 19.2313 6.43934 19.5314C6.72064 19.8314 7.10218 20 7.5 20H16.5C16.8978 20 17.2794 19.8314 17.5607 19.5314C17.842 19.2313 18 18.8243 18 18.4V12.48'
-                    stroke='white'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
+                    stroke='#F8F8F8'
+                    stroke-width='1.5'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
                   />
                   <path
                     d='M4 7H7'
-                    stroke='white'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
+                    stroke='#F8F8F8'
+                    stroke-width='1.5'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
                   />
                   <path
                     d='M4 10H7'
-                    stroke='white'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
+                    stroke='#F8F8F8'
+                    stroke-width='1.5'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
                   />
                   <path
                     d='M4 14H7'
-                    stroke='white'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
+                    stroke='#F8F8F8'
+                    stroke-width='1.5'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
                   />
                   <path
                     d='M4 17H7'
-                    stroke='white'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
+                    stroke='#F8F8F8'
+                    stroke-width='1.5'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
                   />
                   <path
                     d='M19.5022 6.90146C19.821 6.58271 20 6.1504 20 5.69963C20 5.24886 19.821 4.81655 19.5022 4.49781C19.1835 4.17907 18.7513 4 18.3005 4C17.8498 4 17.4175 4.17907 17.0988 4.49781L13.0905 8.50815C12.9003 8.69829 12.761 8.9333 12.6857 9.19148L12.016 11.4879C11.9959 11.5568 11.9947 11.6297 12.0125 11.6992C12.0303 11.7687 12.0665 11.8321 12.1172 11.8828C12.1679 11.9335 12.2313 11.9697 12.3008 11.9875C12.3702 12.0053 12.4432 12.0041 12.512 11.984L14.8082 11.3143C15.0664 11.2389 15.3014 11.0996 15.4915 10.9094L19.5022 6.90146Z'
-                    stroke='white'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
+                    stroke='#F8F8F8'
+                    stroke-width='1.5'
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
                   />
                 </svg>
               }
@@ -341,7 +402,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role === 'Admin' && (
+          {isClient && role === "Admin" && (
             <NavItem
               href={`/admins/teachers`}
               activeClass={activeClass}
@@ -380,14 +441,14 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role !== 'Student' && (
+          {isClient && role !== "Student" && (
             <NavItem
               href={`${
-                isClient && role === 'Teacher'
-                  ? '/teachers'
-                  : role === 'Admin'
-                  ? '/admins'
-                  : ''
+                isClient && role === "Teacher"
+                  ? "/teachers"
+                  : role === "Admin"
+                  ? "/admins"
+                  : ""
               }/students`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -425,14 +486,14 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role !== 'Teacher' && (
+          {isClient && role !== "Teacher" && (
             <NavItem
               href={`${
-                isClient && role === 'Student'
-                  ? '/students'
-                  : role === 'Admin'
-                  ? '/admins'
-                  : ''
+                isClient && role === "Student"
+                  ? "/students"
+                  : role === "Admin"
+                  ? "/admins"
+                  : ""
               }/profile`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -492,14 +553,14 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role !== 'Student' && (
+          {isClient && role !== "Student" && (
             <NavItem
               href={`${
-                isClient && role === 'Teacher'
-                  ? '/teachers'
-                  : role === 'Admin'
-                  ? '/admins'
-                  : ''
+                isClient && role === "Teacher"
+                  ? "/teachers"
+                  : role === "Admin"
+                  ? "/admins"
+                  : ""
               }/subjects`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -563,13 +624,13 @@ const NavItem: React.FC<NavItemProps> = ({
   activeIcon,
 }) => {
   return (
-    <li className='pr-8'>
+    <li className='pr-8 font-roboto'>
       <Link
         href={href}
-        className={`px-5 py-1.5 space-x-3 ${
+        className={`px-5 py-1.5 space-x-3 flex items-center ${
           activeClass === label
-            ? 'bg-primary rounded-tr-2xl rounded-br-2xl'
-            : ''
+            ? "bg-primary rounded-tr-2xl rounded-br-2xl"
+            : ""
         }`}
         onClick={() => setActiveClass(label)}
       >
@@ -579,8 +640,8 @@ const NavItem: React.FC<NavItemProps> = ({
           {activeClass === label ? activeIcon : icon}
         </div>
         <span
-          className={`links_name capitalize font-[400] pt-[5px] !text-md md:text-base ${
-            activeClass !== label ? 'text-subtext/60' : 'text-white'
+          className={`links_name capitalize text-base md:text-lg ${
+            activeClass !== label ? "text-subtext/60" : "text-white font-medium"
           }`}
         >
           {label}

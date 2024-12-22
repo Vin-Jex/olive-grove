@@ -1,12 +1,12 @@
-import Tab, { TTabBody } from '@/components/Molecules/Tab/Tab';
-import { VideoProps } from 'next-video';
+import Tab, { TTabBody } from "@/components/Molecules/Tab/Tab";
+import { VideoProps } from "next-video";
 import {
   TChapter,
   TCourse,
   TLesson,
   TSection,
   TSubSection,
-} from '@/components/utils/types';
+} from "@/components/utils/types";
 
 import {
   FC,
@@ -17,20 +17,20 @@ import {
   useMemo,
   useRef,
   useState,
-} from 'react';
-import TopicVideo from './CourseTopicVideo';
-import NotFoundError from '../NotFoundError';
-import { useTopicContext } from '@/contexts/TopicContext';
-import img404 from '@/images/olive-notes-404.png';
-import { Alert, Checkbox, FormControlLabel, Snackbar } from '@mui/material';
-import { useRouter } from 'next/router';
-import { baseUrl } from '@/components/utils/baseURL';
-import Cookies from 'js-cookie';
-import Button from '../Button';
-import { capitalize } from '@/components/utils/utils';
-import { usePathname } from 'next/navigation';
-import CourseQA from './CourseQA';
-import YouTubeEmbed from './CourseTopicYouTubeVideo';
+} from "react";
+import TopicVideo from "./CourseTopicVideo";
+import NotFoundError from "../NotFoundError";
+import { useTopicContext } from "@/contexts/TopicContext";
+import img404 from "@/images/olive-notes-404.png";
+import { Alert, Checkbox, FormControlLabel, Snackbar } from "@mui/material";
+import { useRouter } from "next/router";
+import { baseUrl } from "@/components/utils/baseURL";
+import Cookies from "js-cookie";
+import Button from "../Button";
+import { capitalize } from "@/components/utils/utils";
+import { usePathname } from "next/navigation";
+import CourseQA from "./CourseQA";
+import YouTubeEmbed from "./CourseTopicYouTubeVideo";
 
 // Function to collect IDs of lessons, sections, and subsections in a linear array
 export function collectLinearContentIds(data: TCourse): string[] {
@@ -107,7 +107,6 @@ export const TopicDetails: FC<{
     setTimeout(() => setTopicIsCompleted(false), 6000);
   };
 
-  console.log(topicDetails.topic?._id, contentIds);
   const getContentIds = useMemo(() => collectLinearContentIds, []);
 
   async function fetchNavigate() {
@@ -118,7 +117,7 @@ export const TopicDetails: FC<{
   function handlePreviousTab() {
     if (topicDetails.topic) {
       const previousId = getPreviousId(
-        topicDetails.topic?._id || '',
+        topicDetails.topic?._id || "",
         contentIds
       );
       router.push(`${pathName}?topic=${previousId}`);
@@ -127,7 +126,7 @@ export const TopicDetails: FC<{
 
   function handleNextTab() {
     if (topicDetails.topic) {
-      const previousId = getNextId(topicDetails.topic?._id || '', contentIds);
+      const previousId = getNextId(topicDetails.topic?._id || "", contentIds);
       router.push(`${pathName}?topic=${previousId}`);
     }
   }
@@ -156,10 +155,6 @@ export const TopicDetails: FC<{
       // alert("Video completed!");
       setVideoCompletedIsTriggered(true);
     }
-
-    console.log('VIDEO DURATION', duration);
-    console.log('VIDEO TIMESTAMP', currentTime);
-    console.log('PERCENTAGE', percentage);
   };
 
   /**
@@ -184,21 +179,18 @@ export const TopicDetails: FC<{
    */
   const markTopicAsRead = useCallback(async () => {
     // * Get the access token from the cookies
-    const jwt = Cookies.get('jwt');
-
-    console.log('Marking Topic as read');
-
+    const jwt = Cookies.get("jwt");
     // * Make an API request to retrieve the list of courses created by this teacher
     const response = await fetch(
       `${baseUrl}/courses/mark-as-viewed/${capitalize(topicDetails.type)}/${
         topicDetails.topic?._id
       }`,
       {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
         body: JSON.stringify({
           currentDate: new Date().toISOString(),
-          nextId: '6739522037923060e34feabd',
+          nextId: "6739522037923060e34feabd",
         }),
       }
     );
@@ -211,8 +203,6 @@ export const TopicDetails: FC<{
       return false;
     }
 
-    console.log('TOPIC CHECKED SUCCESSFULLY');
-
     return true;
   }, [topicDetails.topic?._id, topicDetails.type]);
 
@@ -222,13 +212,7 @@ export const TopicDetails: FC<{
     setNoteCompletedIsTriggered(topicDetails.topic?.viewed || false);
     setCheckedState(topicDetails.topic?.viewed || false);
     fetchNavigate();
-
-    console.log(
-      'NEW TOPIC',
-      topicDetails.topic?.title,
-      topicDetails.topic?.viewed
-    );
-  }, [topicDetails.topic]);
+  }, [fetchNavigate, topicDetails.topic]);
 
   useEffect(() => {
     if (
@@ -262,7 +246,7 @@ export const TopicDetails: FC<{
     ...(topicDetails?.topic?.topicVideo || topicDetails?.topic?.youtubeVideo
       ? [
           {
-            slug: 'video',
+            slug: "video",
             content: (
               <>
                 {topicDetails?.topic?.topicVideo ? (
@@ -292,13 +276,13 @@ export const TopicDetails: FC<{
     ...(topicDetails?.topic?.topicNote
       ? [
           {
-            slug: 'notes',
+            slug: "notes",
             content: (
               <div className='flex w-full gap-2 flex-col'>
                 <div
                   className='lg:max-h-[80vh] w-full overflow-y-auto rounded-sm px-2'
                   dangerouslySetInnerHTML={{
-                    __html: topicDetails?.topic.topicNote || '',
+                    __html: topicDetails?.topic.topicNote || "",
                   }}
                 ></div>
                 <div className='w-full'>
@@ -336,9 +320,9 @@ export const TopicDetails: FC<{
               slugs={[
                 ...(topicDetails.topic.topicVideo ||
                 topicDetails?.topic.youtubeVideo
-                  ? [{ name: 'topic video', key: 'video' }]
+                  ? [{ name: "topic video", key: "video" }]
                   : []),
-                { name: 'topic notes', key: 'notes' },
+                { name: "topic notes", key: "notes" },
               ]}
               body={tabBody}
             />
@@ -347,9 +331,9 @@ export const TopicDetails: FC<{
               slugs={[
                 ...(topicDetails.topic.topicVideo ||
                 topicDetails?.topic.youtubeVideo
-                  ? [{ name: 'topic video', key: 'video' }]
+                  ? [{ name: "topic video", key: "video" }]
                   : []),
-                { name: 'topic notes', key: 'notes' },
+                { name: "topic notes", key: "notes" },
               ]}
               body={tabBody}
             />
@@ -400,7 +384,7 @@ export const TopicDetails: FC<{
         </div>
       ) : (
         <>
-          <NotFoundError msg={'No topic found'} />
+          <NotFoundError msg={"No topic found"} />
         </>
       )}
       {topicIsCompleted && (
@@ -408,7 +392,7 @@ export const TopicDetails: FC<{
           open={topicIsCompleted}
           onClose={() => setTopicIsCompleted(false)}
           autoHideDuration={6000}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           className='!z-[999]'
         >
           <Alert severity='success' onClose={() => setTopicIsCompleted(false)}>

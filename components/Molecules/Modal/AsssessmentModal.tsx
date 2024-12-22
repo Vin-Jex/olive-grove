@@ -19,7 +19,7 @@ const AsssessmentModal: FC<
     subjects: TSelectOptions;
     assessmentTypes: TSelectOptions;
     academicWeeks: TSelectOptions;
-    assessmentClasses: TSelectOptions;
+    assessmenTClasses: TSelectOptions;
   }
 > = ({
   modalOpen,
@@ -33,7 +33,7 @@ const AsssessmentModal: FC<
   subjects,
   assessmentTypes,
   academicWeeks,
-  assessmentClasses,
+  assessmenTClasses,
 }) => {
   const handleChange = ({
     target: { name, value },
@@ -91,62 +91,62 @@ const AsssessmentModal: FC<
       <Modal
         isOpen={modalOpen}
         onClose={handleModalClose}
-        className="w-[80%] sm:w-[70%] md:w-[751px] bg-white backdrop-blur-[10px] rounded-3xl"
+        className='w-[80%] sm:w-[70%] md:w-[751px] bg-white backdrop-blur-[10px] rounded-3xl'
       >
-        <div className="flex justify-between items-center px-7 py-2 mt-4">
-          <span className="text-2xl text-dark font-semibold font-roboto capitalize">
+        <div className='flex justify-between items-center px-7 py-2 mt-4'>
+          <span className='text-2xl text-dark font-semibold font-roboto capitalize'>
             {mode} Assessment
           </span>
         </div>
-        <form className="flex flex-col justify-center py-3 md:py-[40px] px-4 md:px-6 w-full space-y-3">
+        <form className='flex flex-col justify-center py-3 md:py-[40px] px-4 md:px-6 w-full space-y-3'>
           {requestState?.error && (
             <>
-              <div className="text-red-500 text-center">
-                <Info sx={{ fontSize: "1.1rem" }} className="mt-0.5" />
+              <div className='text-red-500 text-center'>
+                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
                 {typeof requestState?.error === "string" &&
                   (requestState.error as string)}
               </div>
             </>
           )}
           <Select
-            name="subject"
+            name='subject'
             onChange={handleChange}
             value={(formState.subject as string).toLowerCase()}
             options={subjects}
-            placeholder="Subject"
+            placeholder='Subject'
             required
           />
 
           <Select
-            name="type"
+            name='type'
             onChange={handleChange}
             value={(formState.assessmentType as string).toLowerCase()}
             options={assessmentTypes}
-            placeholder="Assessment type"
+            placeholder='Assessment type'
             required
           />
 
           <Select
-            name="academicWeek"
+            name='academicWeek'
             onChange={handleChange}
             value={(formState.academicWeek as string).toLowerCase()}
             options={academicWeeks}
-            placeholder="Academic week"
+            placeholder='Academic week'
             required
           />
 
           <Select
-            name="class"
+            name='class'
             onChange={handleChange}
             value={(formState.class as string).toLowerCase()}
-            options={assessmentClasses}
-            placeholder="Class"
+            options={assessmenTClasses}
+            placeholder='Class'
             required
           />
 
           <Input
-            type="datetime-local"
-            name="timeline"
+            type='datetime-local'
+            name='timeline'
             value={
               new Date(formState.dueDate || Date.now())
                 ?.toISOString()
@@ -156,9 +156,9 @@ const AsssessmentModal: FC<
                 ) /* new Date(formState.timeline).toLocaleString() */
             }
             onChange={handleChange}
-            placeholder="Timeline"
+            placeholder='Timeline'
             required
-            className="input"
+            className='input'
           />
 
           <TextEditor
@@ -166,21 +166,21 @@ const AsssessmentModal: FC<
             onChange={(value: string) =>
               setFormState((props) => ({ ...props, description: value }))
             }
-            placeholder="Class Description"
+            placeholder='Class Description'
           />
 
-          <div className="flex items-center space-x-5 w-full">
-            <Button size="xs" color="outline" {...actionProps}>
+          <div className='flex items-center space-x-5 w-full'>
+            <Button size='xs' color='outline' {...actionProps}>
               {is_loading.saving ? (
-                <CircularProgress size={15} color="inherit" />
+                <CircularProgress size={15} color='inherit' />
               ) : (
                 "Save"
               )}
             </Button>
             {handleDelete && (
-              <Button size="xs" color="red" {...deleteActionProps}>
+              <Button size='xs' color='red' {...deleteActionProps}>
                 {is_loading.deleting ? (
-                  <CircularProgress size={15} color="inherit" />
+                  <CircularProgress size={15} color='inherit' />
                 ) : (
                   "Delete"
                 )}

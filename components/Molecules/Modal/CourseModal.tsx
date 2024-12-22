@@ -4,17 +4,8 @@ import Button, { ButtonProps } from "@/components/Atoms/Button";
 import Input from "@/components/Atoms/Input";
 import TextEditor from "@/components/Atoms/TextEditor";
 import File from "@/components/Atoms/File";
-import { title } from "process";
 import { capitalize } from "@/components/utils/utils";
-import {
-  TChapter,
-  TClass,
-  TCourse,
-  TCourseModalProps,
-  TFetchState,
-  TLesson,
-  TSection,
-} from "@/components/utils/types";
+import { TCourse, TCourseModalProps } from "@/components/utils/types";
 import Select from "@/components/Atoms/Select";
 import { CircularProgress } from "@mui/material";
 import { Info } from "@mui/icons-material";
@@ -163,25 +154,25 @@ export default function CourseModal({
 
   useEffect(() => {
     setPreviewImage((formState as TCourse).courseCover as string);
-  }, []);
+  }, [formState]);
 
   return (
     <div>
       <Modal
         isOpen={modalOpen}
         onClose={handleModalClose}
-        className="w-[80%] sm:w-[70%] md:w-[600px] bg-white backdrop-blur-[10px] rounded-3xl"
+        className='w-[80%] sm:w-[70%] md:w-[600px] bg-white backdrop-blur-[10px] rounded-3xl'
       >
-        <div className="flex justify-between items-center px-4 mt-[1rem]">
-          <span className="text-2xl text-dark font-semibold font-roboto capitalize">
+        <div className='flex justify-between items-center px-4 mt-[1rem]'>
+          <span className='text-2xl text-dark font-semibold font-roboto capitalize'>
             {capitalize(mode)} {capitalize(type)}
           </span>
         </div>
-        <form className="flex flex-col justify-center py-4 my-2 px-4 w-full space-y-6">
+        <form className='flex flex-col justify-center py-4 my-2 px-4 w-full space-y-6'>
           {requestState?.error && (
             <>
-              <div className="text-red-500 text-center">
-                <Info sx={{ fontSize: "1.1rem" }} className="mt-0.5" />
+              <div className='text-red-500 text-center'>
+                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
                 {typeof requestState?.error === "string" &&
                   (requestState.error as string)}
               </div>
@@ -189,22 +180,22 @@ export default function CourseModal({
           )}
           {type === "course" && (
             <Select
-              name="classId"
+              name='classId'
               options={classes || []}
               required
-              placeholder="Select class"
+              placeholder='Select class'
               onChange={handleChange}
               {...(formState.classId ? { value: formState.classId } : {})}
             />
           )}
           <Input
-            type="text"
-            name="title"
+            type='text'
+            name='title'
             value={formState.title}
             onChange={handleChange}
             placeholder={`${capitalize(type)} Title`}
             required
-            className="input !rounded-lg"
+            className='input !rounded-lg'
           />
 
           {["topic", "lesson"].includes(type) && (
@@ -229,12 +220,12 @@ export default function CourseModal({
           {/* If the modal is that for creating or editing a course */}
           {type === "course" && (
             <textarea
-              name="description"
+              name='description'
               value={formState.description}
               onChange={handleChange}
-              placeholder="Description"
+              placeholder='Description'
               required
-              className="input textarea"
+              className='input textarea'
             ></textarea>
           )}
 
@@ -260,21 +251,21 @@ export default function CourseModal({
           )} */}
 
           {["topic", "lesson"].includes(type) && (
-            <div className="flex flex-col gap-4">
+            <div className='flex flex-col gap-4'>
               <Input
-                type="datetime-local"
-                name="availableDate"
+                type='datetime-local'
+                name='availableDate'
                 placeholder={`Enter the date the ${type} will be available`}
                 value={formState.availableDate}
                 onChange={handleChange}
-                className="input"
+                className='input'
                 required
               />
 
               <Select
-                name="topicVideoType"
+                name='topicVideoType'
                 required
-                placeholder="Choose topic video type"
+                placeholder='Choose topic video type'
                 value={topicVideoType}
                 options={[
                   { display_value: "Upload Video", value: "topicVideo" },
@@ -296,17 +287,17 @@ export default function CourseModal({
                   fileName={fileName}
                 />
               ) : (
-                <div className="flex w-full flex-col gap-2 text-subtext">
+                <div className='flex w-full flex-col gap-2 text-subtext'>
                   <Input
-                    type="url"
-                    name="youtubeVideo"
+                    type='url'
+                    name='youtubeVideo'
                     value={topicYouTubeUrl}
                     onChange={modifyYouTubeLink}
                     placeholder={`Youtube video URL`}
                     required
-                    className="w-full input !rounded-lg"
+                    className='w-full input !rounded-lg'
                   />
-                  <div className="bg-primary/10 rounded-lg p-4">
+                  <div className='bg-primary/10 rounded-lg p-4'>
                     {/* eslint-disable-next-line react/no-unescaped-entities */}
                     Here's the YouTube Embed URL that will be used:{" "}
                     {formState.youtubeVideo}
@@ -331,18 +322,18 @@ export default function CourseModal({
             />
           )}
 
-          <div className="flex items-center space-x-5 w-full">
-            <Button size="xs" type="submit" color="outline" {...actionProps}>
+          <div className='flex items-center space-x-5 w-full'>
+            <Button size='xs' type='submit' color='outline' {...actionProps}>
               {is_loading.saving ? (
-                <CircularProgress size={15} color="inherit" />
+                <CircularProgress size={15} color='inherit' />
               ) : (
                 "Save"
               )}
             </Button>
             {handleDelete && (
-              <Button size="xs" color="red" {...deleteActionProps}>
+              <Button size='xs' color='red' {...deleteActionProps}>
                 {is_loading.deleting ? (
-                  <CircularProgress size={15} color="inherit" />
+                  <CircularProgress size={15} color='inherit' />
                 ) : (
                   "Delete"
                 )}
