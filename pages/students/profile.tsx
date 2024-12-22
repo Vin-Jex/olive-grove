@@ -373,15 +373,6 @@ const Profile = () => {
                       Edit your personal account information.
                     </span>
                   </div>
-                  <Button
-                    type='submit'
-                    size='sm'
-                    width='fit'
-                    className='!px-8 disabled:cursor-not-allowed'
-                    disabled={isDisabled}
-                  >
-                    Edit Personal Info
-                  </Button>
                 </div>
                 {formError.internetError !== '' ? (
                   <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
@@ -439,6 +430,15 @@ const Profile = () => {
                     />
                   ))}
                 </div>
+                <Button
+                  type='submit'
+                  size='sm'
+                  width='fit'
+                  className='!px-8 disabled:cursor-not-allowed'
+                  disabled={isDisabled}
+                >
+                  Edit Personal Info
+                </Button>
               </div>
             </form>
           )}
