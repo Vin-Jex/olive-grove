@@ -20,15 +20,30 @@ import Course from "@/components/Atoms/Course/EachCourse";
 import { CourseClass, fetchCourses } from "@/components/utils/course";
 import { Add } from "@mui/icons-material";
 import axiosInstance from "@/components/utils/axiosInstance";
+import { useCourseContext } from "@/contexts/CourseContext";
+import LogoutWarningModal from "@/components/Molecules/Modal/LogoutWarningModal";
+import WarningModal from "@/components/Molecules/Modal/WarningModal";
 
 const Subjects: FC = () => {
   const [searchResults, setSearchResults] = useState<TCourse[]>([]);
+  const {
+    course,
+    dispatch,
+    modal,
+    closeModal,
+    modalFormState,
+    setModalFormState,
+    modalRequestState,
+    setModalRequestState,
+    openModal,
+    modalMetadata: { type, mode, handleAction, handleDelete },
+  } = useCourseContext();
   const [courses, setCourses] = useState<TFetchState<TCourse[]>>({
     data: [],
     loading: true,
     error: undefined,
   });
-  const [classes, seTClasses] = useState<
+  const [departments, setDepartments] = useState<
     TFetchState<TDepartment[] | undefined>
   >({
     data: [],
@@ -40,7 +55,7 @@ const Subjects: FC = () => {
     {
       title: "",
       description: "",
-      classId: "",
+      department: "",
       courseCover: undefined,
     }
   );
@@ -65,7 +80,7 @@ const Subjects: FC = () => {
       });
 
       try {
-        // Call the reusable getCourses function, passing the seTClasses state updater
+        // Call the reusable getCourses function, passing the setDepartments state updater
         const courses = await fetchCourses(filter);
 
         if (typeof courses === "object") {
@@ -110,33 +125,33 @@ const Subjects: FC = () => {
   );
 
   /**
-   * * Function responsible from retrieving the classes on the platform
+   * * Function responsible from retrieving the departments on the platform
    */
-  const geTClasses = async (filter?: { query: "title"; value: string }) => {
+  const getDepartments = async (filter?: { query: "title"; value: string }) => {
     try {
       // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
-      seTClasses({
+      setDepartments({
         data: [],
         loading: true,
         error: undefined,
       });
 
       // * Get the access token from the cookies
-      // * Make an API request to retrieve the list of classes created by this teacher
+      // * Make an API request to retrieve the list of departments created by this teacher
       const response = await axiosInstance.get(`/department/all`);
 
-      // * Display the list of classes returned by the endpoint
+      // * Display the list of departments returned by the endpoint
       const responseData = response.data as TResponse<TDepartment[]>;
-      seTClasses({
+      setDepartments({
         data: responseData.data,
         loading: false,
         error: undefined,
       });
     } catch (error: any) {
       console.error(error);
-      // * If it's a 404 error, display message that classes couldn't be found
+      // * If it's a 404 error, display message that departments couldn't be found
       if (error?.response?.status == 404) {
-        seTClasses({
+        setDepartments({
           data: [],
           loading: false,
           error: "No class found",
@@ -145,10 +160,10 @@ const Subjects: FC = () => {
       }
 
       // * If it's any other error code, display default error msg
-      seTClasses({
+      setDepartments({
         data: [],
         loading: false,
-        error: "An error occurred while retrieving classes",
+        error: "An error occurred while retrieving departments",
       });
 
       return;
@@ -193,7 +208,7 @@ const Subjects: FC = () => {
 
     // Perform filtering based on class filter
     const filteredResults = courses.data.filter(
-      (result) => result?.classId?._id === value
+      (result) => result?.department?._id === value
     );
 
     setSearchResults(filteredResults);
@@ -218,7 +233,7 @@ const Subjects: FC = () => {
       // * Append the course details to the request body
       request_data.append("title", formState.title);
       request_data.append("description", formState.description || "");
-      request_data.append("classId", formState.classId || "");
+      request_data.append("classId", formState.department || "");
 
       typeof formState.courseCover === "object" &&
         request_data.append("courseCover", formState.courseCover);
@@ -289,7 +304,7 @@ const Subjects: FC = () => {
   const handleCloseModal = () => {
     setFormState({
       title: "",
-      classId: "",
+      department: "",
       description: "",
       courseCover: "",
       topicVideo: "",
@@ -300,7 +315,7 @@ const Subjects: FC = () => {
 
   useEffect(() => {
     getCourses();
-    geTClasses();
+    getDepartments();
   }, [getCourses]);
 
   return (
@@ -308,32 +323,64 @@ const Subjects: FC = () => {
       <CourseModal
         formState={formState}
         setFormState={setFormState}
-        type='course'
+        type="course"
         handleModalClose={handleCloseModal}
         modalOpen={openModalCreate}
-        mode='create'
+        mode="create"
         handleAction={createCourse}
         requestState={createCourseRes}
-        classes={classes.data?.map((each) => ({
+        departments={departments.data?.map((each) => ({
           value: each._id as string,
           display_value: each.name,
         }))}
       />
+      {modal.open && (
+        <>
+          {mode === "delete" ? (
+            <>
+              <WarningModal
+                modalOpen={true}
+                handleModalClose={closeModal}
+                requestState={modalRequestState}
+                handleConfirm={handleDelete || (() => undefined)}
+                content="Are you sure you want to delete this course?"
+                subtext="This action CAN NOT be undone!"
+              />
+            </>
+          ) : (
+            <CourseModal
+              formState={modalFormState || ({} as any)}
+              setFormState={setModalFormState || ((() => {}) as any)}
+              type={type || "chapter"}
+              handleModalClose={closeModal}
+              modalOpen={true}
+              mode={mode || "create"}
+              handleAction={handleAction || ((() => {}) as any)}
+              handleDelete={handleDelete || ((() => {}) as any)}
+              requestState={modalRequestState}
+              departments={departments.data?.map((each) => ({
+                value: each._id as string,
+                display_value: each.name,
+              }))}
+            />
+          )}
+        </>
+      )}
 
-      <TeachersWrapper title='Subjects' metaTitle='Olive Groove ~ Subjects'>
-        <div className='h-full'>
+      <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
+        <div className="h-full">
           {courses.loading ? (
             <Loader />
           ) : (
             <>
               {/* Title */}
-              <div className='flex justify-between items-start'>
+              <div className="flex justify-between items-start">
                 {typeof courses.error === "object" &&
                   courses.error.status === 404 && (
                     <Button
                       onClick={() => setOpenModalCreate((prev) => !prev)}
-                      width='fit'
-                      size='xs'
+                      width="fit"
+                      size="xs"
                     >
                       <Add />
                       <span>Add subject</span>
@@ -342,11 +389,11 @@ const Subjects: FC = () => {
               </div>
               {/* Searchbars and select fields */}
               {!courses.error && (
-                <div className='flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center'>
-                  <div className='flex justify-start items-center gap-4 w-full md:w-auto'>
+                <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
+                  <div className="flex justify-start items-center gap-4 w-full md:w-auto">
                     <SearchInput
-                      shape='rounded-lg'
-                      placeholder='Search for Subjects'
+                      shape="rounded-lg"
+                      placeholder="Search for Subjects"
                       searchResults={searchResults}
                       setSearchResults={setSearchResults}
                       initialData={courses.data}
@@ -354,24 +401,24 @@ const Subjects: FC = () => {
                     />
                     <Select
                       options={
-                        classes.data?.map((type) => ({
+                        departments.data?.map((type) => ({
                           display_value: type.name,
                           value: type._id || "",
                         })) || []
                       }
-                      name='class'
+                      name="class"
                       required
                       onChange={handleClassFilter}
-                      placeholder='Select class'
-                      inputSize='sm'
-                      className='!py-3'
+                      placeholder="Select class"
+                      inputSize="sm"
+                      className="!py-3"
                     />
                   </div>
                   <div>
                     <Button
                       onClick={() => setOpenModalCreate((prev) => !prev)}
-                      width='fit'
-                      size='xs'
+                      width="fit"
+                      size="xs"
                     >
                       <Add />
                       <span>Add subject</span>
@@ -380,7 +427,7 @@ const Subjects: FC = () => {
                 </div>
               )}
               {courses.error ? (
-                <div className='w-full flex items-center justify-center'>
+                <div className="w-full flex items-center justify-center">
                   {typeof courses.error === "object" &&
                     (courses.error.status === 404 ? (
                       <>
@@ -397,15 +444,15 @@ const Subjects: FC = () => {
                 </div>
               ) : searchResults.length < 1 ? (
                 // 404 image
-                <div className='w-full flex items-center justify-center'>
-                  <NotFoundError msg='No courses found' />
+                <div className="w-full flex items-center justify-center">
+                  <NotFoundError msg="No courses found" />
                 </div>
               ) : (
                 <>
                   {/* Content */}
-                  <div className='mt-4'>
+                  <div className="mt-4">
                     {/* Courses */}
-                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4'>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4">
                       {searchResults &&
                         searchResults.map((course, i) => (
                           <Course course={course} key={i + course.title} />

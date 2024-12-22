@@ -21,6 +21,7 @@ const config: Config = {
         primary: "#32A8C4",
         secondary: "#B69302",
         subtext: "#1E1E1E99",
+        // error: "",
         disabled: "rgba(30, 30, 30, 0.30)",
         "disabled-text": "rgba(248, 248, 248, 0.85)",
         light: "#FFF",

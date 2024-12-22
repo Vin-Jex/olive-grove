@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes, ReactNode } from "react";
 
 export type TSubject = {
   image_url: string;
@@ -7,7 +7,7 @@ export type TSubject = {
 };
 
 type OptionalFields<T extends "get" | "post" = "get"> = {
-  classId?: T extends "post" ? string : TDepartment;
+  department?: T extends "post" ? string : TDepartment;
   // courseInfo?: { description: string };
   chapterId?: string;
   topicNote?: string;
@@ -135,11 +135,11 @@ export type TCourseModalProps = {
   handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
   handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
   type: "course" | "chapter" | "lesson" | "topic";
-  mode: "create" | "edit";
+  mode: "create" | "edit" | "delete";
   formState: TCourseModalFormData;
   setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
   requestState?: TFetchState<any>;
-  classes?: TSelectOptions;
+  departments?: TSelectOptions;
 };
 
 export type TAcademicWeek = {
@@ -252,4 +252,17 @@ export type TContentId = { id: string; isViewed: boolean }[];
 export type TAsseessmentQuestionOption = {
   content: string | undefined;
   _id: string;
+};
+
+export type TSideDialogContent = {
+  title: string | ReactNode;
+  icon: string | ReactNode;
+  action: Function;
+  className?: string;
+};
+
+export type TWarningModalProps = {
+  modalOpen: boolean;
+  handleModalClose: () => void;
+  handleConfirm?: () => void;
 };

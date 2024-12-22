@@ -220,7 +220,7 @@ const Subject: FC = () => {
       modalMetadata: {
         formData: {
           title: course.data?.title || "",
-          classId: (course.data?.classId as any) || "",
+          department: (course.data?.department as any) || "",
           description: course.data?.description || "",
           courseCover: course.data?.courseCover || "",
         },
@@ -309,7 +309,7 @@ const Subject: FC = () => {
             handleAction={handleAction || ((() => {}) as any)}
             handleDelete={handleDelete || ((() => {}) as any)}
             requestState={modalRequestState}
-            classes={classes.data?.map((each) => ({
+            departments={classes.data?.map((each) => ({
               value: each._id as string,
               display_value: each.name,
             }))}

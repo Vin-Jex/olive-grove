@@ -74,7 +74,7 @@ export const Topic: FC<{ topic: TSection | TSubSection; lessonId: string, type: 
           editItem(
             'topic',
             setModalRequestState,
-            formState,
+            formState || { title: "" },
             dispatch,
             'DELETE'
           ),
