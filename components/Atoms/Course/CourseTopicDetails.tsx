@@ -109,10 +109,10 @@ export const TopicDetails: FC<{
 
   const getContentIds = useMemo(() => collectLinearContentIds, []);
 
-  async function fetchNavigate() {
+  const fetchNavigate = useCallback(async () => {
     const contentIds = getContentIds(course!);
     setContentIds(contentIds);
-  }
+  }, []);
 
   function handlePreviousTab() {
     if (topicDetails.topic) {
@@ -278,14 +278,14 @@ export const TopicDetails: FC<{
           {
             slug: "notes",
             content: (
-              <div className='flex w-full gap-2 flex-col'>
+              <div className="flex w-full gap-2 flex-col">
                 <div
-                  className='lg:max-h-[80vh] w-full overflow-y-auto rounded-sm px-2'
+                  className="lg:max-h-[80vh] w-full overflow-y-auto rounded-sm px-2"
                   dangerouslySetInnerHTML={{
                     __html: topicDetails?.topic.topicNote || "",
                   }}
                 ></div>
-                <div className='w-full'>
+                <div className="w-full">
                   <FormControlLabel
                     control={
                       <Checkbox
@@ -307,10 +307,10 @@ export const TopicDetails: FC<{
   return (
     <>
       {topicDetails.topic ? (
-        <div className='flex flex-col w-full gap-4'>
+        <div className="flex flex-col w-full gap-4">
           {/* TITLE */}
 
-          <div className='text-xl max-sm:text-lg font-medium font-roboto bg-primary bg-opacity-10  rounded-lg px-5 py-4'>
+          <div className="text-xl max-sm:text-lg font-medium font-roboto bg-primary bg-opacity-10  rounded-lg px-5 py-4">
             {topicDetails.topic?.title}
           </div>
           {/* TAB */}
@@ -341,7 +341,7 @@ export const TopicDetails: FC<{
             <div>
               {
                 <NotFoundError
-                  msg='No notes provided'
+                  msg="No notes provided"
                   width={320}
                   height={320}
                   img={img404.src}
@@ -350,18 +350,18 @@ export const TopicDetails: FC<{
             </div>
           )}
           {/* Previous and next button */}
-          <div className='flex w-full justify-between py-5'>
+          <div className="flex w-full justify-between py-5">
             <Button
               onClick={handlePreviousTab}
               disabled={
                 getPreviousId &&
                 !getPreviousId(topicDetails.topic._id as string, contentIds)
               }
-              size='xs'
-              className='disabled:!border-none'
+              size="xs"
+              className="disabled:!border-none"
               // className="text-primary !border-primary border"
-              color='outline'
-              width='fit'
+              color="outline"
+              width="fit"
             >
               Previous Topic
             </Button>
@@ -372,9 +372,9 @@ export const TopicDetails: FC<{
                 !getNextId(topicDetails.topic._id as string, contentIds)
               }
               onClick={handleNextTab}
-              size='xs'
-              color='blue'
-              width='fit'
+              size="xs"
+              color="blue"
+              width="fit"
             >
               Next Topic
             </Button>
@@ -393,9 +393,9 @@ export const TopicDetails: FC<{
           onClose={() => setTopicIsCompleted(false)}
           autoHideDuration={6000}
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          className='!z-[999]'
+          className="!z-[999]"
         >
-          <Alert severity='success' onClose={() => setTopicIsCompleted(false)}>
+          <Alert severity="success" onClose={() => setTopicIsCompleted(false)}>
             Topic completed!
           </Alert>
         </Snackbar>

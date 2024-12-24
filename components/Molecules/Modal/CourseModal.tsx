@@ -330,7 +330,7 @@ export default function CourseModal({
                 "Save"
               )}
             </Button>
-            {handleDelete && (
+            {mode === 'edit' && handleDelete && (
               <Button size="xs" color="red" {...deleteActionProps}>
                 {is_loading.deleting ? (
                   <CircularProgress size={15} color="inherit" />
