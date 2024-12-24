@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
-  type: 'verify_email';
+  type?: 'verify_email';
   onClose: () => void;
   children: React.ReactNode;
   className?: string;

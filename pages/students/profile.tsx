@@ -29,11 +29,15 @@ import { Alert, Snackbar } from '@mui/material';
 import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
 import { useRouter } from 'next/router';
 import useUserVerify from '@/components/utils/hooks/useUserVerify';
+import { formatDate } from '@/components/utils/utils';
 
 type TFormState = {
   firstName: string;
   lastName: string;
   middleName: string;
+  department: string;
+  academicStatus: string;
+  dob: string;
   profileImage: string | File | Blob;
   email: string;
   username: string;
@@ -57,6 +61,9 @@ const Profile = () => {
     lastName: '',
     middleName: '',
     profileImage: '',
+    academicStatus: '',
+    department: '',
+    dob: '',
     email: '',
     username: '',
     newPassword: '',
@@ -69,6 +76,8 @@ const Profile = () => {
     firstNameError: '',
     lastNameError: '',
     emailError: '',
+    department: '',
+    dob: '',
     usernameError: '',
     passwordError: '',
     successError: '',
@@ -115,11 +124,35 @@ const Profile = () => {
       required: true,
       error: formError.emailError,
     },
+    //username, dob
+    {
+      label: 'Username',
+      name: 'username',
+      type: 'text',
+      required: false,
+      error: formError.usernameError,
+    },
+    {
+      label: 'Date of Birth',
+      name: 'dob',
+      type: 'date',
+      required: false,
+      error: '',
+    },
+    //disabled
+    { label: 'Department', name: 'department', type: 'text', error: '' },
+    {
+      label: 'Academic Status',
+      name: 'academicStatus',
+      type: 'text',
+      error: '',
+    },
   ];
 
   useEffect(() => {
     if (
       formState.username === '' ||
+      formState.dob === '' ||
       formState.firstName === '' ||
       formState.lastName === '' ||
       formState.email === '' //||
@@ -139,6 +172,7 @@ const Profile = () => {
     formState.firstName,
     formState.lastName,
     formState.newPassword,
+    formState.dob,
     formState.confirmPassword,
     formState.username,
     formState.otp,
@@ -261,6 +295,9 @@ const Profile = () => {
         firstName: data.firstName,
         lastName: data.lastName,
         middleName: data.middleName,
+        department: data.department.name,
+        dob: formatDate(data.dob),
+        academicStatus: data.department.category,
         email: data.email,
         username: data.username,
         newPassword: '',
@@ -281,6 +318,9 @@ const Profile = () => {
         firstName: json.firstName,
         lastName: json.lastName,
         middleName: json.middleName,
+        department: json.department.name,
+        academicStatus: json.department.category,
+        dob: formatDate(json.dob),
         email: json.email,
         username: json.username,
         newPassword: '',
@@ -419,6 +459,13 @@ const Profile = () => {
                       key={field.name}
                       name={field.name}
                       type={field.type}
+                      className='disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md'
+                      disabled={
+                        field.name === 'department' ||
+                        field.name === 'academicStatus'
+                          ? true
+                          : false
+                      }
                       value={
                         formState[
                           field.name as keyof Omit<TFormState, 'profileImage'>
@@ -429,6 +476,20 @@ const Profile = () => {
                       error={field.error}
                     />
                   ))}
+                  <Input
+                    placeholder={'Role'}
+                    key={role}
+                    className='disabled:bg-[#1e1e1e] disabled:bg-opacity-10 !text-subtext disabled:!border-none !rounded-md'
+                    disabled={true}
+                    type='text'
+                    value={role}
+                  />
+                </div>
+                <div>
+                  <span className='text-subtext capitalize'>courses offered</span>
+                  <div className='bg-[#1e1e1e] text-subtext mt-3 bg-opacity-10 rounded-lg w-fit py-3 px-4'>
+                    Mathematics
+                  </div>
                 </div>
                 <Button
                   type='submit'
@@ -444,7 +505,7 @@ const Profile = () => {
           )}
           {currentTab === 'Security' && (
             <form
-              className='w-full flex justify-between sm:!mt-20 items-start bg-white px-8 rounded-2xl pb-8 pt-4 shadow-card'
+              className='w-full flex justify-between sm:!mt-20  items-start bg-white px-8 rounded-2xl pb-8 pt-4 shadow-card'
               // onKeyPress={handleKeyPress}
               onSubmit={handlePasswordChange}
             >

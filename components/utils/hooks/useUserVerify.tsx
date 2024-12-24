@@ -56,27 +56,35 @@ const useUserVerify = () => {
   //   }
 
   async function handleRequestOTP(
-    type: 'email_verification' | 'password_reset'
+    type: 'email_verification' | 'password_reset',
+    token?: { accessToken: string; refreshToken: string } | null
   ) {
     try {
       setOtpRequestLoading(true);
+      setOTPTimer(2 * 60); // 2 minutes
       const request_body = JSON.stringify({ type });
-      const response = await axiosInstance.post(
-        `${baseUrl}/otp/request`,
-        request_body
-      );
+      const response = !token
+        ? await axiosInstance.post(`${baseUrl}/otp/request`, request_body)
+        : await fetch(`${baseUrl}/otp/request`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer accessToken=${token.accessToken};refreshToken=${token.refreshToken}`,
+            },
+            body: request_body,
+          });
       setVerifyOTP({ status: true, message: 'OTP sent to your email' });
+
       setSomethingOccured({
         error: false,
         success: true,
-        message: response.data.data.message,
+        message: 'OTP sent to your email',
       });
-      setOTPTimer(2 * 60); // 2 minutes
     } catch (err: AxiosError | any) {
       setSomethingOccured({
         success: false,
         error: true,
-        message: err.response.data.message,
+        message: !token ? err?.response?.data?.message : err.message,
       });
       console.error(err);
     } finally {

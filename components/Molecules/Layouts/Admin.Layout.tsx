@@ -42,9 +42,6 @@ export const handleLogout = async () => {
     Cookies.remove("role");
     Cookies.remove("userId");
 
-    // setTimeout(() => {
-    //   window.location.href = '/auth/path/teachers/login/';
-    // }, 500);
   } catch (error) {
     console.log("Status: ", error);
   }

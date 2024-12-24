@@ -163,6 +163,7 @@ export type TAssessment<T extends "post" | "get"> = {
 };
 
 export type TStudent = {
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -263,6 +264,7 @@ export type TSideDialogContent = {
 
 export type TWarningModalProps = {
   modalOpen: boolean;
+  loading?: boolean;
   handleModalClose: () => void;
   handleConfirm?: () => void;
 };

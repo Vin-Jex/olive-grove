@@ -1,24 +1,22 @@
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import React, { useCallback, useEffect, useState } from "react";
-import SubjectCard from "@/components/Molecules/Card/SubjectCard";
-import Link from "next/link";
-import withAuth from "@/components/Molecules/WithAuth";
-import { TFetchState } from "@/components/utils/types";
+import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
+import React, { useCallback, useEffect, useState } from 'react';
+import SubjectCard from '@/components/Molecules/Card/SubjectCard';
+import Link from 'next/link';
+import withAuth from '@/components/Molecules/WithAuth';
+import { TFetchState } from '@/components/utils/types';
 // import { fetchCourses } from "@/components/utils/course";
-import dummyImage from "@/images/dummy-img.jpg";
-import DepartmentModal from "@/components/Molecules/Modal/DepartmentModal";
-import { baseUrl } from "@/components/utils/baseURL";
-import axiosInstance from "@/components/utils/axiosInstance";
-import { AxiosError } from "axios";
-import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
-import { useRouter } from "next/router";
-import SearchLayout from "@/components/Molecules/SearchLayout";
-import Select from "@/components/Atoms/Select";
-import Image from "next/image";
-import useDebounce from "@/components/utils/useDebounce";
-import Loader from "@/components/Atoms/Loader";
-
-
+import dummyImage from '@/images/dummy-img.jpg';
+import DepartmentModal from '@/components/Molecules/Modal/DepartmentModal';
+import { baseUrl } from '@/components/utils/baseURL';
+import axiosInstance from '@/components/utils/axiosInstance';
+import { AxiosError } from 'axios';
+import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
+import { useRouter } from 'next/router';
+import SearchLayout from '@/components/Molecules/SearchLayout';
+import Select from '@/components/Atoms/Select';
+import Image from 'next/image';
+import useDebounce from '@/components/utils/useDebounce';
+import Loader from '@/components/Atoms/Loader';
 
 type TCourse = {
   _id: string;
@@ -45,9 +43,10 @@ const Lectures = () => {
   });
   const [lectureInfoModal, setLectureInfoModal] = useState(false);
   const router = useRouter();
-  const [searched, setSearched] = useState(router.query.search ?? "");
+  const [searched, setSearched] = useState(router.query.search ?? '');
+
   useEffect(() => {
-    setSearched(router.query.search ?? "");
+    setSearched(router.query.search ?? '');
   }, [router.query.search]);
   //  courses;
   const getCourses = useCallback(async () => {
@@ -71,16 +70,16 @@ const Lectures = () => {
         setCourses({
           data: [],
           loading: false,
-          error: "Wrong course data format",
+          error: 'Wrong course data format',
         });
       }
     } catch (error: AxiosError | any) {
       if (error.response && error.response.status === 401) {
-        handleLogout().then(() => router.push("/auth/path/students/login/"));
+        handleLogout().then(() => router.push('/auth/path/students/login/'));
       }
-      setCourses({ data: [], loading: false, error: "No courses found" });
+      setCourses({ data: [], loading: false, error: 'No courses found' });
     }
-  }, [router]);
+  }, []);
 
   const getFilteredCourses = useCallback(async () => {
     const searched = router.query.search as string;
@@ -101,14 +100,14 @@ const Lectures = () => {
         setFilteredCourses({
           data: [],
           loading: false,
-          error: "No filtered courses found",
+          error: 'No filtered courses found',
         });
       }
     } catch (error) {
       setFilteredCourses({
         data: [],
         loading: false,
-        error: "Error fetching filtered courses",
+        error: 'Error fetching filtered courses',
       });
     }
   }, [router.query.search]);
@@ -121,7 +120,7 @@ const Lectures = () => {
   const patToUrl = useCallback(
     (searchValue: string) => {
       const pathName = router.pathname;
-      const query = searchValue ? `?search=${searchValue}` : "";
+      const query = searchValue ? `?search=${searchValue}` : '';
       router.push(`${pathName}${query}`);
     },
     [router]
@@ -184,7 +183,7 @@ const Lectures = () => {
               <div
                 className={`flex flex-col gap-1 w-[20rem] absolute bg-white  z-20 ${
                   filteredCourses.data.length > 0 &&
-                  "border border-b border-r border-t-0 border-l rounded-br-md rounded-bl-md"
+                  'border border-b border-r border-t-0 border-l rounded-br-md rounded-bl-md'
                 }`}
               >
                 {filteredCourses.data.length > 0 &&
@@ -198,13 +197,13 @@ const Lectures = () => {
                             height={300}
                             className='h-full w-full object-cover'
                             src={(subject.courseCover as string) || dummyImage}
-                            alt={subject.description || "course searched"}
+                            alt={subject.description || 'course searched'}
                           />
                         </div>
 
                         <div className=' flex-shrink-0'>
                           {subject.title.slice(0, 20) ||
-                            "no description available"}
+                            'no description available'}
                         </div>
                       </div>
                     </Link>
@@ -215,7 +214,7 @@ const Lectures = () => {
               name=''
               className='max-w-[120px] max-sm:max-w-[180px]'
               onChange={() => {}}
-              options={["ascending", "latest"]}
+              options={['ascending', 'latest']}
               placeholder='filter'
               value=''
               required
@@ -230,10 +229,10 @@ const Lectures = () => {
               {courses.data.map((subject, index) => (
                 <SubjectCard
                   key={subject._id}
-                  name={"No Teacher Name"}
-                  role={"Teacher"}
+                  name={'No Teacher Name'}
+                  role={'Teacher'}
                   // type="lecture"
-                  time={"time"}
+                  time={'time'}
                   topic={subject.title as string}
                   subject={subject.title}
                   toggleModal={handleModal}
@@ -248,4 +247,4 @@ const Lectures = () => {
   );
 };
 
-export default withAuth("Student", Lectures);
+export default withAuth('Student', Lectures);
