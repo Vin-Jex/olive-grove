@@ -182,15 +182,15 @@ const Assessments = () => {
               key={index}
               assessments
               toggleModal={() => {}}
-              img={subject.teacher.profileImage}
+              img={subject?.teacher?.profileImage}
               // type="assessment"
-              category={subject.assessmentType.name}
-              name={subject.teacher.name}
+              category={subject?.assessmentType?.name}
+              name={subject?.teacher?.name}
               role={"Teacher"}
-              time={subject.dueDate}
-              topic={subject.description}
-              subject={subject.course.title}
-              btnLink2={`/students/assessments/${subject._id?.toLocaleLowerCase()}`}
+              time={subject?.dueDate}
+              topic={subject?.description}
+              subject={subject?.course?.title}
+              btnLink2={`/students/assessments/${subject?._id?.toLocaleLowerCase()}`}
             />
           ))}
         </div>

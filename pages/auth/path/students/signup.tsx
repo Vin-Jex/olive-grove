@@ -1,31 +1,34 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import logo from "@/public/image/logo.png";
-import AuthBg1 from "@/public/image/auth__bg.png";
-import AuthBg2 from "@/public/image/auth_bg.png";
-import SignUpImage from "@/images/signupImage.png";
-import AuthBg3 from "@/public/image/Frame 5.png";
-import Input, { InputType } from "@/components/Atoms/Input";
-import Button from "@/components/Atoms/Button";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import Image from 'next/image';
+import Link from 'next/link';
+import logo from '@/public/image/logo.png';
+import AuthBg1 from '@/public/image/auth__bg.png';
+import AuthBg2 from '@/public/image/auth_bg.png';
+import SignUpImage from '@/images/signupImage.png';
+import AuthBg3 from '@/public/image/Frame 5.png';
+import Input, { InputType } from '@/components/Atoms/Input';
+import Button from '@/components/Atoms/Button';
 import {
   ChevronLeft,
   Info,
   VisibilityOffOutlined,
   VisibilityOutlined,
-} from "@mui/icons-material";
-import File from "@/components/Atoms/File";
-import { baseUrl } from "@/components/utils/baseURL";
-import { useRouter } from "next/router";
-import InputField from "@/components/Atoms/InputField";
-import CustomCursor from "@/components/Molecules/CustomCursor";
-import { Alert, CircularProgress, Snackbar } from "@mui/material";
-import { fetchCourses } from "@/components/utils/course";
-import { TCourse } from "@/components/utils/types";
-import OTPInput from "@/components/Molecules/OTPInput";
-import useUserVerify from "@/components/utils/hooks/useUserVerify";
-import { DotLoader } from "react-spinners";
-import MultipleSelect from "@/components/Molecules/MaterialSelect";
+} from '@mui/icons-material';
+import File from '@/components/Atoms/File';
+import { baseUrl } from '@/components/utils/baseURL';
+import { useRouter } from 'next/router';
+import InputField from '@/components/Atoms/InputField';
+import CustomCursor from '@/components/Molecules/CustomCursor';
+import { Alert, CircularProgress, Snackbar } from '@mui/material';
+import { fetchCourses } from '@/components/utils/course';
+import { TCourse } from '@/components/utils/types';
+import OTPInput from '@/components/Molecules/OTPInput';
+import useUserVerify from '@/components/utils/hooks/useUserVerify';
+import { DotLoader } from 'react-spinners';
+import MultipleSelect from '@/components/Molecules/MaterialSelect';
+import FormPagination from '@/components/Molecules/FormPagination';
+import axios, { AxiosError } from 'axios';
 
 export type SignupType = {
   firstName: string;
@@ -59,40 +62,44 @@ const StudentSignup = () => {
   const [selectedImage, setSelectedImage] = useState<
     Blob | null | string | undefined
   >(null);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState('');
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [fetchedDept, setFetchedDept] = useState<DeptData[]>([]);
   const [availableCourse, setAvailableCourses] = useState<TCourse[]>([]);
+  const [tokens, setTokens] = useState<{
+    accessToken: string;
+    refreshToken: string;
+  } | null>(null);
   const [formState, setFormState] = useState<SignupType>({
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    department: "",
-    email: "",
-    dob: "",
+    firstName: '',
+    lastName: '',
+    middleName: '',
+    department: '',
+    email: '',
+    dob: '',
     enrolledSubjects: [],
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
   const [formError, setFormError] = useState({
-    internetError: "",
-    firstNameError: "",
-    lastNameError: "",
-    enrolledSubjectsError: "",
-    dobError: "",
-    emailError: "",
-    departmentError: "",
-    usernameError: "",
-    passwordError: "",
-    profileImageError: "",
-    successError: "",
-    generalError: "",
+    internetError: '',
+    firstNameError: '',
+    lastNameError: '',
+    enrolledSubjectsError: '',
+    dobError: '',
+    emailError: '',
+    departmentError: '',
+    usernameError: '',
+    passwordError: '',
+    profileImageError: '',
+    successError: '',
+    generalError: '',
   });
-  const [isDisabled, setIsDisabled] = useState<boolean[]>(Array(4).fill(true));
+  const [isDisabled, setIsDisabled] = useState<boolean[]>(Array(3).fill(true));
 
   const [isLoading, setIsLoading] = useState(false);
   const [currentFormIndex, setCurrentFormIndex] = useState(0);
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState('');
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
 
   const inputFields: (
@@ -112,57 +119,62 @@ const StudentSignup = () => {
       }
   )[] = [
     {
-      label: "Last Name *",
-      name: "lastName",
-      type: "text",
+      label: 'Last Name *',
+      name: 'lastName',
+      type: 'text',
       required: true,
       error: formError.lastNameError,
     },
     {
-      label: "Date of Birth *",
-      name: "dob",
-      type: "date",
+      label: 'Date of Birth *',
+      name: 'dob',
+      type: 'date',
       required: true,
       error: formError.dobError,
     },
 
     {
-      label: "Username *",
-      name: "username",
-      type: "text",
+      label: 'Username *',
+      name: 'username',
+      type: 'text',
       required: true,
       error: formError.usernameError,
     },
     {
-      label: "Password *",
-      name: "password",
-      type: "password",
+      label: 'Password *',
+      name: 'password',
+      type: 'password',
       required: true,
       error: formError.passwordError,
     },
   ];
 
   useEffect(() => {
+    console.log('dob', selectedImage);
     if (
-      formState.dob !== "" &&
-      formState.username !== "" &&
-      formState.firstName !== "" &&
-      formState.lastName !== "" &&
-      formState.department !== "" &&
-      formState.password !== "" &&
+      formState.dob !== '' &&
+      formState.middleName !== '' &&
+      formState.username !== '' &&
+      formState.firstName !== '' &&
+      formState.lastName !== '' &&
+      formState.department !== '' &&
+      formState.password !== '' &&
       selectedImage !== null
     ) {
-      setIsDisabled((c) => c.map((_, i) => (i === 0 ? false : true)));
+      console.log('I am in the if statement yay!')
+      setIsDisabled((c) => c.map((e, i) => (i === 0 ? false : e)));
     }
-    if (formState.email !== "")
-      setIsDisabled((c) => c.map((_, i) => (i === 1 ? false : true)));
-    if (formState.enrolledSubjects.length !== 0)
-      setIsDisabled((c) => c.map((_, i) => (i === 2 ? false : true)));
+    if (formState.email !== '' && formState.enrolledSubjects.length !== 0)
+      setIsDisabled((c) => c.map((e, i) => (i === 1 ? false: e)));
+    if (otp !== '')
+      setIsDisabled((c) => c.map((e, i) => (i === 2 ? false: e)));
   }, [
     formState.dob,
     formState.email,
+    otp,
     formState.firstName,
     formState.lastName,
+    formState.middleName,
     formState.enrolledSubjects,
     formState.password,
     formState.department,
@@ -177,14 +189,14 @@ const StudentSignup = () => {
         if (!response.ok) {
           setFormError((prevState) => ({
             ...prevState,
-            departmentError: "Error fetching department",
+            departmentError: 'Error fetching department',
           }));
         }
         const dept = await response.json();
 
         setFetchedDept(dept.data);
       } catch (err) {
-        console.error(err, "error");
+        console.error(err, 'error');
       }
     }
     fetchDepartment();
@@ -192,12 +204,15 @@ const StudentSignup = () => {
 
   useEffect(() => {
     async function getCourses() {
-      const courses = await fetchCourses();
-      if (typeof courses === "string") return;
+      const courses = await fetchCourses({
+        query: 'department',
+        value: formState.department,
+      });
+      if (typeof courses === 'string') return;
       else setAvailableCourses(courses.data);
     }
     getCourses();
-  }, []);
+  }, [formState.department]);
 
   useEffect(() => {
     console.log(isDisabled);
@@ -212,56 +227,66 @@ const StudentSignup = () => {
       ...prevState,
       [name]: value,
     }));
-    console.log(value, "this is the target");
+    console.log(value, 'this is the target');
   };
 
   const resetForm = () => {
     setFormState((prevState) => ({
       ...prevState,
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      username: "",
-      department: "",
-      dob: "",
-      email: "",
-      password: "",
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      username: '',
+      department: '',
+      dob: '',
+      email: '',
+      password: '',
     }));
     setSelectedImage(null);
-    setFileName("");
+    setFileName('');
     setPreviewImage(null);
   };
 
   const resetImageField = () => {
     setSelectedImage(null);
-    setFileName("");
+    setFileName('');
     setPreviewImage(null);
   };
 
-  const handleGetOTP = () => {
-    handleRequestOTP("email_verification");
-    setCurrentFormIndex((c) => c + 1);
-  };
-
-  async function handleEmailVerify(otp: string) {
-    console.log("Verify OTP");
+  async function handleEmailVerify(
+    otp: string,
+    token?: { accessToken: string; refreshToken: string } | null
+  ) {
+    console.log('Verify OTP');
     try {
       setEmailVerifyLoading(true);
       const request_body = JSON.stringify({ otp });
-      const response = await fetch(`${baseUrl}/email/verify`, {
-        body: request_body,
-      });
+      const response = await axios.post(
+        `${baseUrl}/email/verify`,
+        request_body,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer accessToken=${token?.accessToken};refreshToken=${token?.refreshToken}`,
+          },
+        }
+      );
 
-      const data = await response.json();
+      setCurrentFormIndex((c) => c + 1);
+
       setSomethingOccured({
         success: true,
         error: false,
-        message: data.data.message,
+        message: response.data.message,
       });
-      setCurrentFormIndex((c) => c + 1);
-      router.replace(router.asPath);
-    } catch (err) {
-      console.error("otp error", otp);
+    } catch (err: AxiosError | any) {
+      console.error('otp error', otp);
+      console.log(err);
+      setSomethingOccured({
+        success: false,
+        error: true,
+        message: err.response.data.message,
+      });
     } finally {
       setEmailVerifyLoading(false);
     }
@@ -272,7 +297,7 @@ const StudentSignup = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       return;
     }
@@ -281,7 +306,7 @@ const StudentSignup = () => {
     if (!formState.email.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        emailError: "Email field cannot be empty",
+        emailError: 'Email field cannot be empty',
       }));
       return;
     }
@@ -289,7 +314,7 @@ const StudentSignup = () => {
     if (!formState.password.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        passwordError: "Password field cannot be empty",
+        passwordError: 'Password field cannot be empty',
       }));
       return;
     }
@@ -330,7 +355,7 @@ const StudentSignup = () => {
         profileImageError: data.message.profileImage,
       }));
     } else {
-      console.error("Error Message: ", data.error);
+      console.error('Error Message: ', data.error);
     }
 
     if (data.error) {
@@ -364,23 +389,22 @@ const StudentSignup = () => {
   const clearError = () => {
     setTimeout(() => {
       setFormError({
-        internetError: "",
-        firstNameError: "",
-        lastNameError: "",
-        enrolledSubjectsError: "",
-        departmentError: "",
-        dobError: "",
-        emailError: "",
-        usernameError: "",
-        passwordError: "",
-        profileImageError: "",
-        successError: "",
-        generalError: "",
+        internetError: '',
+        firstNameError: '',
+        lastNameError: '',
+        enrolledSubjectsError: '',
+        departmentError: '',
+        dobError: '',
+        emailError: '',
+        usernameError: '',
+        passwordError: '',
+        profileImageError: '',
+        successError: '',
+        generalError: '',
       });
     }, 7000);
   };
 
-  console.log(formState, "formDtate");
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     event.preventDefault();
@@ -389,7 +413,7 @@ const StudentSignup = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       setIsLoading(false);
       clearError();
@@ -397,54 +421,59 @@ const StudentSignup = () => {
     }
 
     const formData = new FormData();
-    formData.append("profileImage", selectedImage as Blob);
+    formData.append('profileImage', selectedImage as Blob);
 
     // Append other form fields to the FormData object
     Object.entries(formState).forEach(([key, value]) => {
-      if (key === "enrolledSubjects") {
-        formData.append(key, JSON.stringify([value]));
-        console.log(
-          "this is the value of the enrolled subects",
-          JSON.stringify([value])
-        );
+      if (key === 'enrolledSubjects') {
+        formData.append(key, JSON.stringify(value));
       } else formData.append(key, value as string);
     });
 
-    console.log(formData, "this is the formdata");
+    console.log(formData, 'this is the formdata');
 
     try {
       const response = await fetch(`${baseUrl}/student-signup`, {
-        method: "POST",
+        method: 'POST',
         // credentials: 'include',
         body: formData,
       });
 
       if (!response.ok) {
         const data = await response.json();
-        console.log(data, "thsi is the data from student signup");
+        console.log(data, 'thsi is the data from student signup');
+        //set access and refreshTokens to cookies
+
         handleErrors(data);
         return;
       }
 
       const data = await response.json();
-      console.log(data, "thsi is the data from student signup");
+      setCurrentFormIndex((c) => c + 1);
+
+      setTokens({
+        accessToken: data.token.accessToken,
+        refreshToken: data.token.refreshToken,
+      });
+      console.log(data, 'thsi is the data from student signup');
       setFormError((prevState) => ({
         ...prevState,
-        successError: "Student account created successfully.",
+        successError: 'Student account created successfully.',
       }));
 
       // Reset the form after successful submission
       resetForm();
 
       //I need to show the page final page that has a button with which the user can navigate to the dasboard
-      // // Wait for 5 seconds before redirecting to login
-      // setTimeout(() => {
-      //   router.push('/auth/path/students/login/');
-      // }, 5000);
 
-      console.log("Response: ", JSON.stringify(data));
+      console.log('Response: ', JSON.stringify(data));
     } catch (error) {
-      console.log("Status: ", error);
+      // setSomethingOccured({
+      //   success: true,
+      //   error: false,
+      //   message: error.data.message,
+      // });
+      console.log('Status: ', error);
     } finally {
       setIsDisabled((c) => c.map((_, i) => (i === 3 ? true : false)));
       setIsLoading(false);
@@ -453,14 +482,14 @@ const StudentSignup = () => {
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === "Enter") {
+    if (isDisabled && event.key === 'Enter') {
       handleSignup(event);
     }
   };
 
   return (
     <>
-      <div className='flex w-full max-h-screen relative'>
+      <div className='flex flex-col md:flex-row w-full max-h-screen relative'>
         {/*<customcursor />*/}
 
         {/* <Image
@@ -473,14 +502,14 @@ const StudentSignup = () => {
         alt='Auth Background Image 2'
         className='absolute -z-50 top-0 right-0'
       /> */}
-        <div className='flex-1 relative'>
-          <div className='h-52 blur-md bottom-0 absolute bg-black/30 w-full'></div>
+        <div className='flex-1 hidden md:block relative'>
+          <div className='h-52  blur-md bottom-0 absolute bg-black/30 w-full'></div>
           <Image
             src={SignUpImage}
             alt='sign up image'
-            className='hidden md:block overflow-hidden h-full  object-cover'
+            className=' overflow-hidden h-full  object-cover'
           />
-          <div className='absolute text-white bottom-0 px-16 py-16'>
+          <div className='absolute md:px-5 lg:px-16 text-white bottom-0 py-16'>
             <div className=' text-3xl text-center py-4 font-bold'>
               Olive Groove Student/Teacher Portal.
             </div>
@@ -490,11 +519,11 @@ const StudentSignup = () => {
               able to create and manage your classes, lectures and assessments
               while also viewing your student performances on their courses.
             </span>
-            <div className='flex gap-5 py-4 justify-center'>
-              <div className='bg-[#f8f8f8] bg-opacity-50 px-5 py-2 rounded-full'>
+            <div className='flex md:flex-col lg:flex-row gap-5 py-4 justify-center'>
+              <div className='bg-[#f8f8f8] bg-opacity-50 text-center px-5 py-2 rounded-full'>
                 Flexibility of Management
               </div>
-              <div className='bg-[#f8f8f8] bg-opacity-50 px-5 py-2 rounded-full'>
+              <div className='bg-[#f8f8f8] bg-opacity-50 text-center px-5 py-2 rounded-full'>
                 24/7 Accessibility
               </div>
             </div>
@@ -508,10 +537,10 @@ const StudentSignup = () => {
         />
       </div> */}
         <div className='relative w-full flex items-center justify-center  flex-1'>
-          <div className=' flex flex-col items-center justify-center gap-y-3'>
+          <div className=' flex flex-col w-full items-center justify-center gap-y-3'>
             <Link
               href='/'
-              className='absolute left-[5rem] top-[1rem] w-[4.5rem] h-[5rem] -ml-4 -mb-2'
+              className='xl:absolute left-[5rem] top-[1rem] w-[4.5rem] h-[5rem] -ml-4 -mb-2'
             >
               <Image
                 src={logo}
@@ -544,49 +573,49 @@ const StudentSignup = () => {
 
             {formError.usernameError ? (
               <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-                <Info sx={{ fontSize: "1.1rem" }} />
+                <Info sx={{ fontSize: '1.1rem' }} />
                 {formError.usernameError}
               </span>
             ) : formError.passwordError ? (
               <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-                <Info sx={{ fontSize: "1.1rem" }} />
+                <Info sx={{ fontSize: '1.1rem' }} />
                 {formError.passwordError}
               </span>
             ) : formError.internetError ? (
               <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+                <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
                 {formError.internetError}
               </span>
             ) : formError.successError ? (
               <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+                <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
                 {formError.successError}
               </span>
             ) : formError.departmentError ? (
               <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+                <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
                 {formError.departmentError}
               </span>
             ) : formError.generalError ? (
               <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+                <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
                 <span>{formError.generalError}</span>
               </span>
             ) : null}
-            {formError.profileImageError !== "" && (
+            {formError.profileImageError !== '' && (
               <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-red-600'>
-                <Info sx={{ fontSize: "1.1rem" }} />
+                <Info sx={{ fontSize: '1.1rem' }} />
                 {formError.profileImageError}
               </span>
             )}
             <form
-              className='flex flex-col mx-auto gap-y-5 w-[490px]'
+              className='flex flex-col mx-auto gap-y-5 '
               onKeyPress={handleKeyPress}
               onSubmit={handleSignup}
             >
               {/* first form step */}
               {currentFormIndex === 0 && (
-                <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
+                <div className='flex flex-col w-full gap-y-5 '>
                   <span className='text-subtext text-[16px] text-center font-medium capitalize font-roboto leading-[28px]'>
                     Create new account
                   </span>
@@ -607,7 +636,7 @@ const StudentSignup = () => {
                       placeholder='Middle Name'
                       value={formState.middleName}
                       onChange={handleChange}
-                      error={""}
+                      error={''}
                     />
                   </div>
                   <div className='w-full '>
@@ -630,23 +659,23 @@ const StudentSignup = () => {
                     </select>
                   </div>
                   {inputFields.map((field) =>
-                    field.name !== "password" ? (
+                    field.name !== 'password' ? (
                       <InputField
                         placeholder={field.label}
                         key={field.name}
                         name={field.name}
                         type={field.type}
                         pattern={
-                          field.name === "username"
-                            ? "[a-zA-Z0-9!@#$_%].{5,}$"
+                          field.name === 'username'
+                            ? '[a-zA-Z0-9!@#$_%].{5,}$'
                             : undefined
                         }
                         title={
-                          field.name === "email"
-                            ? "Please enter a valid email address"
-                            : field.name === "username"
-                            ? "Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)"
-                            : ""
+                          field.name === 'email'
+                            ? 'Please enter a valid email address'
+                            : field.name === 'username'
+                            ? 'Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
+                            : ''
                         }
                         value={formState[field.name as keyof SignupType]}
                         onChange={handleChange}
@@ -680,14 +709,13 @@ const StudentSignup = () => {
                       disabled={false}
                       resetImageStates={resetImageField}
                       placeholder={
-                        fileName === "" ? fileName : "Upload Profile Picture"
+                        fileName === '' ? fileName : 'Upload Profile Picture'
                       }
                       required
                       fileName={fileName}
                     />
                   </div>
                   <Button
-                    // type='submit'
                     size='sm'
                     width='full'
                     onClick={() => setCurrentFormIndex((c) => c + 1)}
@@ -710,38 +738,90 @@ const StudentSignup = () => {
                 </div>
               )}
 
-              {/* second form step */}
               {currentFormIndex === 1 && (
                 <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
                   <span className='text-center text-subtext'>
-                    Enter your email below to get your verification OTP.
+                    Kindly select all your enrolled subjects below.
+                  </span>
+                  <InputField
+                    type='email'
+                    name='email'
+                    className='ml-0 !py-5 !w-full'
+                    value={formState.email}
+                    onChange={handleChange}
+                    placeholder='Enter your mail'
+                    required
+                    error={formError.emailError}
+                  />
+                  <div className='w-full'>
+                    <MultipleSelect
+                      name='enrolledSubjects'
+                      onChange={setFormState}
+                      options={availableCourse.map((c) => ({
+                        name: c.title,
+                        value: c._id as string,
+                      }))}
+                    />
+                  </div>
+                  <Button
+                    disabled={isLoading || isDisabled[1]}
+                    width='full'
+                    type='submit'
+                    // /*type='submit'*/ onClick={() =>
+                    //   setCurrentFormIndex((c) => c + 1)
+                    // }
+                    size='md'
+                  >
+                    {isLoading ? (
+                      <CircularProgress size={20} color='inherit' />
+                    ) : (
+                      'Complete'
+                    )}
+                  </Button>
+                </div>
+              )}
+              {/* second form step */}
+              {/* third part of the step form */}
+
+              {/**forth part of the form */}
+              {currentFormIndex === 2 && (
+                <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
+                  <span className='text-center text-subtext'>
+                    Would you like to verify your account now?
                   </span>
                   <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                    <InputField
-                      type='email'
-                      name='email'
-                      value={formState.email}
-                      onChange={handleChange}
-                      placeholder='Enter your mail'
-                      required
-                      error={formError.emailError}
-                    />
-                    <div className='w-full'>
-                      <Button
-                        size='md'
-                        width='full'
-                        disabled={isDisabled[1]}
-                        onClick={handleGetOTP}
-                        className='mx-auto'
-                      >
-                        {otpRequestLoading ? <DotLoader /> : "Send OTP"}
-                      </Button>
-                    </div>
+                    <Button
+                      size='md'
+                      width='full'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleRequestOTP('email_verification', tokens);
+                        setCurrentFormIndex((c) => c + 1);
+                      }}
+                      className='mx-auto text-center'
+                    >
+                      {otpRequestLoading ? (
+                        <CircularProgress size={20} color='inherit' />
+                      ) : (
+                        'Verify Now'
+                      )}
+                    </Button>
+                    <Link
+                      href='/auth/path/students/login'
+                      className='w-full text-subtext border text-center py-4'
+                    >
+                      Verify Later
+                    </Link>
+                  </div>
+                  <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
+                    <span className='text-subtext text-center'>
+                      If you choose to verify later, you will be restricted to a
+                      specific level of access with your account.
+                    </span>
                   </div>
                 </div>
               )}
-              {/* third part of the step form */}
-              {currentFormIndex === 2 && (
+              {currentFormIndex === 3 && (
                 <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
                   <span className='text-center text-subtext'>
                     An OTP was sent to the mail you provided below. Kindly it
@@ -753,82 +833,55 @@ const StudentSignup = () => {
                       length={6}
                       onChange={(otp) => {
                         setOtp(otp);
-                        setCurrentFormIndex((c) => c + 1);
                       }}
                     />
                   </div>
                   <Button
                     width='full'
                     disabled={isDisabled[2]}
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.preventDefault();
-                      handleEmailVerify(otp);
+                      await handleEmailVerify(otp, tokens);
                     }}
                     className='mx-auto'
                     size='md'
                   >
-                    Verify
+                    {emailVerifyLoading ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      'Verify'
+                    )}
                   </Button>
                   <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
                     <span className='text-subtext'>Did&apos;t get OTP?</span>
-                    <Link
-                      href='/auth/path/students/login'
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleRequestOTP('email_verification', tokens);
+                      }}
                       className='text-primary'
                     >
                       Resend OTP
-                    </Link>
+                    </button>
+                    <span className='text-subtext ml-6'>
+                      {String(Math.floor(OTPTimer / 60)).length < 2
+                        ? String(Math.floor(OTPTimer / 60)).padStart(2, '0')
+                        : Math.floor(OTPTimer / 60)}
+                      :
+                      {String(OTPTimer % 60).length < 2
+                        ? String(OTPTimer % 60).padStart(2, '0')
+                        : OTPTimer % 60}
+                    </span>
                   </div>
                 </div>
               )}
-              {/**forth part of the form */}
-              {currentFormIndex === 3 && (
-                <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                  <span className='text-center text-subtext'>
-                    Kindly select all your enrolled subjects below.
-                  </span>
-                  <div>
-                    <MultipleSelect />
-                    {/* <select
-                      onChange={handleChange}
-                      value={formState.enrolledSubjects}
-                      name='enrolledSubjects'
-                      id='enrolledSubjects'
-                      required
-                      // multiple
-                      className='flex items-center px-2 sm:px-2.5 py-3 rounded-xl h-12 bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full  outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
-                    >
-                      <option value='' disabled selected>
-                        Select Enrolled courses
-                      </option>
-                      {availableCourse?.map((dept) => (
-                        <option value={dept._id} key={dept._id}>
-                          {dept.title}
-                        </option>
-                      ))}
-                    </select> */}
-                  </div>
-                  <Button
-                    disabled={isLoading}
-                    width='full'
-                    /*type='submit'*/ onClick={() =>
-                      setCurrentFormIndex((c) => c + 1)
-                    }
-                    size='md'
-                  >
-                    {isLoading ? (
-                      <CircularProgress size={20} color='inherit' />
-                    ) : (
-                      "Complete"
-                    )}
-                  </Button>
-                </div>
-              )}
+
               {/* final page */}
               {currentFormIndex === 4 && (
                 <div className='flex flex-col mx-auto gap-y-5 w-[490px] justify-center items-center'>
                   <SignUpCompleteIcon />
                   <h2 className='font-bold text-xl md:text-2xl lg:text-3xl'>
-                    Welcome {"Eniola"}!
+                    Welcome {'Eniola'}!
                   </h2>
                   <span className='text-lg max-sm:text-base text-[#1e1e1e] text-opacity-50'>
                     Your account has been created successfully!
@@ -841,12 +894,17 @@ const StudentSignup = () => {
                   </Link>
                 </div>
               )}
-              <button
-                disabled={currentFormIndex === 0}
-                onClick={() => setCurrentFormIndex((c) => c - 1)}
-              >
-                <ChevronLeft />
-              </button>
+
+              {/* second form step */}
+
+              {/* third part of the step form */}
+
+              <FormPagination
+                isDisabled={isDisabled}
+                index={currentFormIndex}
+                number={4}
+                onChange={setCurrentFormIndex}
+              />
             </form>
           </div>
         </div>
@@ -863,11 +921,11 @@ const StudentSignup = () => {
             }))
           }
           autoHideDuration={6000}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           className='!z-[999]'
         >
           <Alert
-            severity={somethingOccured.error ? "error" : "success"}
+            severity={somethingOccured.error ? 'error' : 'success'}
             onClose={() =>
               setSomethingOccured((err) => ({ ...err, error: false }))
             }

@@ -58,6 +58,7 @@ export default function EmailVerifyModal({
   return (
     <div>
       <Modal
+        type='verify_email'
         isOpen={modalOpen}
         onClose={handleModalClose}
         className='w-[80%] sm:w-[70%] md:w-[602px] bg-white backdrop-blur-[10px] rounded-3xl'
@@ -83,10 +84,9 @@ export default function EmailVerifyModal({
           </div>
           <div>
             <OTPInput length={6} onChange={setOtp} />
-            <div>
+            <div className='mx-auto flex items-center gap-4'>
               <Button
                 size='sm'
-                className='mx-auto'
                 onClick={(e) => {
                   e.preventDefault();
                   handleEmailVerify(otp);
@@ -99,7 +99,7 @@ export default function EmailVerifyModal({
                   'send OTP'
                 )}
               </Button>
-              <span>{OTPTimer}</span>
+              {OTPTimer > 0 && <span className='text-subtext'>{OTPTimer}</span>}
             </div>
           </div>
         </div>

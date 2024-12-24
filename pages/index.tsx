@@ -1,22 +1,22 @@
-import Hero from "@/components/Molecules/Hero";
-import Layout from "@/components/Molecules/Layout";
-import Image from "next/image";
-import React, { useEffect } from "react";
-import study from "@/public/image/study.png";
-import like from "@/public/image/like.png";
-import student1 from "@/public/image/student2.png";
-import student2 from "@/public/image/student5.png";
-import student3 from "@/public/image/student7.png";
-import write from "@/public/image/write.png";
-import teacher from "@/public/image/teacher.png";
-import file from "@/public/image/file.png";
-import favorites from "@/public/image/favorites.png";
-import Button from "@/components/Atoms/Button";
-import { useRouter } from "next/router";
-import { motion } from "framer-motion";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import { useAuth } from "@/contexts/AuthContext";
+import Hero from '@/components/Molecules/Hero';
+import Layout from '@/components/Molecules/Layout';
+import Image from 'next/image';
+import React, { useEffect } from 'react';
+import study from '@/public/image/study.png';
+import like from '@/public/image/like.png';
+import student1 from '@/public/image/student2.png';
+import student2 from '@/public/image/student5.png';
+import student3 from '@/public/image/student7.png';
+import write from '@/public/image/write.png';
+import teacher from '@/public/image/teacher.png';
+import file from '@/public/image/file.png';
+import favorites from '@/public/image/favorites.png';
+import Button from '@/components/Atoms/Button';
+import { useRouter } from 'next/router';
+import { motion } from 'framer-motion';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Home: React.FC = () => {
   const router = useRouter();
@@ -25,7 +25,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     AOS.init({
       duration: 1200,
-      easing: "ease-in-out",
+      easing: 'ease-in-out',
     });
   }, []);
 
@@ -36,7 +36,7 @@ const Home: React.FC = () => {
       y: 0,
       transition: {
         staggerChildren: 0.2,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
@@ -57,7 +57,7 @@ const Home: React.FC = () => {
           >
             <motion.div
               whileHover={{ scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
               className='flex flex-col justify-center w-full gap-y-3 md:max-w-[670px] glass-card mx-auto'
             >
               <h5 className='text-primary text-base leading-6 font-semibold font-roboto'>
@@ -127,7 +127,7 @@ const Home: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeInOut" }}
+            transition={{ duration: 1, ease: 'easeInOut' }}
             className='flex flex-col items-center justify-center text-center md:w-[800px] mx-auto gap-y-2'
           >
             <h5 className='text-primary text-base leading-6 font-semibold font-roboto'>
@@ -146,21 +146,21 @@ const Home: React.FC = () => {
             {[
               {
                 icon: write,
-                title: "Student Portals",
+                title: 'Student Portals',
                 description:
-                  "Access your personalized student portal for a tailored learning experience.",
+                  'Access your personalized student portal for a tailored learning experience.',
               },
               {
                 icon: teacher,
-                title: "Teacher Portals",
+                title: 'Teacher Portals',
                 description:
-                  "Teachers can easily manage and organize their classes through our intuitive teacher portals.",
+                  'Teachers can easily manage and organize their classes through our intuitive teacher portals.',
               },
               {
                 icon: file,
-                title: "Submit Work",
+                title: 'Submit Work',
                 description:
-                  "Access your personalized student portal for a tailored learning experience.",
+                  'Access your personalized student portal for a tailored learning experience.',
               },
             ].map((feature, index) => (
               <motion.div
@@ -168,7 +168,7 @@ const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 whileHover={{ scale: 1.05 }}
-                transition={{ duration: 1, ease: "easeInOut" }}
+                transition={{ duration: 1, ease: 'easeInOut' }}
                 className='flex flex-col justify-center items-center gap-y-1 md:gap-y-3 xl:gap-y-5 flex-[1_0_0] text-center glass-card'
               >
                 <Image
@@ -207,7 +207,7 @@ const Home: React.FC = () => {
 
             <motion.div
               whileHover={{ scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
               className='flex flex-col lg:justify-center w-full gap-y-6 order-1 lg:order-2 lg:w-[700px] mx-auto'
             >
               <span className='flex text-dark text-[1.6rem] sm:text-[1.8rem] md:text-[2.4rem] xl:text-[3rem] lg:items-stretch leading-[38px] sm:leading-[48px] md:leading-[58px] lg:leading-[60px] xl:leading-[67px] font-bold font-roboto items-stretch text-center lg:text-start'>
@@ -226,7 +226,7 @@ const Home: React.FC = () => {
             <div className='flex flex-col justify-center w-full lg:w-[700px] gap-y-6 mx-auto'>
               <motion.div
                 whileHover={{ scale: 1.03 }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
               >
                 <Image
                   src={favorites}
@@ -253,18 +253,18 @@ const Home: React.FC = () => {
                     const role = user?.role;
                     loggedIn
                       ? router.push(
-                          role === "Student"
-                            ? "/students/dashboard"
-                            : role === "Teacher"
-                            ? "/teachers/dashboard"
-                            : role === "Admin"
-                            ? "/admins/dashboard"
-                            : "/auth/path"
+                          role === 'Student'
+                            ? '/students/dashboard'
+                            : role === 'Teacher'
+                            ? '/teachers/dashboard'
+                            : role === 'Admin'
+                            ? '/admins/dashboard'
+                            : '/auth/path'
                         )
-                      : router.push("/auth/path");
+                      : router.push('/auth/path');
                   }}
                 >
-                  {loggedIn ? "Dashboard" : "Login"}
+                  {loggedIn ? 'Dashboard' : 'Login'}
                 </Button>
               </motion.div>
             </div>
