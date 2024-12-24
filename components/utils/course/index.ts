@@ -202,7 +202,7 @@ export const editItem = async (
  * }
  */
 export const fetchCourses = async (filter?: {
-  query: "title";
+  query: "title" | string;
   value: string;
 }): Promise<{ data: TCourse[] } | string> => {
   try {

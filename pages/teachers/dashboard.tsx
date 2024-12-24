@@ -1,23 +1,19 @@
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
 import React, { useState } from "react";
 import Img from "@/public/image/celebrate.png";
 import Image from "next/image";
 import ClassCard from "@/components/Molecules/Card/ClassCard";
 import withAuth from "@/components/Molecules/WithAuth";
-import ClassModal from "@/components/Molecules/Modal/ClassModal";
-import { useRouter } from "next/router";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import { ArrowBackIos, ExpandMore } from "@mui/icons-material";
-import EditClassModal from "@/components/Molecules/Modal/EditClassModal";
+import UpdateDepartmentModal from "@/components/Molecules/Modal/UpdateDepartmentModal";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalAss, setOpenModalAss] = useState(false);
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [formState, setFormState] = useState({
-    class: "",
+    department: "",
     description: "",
     duration: "",
     meetingLink: "",
@@ -29,7 +25,6 @@ const Dashboard = () => {
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
     setIsOpen(false);
-    // You can perform any action here with the selected option
   };
 
   const handleModal = () => {
@@ -40,17 +35,17 @@ const Dashboard = () => {
   };
   return (
     <>
-      <EditClassModal
+      <UpdateDepartmentModal
         formState={formState}
         setFormState={setFormState}
-        type='class'
+        type='department'
         handleModalClose={handleModal}
         modalOpen={openModal}
       />
-      <EditClassModal
+      <UpdateDepartmentModal
         formState={formState}
         setFormState={setFormState}
-        type='assignment'
+        type='assessment'
         handleModalClose={handleModalAssignment}
         modalOpen={openModalAss}
       />
@@ -62,7 +57,7 @@ const Dashboard = () => {
                 Welcome back, John
               </h3>
               <span className='text-sm sm:text-base text-light/80 font-roboto'>
-                You have 3 classes and 2 assignments to attend to.
+                You have 3 lectures and 2 assessments to attend to.
               </span>
               <span className='text-sm sm:text-base text-light/80 font-roboto mt-1'>
                 &quot;To teacher is to learn twice over&quot; learning to become
@@ -127,7 +122,7 @@ const Dashboard = () => {
 
               <div className='flex flex-col w-full items-center'>
                 <h3 className='font-roboto font-medium text-sm sm:text-base text-secondary w-full'>
-                  No. of Classes
+                  No. of Lectures
                 </h3>
                 <span className='text-dark font-semibold text-xl md:text-2xl w-full'>
                   8
@@ -141,7 +136,7 @@ const Dashboard = () => {
               <ClassCard
                 handleEdit={handleModal}
                 editable={true}
-                title="class"
+                title='class'
               />
             </div>
             <div className='w-full md:w-1/2 mt-4 sm:mt-0'>

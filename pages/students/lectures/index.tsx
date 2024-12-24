@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
 import React, { useCallback, useEffect, useState } from 'react';
 import SubjectCard from '@/components/Molecules/Card/SubjectCard';
@@ -7,7 +6,7 @@ import withAuth from '@/components/Molecules/WithAuth';
 import { TFetchState } from '@/components/utils/types';
 // import { fetchCourses } from "@/components/utils/course";
 import dummyImage from '@/images/dummy-img.jpg';
-import ClassModal from '@/components/Molecules/Modal/ClassModal';
+import DepartmentModal from '@/components/Molecules/Modal/DepartmentModal';
 import { baseUrl } from '@/components/utils/baseURL';
 import axiosInstance from '@/components/utils/axiosInstance';
 import { AxiosError } from 'axios';
@@ -19,41 +18,6 @@ import Image from 'next/image';
 import useDebounce from '@/components/utils/useDebounce';
 import Loader from '@/components/Atoms/Loader';
 
-export const subjectData = [
-  {
-    subject: 'Further Mathematics',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Calculus',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
-  },
-  {
-    subject: 'Chemistry',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Organic Chemistry',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
-  },
-  {
-    subject: 'Physics',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Motion',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
-  },
-  {
-    subject: 'Mathematics',
-    role: 'Teacher',
-    time: '09:00AM - 10:30AM',
-    topic: 'Trigonomentry',
-    name: 'Dr. Ayodeji Emmanuel',
-    btnLink1: '#',
-  },
-];
-
 type TCourse = {
   _id: string;
   title: string;
@@ -64,7 +28,7 @@ type TCourse = {
   };
 };
 
-const Classes = () => {
+const Lectures = () => {
   const [courses, setCourses] = useState<TFetchState<TCourse[]>>({
     data: [],
     loading: false,
@@ -80,6 +44,7 @@ const Classes = () => {
   const [lectureInfoModal, setLectureInfoModal] = useState(false);
   const router = useRouter();
   const [searched, setSearched] = useState(router.query.search ?? '');
+
   useEffect(() => {
     setSearched(router.query.search ?? '');
   }, [router.query.search]);
@@ -114,7 +79,7 @@ const Classes = () => {
       }
       setCourses({ data: [], loading: false, error: 'No courses found' });
     }
-  }, [router.query.search]); // Empty dependency array
+  }, []);
 
   const getFilteredCourses = useCallback(async () => {
     const searched = router.query.search as string;
@@ -150,7 +115,7 @@ const Classes = () => {
   // Separate effects for different concerns
   useEffect(() => {
     getCourses();
-  }, []); // Only run once when component mounts
+  }, [getCourses]);
 
   const patToUrl = useCallback(
     (searchValue: string) => {
@@ -191,8 +156,8 @@ const Classes = () => {
   }, [router.query.search, debouncedGetFilteredCourses]);
   return (
     <>
-      <ClassModal
-        type='class'
+      <DepartmentModal
+        type='lecture'
         handleModalClose={handleModal}
         modalOpen={lectureInfoModal!}
       />
@@ -281,6 +246,5 @@ const Classes = () => {
     </>
   );
 };
-// export default Classes;
 
-export default withAuth('Student', Classes);
+export default withAuth('Student', Lectures);

@@ -5,7 +5,7 @@ import SearchInput from "@/components/Atoms/SearchInput";
 import Button from "@/components/Atoms/Button";
 import Select from "@/components/Atoms/Select";
 import {
-  TClass,
+  TDepartment,
   TCourse,
   TFetchState,
   THandleSearchChange,
@@ -20,15 +20,32 @@ import Course from "@/components/Atoms/Course/EachCourse";
 import { CourseClass, fetchCourses } from "@/components/utils/course";
 import { Add } from "@mui/icons-material";
 import axiosInstance from "@/components/utils/axiosInstance";
+import { useCourseContext } from "@/contexts/CourseContext";
+import LogoutWarningModal from "@/components/Molecules/Modal/LogoutWarningModal";
+import WarningModal from "@/components/Molecules/Modal/WarningModal";
 
 const Subjects: FC = () => {
   const [searchResults, setSearchResults] = useState<TCourse[]>([]);
+  const {
+    course,
+    dispatch,
+    modal,
+    closeModal,
+    modalFormState,
+    setModalFormState,
+    modalRequestState,
+    setModalRequestState,
+    openModal,
+    modalMetadata: { type, mode, handleAction, handleDelete },
+  } = useCourseContext();
   const [courses, setCourses] = useState<TFetchState<TCourse[]>>({
     data: [],
     loading: true,
     error: undefined,
   });
-  const [classes, setClasses] = useState<TFetchState<TClass[] | undefined>>({
+  const [departments, setDepartments] = useState<
+    TFetchState<TDepartment[] | undefined>
+  >({
     data: [],
     loading: false,
     error: undefined,
@@ -38,7 +55,7 @@ const Subjects: FC = () => {
     {
       title: "",
       description: "",
-      classId: "",
+      department: "",
       courseCover: undefined,
     }
   );
@@ -63,7 +80,7 @@ const Subjects: FC = () => {
       });
 
       try {
-        // Call the reusable getCourses function, passing the setClasses state updater
+        // Call the reusable getCourses function, passing the setDepartments state updater
         const courses = await fetchCourses(filter);
 
         if (typeof courses === "object") {
@@ -108,33 +125,33 @@ const Subjects: FC = () => {
   );
 
   /**
-   * * Function responsible from retrieving the classes on the platform
+   * * Function responsible from retrieving the departments on the platform
    */
-  const getClasses = async (filter?: { query: "title"; value: string }) => {
+  const getDepartments = async (filter?: { query: "title"; value: string }) => {
     try {
       // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
-      setClasses({
+      setDepartments({
         data: [],
         loading: true,
         error: undefined,
       });
 
       // * Get the access token from the cookies
-      // * Make an API request to retrieve the list of classes created by this teacher
-      const response = await axiosInstance.get(`/classes/all`);
+      // * Make an API request to retrieve the list of departments created by this teacher
+      const response = await axiosInstance.get(`/department/all`);
 
-      // * Display the list of classes returned by the endpoint
-      const responseData = response.data as TResponse<TClass[]>;
-      setClasses({
+      // * Display the list of departments returned by the endpoint
+      const responseData = response.data as TResponse<TDepartment[]>;
+      setDepartments({
         data: responseData.data,
         loading: false,
         error: undefined,
       });
     } catch (error: any) {
       console.error(error);
-      // * If it's a 404 error, display message that classes couldn't be found
+      // * If it's a 404 error, display message that departments couldn't be found
       if (error?.response?.status == 404) {
-        setClasses({
+        setDepartments({
           data: [],
           loading: false,
           error: "No class found",
@@ -143,10 +160,10 @@ const Subjects: FC = () => {
       }
 
       // * If it's any other error code, display default error msg
-      setClasses({
+      setDepartments({
         data: [],
         loading: false,
-        error: "An error occurred while retrieving classes",
+        error: "An error occurred while retrieving departments",
       });
 
       return;
@@ -191,7 +208,7 @@ const Subjects: FC = () => {
 
     // Perform filtering based on class filter
     const filteredResults = courses.data.filter(
-      (result) => result?.classId?._id === value
+      (result) => result?.department?._id === value
     );
 
     setSearchResults(filteredResults);
@@ -216,7 +233,7 @@ const Subjects: FC = () => {
       // * Append the course details to the request body
       request_data.append("title", formState.title);
       request_data.append("description", formState.description || "");
-      request_data.append("classId", formState.classId || "");
+      request_data.append("classId", formState.department || "");
 
       typeof formState.courseCover === "object" &&
         request_data.append("courseCover", formState.courseCover);
@@ -287,7 +304,7 @@ const Subjects: FC = () => {
   const handleCloseModal = () => {
     setFormState({
       title: "",
-      classId: "",
+      department: "",
       description: "",
       courseCover: "",
       topicVideo: "",
@@ -298,7 +315,7 @@ const Subjects: FC = () => {
 
   useEffect(() => {
     getCourses();
-    getClasses();
+    getDepartments();
   }, [getCourses]);
 
   return (
@@ -312,11 +329,43 @@ const Subjects: FC = () => {
         mode="create"
         handleAction={createCourse}
         requestState={createCourseRes}
-        classes={classes.data?.map((each) => ({
+        departments={departments.data?.map((each) => ({
           value: each._id as string,
           display_value: each.name,
         }))}
       />
+      {modal.open && (
+        <>
+          {mode === "delete" ? (
+            <>
+              <WarningModal
+                modalOpen={true}
+                handleModalClose={closeModal}
+                requestState={modalRequestState}
+                handleConfirm={handleDelete || (() => undefined)}
+                content="Are you sure you want to delete this course?"
+                subtext="This action CAN NOT be undone!"
+              />
+            </>
+          ) : (
+            <CourseModal
+              formState={modalFormState || ({} as any)}
+              setFormState={setModalFormState || ((() => {}) as any)}
+              type={type || "chapter"}
+              handleModalClose={closeModal}
+              modalOpen={true}
+              mode={mode || "create"}
+              handleAction={handleAction || ((() => {}) as any)}
+              handleDelete={handleDelete || ((() => {}) as any)}
+              requestState={modalRequestState}
+              departments={departments.data?.map((each) => ({
+                value: each._id as string,
+                display_value: each.name,
+              }))}
+            />
+          )}
+        </>
+      )}
 
       <TeachersWrapper title="Subjects" metaTitle="Olive Groove ~ Subjects">
         <div className="h-full">
@@ -352,7 +401,7 @@ const Subjects: FC = () => {
                     />
                     <Select
                       options={
-                        classes.data?.map((type) => ({
+                        departments.data?.map((type) => ({
                           display_value: type.name,
                           value: type._id || "",
                         })) || []

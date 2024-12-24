@@ -54,6 +54,8 @@ const CustomWrongIcon = () => {
 
 enum QuestionType {
   MULTIPLE_CHOICE = 'multiple_choice',
+  PARAGRAGH = 'paragraph',
+  FILE_UPLOAD = 'file_upload',
 }
 
 const CustomRightIcon = (props: { className?: string }) => {
@@ -249,7 +251,7 @@ const AssessmentDetailsPage = () => {
     if (
       Object.keys(answeredQxts).length +
         Object.keys(fileUploadAnswers).length !==
-        quizQuestions?.questions?.length
+      quizQuestions?.questions?.length
     ) {
       alert('Please answer all questions before submitting');
       return;
@@ -348,17 +350,17 @@ const AssessmentDetailsPage = () => {
               </Link>{' '}
               /{' '}
               <span className='text-primary'>
-                {quizQuestions?.course.title}
+                {quizQuestions?.course?.title}
               </span>
             </div>
           </div>
           <div className=' py-8 px-6  rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
             <h2 className='text-3xl py-5'>
-              {quizQuestions?.course.title} Class Exercise
+              {quizQuestions?.course?.title} Class Exercise
             </h2>
             <div className='max-sm:flex-col max-sm:gap-3 flex justify-between'>
               <span>
-                <strong>Topic:</strong> {quizQuestions?.course.chapters[0]}
+                <strong>Topic:</strong> {quizQuestions?.course?.chapters[0]}
               </span>
               <span>
                 <strong>Due:</strong>{' '}
@@ -575,7 +577,7 @@ function QuestionCard({
               </div>
             ))}
         </RadioGroup>
-        {question.questionType === 'german' && (
+        {question.questionType === QuestionType.PARAGRAGH && (
           <Input
             type='text'
             disabled={review}
@@ -591,7 +593,7 @@ function QuestionCard({
             }}
           />
         )}
-        {question.questionType === 'image_upload' && (
+        {question.questionType === QuestionType.FILE_UPLOAD && (
           <>
             <label
               htmlFor={question._id.toString()}

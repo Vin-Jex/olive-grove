@@ -1,9 +1,13 @@
-import { TCourse } from "@/components/utils/types";
+import { TCourse, TResponse } from "@/components/utils/types";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef, useState } from "react";
 import coursePlaceholder from "@/images/course-placeholder.png";
 import Button from "../Button";
+import { AnimatePresence } from "framer-motion";
+import SideDialog from "../DialogAction";
+import { useCourseContext } from "@/contexts/CourseContext";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 enum CONTAINER_STYLES {
   ROW = "flex-row max-w-[450px]",
@@ -131,21 +135,205 @@ enum CONTAINER_STYLES {
 
 const Course: FC<{ course: TCourse }> = ({ course }) => {
   const router = useRouter();
+  const { openModal, dispatch, setModalRequestState } = useCourseContext();
   const container_ref = useRef<HTMLImageElement | HTMLDivElement>(null);
+  const action_ref = useRef<HTMLDivElement>(null);
+  const [display_actions, setDisplayActions] = useState(false);
   const description =
     course?.description && course.description?.length > 150
       ? `${course.description?.slice(0, 150)}...`
       : course.description;
 
+  const displayActionHandler = () => {
+    setDisplayActions(true);
+  };
+
+  const hideActionHandler = () => {
+    setDisplayActions(false);
+  };
+
+  /**
+   * * Function responsible for editing the course
+   */
+  const handleEditCourse = async (formState?: any) => {
+    try {
+      // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
+      setModalRequestState({
+        data: undefined,
+        loading: true,
+        error: undefined,
+      });
+
+      const request_data = new FormData();
+
+      // * Append the course details to the request body
+      request_data.append("title", formState.title);
+      request_data.append("description", formState.description || "");
+      request_data.append("classId", formState.classId || "");
+
+      typeof formState.courseCover === "object" &&
+        request_data.append("courseCover", formState.courseCover);
+      !formState.courseCover && request_data.append("courseCover", "");
+
+      // * Make an API request to retrieve the list of courses created by this teacher
+      const response = await axiosInstance.put(
+        `/courses/${course?._id}`,
+        request_data,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      // * Update the existing data with that returned by the API request
+      const responseData = response.data as TResponse<TCourse>;
+      setModalRequestState({
+        data: responseData.data,
+        loading: false,
+        error: undefined,
+      });
+
+      dispatch({ type: "EDIT_COURSE", payload: responseData.data });
+
+      return true;
+    } catch (error: any) {
+      // * If it's a 400 error, display message that the input details are incomplete
+      if (error?.response?.status == 400) {
+        // const data = (await response.json()) as TResponse<any>;
+        setModalRequestState({
+          data: undefined,
+          loading: false,
+          error: "Invalid form data passed",
+        });
+        return false;
+      }
+
+      // * If it's any other error code, display default error msg
+      setModalRequestState({
+        data: undefined,
+        loading: false,
+        error: "An error occurred while updating the course",
+      });
+
+      return false;
+    }
+  };
+
+  /**
+   * * Function responsible for deleting the course
+   */
+  const handleDeleteCourse = async () => {
+    try {
+      // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
+      setModalRequestState({
+        data: undefined,
+        loading: true,
+        error: undefined,
+      });
+
+      // * Make an API request to delete this course
+      const response = await axiosInstance.delete(`/courses/${course?._id}`);
+
+      // * Update the existing data with that returned by the API request
+      const responseData = response.data as TResponse<TCourse>;
+      setModalRequestState({
+        data: responseData.data,
+        loading: false,
+        error: undefined,
+      });
+
+      router.push("/teachers/subjects");
+
+      return true;
+    } catch (error: any) {
+      if (error?.response?.status == 404) {
+        // const data = (await response.json()) as TResponse<any>;
+        setModalRequestState({
+          data: undefined,
+          loading: false,
+          error: "Course not found",
+        });
+        router.push("/teachers/subjects");
+        return false;
+      }
+
+      // * If it's a 400 error, display message that the input details are incomplete
+      if (error?.response?.status == 400) {
+        // const data = (await response.json()) as TResponse<any>;
+        setModalRequestState({
+          data: undefined,
+          loading: false,
+          error: "Error deleting course",
+        });
+        return false;
+      }
+
+      // * If it's any other error code, display default error msg
+      setModalRequestState({
+        data: undefined,
+        loading: false,
+        error: "An error occurred while updating the course",
+      });
+
+      return false;
+    }
+  };
+
+  /**
+   * * Function responsible for opening the course modal to edit the course
+   * */
+  const openEditCourseModal = () => {
+    openModal({
+      modalMetadata: {
+        formData: {
+          title: course?.title || "",
+          department: (course?.department as any) || "",
+          description: course?.description || "",
+          courseCover: course?.courseCover || "",
+        },
+        mode: "edit",
+        type: "course",
+        handleAction: handleEditCourse,
+        // handleDelete: handleDeleteCourse,
+      },
+    });
+  };
+
+  /**
+   * * Function responsible for opening the course modal to edit the course
+   * */
+  const openDeleteCourseModal = () => {
+    openModal({
+      modalMetadata: {
+        formData: {
+          _id: course._id,
+          title: "",
+        },
+        mode: "delete",
+        type: "course",
+        handleDelete: handleDeleteCourse,
+      },
+    });
+  };
+
+  useEffect(() => {
+    action_ref.current?.addEventListener("mouseover", displayActionHandler);
+    action_ref.current?.addEventListener("mouseout", hideActionHandler);
+    return () => {
+      action_ref.current?.removeEventListener(
+        "mouseover",
+        displayActionHandler
+      );
+      action_ref.current?.removeEventListener("mouseout", hideActionHandler);
+    };
+  }, []);
+
   return (
     <div
-      className={`flex flex-col p-3 gap-3 rounded-lg shadow bg-white cursor-pointer transition hover:scale-105`}
-      onClick={() => router.push(`/teachers/subjects/${course._id}`)}
+      className={`flex flex-col p-3 gap-3 rounded-lg shadow bg-white`}
       ref={container_ref}
     >
       {/* IMAGE */}
       <div
-        className={`w-full flex-grow h-[175px] bg-red-400 rounded-lg overflow-hidden cursor-pointer relative`}
+        className={`w-full flex-grow h-[175px] rounded-lg overflow-hidden cursor-pointer relative`}
+        onClick={() => router.push(`/teachers/subjects/${course._id}`)}
       >
         {/* Chapter badge */}
         <div className="flex items-center gap-2 text-[#1E1E1E99] absolute top-2 left-2 bg-white rounded-full px-1.5 py-1 text-2xs">
@@ -183,10 +371,38 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
       <div className="flex flex-col gap-2">
         {/* BADGES */}
         <div className="flex justify-between gap-4 items-center">
+          {/* Class name */}
           <span className="rounded-full bg-[#B69302]/10 py-1 px-3.5 text-2xs">
-            {course.classId?.name}
+            {course.department?.name}
           </span>
-          <i className="fa-solid fa-ellipsis-vertical cursor-pointer"></i>{" "}
+          {/* More icon container */}
+          <div ref={action_ref} className="relative p-1 cursor-pointer">
+            {/* More icon */}
+            <i className="fa-solid fa-ellipsis-vertical cursor-pointer"></i>{" "}
+            <AnimatePresence>
+              {display_actions && (
+                <>
+                  <SideDialog
+                    className="-left-[151px]"
+                    links={[
+                      {
+                        icon: "fas fa-pencil",
+                        title: "Edit",
+                        action: openEditCourseModal,
+                        className: "transition hover:text-primary",
+                      },
+                      {
+                        icon: "fas fa-trash",
+                        title: "Delete",
+                        action: openDeleteCourseModal,
+                        className: "transition hover:text-red-400",
+                      },
+                    ]}
+                  />
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
         {/* TITLE */}
         <div className="text-lg font-bold">
@@ -199,6 +415,15 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
           className="font-roboto text-sm !leading-5 text-[#1E1E1E99]"
           dangerouslySetInnerHTML={{ __html: description || "" }}
         ></div>
+        {/* BUTTON */}
+        <Button
+          size="xs"
+          color="blue"
+          onClick={() => router.push(`/teachers/subjects/${course._id}`)}
+          width="full"
+        >
+          View Course
+        </Button>
       </div>
     </div>
   );

@@ -3,12 +3,11 @@ import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
 import {
-  TClass,
+  TDepartment,
   TCourse,
   TFetchState,
   TResponse,
 } from "@/components/utils/types";
-import { baseUrl } from "@/components/utils/baseURL";
 import { useRouter } from "next/router";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
 import { useCourseContext } from "@/contexts/CourseContext";
@@ -28,7 +27,9 @@ const Subject: FC = () => {
   const { subjectid } = useMemo(() => router.query, [router.query]);
   const [userRole, setUserRole] = useState<string>();
   const [showSideBar, setShowSideBar] = useState(false);
-  const [classes, setClasses] = useState<TFetchState<TClass[] | undefined>>({
+  const [classes, seTClasses] = useState<
+    TFetchState<TDepartment[] | undefined>
+  >({
     data: [],
     loading: false,
     error: undefined,
@@ -219,7 +220,7 @@ const Subject: FC = () => {
       modalMetadata: {
         formData: {
           title: course.data?.title || "",
-          classId: (course.data?.classId as any) || "",
+          department: (course.data?.department as any) || "",
           description: course.data?.description || "",
           courseCover: course.data?.courseCover || "",
         },
@@ -234,10 +235,10 @@ const Subject: FC = () => {
   /**
    * * Function responsible from retrieving the classes on the platform
    */
-  const getClasses = async (filter?: { query: "title"; value: string }) => {
+  const geTClasses = async (filter?: { query: "title"; value: string }) => {
     try {
       // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
-      setClasses({
+      seTClasses({
         data: [],
         loading: true,
         error: undefined,
@@ -245,11 +246,11 @@ const Subject: FC = () => {
 
       // * Get the access token from the cookies
       // * Make an API request to retrieve the list of classes created by this teacher
-      const response = await axiosInstance.get(`/classes/all`);
+      const response = await axiosInstance.get(`/department/all`);
 
       // * Display the list of classes returned by the endpoint
-      const responseData = response.data as TResponse<TClass[]>;
-      setClasses({
+      const responseData = response.data as TResponse<TDepartment[]>;
+      seTClasses({
         data: responseData.data,
         loading: false,
         error: undefined,
@@ -258,7 +259,7 @@ const Subject: FC = () => {
       console.error(error);
       // * If it's a 404 error, display message that classes couldn't be found
       if (error?.response?.status == 404) {
-        setClasses({
+        seTClasses({
           data: [],
           loading: false,
           error: "No class found",
@@ -267,7 +268,7 @@ const Subject: FC = () => {
       }
 
       // * If it's any other error code, display default error msg
-      setClasses({
+      seTClasses({
         data: [],
         loading: false,
         error: "An error occurred while retrieving classes",
@@ -286,7 +287,7 @@ const Subject: FC = () => {
 
   useEffect(() => {
     if (subjectid) getCourse((subjectid as string) || "nil");
-    getClasses();
+    geTClasses();
   }, [getCourse, subjectid]);
 
   useEffect(() => {
@@ -308,7 +309,7 @@ const Subject: FC = () => {
             handleAction={handleAction || ((() => {}) as any)}
             handleDelete={handleDelete || ((() => {}) as any)}
             requestState={modalRequestState}
-            classes={classes.data?.map((each) => ({
+            departments={classes.data?.map((each) => ({
               value: each._id as string,
               display_value: each.name,
             }))}
@@ -318,15 +319,15 @@ const Subject: FC = () => {
 
       <TopicContextProvider course={course.data}>
         <TeachersWrapper
-          title="Subjects"
-          metaTitle="Olive Groove ~ Subjects"
-          className="relative"
+          title='Subjects'
+          metaTitle='Olive Groove ~ Subjects'
+          className='relative'
         >
-          <div className="space-y-5 h-full relative">
+          <div className='space-y-5 h-full relative'>
             {course.loading ? (
               <Loader />
             ) : course.error ? (
-              <div className="w-full h-full flex items-center justify-center">
+              <div className='w-full h-full flex items-center justify-center'>
                 {typeof course.error === "object" &&
                   (course.error.status === 404 ? (
                     <>
@@ -339,11 +340,11 @@ const Subject: FC = () => {
             ) : course.data ? (
               <>
                 {/* Title */}
-                <div className="flex flex-row gap-4 sm:gap-0 sm:flex-row justify-between items-start">
-                  <div className="flex flex-row gap-2 items-center">
+                <div className='flex flex-row gap-4 sm:gap-0 sm:flex-row justify-between items-start'>
+                  <div className='flex flex-row gap-2 items-center'>
                     {/* Previous page button */}
                     <div
-                      className="w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full "
+                      className='w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full '
                       onClick={() =>
                         router.push(
                           `/${
@@ -356,16 +357,16 @@ const Subject: FC = () => {
                         )
                       }
                     >
-                      <i className="fas fa-arrow-left text-greyed hover:text-dark"></i>
+                      <i className='fas fa-arrow-left text-greyed hover:text-dark'></i>
                     </div>
-                    <span className="text-2xl font-medium text-dark font-roboto">
+                    <span className='text-2xl font-medium text-dark font-roboto'>
                       {course.data?.title || "Loading..."}
                     </span>
                   </div>
-                  <div className="flex gap-4 items-center">
+                  <div className='flex gap-4 items-center'>
                     {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
                     <div
-                      className="rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110"
+                      className='rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110'
                       onClick={() => setShowSideBar((prev) => !prev)}
                     >
                       <i
@@ -375,20 +376,20 @@ const Subject: FC = () => {
                       ></i>
                     </div>
                     <Button
-                      width="fit"
-                      size="xs"
-                      color="outline"
+                      width='fit'
+                      size='xs'
+                      color='outline'
                       onClick={openEditCourseModal}
-                      className="flex gap-1"
+                      className='flex gap-1'
                     >
-                      <i className="fas fa-pencil"></i> <span>Edit Course</span>
+                      <i className='fas fa-pencil'></i> <span>Edit Course</span>
                     </Button>
                   </div>
                 </div>
                 {/* <div className="flex items-stretch gap-4 relative"> */}
-                <div className="flex items-stretch gap-4">
+                <div className='flex items-stretch gap-4'>
                   {/* SIDEBAR */}
-                  <div className="flex-none hidden xl:block">
+                  <div className='flex-none hidden xl:block'>
                     <SideBar courseId={(subjectid as string) || ""} />
                   </div>
                   {/* MOBILE SIDEBAR */}
@@ -398,7 +399,7 @@ const Subject: FC = () => {
                     )}
                   </AnimatePresence>
                   {/* COURSE */}
-                  <div className="flex-1">
+                  <div className='flex-1'>
                     <TopicDetails course={course.data} />
                   </div>
                 </div>

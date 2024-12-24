@@ -3,7 +3,7 @@ import SideNav from '../Navs/SideNav';
 import AdminNav from '../Navs/AdminNav';
 import { useSidebarContext } from '@/contexts/SidebarContext';
 import Meta from '@/components/Atoms/Meta';
-import WarningModal from '../Modal/WarningModal';
+import LogoutWarningModal from '../Modal/LogoutWarningModal';
 import { useRouter } from 'next/router';
 import CustomCursor from '../CustomCursor';
 import { handleLogout } from './Admin.Layout';
@@ -28,6 +28,7 @@ const StudentWrapper = ({
   // const { active } = useSidebarContext();
   const active = true;
   const [warningModal, setWarningModal] = useState(false);
+  const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const router = useRouter();
 
@@ -44,10 +45,16 @@ const StudentWrapper = ({
       {/*<customcursor />*/}
 
       <Meta title={metaTitle || 'Dashboard'} description={description} />
-      <WarningModal
+      <LogoutWarningModal
         handleModalClose={handleWarning}
+        loading={isLogOutLoading}
         handleConfirm={() => {
-          handleLogout().then(() => router.push('/auth/path/students/login/'));
+          setIsLogOutLoading(true);
+          handleLogout().then(() => {
+            setIsLogOutLoading(false);
+            handleWarning();
+            router.push('/auth/path/students/login/');
+          });
         }}
         modalOpen={warningModal}
       />

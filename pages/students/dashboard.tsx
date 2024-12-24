@@ -4,44 +4,12 @@ import React, { useEffect, useState } from 'react';
 import Img from '@/public/image/welcome_img.svg';
 import Image from 'next/image';
 import ClassCard from '@/components/Molecules/Card/ClassCard';
-import ClassModal from '@/components/Molecules/Modal/ClassModal';
 import withAuth from '@/components/Molecules/WithAuth';
 import { baseUrl } from '@/components/utils/baseURL';
 import Calendar from '@/components/Molecules/Calendar';
 import axiosInstance from '@/components/utils/axiosInstance';
-
-const TodayClass = [
-  {
-    subject: 'Physics',
-    time: '08:30AM - 9:30AM',
-    description: 'Introduction to Physics',
-    teacher: 'Mr. John Doe',
-  },
-  {
-    subject: 'English Studies',
-    time: '09:40AM - 10:20AM',
-    description: 'Introduction to English',
-    teacher: 'Mrs. Jane Doe',
-  },
-  {
-    subject: 'Chemistry',
-    time: '10:30AM - 11:30AM',
-    description: 'Introduction to Chemistry',
-    teacher: 'Mr. John Doe',
-  },
-  {
-    subject: 'Agricultural Studies',
-    time: '11:40AM - 12:20PM',
-    description: 'Introduction to Agriculture',
-    teacher: 'Mrs. Jane Doe',
-  },
-  {
-    subject: 'Computer Science',
-    time: '12:30PM - 1:30PM',
-    description: 'Introduction to Computer Science',
-    teacher: 'Mr. John Doe',
-  },
-];
+import { TodayClass } from '@/data/data';
+import DepartmentModal from '@/components/Molecules/Modal/DepartmentModal';
 
 type TCourseInfo = { courseId: string; courseName: string };
 type TAssessmentInfo = { assessmentId: string; title: string };
@@ -92,33 +60,55 @@ const Dashboard = () => {
   const firstName = localStorage.getItem(`profileInfo_Student_${userId}`);
   useEffect(() => {
     async function getUserInfo() {
-      // async function fetchStudentProfile() {
-      //   try {
-      //     const response = await axiosInstance.get(`${baseUrl}/student`);
-      //     setStudentInfo({
-      //       firstName: response.data.firstName,
-      //     });
-      //   } catch (err) {
-      //     //how to display error.
-      //   }
-      // }
+      async function fetchAcademicSession() {
+        try {
+          const response = await axiosInstance.get(
+            `${baseUrl}/academic-sections`
+          );
+          setDashboardInfo((prev) => ({
+            ...prev,
+            accademicSession: response.data.data[0]?.sectionName,
+          }));
+        } catch (err) {
+          //how to display error.
+        }
+      }
+      async function fetchCourses() {
+        try {
+          const response = await axiosInstance.get(
+            `${baseUrl}/courses/student`
+          );
+          setDashboardInfo((prev) => ({
+            ...prev,
+            enrolledCourses: response.data.data,
+          }));
+        } catch (err) {
+          //how to display error
+          console.error('Error fetching courses', err);
+        }
+      }
       async function fetchDashboardContent() {
         try {
           const response = (await axiosInstance.get(
             `${baseUrl}/student/dashboard`
           )) as TResponse;
-          setDashboardInfo({
+          setDashboardInfo((prev) => ({
+            ...prev,
             deparment: response.data.department,
-            accademicSession: response.data.academicSection,
-            enrolledCourses: response.data.enrolledCourses,
+            // accademicSession: response.data.academicSection,
+            // enrolledCourses: response.data.enrolledCourses,
             upcomingAssessments: response.data.upcomingAssessments,
             upcomingCourses: response.data.upcomingCourses,
-          });
+          }));
         } catch (err) {
           //how to display error.
         }
       }
-      await Promise.all([fetchDashboardContent()]);
+      await Promise.all([
+        fetchDashboardContent(),
+        fetchAcademicSession(),
+        fetchCourses(),
+      ]);
     }
     getUserInfo();
   }, []);
@@ -131,13 +121,13 @@ const Dashboard = () => {
   };
   return (
     <>
-      <ClassModal
-        type='class'
+      <DepartmentModal
+        type='lecture'
         handleModalClose={handleModal}
         modalOpen={openModal}
       />
-      <ClassModal
-        type='assignment'
+      <DepartmentModal
+        type='assessment'
         handleModalClose={handleModalAssignment}
         modalOpen={openModalAss}
       />
@@ -152,7 +142,8 @@ const Dashboard = () => {
             <div className='bg-primary max-sm:mt-4 max-sm:min-h-[170px] w-full rounded-3xl font-roboto relative overflow-hidden h-full '>
               <div className='flex flex-col h-full justify-center my-auto px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
                 <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
-                  Welcome back, {firstName && JSON.parse(firstName!).data.firstName}
+                  Welcome back,{' '}
+                  {firstName && JSON.parse(firstName!).data.firstName}
                 </h3>
                 <span className='text-base text-light/80 font-roboto'>
                   You have 3 classes and 2 assignments to attend to.
@@ -196,15 +187,16 @@ const Dashboard = () => {
                   : dashboardInfo.enrolledCourses.length.toString()
               }
               footer={
-                !dashboardInfo.enrolledCourses
-                  ? ''
-                  : dashboardInfo.enrolledCourses.join(' ,')
+                // !dashboardInfo.enrolledCourses
+                //   ? ''
+                //   : dashboardInfo.enrolledCourses.join(' ,')
+                ''
               }
             />
             <Card
               header='Current Session'
               main={dashboardInfo.accademicSession}
-              footer='NExt session starts in 3 months'
+              footer='Next session starts in 3 months'
             />
           </div>
           {/* </div> */}

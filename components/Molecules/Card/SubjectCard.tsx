@@ -104,15 +104,13 @@ const SubjectCard: React.FC<SubjectProps> = ({
       </div>
 
       <div className='flex lg:flex-col lg:items-start min-[1580px]:items-center min-[1580px]:flex-row justify-between items-center gap-4'>
-        <>
-          <Link
-            className='w-fit !text-white bg-primary hover:bg-[#28a1b0] transition duration-200 ease-in-out rounded-[4px] px-2 md:px-3 lg:px-4 !py-1.5 lg:py-3 text-sm md:text-base font-medium'
-            href={btnLink2}
-            passHref
-          >
-            {assessments ? 'View Assessment' : 'View Lecture'}
-          </Link>
-        </>
+        <Link
+          className='w-fit !text-white bg-primary hover:bg-[#28a1b0] transition duration-200 ease-in-out rounded-[4px] px-2 md:px-3 lg:px-4 !py-1.5 lg:py-3 text-sm md:text-base font-medium'
+          href={btnLink2}
+          passHref
+        >
+          {assessments ? 'View Assessment' : 'View Lecture'}
+        </Link>
         <Label
           date=''
           upcoming={true}
@@ -135,12 +133,15 @@ function Label({
   return (
     <>
       {upcoming ? (
-        <span className='px-3 py-2 flex items-center h-8 text-xs rounded-full text-[#1E1E1E] text-opacity-60 bg-[#B69302] bg-opacity-10'>
+        <span className='px-3 py-2 flex items-center h-[28px] text-xs rounded-full text-[#1E1E1E] text-opacity-60 bg-[#B69302] bg-opacity-10'>
           <SVGDot className='mr-2 block' />
-          {type === 'assessments' ? 'New' : 'Upcoming'}
+          <span className='pt-[2px]'>
+            {' '}
+            {type === 'assessments' ? 'New' : 'Upcoming'}
+          </span>
         </span>
       ) : (
-        <span className='bg-[#1E1E1E] bg-opacity-10 px-4   py-2 rounded-full text-[#1E1E1E] text-opacity-60 '>
+        <span className='bg-[#1E1E1E] h-[28px] text-xs bg-opacity-10 px-4   py-2 rounded-full text-[#1E1E1E] text-opacity-60 '>
           20/11/2024
         </span>
       )}

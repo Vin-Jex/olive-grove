@@ -13,7 +13,7 @@ type LectureModalProps = {
   handleModalClose: () => void;
   handleDelete?: () => void;
   handleAction?: () => Promise<boolean>;
-  type: "class" | "assignment" | "course";
+  type: "lecture" | "assessment" | "course";
   mode?: "create" | "edit" | "delete";
   formState: {
     subject: string;
@@ -108,7 +108,7 @@ export default function LectureModal({
         {/* Modal Header */}
         <div className='flex justify-between items-center px-4 mt-[1.2rem]'>
           <span className='text-2xl text-dark font-semibold font-roboto capitalize'>
-            {mode} {type === "class" ? "Lecture" : type}
+            {mode} {type === "lecture" ? "Lecture" : type}
           </span>
         </div>
 
@@ -160,7 +160,7 @@ export default function LectureModal({
               value={formState.meetingLink}
               onChange={handleChange}
               placeholder='Meeting Link'
-              required={type === "class"}
+              required={type === "lecture"}
               className='input'
             />
           </label>

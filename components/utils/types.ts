@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from 'react';
+import { InputHTMLAttributes, ReactNode } from "react";
 
 export type TSubject = {
   image_url: string;
@@ -7,7 +7,7 @@ export type TSubject = {
 };
 
 type OptionalFields<T extends "get" | "post" = "get"> = {
-  classId?: T extends "post" ? string : TClass;
+  department?: T extends "post" ? string : TDepartment;
   // courseInfo?: { description: string };
   chapterId?: string;
   topicNote?: string;
@@ -71,7 +71,7 @@ export type TFetchState<T> = {
   error: undefined | string | TErrorState;
 };
 
-export type TClass = {
+export type TDepartment = {
   _id?: string;
   name: string;
   category: string;
@@ -134,12 +134,12 @@ export type TCourseModalProps = {
   handleModalClose: () => void;
   handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
   handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
-  type: 'course' | 'chapter' | 'lesson' | 'topic';
-  mode: 'create' | 'edit';
+  type: "course" | "chapter" | "lesson" | "topic";
+  mode: "create" | "edit" | "delete";
   formState: TCourseModalFormData;
   setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
   requestState?: TFetchState<any>;
-  classes?: TSelectOptions;
+  departments?: TSelectOptions;
 };
 
 export type TAcademicWeek = {
@@ -151,7 +151,7 @@ export type TAcademicWeek = {
   _id?: string;
 };
 
-export type TAssessment<T extends 'post' | 'get'> = {
+export type TAssessment<T extends "post" | "get"> = {
   _id?: string;
   subject: T extends "post" ? string : TCourse;
   assessmentType: T extends "post" ? string : TAssessmentType;
@@ -159,10 +159,11 @@ export type TAssessment<T extends 'post' | 'get'> = {
   dueDate: string | Date;
   teacher: T extends "post" ? string : TTeacher;
   academicWeek: T extends "post" ? string : TAcademicWeek;
-  class: T extends "post" ? string : TClass;
+  class: T extends "post" ? string : TDepartment;
 };
 
 export type TStudent = {
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -207,7 +208,7 @@ export type TModalProps<T> = {
   handleAction?: (formData: T) => Promise<boolean>;
   handleDelete?: (formData: T) => Promise<boolean>;
   requestState?: TFetchState<any>;
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   formState: T;
   setFormState: React.Dispatch<React.SetStateAction<T>>;
 };
@@ -221,18 +222,18 @@ export type TTopicDetails = {
   path: [string, string, string] | undefined;
   topicChapter: string;
   topicLesson: string;
-  type: 'section' | 'lesson';
+  type: "section" | "lesson";
   topic: TSection | undefined;
 };
 
-export type TLoginResponse<T extends 'student' | 'teacher' | 'admin'> = {
+export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
   token: {
     accessToken: string;
     refreshToken: string;
   };
-  details: T extends 'student'
+  details: T extends "student"
     ? TStudent
-    : T extends 'teacher'
+    : T extends "teacher"
     ? TTeacher
     : TAdmin;
 };
@@ -252,4 +253,18 @@ export type TContentId = { id: string; isViewed: boolean }[];
 export type TAsseessmentQuestionOption = {
   content: string | undefined;
   _id: string;
+};
+
+export type TSideDialogContent = {
+  title: string | ReactNode;
+  icon: string | ReactNode;
+  action: Function;
+  className?: string;
+};
+
+export type TWarningModalProps = {
+  modalOpen: boolean;
+  loading?: boolean;
+  handleModalClose: () => void;
+  handleConfirm?: () => void;
 };
