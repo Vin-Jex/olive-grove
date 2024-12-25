@@ -105,12 +105,12 @@ const Input: React.FC<InputProps> = ({
         />
         {ShowIcon && showInput ? (
           <ShowIcon
-            className='absolute right-3 top-1/2 -translate-y-1/2 text-subtext !text-[1.4rem]'
+            className='absolute right-3 top-1/2 -translate-y-1/2 text-subtext/50 !text-[1.4rem]'
             onClick={showInputField}
           />
         ) : HideIcon && !showInput ? (
           <HideIcon
-            className='absolute right-3 top-1/2 -translate-y-1/2 text-subtext !text-[1.4rem]'
+            className='absolute right-3 top-1/2 -translate-y-1/2 text-subtext/50 !text-[1.4rem]'
             onClick={showInputField}
           />
         ) : (
