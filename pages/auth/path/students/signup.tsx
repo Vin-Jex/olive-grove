@@ -637,7 +637,7 @@ const StudentSignup = () => {
                 <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
                   <span className='text-subtext'>Already have an account?</span>
                   <Link
-                    href='/auth/path/students/login'
+                    href='/auth/path/students/signin'
                     className='text-primary'
                   >
                     Login
@@ -715,7 +715,7 @@ const StudentSignup = () => {
                     )}
                   </Button>
                   <Link
-                    href='/auth/path/students/login'
+                    href='/auth/path/students/signin'
                     className='w-full text-subtext border text-center py-4'
                   >
                     Verify Later
