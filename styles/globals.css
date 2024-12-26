@@ -64,7 +64,7 @@ body {
 }
 
 .input {
-  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border-subtext/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext transition duration-200;
+  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border !border-subtext/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:!text-subtext/50 first-letter:!uppercase !text-subtext/50 transition duration-200;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -76,6 +76,7 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* For Firefox */
 }
+
 .radio {
   position: relative;
 }
@@ -113,7 +114,7 @@ input[type="number"] {
 }
 
 .radio-check {
-  @apply h-6 w-6 appearance-none ring-[2.4px] ring-inset ring-white border-[3.5px] border-primary rounded-full checked:bg-primary checked:border-primary;
+  @apply h-5 w-5 appearance-none ring-[2.4px] ring-inset ring-white border-[2px] border-primary rounded-full checked:bg-primary checked:border-primary;
 }
 
 /* Sidenav */
@@ -251,6 +252,7 @@ sidebar-nav.active ul li a span {
 .hide > .ql-toolbar {
   display: none !important;
 }
+
 .ql-toolbar.ql-snow {
   @apply !border-x-0 !border-t-0 !border-b !border-dark font-roboto !sticky top-0 !bg-white left-0 !z-20;
 }
@@ -273,6 +275,7 @@ sidebar-nav.active ul li a span {
   font-size: 15px;
   padding: 0 !important;
 }
+
 .hide .ql-editor.ql-blank::after {
   color: rgb(1 1 1 / 0.4) !important;
   fill: rgb(1 1 1 / 0.4) !important;
@@ -280,6 +283,7 @@ sidebar-nav.active ul li a span {
   font-size: 15px;
   padding: 0 !important;
 }
+
 .ql-editor.ql-blank::before {
   color: rgb(0 0 0 / 0.5) !important;
   fill: rgb(0 0 0 / 0.5) !important;
@@ -318,7 +322,4 @@ sidebar-nav.active ul li a span {
     0 4px 29px -4px rgb(0 0 0 / 0.01);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
     var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.question-input {
 }

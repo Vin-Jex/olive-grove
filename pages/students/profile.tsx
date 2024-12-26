@@ -1,6 +1,6 @@
-import Cookies from 'js-cookie';
-import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import Image from 'next/image';
+import Cookies from "js-cookie";
+import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
+import Image from "next/image";
 import React, {
   ChangeEvent,
   Dispatch,
@@ -9,26 +9,26 @@ import React, {
   useCallback,
   useEffect,
   useState,
-} from 'react';
-import dummyImage from '@/images/dummy-img.jpg';
-import Button from '@/components/Atoms/Button';
-import InputField from '@/components/Atoms/InputField';
-import Input, { InputType } from '@/components/Atoms/Input';
+} from "react";
+import dummyImage from "@/images/dummy-img.jpg";
+import Button from "@/components/Atoms/Button";
+import InputField from "@/components/Atoms/InputField";
+import Input, { InputType } from "@/components/Atoms/Input";
 import {
   Info,
   VisibilityOffOutlined,
   VisibilityOutlined,
-} from '@mui/icons-material';
-import withAuth from '@/components/Molecules/WithAuth';
-import { baseUrl } from '@/components/utils/baseURL';
-import { useAuth } from '@/contexts/AuthContext';
-import axiosInstance from '@/components/utils/axiosInstance';
-import { AxiosError } from 'axios';
-import EmailVerifyModal from '@/components/Molecules/Modal/EmailVerifyModal';
-import { Alert, Snackbar } from '@mui/material';
-import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
-import { useRouter } from 'next/router';
-import useUserVerify from '@/components/utils/hooks/useUserVerify';
+} from "@mui/icons-material";
+import withAuth from "@/components/Molecules/WithAuth";
+import { baseUrl } from "@/components/utils/baseURL";
+import { useAuth } from "@/contexts/AuthContext";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { AxiosError } from "axios";
+import EmailVerifyModal from "@/components/Molecules/Modal/EmailVerifyModal";
+import { Alert, Snackbar } from "@mui/material";
+import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
+import { useRouter } from "next/router";
+import useUserVerify from "@/components/utils/hooks/useUserVerify";
 
 type TFormState = {
   firstName: string;
@@ -53,37 +53,37 @@ const Profile = () => {
     OTPTimer,
   } = useUserVerify();
   const [formState, setFormState] = useState<TFormState>({
-    firstName: '',
-    lastName: '',
-    middleName: '',
-    profileImage: '',
-    email: '',
-    username: '',
-    newPassword: '',
-    confirmPassword: '',
-    otp: '',
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    profileImage: "",
+    email: "",
+    username: "",
+    newPassword: "",
+    confirmPassword: "",
+    otp: "",
   });
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [formError, setFormError] = useState({
-    internetError: '',
-    firstNameError: '',
-    lastNameError: '',
-    emailError: '',
-    usernameError: '',
-    passwordError: '',
-    successError: '',
+    internetError: "",
+    firstNameError: "",
+    lastNameError: "",
+    emailError: "",
+    usernameError: "",
+    passwordError: "",
+    successError: "",
   });
   const [isDisabled, setIsDisabled] = useState(true);
   const [isDisabledPassword, setIsDisabledPassword] = useState(true);
-  const [profileImage, setProfileImage] = useState('');
-  const [studentName, setStudentName] = useState('');
-  const [currentTab, setCurrentTab] = useState<'Account' | 'Security'>(
-    'Account'
+  const [profileImage, setProfileImage] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [currentTab, setCurrentTab] = useState<"Account" | "Security">(
+    "Account"
   );
   const [emailVerifyModal, setEmailVerifyModal] = useState(false);
   const { user } = useAuth();
   const role = user?.role;
-  const [profileError, setProfileError] = useState('');
+  const [profileError, setProfileError] = useState("");
 
   const inputFields: (
     | {
@@ -102,16 +102,16 @@ const Profile = () => {
       }
   )[] = [
     {
-      label: 'Last Name *',
-      name: 'lastName',
-      type: 'text',
+      label: "Last Name *",
+      name: "lastName",
+      type: "text",
       required: true,
       error: formError.lastNameError,
     },
     {
-      label: 'Email Address *',
-      name: 'email',
-      type: 'email',
+      label: "Email Address *",
+      name: "email",
+      type: "email",
       required: true,
       error: formError.emailError,
     },
@@ -119,18 +119,18 @@ const Profile = () => {
 
   useEffect(() => {
     if (
-      formState.username === '' ||
-      formState.firstName === '' ||
-      formState.lastName === '' ||
-      formState.email === '' //||
+      formState.username === "" ||
+      formState.firstName === "" ||
+      formState.lastName === "" ||
+      formState.email === "" //||
     )
       setIsDisabled(true);
     // else setIsDisabled(false);
 
     if (
-      formState.newPassword === '' ||
-      formState.confirmPassword === '' ||
-      formState.otp === ''
+      formState.newPassword === "" ||
+      formState.confirmPassword === "" ||
+      formState.otp === ""
     )
       setIsDisabledPassword(true);
     else setIsDisabledPassword(false);
@@ -159,8 +159,8 @@ const Profile = () => {
     const formData = new FormData();
 
     Object.entries(formState).forEach(([key, value]) => {
-      console.log(key, value, 'key value');
-      if (key !== 'password' && key !== 'otp' && key !== 'username') {
+      console.log(key, value, "key value");
+      if (key !== "password" && key !== "otp" && key !== "username") {
         formData.append(key, value);
       }
     });
@@ -170,7 +170,7 @@ const Profile = () => {
       const response = await axiosInstance.put(
         `${baseUrl}/student-user/${formState.username}`,
         formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       const data = await response.data;
@@ -185,13 +185,13 @@ const Profile = () => {
       setTimeout(() => {
         setFormError((prevState) => ({
           ...prevState,
-          successError: '',
+          successError: "",
         }));
       }, 5000);
 
-      console.log('Response: ', JSON.stringify(data));
+      console.log("Response: ", JSON.stringify(data));
     } catch (error: AxiosError | any) {
-      console.log(error, 'axios error');
+      console.log(error, "axios error");
       const data = error.response.data;
       // handleErrors(data);
       setSomethingOccured((err) => ({
@@ -199,7 +199,7 @@ const Profile = () => {
         error: true,
         message: data.message,
       }));
-      console.log('Status: ', error);
+      console.log("Status: ", error);
     } finally {
       // setIsDisabled(true);
     }
@@ -212,7 +212,7 @@ const Profile = () => {
 
     // Append other form fields to the FormData object
     Object.entries(formState).forEach(([key, value]) => {
-      if (key === 'newPassword' || key === 'confirmPassword' || key === 'otp')
+      if (key === "newPassword" || key === "confirmPassword" || key === "otp")
         formData.append(key, value);
     });
 
@@ -227,7 +227,7 @@ const Profile = () => {
 
       //log the user out on successfull password change
       handleLogout().then(() => {
-        router.push('/auth/path/students/login');
+        router.push("/auth/path/students/signin");
       });
 
       setSomethingOccured((err) => ({
@@ -263,12 +263,12 @@ const Profile = () => {
         middleName: data.middleName,
         email: data.email,
         username: data.username,
-        newPassword: '',
-        confirmPassword: '',
-        otp: '',
+        newPassword: "",
+        confirmPassword: "",
+        otp: "",
       });
       setProfileImage(data.profileImage);
-      setStudentName(data.firstName + ' ' + data.lastName);
+      setStudentName(data.firstName + " " + data.lastName);
       return;
     }
 
@@ -283,13 +283,13 @@ const Profile = () => {
         middleName: json.middleName,
         email: json.email,
         username: json.username,
-        newPassword: '',
-        confirmPassword: '',
-        otp: '',
+        newPassword: "",
+        confirmPassword: "",
+        otp: "",
       });
       setProfileImage(json.profileImage);
 
-      setStudentName(json.firstName + ' ' + json.lastName);
+      setStudentName(json.firstName + " " + json.lastName);
 
       localStorage.setItem(
         cacheKey,
@@ -299,13 +299,13 @@ const Profile = () => {
       );
     } catch (err: AxiosError | any) {
       //how to display error.
-      if (err.message === 'Network Error') console.log('network error');
+      if (err.message === "Network Error") console.log("network error");
       if (
         err.response.data.message ===
-        'Your account is not verified. Please check your email for the verification code.'
+        "Your account is not verified. Please check your email for the verification code."
       )
         setEmailVerifyModal(true);
-      setProfileError('Error occured in fetching user profile');
+      setProfileError("Error occured in fetching user profile");
     }
   }, [user?.id, role]);
 
@@ -314,7 +314,7 @@ const Profile = () => {
   }, [fetchProfile, user]);
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === 'Enter') {
+    if (isDisabled && event.key === "Enter") {
       handleProfileEdit(event);
     }
     setIsDisabled(false);
@@ -331,15 +331,15 @@ const Profile = () => {
       >
         <div className='md:p-12 px-6 py-12 space-y-5'>
           <div className='w-full max-w-[10rem] flex gap-0'>
-            {['Account', 'Security'].map((slug, i) => (
+            {["Account", "Security"].map((slug, i) => (
               <>
                 <div
                   className={`px-7 py-2 font-medium text-sm border-b-2 cursor-pointer transition ${
                     currentTab === slug
-                      ? 'border-primary border-opacity-70  bg-[#32A8C41A] text-primary'
-                      : ''
+                      ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
+                      : ""
                   }`}
-                  onClick={() => setCurrentTab(slug as 'Account' | 'Security')}
+                  onClick={() => setCurrentTab(slug as "Account" | "Security")}
                   key={i}
                 >
                   {slug}
@@ -349,7 +349,7 @@ const Profile = () => {
           </div>
           {/* Title */}
 
-          {currentTab === 'Account' && (
+          {currentTab === "Account" && (
             <form
               className='w-full flex justify-between sm:!mt-20 bg-white px-8 max-sm:px-5 rounded-2xl py-10 shadow-card'
               onKeyPress={handleKeyPress}
@@ -383,18 +383,18 @@ const Profile = () => {
                     Edit Personal Info
                   </Button>
                 </div>
-                {formError.internetError !== '' ? (
+                {formError.internetError !== "" ? (
                   <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
-                    <Info sx={{ fontSize: '1.1rem' }} />
+                    <Info sx={{ fontSize: "1.1rem" }} />
                     {formError.internetError}
                   </span>
-                ) : formError.successError !== '' ? (
+                ) : formError.successError !== "" ? (
                   <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
-                    <Info sx={{ fontSize: '1.1rem' }} />
+                    <Info sx={{ fontSize: "1.1rem" }} />
                     {formError.successError}
                   </span>
                 ) : (
-                  ''
+                  ""
                 )}
                 <div className='text-red-500'>
                   {profileError && profileError}
@@ -420,7 +420,7 @@ const Profile = () => {
                     placeholder='Middle Name'
                     value={formState.middleName}
                     onChange={handleChange}
-                    error={''}
+                    error={""}
                   />
                   {inputFields.map((field) => (
                     <InputField
@@ -430,7 +430,7 @@ const Profile = () => {
                       type={field.type}
                       value={
                         formState[
-                          field.name as keyof Omit<TFormState, 'profileImage'>
+                          field.name as keyof Omit<TFormState, "profileImage">
                         ]
                       }
                       onChange={handleChange}
@@ -442,7 +442,7 @@ const Profile = () => {
               </div>
             </form>
           )}
-          {currentTab === 'Security' && (
+          {currentTab === "Security" && (
             <form
               className='w-full flex justify-between sm:!mt-20 items-start bg-white px-8 rounded-2xl pb-8 pt-4 shadow-card'
               // onKeyPress={handleKeyPress}
@@ -461,7 +461,7 @@ const Profile = () => {
                 </div>
                 {formError.passwordError && (
                   <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600 capitalize -mb-3'>
-                    <Info sx={{ fontSize: '1.1rem' }} />
+                    <Info sx={{ fontSize: "1.1rem" }} />
                     {formError.passwordError}
                   </span>
                 )}
@@ -502,18 +502,18 @@ const Profile = () => {
                   </div>
                 </div>
                 <div className='font-roboto text-subtext'>
-                  {verifyOTP.message}{' '}
+                  {verifyOTP.message}{" "}
                   <button
                     disabled={
-                      formState.newPassword === '' ||
-                      formState.confirmPassword === '' ||
+                      formState.newPassword === "" ||
+                      formState.confirmPassword === "" ||
                       formState.newPassword !== formState.confirmPassword ||
                       OTPTimer > 0
                     }
-                    onClick={() => handleRequestOTP('password_reset')}
+                    onClick={() => handleRequestOTP("password_reset")}
                     className='text-primary font-bold disabled:cursor-not-allowed'
                   >
-                    {verifyOTP.status ? 'Resend OTP' : ' Request OTP'}
+                    {verifyOTP.status ? "Resend OTP" : " Request OTP"}
                   </button>
                 </div>
                 <Button
@@ -547,11 +547,11 @@ const Profile = () => {
             }))
           }
           autoHideDuration={6000}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           className='!z-[999]'
         >
           <Alert
-            severity={somethingOccured.error ? 'error' : 'success'}
+            severity={somethingOccured.error ? "error" : "success"}
             onClose={() =>
               setSomethingOccured((err) => ({ ...err, error: false }))
             }
@@ -571,7 +571,7 @@ interface HeaderProps {
   setPreviewImage: Dispatch<SetStateAction<Blob | null | string>>;
   previewImage: string;
   setFormState: Dispatch<SetStateAction<TFormState>>;
-  type?: 'security' | string;
+  type?: "security" | string;
 }
 
 function Header({
@@ -599,7 +599,7 @@ function Header({
           alt='Profile Image'
           className='shadow w-[6rem] h-[6rem] object-cover rounded-full'
         />
-        {type !== 'security' && (
+        {type !== "security" && (
           <>
             <label
               className='absolute -right-2 cursor-pointer top-[60%]'
@@ -663,4 +663,4 @@ function CameraIcon() {
   );
 }
 
-export default withAuth('Student', Profile);
+export default withAuth("Student", Profile);

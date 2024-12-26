@@ -26,6 +26,7 @@ import OTPInput from "@/components/Molecules/OTPInput";
 import useUserVerify from "@/components/utils/hooks/useUserVerify";
 import { DotLoader } from "react-spinners";
 import MultipleSelect from "@/components/Molecules/MaterialSelect";
+import AuthLayout from "./layout";
 
 export type SignupType = {
   firstName: string;
@@ -439,7 +440,7 @@ const StudentSignup = () => {
       //I need to show the page final page that has a button with which the user can navigate to the dasboard
       // // Wait for 5 seconds before redirecting to login
       // setTimeout(() => {
-      //   router.push('/auth/path/students/login/');
+      //   router.push('/auth/path/students/signin/');
       // }, 5000);
 
       console.log("Response: ", JSON.stringify(data));
@@ -459,336 +460,274 @@ const StudentSignup = () => {
   };
 
   return (
-    <>
-      <div className='flex w-full max-h-screen relative'>
-        {/*<customcursor />*/}
-
-        {/* <Image
-        src={AuthBg1}
-        alt='Auth Background Image 2'
-        className='absolute -z-50 bottom-0 left-0'
-      />
-      <Image
-        src={AuthBg2}
-        alt='Auth Background Image 2'
-        className='absolute -z-50 top-0 right-0'
-      /> */}
-        <div className='flex-1 relative'>
-          <div className='h-52 blur-md bottom-0 absolute bg-black/30 w-full'></div>
-          <Image
-            src={SignUpImage}
-            alt='sign up image'
-            className='hidden md:block overflow-hidden h-full  object-cover'
-          />
-          <div className='absolute text-white bottom-0 px-16 py-16'>
-            <div className=' text-3xl text-center py-4 font-bold'>
-              Olive Groove Student/Teacher Portal.
-            </div>
-            <span className='text-center inline-block'>
-              As a student you get access to all your classes, lectures,
-              assessments and even your activity progress. As a teacher you are
-              able to create and manage your classes, lectures and assessments
-              while also viewing your student performances on their courses.
-            </span>
-            <div className='flex gap-5 py-4 justify-center'>
-              <div className='bg-[#f8f8f8] bg-opacity-50 px-5 py-2 rounded-full'>
-                Flexibility of Management
-              </div>
-              <div className='bg-[#f8f8f8] bg-opacity-50 px-5 py-2 rounded-full'>
-                24/7 Accessibility
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* <div className='w-full flex items-center justify-center'>
-        <Image
-          src={AuthBg3}
-          alt='Auth Background Image 2'
-          className='max-w-[659px] max-h-[659px] w-full h-full object-cover'
-        />
-      </div> */}
-        <div className='relative w-full flex items-center justify-center  flex-1'>
-          <div className=' flex flex-col items-center justify-center gap-y-3'>
-            <Link
-              href='/'
-              className='absolute left-[5rem] top-[1rem] w-[4.5rem] h-[5rem] -ml-4 -mb-2'
-            >
-              <Image
-                src={logo}
-                alt='Olive_grove_logo'
-                width='10000'
-                height='10000'
-                className='w-full h-full object-cover'
-              />
-            </Link>
-            <div className='flex flex-col items-center justify-center'>
-              {currentFormIndex !== 4 && (
-                <>
-                  <div className='w-[7rem] bg-[#1e1e1e] bg-opacity-5 h-1  my-2 relative'>
-                    <div
-                      style={{
-                        width: `${((currentFormIndex + 1) * 100) / 4}%`,
-                      }}
-                      className={`absolute h-full transition-all left-0 top-0 bg-primary`}
-                    ></div>
-                  </div>
-                  <h5 className='text-dark text-[20px] font-semibold capitalize font-roboto leading-[25px]'>
-                    School Portal
-                  </h5>
-                  <span className='text-primary text-[30px] font-semibold capitalize font-roboto leading-[30px]'>
-                    Olive Grove School
-                  </span>
-                </>
-              )}
-            </div>
-
-            {formError.usernameError ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-                <Info sx={{ fontSize: "1.1rem" }} />
-                {formError.usernameError}
-              </span>
-            ) : formError.passwordError ? (
-              <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-                <Info sx={{ fontSize: "1.1rem" }} />
-                {formError.passwordError}
-              </span>
-            ) : formError.internetError ? (
-              <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-                {formError.internetError}
-              </span>
-            ) : formError.successError ? (
-              <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-                {formError.successError}
-              </span>
-            ) : formError.departmentError ? (
-              <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-                {formError.departmentError}
-              </span>
-            ) : formError.generalError ? (
-              <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-                <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-                <span>{formError.generalError}</span>
-              </span>
-            ) : null}
-            {formError.profileImageError !== "" && (
-              <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-red-600'>
-                <Info sx={{ fontSize: "1.1rem" }} />
-                {formError.profileImageError}
-              </span>
-            )}
-            <form
-              className='flex flex-col mx-auto gap-y-5 w-[490px]'
-              onKeyPress={handleKeyPress}
-              onSubmit={handleSignup}
-            >
-              {/* first form step */}
-              {currentFormIndex === 0 && (
-                <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                  <span className='text-subtext text-[16px] text-center font-medium capitalize font-roboto leading-[28px]'>
-                    Create new account
-                  </span>
-                  <div className='flex items-end gap-3 w-full'>
-                    <InputField
-                      name='firstName'
-                      type='text'
-                      placeholder='First Name *'
-                      value={formState.firstName}
-                      onChange={handleChange}
-                      required
-                      error={formError.firstNameError}
-                    />
-
-                    <InputField
-                      name='middleName'
-                      type='text'
-                      placeholder='Middle Name'
-                      value={formState.middleName}
-                      onChange={handleChange}
-                      error={""}
-                    />
-                  </div>
-                  <div className='w-full '>
-                    <select
-                      onChange={handleChange}
-                      value={formState.department}
-                      id='department'
-                      name='department'
-                      required
-                      className='flex items-center h-12 px-2 sm:px-2.5 py-3 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
-                    >
-                      <option value='' disabled selected>
-                        Select Department
-                      </option>
-                      {fetchedDept?.map((course) => (
-                        <option value={course._id} key={course._id}>
-                          {course.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  {inputFields.map((field) =>
-                    field.name !== "password" ? (
-                      <InputField
-                        placeholder={field.label}
-                        key={field.name}
-                        name={field.name}
-                        type={field.type}
-                        pattern={
-                          field.name === "username"
-                            ? "[a-zA-Z0-9!@#$_%].{5,}$"
-                            : undefined
-                        }
-                        title={
-                          field.name === "email"
-                            ? "Please enter a valid email address"
-                            : field.name === "username"
-                            ? "Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)"
-                            : ""
-                        }
-                        value={formState[field.name as keyof SignupType]}
-                        onChange={handleChange}
-                        required={field.required}
-                        error={field.error}
-                      />
-                    ) : (
-                      <Input
-                        key={field.name}
-                        pattern='^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$'
-                        title='Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
-                        type='password'
-                        name='password'
-                        value={formState[field.name as keyof SignupType]}
-                        onChange={handleChange}
-                        placeholder='Password'
-                        showIcon={VisibilityOutlined}
-                        hideIcon={VisibilityOffOutlined}
-                        required={field.required}
-                        className='input rounded-lg p-3'
-                      />
-                    )
-                  )}
-
-                  <div className='w-full flex flex-col gap-1 cursor-pointer'>
-                    <File
-                      selectedImage={selectedImage}
-                      setSelectedImage={setSelectedImage}
-                      previewImage={previewImage}
-                      onChange={handleImageChange}
-                      disabled={false}
-                      resetImageStates={resetImageField}
-                      placeholder={
-                        fileName === "" ? fileName : "Upload Profile Picture"
-                      }
-                      required
-                      fileName={fileName}
-                    />
-                  </div>
-                  <Button
-                    // type='submit'
-                    size='sm'
-                    width='full'
-                    onClick={() => setCurrentFormIndex((c) => c + 1)}
-                    className='capitalize'
-                    disabled={isDisabled[0]}
-                  >
-                    Sign Up
-                  </Button>
-                  <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
-                    <span className='text-subtext'>
-                      Already have an account?
-                    </span>
-                    <Link
-                      href='/auth/path/students/login'
-                      className='text-primary'
-                    >
-                      Login
-                    </Link>
-                  </div>
-                </div>
-              )}
-
-              {/* second form step */}
-              {currentFormIndex === 1 && (
-                <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                  <span className='text-center text-subtext'>
-                    Enter your email below to get your verification OTP.
-                  </span>
-                  <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                    <InputField
-                      type='email'
-                      name='email'
-                      value={formState.email}
-                      onChange={handleChange}
-                      placeholder='Enter your mail'
-                      required
-                      error={formError.emailError}
-                    />
-                    <div className='w-full'>
-                      <Button
-                        size='md'
-                        width='full'
-                        disabled={isDisabled[1]}
-                        onClick={handleGetOTP}
-                        className='mx-auto'
-                      >
-                        {otpRequestLoading ? <DotLoader /> : "Send OTP"}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {/* third part of the step form */}
-              {currentFormIndex === 2 && (
-                <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                  <span className='text-center text-subtext'>
-                    An OTP was sent to the mail you provided below. Kindly it
-                    below.
-                  </span>
-                  <div className='flex justify-center'>
-                    <OTPInput
-                      className='!my-1'
-                      length={6}
-                      onChange={(otp) => {
-                        setOtp(otp);
-                        setCurrentFormIndex((c) => c + 1);
-                      }}
-                    />
-                  </div>
-                  <Button
-                    width='full'
-                    disabled={isDisabled[2]}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleEmailVerify(otp);
+    <AuthLayout title=''>
+      <div className='relative w-full h-full flex items-center justify-center  flex-1'>
+        <div className='flex flex-col items-center justify-center gap-y-3'>
+          <div className='flex flex-col items-center justify-center'>
+            {currentFormIndex !== 4 && (
+              <>
+                <div className='w-[7rem] bg-[#1e1e1e] bg-opacity-5 h-1  my-2 relative'>
+                  <div
+                    style={{
+                      width: `${((currentFormIndex + 1) * 100) / 4}%`,
                     }}
-                    className='mx-auto'
-                    size='md'
+                    className={`absolute h-full transition-all left-0 top-0 bg-primary`}
+                  ></div>
+                </div>
+                <h5 className='text-dark text-[20px] font-semibold capitalize font-roboto leading-[25px]'>
+                  School Portal
+                </h5>
+                <span className='text-primary text-[30px] font-semibold capitalize font-roboto leading-[30px]'>
+                  Olive Grove School
+                </span>
+              </>
+            )}
+          </div>
+          {formError.usernameError ? (
+            <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
+              <Info sx={{ fontSize: "1.1rem" }} />
+              {formError.usernameError}
+            </span>
+          ) : formError.passwordError ? (
+            <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
+              <Info sx={{ fontSize: "1.1rem" }} />
+              {formError.passwordError}
+            </span>
+          ) : formError.internetError ? (
+            <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
+              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              {formError.internetError}
+            </span>
+          ) : formError.successError ? (
+            <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
+              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              {formError.successError}
+            </span>
+          ) : formError.departmentError ? (
+            <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
+              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              {formError.departmentError}
+            </span>
+          ) : formError.generalError ? (
+            <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
+              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <span>{formError.generalError}</span>
+            </span>
+          ) : null}
+          {formError.profileImageError !== "" && (
+            <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-red-600'>
+              <Info sx={{ fontSize: "1.1rem" }} />
+              {formError.profileImageError}
+            </span>
+          )}
+          <form
+            className='flex flex-col mx-auto gap-y-5 w-[490px]'
+            onKeyPress={handleKeyPress}
+            onSubmit={handleSignup}
+          >
+            {/* first form step */}
+            {currentFormIndex === 0 && (
+              <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
+                <span className='text-subtext text-[16px] text-center font-medium capitalize font-roboto leading-[28px]'>
+                  Create new account
+                </span>
+                <div className='flex items-end gap-3 w-full'>
+                  <InputField
+                    name='firstName'
+                    type='text'
+                    placeholder='First Name *'
+                    value={formState.firstName}
+                    onChange={handleChange}
+                    required
+                    error={formError.firstNameError}
+                  />
+
+                  <InputField
+                    name='middleName'
+                    type='text'
+                    placeholder='Middle Name'
+                    value={formState.middleName}
+                    onChange={handleChange}
+                    error={""}
+                  />
+                </div>
+                <div className='w-full '>
+                  <select
+                    onChange={handleChange}
+                    value={formState.department}
+                    id='department'
+                    name='department'
+                    required
+                    className='flex items-center h-12 px-2 sm:px-2.5 py-3 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
                   >
-                    Verify
-                  </Button>
-                  <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
-                    <span className='text-subtext'>Did&apos;t get OTP?</span>
-                    <Link
-                      href='/auth/path/students/login'
-                      className='text-primary'
+                    <option value='' disabled selected>
+                      Select Department
+                    </option>
+                    {fetchedDept?.map((course) => (
+                      <option value={course._id} key={course._id}>
+                        {course.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {inputFields.map((field) =>
+                  field.name !== "password" ? (
+                    <InputField
+                      placeholder={field.label}
+                      key={field.name}
+                      name={field.name}
+                      type={field.type}
+                      pattern={
+                        field.name === "username"
+                          ? "[a-zA-Z0-9!@#$_%].{5,}$"
+                          : undefined
+                      }
+                      title={
+                        field.name === "email"
+                          ? "Please enter a valid email address"
+                          : field.name === "username"
+                          ? "Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)"
+                          : ""
+                      }
+                      value={formState[field.name as keyof SignupType]}
+                      onChange={handleChange}
+                      required={field.required}
+                      error={field.error}
+                    />
+                  ) : (
+                    <Input
+                      key={field.name}
+                      pattern='^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$'
+                      title='Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
+                      type='password'
+                      name='password'
+                      value={formState[field.name as keyof SignupType]}
+                      onChange={handleChange}
+                      placeholder='Password'
+                      showIcon={VisibilityOutlined}
+                      hideIcon={VisibilityOffOutlined}
+                      required={field.required}
+                      className='input rounded-lg p-3'
+                    />
+                  )
+                )}
+
+                <div className='w-full flex flex-col gap-1 cursor-pointer'>
+                  <File
+                    selectedImage={selectedImage}
+                    setSelectedImage={setSelectedImage}
+                    previewImage={previewImage}
+                    onChange={handleImageChange}
+                    disabled={false}
+                    resetImageStates={resetImageField}
+                    placeholder={
+                      fileName === "" ? fileName : "Upload Profile Picture"
+                    }
+                    required
+                    fileName={fileName}
+                  />
+                </div>
+                <Button
+                  // type='submit'
+                  size='sm'
+                  width='full'
+                  onClick={() => setCurrentFormIndex((c) => c + 1)}
+                  className='capitalize'
+                  disabled={isDisabled[0]}
+                >
+                  Sign Up
+                </Button>
+                <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
+                  <span className='text-subtext'>Already have an account?</span>
+                  <Link
+                    href='/auth/path/students/signin'
+                    className='text-primary'
+                  >
+                    Sign In
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* second form step */}
+            {currentFormIndex === 1 && (
+              <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
+                <span className='text-center text-subtext'>
+                  Enter your email below to get your verification OTP.
+                </span>
+                <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
+                  <InputField
+                    type='email'
+                    name='email'
+                    value={formState.email}
+                    onChange={handleChange}
+                    placeholder='Enter your mail'
+                    required
+                    error={formError.emailError}
+                  />
+                  <div className='w-full'>
+                    <Button
+                      size='md'
+                      width='full'
+                      disabled={isDisabled[1]}
+                      onClick={handleGetOTP}
+                      className='mx-auto'
                     >
-                      Resend OTP
-                    </Link>
+                      {otpRequestLoading ? <DotLoader /> : "Send OTP"}
+                    </Button>
                   </div>
                 </div>
-              )}
-              {/**forth part of the form */}
-              {currentFormIndex === 3 && (
-                <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                  <span className='text-center text-subtext'>
-                    Kindly select all your enrolled subjects below.
-                  </span>
-                  <div>
-                    <MultipleSelect />
-                    {/* <select
+              </div>
+            )}
+            {/* third part of the step form */}
+            {currentFormIndex === 2 && (
+              <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
+                <span className='text-center text-subtext'>
+                  An OTP was sent to the mail you provided below. Kindly it
+                  below.
+                </span>
+                <div className='flex justify-center'>
+                  <OTPInput
+                    className='!my-1'
+                    length={6}
+                    onChange={(otp) => {
+                      setOtp(otp);
+                      setCurrentFormIndex((c) => c + 1);
+                    }}
+                  />
+                </div>
+                <Button
+                  width='full'
+                  disabled={isDisabled[2]}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleEmailVerify(otp);
+                  }}
+                  className='mx-auto'
+                  size='md'
+                >
+                  Verify
+                </Button>
+                <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
+                  <span className='text-subtext'>Did&apos;t get OTP?</span>
+                  <Link
+                    href='/auth/path/students/signin'
+                    className='text-primary'
+                  >
+                    Resend OTP
+                  </Link>
+                </div>
+              </div>
+            )}
+            {/**forth part of the form */}
+            {currentFormIndex === 3 && (
+              <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
+                <span className='text-center text-subtext'>
+                  Kindly select all your enrolled subjects below.
+                </span>
+                <div>
+                  <MultipleSelect />
+                  {/* <select
                       onChange={handleChange}
                       value={formState.enrolledSubjects}
                       name='enrolledSubjects'
@@ -806,49 +745,42 @@ const StudentSignup = () => {
                         </option>
                       ))}
                     </select> */}
-                  </div>
-                  <Button
-                    disabled={isLoading}
-                    width='full'
-                    /*type='submit'*/ onClick={() =>
-                      setCurrentFormIndex((c) => c + 1)
-                    }
-                    size='md'
-                  >
-                    {isLoading ? (
-                      <CircularProgress size={20} color='inherit' />
-                    ) : (
-                      "Complete"
-                    )}
-                  </Button>
                 </div>
-              )}
-              {/* final page */}
-              {currentFormIndex === 4 && (
-                <div className='flex flex-col mx-auto gap-y-5 w-[490px] justify-center items-center'>
-                  <SignUpCompleteIcon />
-                  <h2 className='font-bold text-xl md:text-2xl lg:text-3xl'>
-                    Welcome {"Eniola"}!
-                  </h2>
-                  <span className='text-lg max-sm:text-base text-[#1e1e1e] text-opacity-50'>
-                    Your account has been created successfully!
-                  </span>
-                  <Link
-                    className='bg-primary px-4 py-2 text-white rounded-md'
-                    href='/students/dashboard'
-                  >
-                    Go to Dashboard
-                  </Link>
-                </div>
-              )}
-              <button
-                disabled={currentFormIndex === 0}
-                onClick={() => setCurrentFormIndex((c) => c - 1)}
-              >
-                <ChevronLeft />
-              </button>
-            </form>
-          </div>
+                <Button
+                  disabled={isLoading}
+                  width='full'
+                  /*type='submit'*/ onClick={() =>
+                    setCurrentFormIndex((c) => c + 1)
+                  }
+                  size='md'
+                >
+                  {isLoading ? (
+                    <CircularProgress size={20} color='inherit' />
+                  ) : (
+                    "Complete"
+                  )}
+                </Button>
+              </div>
+            )}
+            {/* final page */}
+            {currentFormIndex === 4 && (
+              <div className='flex flex-col mx-auto gap-y-5 w-[490px] justify-center items-center'>
+                <SignUpCompleteIcon />
+                <h2 className='font-bold text-xl md:text-2xl lg:text-3xl'>
+                  Welcome {"Eniola"}!
+                </h2>
+                <span className='text-lg max-sm:text-base text-[#1e1e1e] text-opacity-50'>
+                  Your account has been created successfully!
+                </span>
+                <Link
+                  className='bg-primary px-4 py-2 text-white rounded-md'
+                  href='/students/dashboard'
+                >
+                  Go to Dashboard
+                </Link>
+              </div>
+            )}
+          </form>
         </div>
       </div>
 
@@ -876,7 +808,7 @@ const StudentSignup = () => {
           </Alert>
         </Snackbar>
       )}
-    </>
+    </AuthLayout>
   );
 };
 

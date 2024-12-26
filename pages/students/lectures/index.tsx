@@ -18,8 +18,6 @@ import Image from "next/image";
 import useDebounce from "@/components/utils/useDebounce";
 import Loader from "@/components/Atoms/Loader";
 
-
-
 type TCourse = {
   _id: string;
   title: string;
@@ -76,7 +74,7 @@ const Lectures = () => {
       }
     } catch (error: AxiosError | any) {
       if (error.response && error.response.status === 401) {
-        handleLogout().then(() => router.push("/auth/path/students/login/"));
+        handleLogout().then(() => router.push("/auth/path/students/signin/"));
       }
       setCourses({ data: [], loading: false, error: "No courses found" });
     }

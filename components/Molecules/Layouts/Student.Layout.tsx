@@ -40,14 +40,14 @@ const StudentWrapper = ({
   };
 
   return (
-    <div className="w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center">
+    <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
       {/*<customcursor />*/}
 
       <Meta title={metaTitle || "Dashboard"} description={description} />
       <LogoutWarningModal
         handleModalClose={handleWarning}
         handleConfirm={() => {
-          handleLogout().then(() => router.push("/auth/path/students/login/"));
+          handleLogout().then(() => router.push("/auth/path/students/signin/"));
         }}
         modalOpen={warningModal}
       />
@@ -59,7 +59,7 @@ const StudentWrapper = ({
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
-      <div className="w-full">
+      <div className='w-full'>
         <div
           className={`${
             active ? "" : ""
@@ -79,13 +79,13 @@ const StudentWrapper = ({
             />
           </nav>
         </div>
-        <main className="w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20">
+        <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
           <div
             className={`${
               active ? "w-0 lg:w-[18rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
-          <div className="min-h-screen w-full z-10">{children}</div>
+          <div className='min-h-screen w-full z-10'>{children}</div>
         </main>
       </div>
     </div>
