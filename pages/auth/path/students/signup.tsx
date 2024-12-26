@@ -1,8 +1,5 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import logo from "@/public/image/logo.png";
-import SignUpImage from "@/images/signupImage.png";
 import Input, { InputType } from "@/components/Atoms/Input";
 import Button from "@/components/Atoms/Button";
 import {
