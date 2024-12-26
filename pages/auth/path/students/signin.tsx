@@ -1,11 +1,6 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import Image from "next/image";
 import Link from "next/link";
-import logo from "@/public/image/logo.png";
-import AuthBg1 from "@/public/image/auth__bg.png";
-import AuthBg2 from "@/public/image/auth_bg.png";
-import AuthBg3 from "@/public/image/Frame 5.png";
 import Input from "@/components/Atoms/Input";
 import Button from "@/components/Atoms/Button";
 import {
@@ -14,10 +9,7 @@ import {
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { useRouter } from "next/router";
-import CustomCursor from "@/components/Molecules/CustomCursor";
 import { CircularProgress } from "@mui/material";
-import { baseUrl } from "@/components/utils/baseURL";
-import exp from "constants";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { useAuth } from "@/contexts/AuthContext";
 import useAjaxRequest, { TAxiosError, TAxiosSuccess } from "use-ajax-request";
