@@ -314,7 +314,7 @@ const Profile = () => {
         title='Profile'
         metaTitle='Olive Grove ~ Profile'
       >
-        <div className='md:p-12 px-6 py-12 space-y-5'>
+        <div className='md:px-12 px-6 py-12 space-y-5'>
           <div className='w-full max-w-[10rem] flex gap-0'>
             {["Account", "Security"].map((slug, i) => (
               <>
@@ -336,7 +336,7 @@ const Profile = () => {
 
           {currentTab === "Account" && (
             <form
-              className='w-full flex justify-between sm:!mt-20 bg-white px-8 max-sm:px-5 rounded-2xl py-10 shadow-card'
+              className='w-full flex justify-between  bg-white px-8 max-sm:px-5 rounded-2xl py-10 shadow-card'
               onKeyPress={handleKeyPress}
               onSubmit={handleProfileEdit}
             >
@@ -442,19 +442,19 @@ const Profile = () => {
                 </div>
                 <Button
                   type='submit'
-                  size='sm'
+                  size='xs'
                   width='fit'
                   className='!px-8 disabled:cursor-not-allowed'
                   disabled={isDisabled}
                 >
-                  Edit Personal Info
+                  Update
                 </Button>
               </div>
             </form>
           )}
           {currentTab === "Security" && (
             <form
-              className='w-full flex justify-between sm:!mt-20  items-start bg-white px-8 rounded-2xl pb-8 pt-4 shadow-card'
+              className='w-full flex justify-between items-start bg-white px-8 rounded-2xl pb-8 pt-4 shadow-card'
               // onKeyPress={handleKeyPress}
               onSubmit={handlePasswordChange}
             >
@@ -494,7 +494,7 @@ const Profile = () => {
                     // required
                     className='input !rounded-xl'
                   />
-                  <div>
+                  <div className='flex items-center  '>
                     <Input
                       type='number'
                       name='otp'
@@ -504,7 +504,7 @@ const Profile = () => {
                       //required
                       className='input !rounded-xl'
                     />
-                    <span className='text-sm ml-4'>{OTPTimer}</span>
+                    <span className={`text-sm ml-4 ${OTPTimer === 0 && 'hidden'}`}>{OTPTimer}</span>
                   </div>
                 </div>
                 <div className='font-roboto text-subtext'>
