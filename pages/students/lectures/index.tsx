@@ -4,7 +4,6 @@ import SubjectCard from '@/components/Molecules/Card/SubjectCard';
 import Link from 'next/link';
 import withAuth from '@/components/Molecules/WithAuth';
 import { TFetchState } from '@/components/utils/types';
-// import { fetchCourses } from "@/components/utils/course";
 import dummyImage from '@/images/dummy-img.jpg';
 import DepartmentModal from '@/components/Molecules/Modal/DepartmentModal';
 import { baseUrl } from '@/components/utils/baseURL';
@@ -75,7 +74,7 @@ const Lectures = () => {
       }
     } catch (error: AxiosError | any) {
       if (error.response && error.response.status === 401) {
-        handleLogout().then(() => router.push('/auth/path/students/login/'));
+        handleLogout().then(() => router.push("/auth/path/students/signin"));
       }
       setCourses({ data: [], loading: false, error: 'No courses found' });
     }

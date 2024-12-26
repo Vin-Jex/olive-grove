@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import Modal from './Modal';
-import Button from '@/components/Atoms/Button';
-import { TWarningModalProps } from '@/components/utils/types';
-import { CircularProgress } from '@mui/material';
+import React from "react";
+import Modal from "./Modal";
+import Button from "@/components/Atoms/Button";
+import { TWarningModalProps } from "@/components/utils/types";
+import { CircularProgress } from "@mui/material";
 
 export default function LogoutWarningModal({
   modalOpen,
@@ -42,13 +42,12 @@ export default function LogoutWarningModal({
               size='sm'
               onClick={() => {
                 handleConfirm && handleConfirm();
-                // handleModalClose();
               }}
             >
               {loading ? (
                 <CircularProgress className='' size={20} color='inherit' />
               ) : (
-                'Confirm'
+                "Confirm"
               )}
             </Button>
           </div>

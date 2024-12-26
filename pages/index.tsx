@@ -289,6 +289,3 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-//  Students have the convenience of submitting their work directly through our platform.
-// Teachers can easily manage and organize their classes through our intuitive teacher portals.
-//  Access your personalized student portal for a tailored learning experience.

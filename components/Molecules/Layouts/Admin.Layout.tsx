@@ -1,36 +1,16 @@
 import React, { ReactNode, useState } from "react";
 import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
-import { useSidebarContext } from "@/contexts/SidebarContext";
 import Meta from "@/components/Atoms/Meta";
 import LogoutWarningModal from "../Modal/LogoutWarningModal";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
-import CustomCursor from "../CustomCursor";
 import { baseUrl } from "@/components/utils/baseURL";
 import axiosInstance from "@/components/utils/axiosInstance";
-import { constrainedMemory } from "process";
 
 export const handleLogout = async () => {
   const role = Cookies.get("role");
   try {
-    // const refreshToken = Cookies.get('refreshToken');
-    // const accessToken = Cookies.get('accessToken');
-    // const response = await fetch(`${baseUrl}/${role?.toLowerCase()}-logout`, {
-    //   method: 'POST',
-    //   // credentials: 'include',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: `Bearer accessToken=${accessToken};requestToken=${refreshToken}`,
-    //   },
-    // });
-
-    // if (!response.ok) {
-    //   await response.json();
-    //   console.log(response, 'this section');
-    //   return;
-    // }
-
     const response = await axiosInstance.post(
       `${baseUrl}/${role?.toLowerCase()}-logout`
     );
@@ -41,7 +21,6 @@ export const handleLogout = async () => {
     Cookies.remove("refreshToken");
     Cookies.remove("role");
     Cookies.remove("userId");
-
   } catch (error) {
     console.log("Status: ", error);
   }
@@ -60,7 +39,6 @@ const AdminsWrapper = ({
   description,
   children,
 }: AdminWrapperProps) => {
-  // const { active } = useSidebarContext();
   const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
@@ -75,7 +53,7 @@ const AdminsWrapper = ({
   };
 
   return (
-    <div className="w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center">
+    <div className='w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center'>
       {/*<customcursor />*/}
 
       <Meta title={metaTitle || "Dashboard"} description={description} />
@@ -94,7 +72,7 @@ const AdminsWrapper = ({
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
-      <div className="w-full">
+      <div className='w-full'>
         <div
           className={`${
             active ? "" : ""
@@ -113,13 +91,13 @@ const AdminsWrapper = ({
             />
           </nav>
         </div>
-        <main className="w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20">
+        <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
           <div
             className={`${
               active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
-          <div className="min-h-screen w-full z-10">{children}</div>
+          <div className='min-h-screen w-full z-10'>{children}</div>
         </main>
       </div>
     </div>

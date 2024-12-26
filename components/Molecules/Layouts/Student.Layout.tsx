@@ -1,12 +1,10 @@
-import React, { ReactNode, useState } from 'react';
-import SideNav from '../Navs/SideNav';
-import AdminNav from '../Navs/AdminNav';
-import { useSidebarContext } from '@/contexts/SidebarContext';
-import Meta from '@/components/Atoms/Meta';
-import LogoutWarningModal from '../Modal/LogoutWarningModal';
-import { useRouter } from 'next/router';
-import CustomCursor from '../CustomCursor';
-import { handleLogout } from './Admin.Layout';
+import React, { ReactNode, useState } from "react";
+import SideNav from "../Navs/SideNav";
+import AdminNav from "../Navs/AdminNav";
+import Meta from "@/components/Atoms/Meta";
+import LogoutWarningModal from "../Modal/LogoutWarningModal";
+import { useRouter } from "next/router";
+import { handleLogout } from "./Admin.Layout";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -44,7 +42,7 @@ const StudentWrapper = ({
     <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
       {/*<customcursor />*/}
 
-      <Meta title={metaTitle || 'Dashboard'} description={description} />
+      <Meta title={metaTitle || "Dashboard"} description={description} />
       <LogoutWarningModal
         handleModalClose={handleWarning}
         loading={isLogOutLoading}
@@ -53,7 +51,7 @@ const StudentWrapper = ({
           handleLogout().then(() => {
             setIsLogOutLoading(false);
             handleWarning();
-            router.push('/auth/path/students/login/');
+            router.push("/auth/path/students/signin");
           });
         }}
         modalOpen={warningModal}
@@ -61,7 +59,7 @@ const StudentWrapper = ({
 
       <aside
         className={`absolute left-0 top-0 h-screen overflow-auto w-[16rem] z-30 !bg-white lg:block transition-transform transform ${
-          isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
+          isSidenavOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
@@ -69,12 +67,12 @@ const StudentWrapper = ({
       <div className='w-full'>
         <div
           className={`${
-            active ? '' : ''
+            active ? "" : ""
           } absolute right-0 top-0 w-full flex z-30 lg:z-20`}
         >
           <div
             className={`${
-              active ? 'w-0 lg:w-[22rem]' : 'w-0 lg:w-[98px]'
+              active ? "w-0 lg:w-[22rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
           <nav className={`w-full sm:mr-[3.9rem]`}>
@@ -89,7 +87,7 @@ const StudentWrapper = ({
         <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
           <div
             className={`${
-              active ? 'w-0 lg:w-[18rem]' : 'w-0 lg:w-[98px]'
+              active ? "w-0 lg:w-[18rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
           <div className='min-h-screen w-full z-10'>{children}</div>
