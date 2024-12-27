@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import withAuth from "@/components/Molecules/WithAuth";
-import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import SearchInput from "@/components/Atoms/SearchInput";
 import TableReuse from "@/components/Molecules/Table/TableReuse";
 import Img from "@/public/image/student3.png";
+import AdminsWrapper from "@/components/Molecules/Layouts/Admin.Layout";
 
 const data = [
   {
@@ -45,7 +45,6 @@ const data = [
   },
 ];
 const Students = () => {
-  const router = useRouter();
   const [searchResults, setSearchResults] = useState(data);
 
   const columns = [
@@ -58,7 +57,7 @@ const Students = () => {
   ];
 
   return (
-    <TeachersWrapper title='Student' metaTitle='Olive Grove ~ Student'>
+    <AdminsWrapper title='Student' metaTitle='Olive Grove ~ Student'>
       <div className='p-12 space-y-5'>
         {/* Title */}
         <div className='flex flex-col'>
@@ -98,8 +97,8 @@ const Students = () => {
           <TableReuse data={searchResults} columns={columns} action={false} />
         </div>
       </div>
-    </TeachersWrapper>
+    </AdminsWrapper>
   );
 };
 
-export default withAuth("Teacher", Students);
+export default withAuth("Admin", Students);

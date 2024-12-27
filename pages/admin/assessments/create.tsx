@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { subjectData } from "../lectures";
 import withAuth from "@/components/Molecules/WithAuth";
-import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
 import AssessmentCard from "@/components/Molecules/Card/AssessmentCard";
-import { ArrowBackIos, Close } from "@mui/icons-material";
 import Input from "@/components/Atoms/Input";
 import InputField from "@/components/Atoms/InputField";
+import AdminsWrapper from "@/components/Molecules/Layouts/Admin.Layout";
+import { ArrowBackIos, Close } from "@mui/icons-material";
 
 const ModifyAssessments = () => {
   const router = useRouter();
@@ -45,7 +44,7 @@ const ModifyAssessments = () => {
     setAnswers(updatedAnswers);
   };
   return (
-    <TeachersWrapper
+    <AdminsWrapper
       title='Assessments'
       metaTitle='Olive Grove ~ Create or Modify Assessments'
     >
@@ -235,8 +234,8 @@ const ModifyAssessments = () => {
           </form>
         </div>
       </div>
-    </TeachersWrapper>
+    </AdminsWrapper>
   );
 };
 
-export default withAuth("Teacher", ModifyAssessments);
+export default withAuth("Admin", ModifyAssessments);

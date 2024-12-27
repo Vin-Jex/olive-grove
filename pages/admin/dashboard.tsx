@@ -148,4 +148,4 @@ const Dashboard = () => {
   );
 };
 
-export default withAuth("Teacher", Dashboard);
+export default withAuth("Admin", Dashboard);

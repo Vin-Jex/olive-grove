@@ -1,4 +1,3 @@
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
 import React, { useState } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import SwitchContentNav from "@/components/Molecules/Navs/SwitchContentNav";
@@ -7,6 +6,7 @@ import Button from "@/components/Atoms/Button";
 import DepartmentModal from "@/components/Molecules/Modal/DepartmentModal";
 import { TCourse } from "@/components/utils/types";
 import UpdateDepartmentModal from "@/components/Molecules/Modal/UpdateDepartmentModal";
+import AdminsWrapper from "@/components/Molecules/Layouts/Admin.Layout";
 
 interface SubjectData {
   [key: string]: {
@@ -85,7 +85,7 @@ const Departments = () => {
         handleModalClose={handleModalCreate}
         modalOpen={openModalCreate}
       />
-      <StudentWrapper title='Departments' metaTitle='Olive Grove ~ Departments'>
+      <AdminsWrapper title='Departments' metaTitle='Olive Grove ~ Departments'>
         <div className='p-12 space-y-5'>
           {/* Title */}
           <div className='flex items-center justify-between'>
@@ -165,9 +165,9 @@ const Departments = () => {
                 ))}
           </>
         </div>
-      </StudentWrapper>
+      </AdminsWrapper>
     </>
   );
 };
 
-export default withAuth("Teacher", Departments);
+export default withAuth("Admin", Departments);
