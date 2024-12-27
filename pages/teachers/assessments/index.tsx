@@ -667,8 +667,9 @@ const Assessments = () => {
         }
       />
       <TeachersWrapper
+        isPublic={false}
         title='Assessments'
-        metaTitle='Olive Groove ~ Assessments'
+        metaTitle='Olive Grove ~ Assessments'
       >
         <div className='space-y-5 h-full'>
           <>

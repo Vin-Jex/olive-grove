@@ -46,8 +46,9 @@ const AssessmentDetailsPage = () => {
 
   return (
     <TeachersWrapper
+      isPublic={false}
       title={`Assessment`}
-      metaTitle={`Olive Groove ~ ${assessmentId} assessment`}
+      metaTitle={`Olive Grove ~ ${assessmentId} assessment`}
     >
       <div className='space-y-5'>
         <div className='flex items-center justify-between'>

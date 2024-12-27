@@ -9,7 +9,7 @@ import AssessmentCard from "@/components/Molecules/Card/AssessmentCard";
 const Assessments = () => {
   const router = useRouter();
   return (
-    <TeachersWrapper title='Assessments' metaTitle='Olive Groove ~ Assessments'>
+    <TeachersWrapper title='Assessments' metaTitle='Olive Grove ~ Assessments'>
       <div className='p-12 space-y-5'>
         {/* Title */}
         <div className='flex items-center justify-between'>

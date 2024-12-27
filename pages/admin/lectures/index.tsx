@@ -85,10 +85,7 @@ const Departments = () => {
         handleModalClose={handleModalCreate}
         modalOpen={openModalCreate}
       />
-      <StudentWrapper
-        title='Departments'
-        metaTitle='Olive Groove ~ Departments'
-      >
+      <StudentWrapper title='Departments' metaTitle='Olive Grove ~ Departments'>
         <div className='p-12 space-y-5'>
           {/* Title */}
           <div className='flex items-center justify-between'>

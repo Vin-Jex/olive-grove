@@ -57,7 +57,7 @@ const list: {
   ],
   resources: [
     {
-      text: "Olive Groove College Ugwuomu Nike, Enugu.",
+      text: "Olive Grove College Ugwuomu Nike, Enugu.",
       Icon: PlaceOutlined,
       link: "#",
     },
@@ -76,27 +76,27 @@ const list: {
     {
       text: "Facebook",
       Icon: Facebook,
-      link: "https://www.facebook.com/olivegroove",
+      link: "https://www.facebook.com/oliveGrove",
     },
     {
       text: "Instagram",
       Icon: Instagram,
-      link: "https://www.instagram.com/olivegroove",
+      link: "https://www.instagram.com/oliveGrove",
     },
     {
       text: "Twitter",
       Icon: Twitter,
-      link: "https://www.x.com/olivegroove",
+      link: "https://www.x.com/oliveGrove",
     },
     {
       text: "LinkedIn",
       Icon: LinkedIn,
-      link: "https://www.linkedin.com/in/olivegroove",
+      link: "https://www.linkedin.com/in/oliveGrove",
     },
     {
       text: "YouTube",
       Icon: YouTube,
-      link: "https://www.youtube.com/olivegroove",
+      link: "https://www.youtube.com/oliveGrove",
     },
   ],
 };

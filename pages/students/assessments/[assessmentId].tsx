@@ -1,24 +1,24 @@
-import { useRouter } from 'next/router';
-import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import React, { FormEvent, useCallback, useEffect, useState } from 'react';
-import Image, { StaticImageData } from 'next/image';
-import img from '@/public/image/tutor.png';
-import TestImage from '@/images/test-assessment-testing.png';
-import Link from 'next/link';
-import Button from '@/components/Atoms/Button';
-import withAuth from '@/components/Molecules/WithAuth';
+import { useRouter } from "next/router";
+import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
+import React, { FormEvent, useCallback, useEffect, useState } from "react";
+import Image, { StaticImageData } from "next/image";
+import img from "@/public/image/tutor.png";
+import TestImage from "@/images/test-assessment-testing.png";
+import Link from "next/link";
+import Button from "@/components/Atoms/Button";
+import withAuth from "@/components/Molecules/WithAuth";
 import {
   FormControl,
   FormControlLabel,
   FormLabel,
   Radio,
   RadioGroup,
-} from '@mui/material';
-import { BackButton } from '../lectures/[subjectId]';
-import axiosInstance from '@/components/utils/axiosInstance';
-import { baseUrl } from '@/components/utils/baseURL';
-import Input from '@/components/Atoms/Input';
-import Loader from '@/components/Atoms/Loader';
+} from "@mui/material";
+import { BackButton } from "../lectures/[subjectId]";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { baseUrl } from "@/components/utils/baseURL";
+import Input from "@/components/Atoms/Input";
+import Loader from "@/components/Atoms/Loader";
 
 const CustomWrongIcon = () => {
   return (
@@ -53,9 +53,9 @@ const CustomWrongIcon = () => {
 };
 
 enum QuestionType {
-  MULTIPLE_CHOICE = 'multiple_choice',
-  PARAGRAGH = 'paragraph',
-  FILE_UPLOAD = 'file_upload',
+  MULTIPLE_CHOICE = "multiple_choice",
+  PARAGRAGH = "paragraph",
+  FILE_UPLOAD = "file_upload",
 }
 
 const CustomRightIcon = (props: { className?: string }) => {
@@ -185,17 +185,17 @@ const AssessmentDetailsPage = () => {
 
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [currentQxtIndex, setCurrentQxtIndex] = useState(() => {
-    const index = localStorage.getItem('currentQxtIndex');
-    return index ? index : '';
+    const index = localStorage.getItem("currentQxtIndex");
+    return index ? index : "";
   });
 
   const { assessmentId } = router.query;
 
   const [answeredQxts, setAnsweredQxts] = useState<Record<string, string>>(
     () => {
-      const answeredQxts = localStorage.getItem('answeredQxts');
-      console.log(answeredQxts, 'answeredQxts');
-      return answeredQxts !== 'undefined' && answeredQxts
+      const answeredQxts = localStorage.getItem("answeredQxts");
+      console.log(answeredQxts, "answeredQxts");
+      return answeredQxts !== "undefined" && answeredQxts
         ? JSON.parse(answeredQxts)
         : {};
     }
@@ -226,18 +226,18 @@ const AssessmentDetailsPage = () => {
   // const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    localStorage.setItem('currentQxtIndex', currentQxtIndex.toString());
-    localStorage.setItem('answeredQxts', JSON.stringify(answeredQxts));
+    localStorage.setItem("currentQxtIndex", currentQxtIndex.toString());
+    localStorage.setItem("answeredQxts", JSON.stringify(answeredQxts));
   }, [currentQxtIndex, answeredQxts]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = 'The quiz duration is still ongoing';
+      e.returnValue = "The quiz duration is still ongoing";
     };
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -245,7 +245,7 @@ const AssessmentDetailsPage = () => {
     const formData = new FormData();
     // Check if all questions are answered
     if (!fileUploadAnswers) {
-      alert('Please answer all questions before submitting');
+      alert("Please answer all questions before submitting");
       return;
     }
     if (
@@ -253,7 +253,7 @@ const AssessmentDetailsPage = () => {
         Object.keys(fileUploadAnswers).length !==
       quizQuestions?.questions?.length
     ) {
-      alert('Please answer all questions before submitting');
+      alert("Please answer all questions before submitting");
       return;
     }
 
@@ -268,23 +268,23 @@ const AssessmentDetailsPage = () => {
     //* Functionality to submit the answers to the server
 
     try {
-      const res = await fetch('/api/submit-answers', {
-        method: 'POST',
+      const res = await fetch("/api/submit-answers", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(answeredQxts),
       });
 
       if (!res.ok) {
-        throw new Error('Failed to submit answers');
+        throw new Error("Failed to submit answers");
       }
       const data = await res.json();
       console.log(data);
-      alert('Answers submitted successfully');
+      alert("Answers submitted successfully");
     } catch (error) {
       console.error(error);
-      alert('Failed to submit answers');
+      alert("Failed to submit answers");
     }
 
     // Check if all answers are correct
@@ -301,7 +301,7 @@ const AssessmentDetailsPage = () => {
     alert(`You scored ${score} out of ${questions.length}`);
     **/
     setAnsweredQxts({});
-    localStorage.setItem('answeredQxts', JSON.stringify({}));
+    localStorage.setItem("answeredQxts", JSON.stringify({}));
     setIsQuizComplete(true);
   }
 
@@ -319,11 +319,11 @@ const AssessmentDetailsPage = () => {
 
   const resetQuiz = () => {
     // Clear local storage and reset state
-    localStorage.removeItem('quizCurrentQuestion');
-    localStorage.removeItem('quizSelectedAnswers');
-    localStorage.removeItem('quizScore');
+    localStorage.removeItem("quizCurrentQuestion");
+    localStorage.removeItem("quizSelectedAnswers");
+    localStorage.removeItem("quizScore");
 
-    setCurrentQxtIndex('');
+    setCurrentQxtIndex("");
     setAnsweredQxts({});
     setIsQuizComplete(false);
   };
@@ -333,7 +333,7 @@ const AssessmentDetailsPage = () => {
       firstTitle='Assessment'
       remark='assessment title'
       title={`Assessment`}
-      metaTitle={`Olive Groove ~ ${assessmentId} assessment`}
+      metaTitle={`Olive Grove ~ ${assessmentId} assessment`}
     >
       {isLoading && <Loader />}
       {isQuizComplete && <SubmissionCard />}
@@ -347,8 +347,8 @@ const AssessmentDetailsPage = () => {
             <div className='flex py-7 mt-4 items-center space-x-2'>
               <Link href='/students/assessments'>
                 <span className='text-gray pr-2'>Assessments </span>
-              </Link>{' '}
-              /{' '}
+              </Link>{" "}
+              /{" "}
               <span className='text-primary'>
                 {quizQuestions?.course?.title}
               </span>
@@ -363,18 +363,18 @@ const AssessmentDetailsPage = () => {
                 <strong>Topic:</strong> {quizQuestions?.course?.chapters[0]}
               </span>
               <span>
-                <strong>Due:</strong>{' '}
+                <strong>Due:</strong>{" "}
                 {new Date(quizQuestions?.dueDate)
                   .toLocaleDateString([], {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
                   })
-                  .replaceAll('/', '-')}
-                ,{' '}
+                  .replaceAll("/", "-")}
+                ,{" "}
                 {new Date(quizQuestions?.dueDate).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
+                  hour: "2-digit",
+                  minute: "2-digit",
                 })}
               </span>
             </div>
@@ -448,7 +448,7 @@ function QuestionCard({
   setAnsweredQxts,
 }: {
   // question: TQuestionCard;
-  question: TQuestionCard['questions'][0];
+  question: TQuestionCard["questions"][0];
   value: string;
   i: number;
   saveUpload: React.Dispatch<
@@ -460,13 +460,13 @@ function QuestionCard({
 }) {
   return (
     <div className='bg-white p-10 rounded-2xl'>
-      <FormControl style={{ width: '100%' }}>
+      <FormControl style={{ width: "100%" }}>
         <FormLabel
           style={{
             fontSize: 18,
-            fontWeight: 'normal',
-            width: '100%',
-            color: 'black',
+            fontWeight: "normal",
+            width: "100%",
+            color: "black",
             marginBlockEnd: 24,
           }}
           id='demo-radio-buttons-group-label'
@@ -485,7 +485,7 @@ function QuestionCard({
           {question.questionText}
         </FormLabel>
         <RadioGroup
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
           value={value}
           onChange={(e) => {
             const selected = { [question._id.toString()]: e.target.value };
@@ -509,12 +509,12 @@ function QuestionCard({
                     review
                       ? option === question.correctAnswer
                         ? {
-                            height: '32px',
-                            width: '50%',
+                            height: "32px",
+                            width: "50%",
                             paddingInlineEnd: 17,
-                            textOverflow: 'ellipsis',
+                            textOverflow: "ellipsis",
                             paddingBlock: 2,
-                            backgroundColor: '#cbf5ff',
+                            backgroundColor: "#cbf5ff",
                             marginLeft: -3,
                             fillOpacity: 0.6,
                             borderRadius: 5,
@@ -523,12 +523,12 @@ function QuestionCard({
                         : option === question.yourAnswer &&
                           option !== question.correctAnswer
                         ? {
-                            height: '32px',
-                            width: '50%',
+                            height: "32px",
+                            width: "50%",
                             paddingInlineEnd: 17,
                             paddingBlock: 2,
                             marginLeft: -3,
-                            backgroundColor: '#fdd9d9',
+                            backgroundColor: "#fdd9d9",
                             fillOpacity: 0.6,
                             borderRadius: 5,
                             marginBlock: 7,
@@ -793,4 +793,4 @@ const WrongCrossMark = () => {
 
 // export default AssessmentDetailsPage;
 
-export default withAuth('Student', AssessmentDetailsPage);
+export default withAuth("Student", AssessmentDetailsPage);

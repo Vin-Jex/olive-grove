@@ -360,7 +360,7 @@ const Profile = () => {
         firstTitle='Profile'
         remark='Manage and edit your profile settings.'
         title='Profile'
-        metaTitle='Olive Groove ~ Profile'
+        metaTitle='Olive Grove ~ Profile'
       >
         <div className='md:p-12 px-6 py-12 space-y-5'>
           <div className='w-full max-w-[10rem] flex gap-0'>

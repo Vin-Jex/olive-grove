@@ -49,7 +49,11 @@ const Dashboard = () => {
         handleModalClose={handleModalAssignment}
         modalOpen={openModalAss}
       />
-      <TeachersWrapper title='Dashboard' metaTitle='Olive Groove ~ Dashboard'>
+      <TeachersWrapper
+        title='Dashboard'
+        metaTitle='Olive Grove ~ Dashboard'
+        isPublic={false}
+      >
         <div className='space-y-5'>
           <div className='bg-primary w-full rounded-3xl font-roboto relative overflow-hidden max-h-[200px]'>
             <div className='flex flex-col px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>

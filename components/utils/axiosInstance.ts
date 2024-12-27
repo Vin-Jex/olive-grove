@@ -29,7 +29,7 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    console.log('what is this respnse from the response', response);
+
 
     const accessToken = response.headers['x-access-token'];
     const refreshToken = response.headers['x-refresh-token'];

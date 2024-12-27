@@ -47,7 +47,7 @@ const ModifyAssessments = () => {
   return (
     <TeachersWrapper
       title='Assessments'
-      metaTitle='Olive Groove ~ Create or Modify Assessments'
+      metaTitle='Olive Grove ~ Create or Modify Assessments'
     >
       <div className='p-12 space-y-5'>
         {/* Title */}

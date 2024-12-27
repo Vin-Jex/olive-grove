@@ -319,8 +319,9 @@ const Subject: FC = () => {
 
       <TopicContextProvider course={course.data}>
         <TeachersWrapper
+          isPublic={false}
           title='Subjects'
-          metaTitle='Olive Groove ~ Subjects'
+          metaTitle='Olive Grove ~ Subjects'
           className='relative'
         >
           <div className='space-y-5 h-full relative'>

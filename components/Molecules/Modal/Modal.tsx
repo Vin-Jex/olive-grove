@@ -5,6 +5,7 @@ interface ModalProps {
   type?: 'verify_email';
   onClose: () => void;
   children: React.ReactNode;
+  
   className?: string;
 }
 

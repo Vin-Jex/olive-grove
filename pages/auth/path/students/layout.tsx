@@ -31,7 +31,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
           <div className='flex flex-col items-center justify-center py-4 absolute bottom-0 z-10 w-full min-h-60 bg-gradient-to-t from-black via-black/70 to-transparent'>
             <div className='flex flex-col items-center justify-center w-[60%] text-center'>
               <span className='font-roboto font-semibold text-white text-2xl'>
-                Olive Groove Student/Teacher Portal.
+                Olive Grove Student/Teacher Portal.
               </span>
               <span className='text-sm text-[#F8F8F8CC]'>
                 As a student you get access to all your classes, lectures,

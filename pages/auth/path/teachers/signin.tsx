@@ -11,12 +11,12 @@ import {
   VisibilityOutlined,
 } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
-import CustomCursor from "@/components/Molecules/CustomCursor";
 import useAjaxRequest, { TAxiosError, TAxiosSuccess } from "use-ajax-request";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { TLoginResponse } from "@/components/utils/types";
 import Cookies from "js-cookie";
 import { useAuth } from "@/contexts/AuthContext";
+import { initDB } from "@/components/utils/indexDB";
 
 export type loginType = {
   teacherID: string;
@@ -47,10 +47,8 @@ const LoginPath = () => {
     successError: "",
     generalError: "",
   });
-  // const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(true);
-  const maxAge = 1 * 24 * 60 * 60;
 
   useEffect(() => {
     if (formState.teacherID === "" || formState.password.length < 6) {
@@ -136,55 +134,7 @@ const LoginPath = () => {
     }, 7000);
   };
 
-  // const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   setIsLoading(true);
-
-  //   if (!navigator.onLine) {
-  //     setFormError((prevState) => ({
-  //       ...prevState,
-  //       internetError: "No internet connection",
-  //     }));
-  //     setIsLoading(false);
-  //     clearError();
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch(`${baseUrl}/teacher-login`, {
-  //       method: "POST",
-  //       credentials: "include",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(formState),
-  //     });
-
-  //     if (!response.ok) {
-  //       const data = await response.json();
-  //       handleErrors(data);
-  //       return;
-  //     }
-  //     await response.json();
-  //     setFormError((prevState) => ({
-  //       ...prevState,
-  //       successError: "Teacher successfully logged in.",
-  //     }));
-
-  //     resetForm();
-
-  //     setTimeout(() => {
-  //       router.push("/");
-  //     }, 500);
-  //   } catch (error) {
-  //     console.log("Error:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //     clearError();
-  //   }
-  // };
-
-  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"teacher">> = ({
+  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"teacher">> = async ({
     data,
   }) => {
     const accessToken = data.token.accessToken;
@@ -192,12 +142,8 @@ const LoginPath = () => {
     const userId = data.details._id;
     const userRole = data.details.role;
 
-    const expiryDate = new Date().setDate(new Date().getDate() + 1);
-
-    // console.log("Tihs is the accessToken", accessToken);
-    // console.log("This is the refreshToken", refreshToken);
-    // console.log("Tihs is the userId", userId);
-    // console.log("This is the userRole", userRole);
+    const userDetails = data.details;
+    await initDB(userDetails, userDetails._id);
 
     accessToken !== undefined &&
       Cookies.set("accessToken", accessToken, { expires: 1 });

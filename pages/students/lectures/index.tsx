@@ -157,7 +157,7 @@ const Lectures = () => {
         title='Courses'
         firstTitle='Courses'
         remark='Manage and get updates on your courses'
-        metaTitle='Olive Groove ~ Classes'
+        metaTitle='Olive Grove ~ Classes'
       >
         <div className='sm:p-12 p-5 space-y-5'>
           {/* Title */}

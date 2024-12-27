@@ -26,7 +26,7 @@ const LoginPath = () => {
 
   const handleLogin = () => {
     if (selectedRole === "teacher") {
-      router.push("/auth/path/teachers/login");
+      router.push("/auth/path/teachers/signin");
     } else if (selectedRole === "student") {
       router.push("/auth/path/students/signin");
     }
@@ -67,13 +67,13 @@ const LoginPath = () => {
               role='student'
               selectedRole={selectedRole}
               handleCardClick={handleCardClick}
-              description='Sign in to Olive Groove as a student and get access to classes and assignments.'
+              description='Sign in to Olive Grove as a student and get access to classes and assignments.'
             />
             <RoleCard
               role='teacher'
               selectedRole={selectedRole}
               handleCardClick={handleCardClick}
-              description='Sign in to Olive Groove as a teacher and create classes and assignments for your students.'
+              description='Sign in to Olive Grove as a teacher and create classes and assignments for your students.'
             />
           </div>
 

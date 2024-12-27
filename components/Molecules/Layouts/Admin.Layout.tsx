@@ -60,7 +60,7 @@ const AdminsWrapper = ({
       <LogoutWarningModal
         handleModalClose={handleWarning}
         handleConfirm={() => {
-          handleLogout().then(() => router.push("/auth/path/teachers/login/"));
+          handleLogout().then(() => router.push("/auth/path/teachers/signin"));
         }}
         modalOpen={warningModal}
       />

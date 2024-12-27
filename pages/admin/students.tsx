@@ -58,7 +58,7 @@ const Students = () => {
   ];
 
   return (
-    <TeachersWrapper title='Student' metaTitle='Olive Groove ~ Student'>
+    <TeachersWrapper title='Student' metaTitle='Olive Grove ~ Student'>
       <div className='p-12 space-y-5'>
         {/* Title */}
         <div className='flex flex-col'>

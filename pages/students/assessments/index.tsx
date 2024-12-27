@@ -172,7 +172,7 @@ const Assessments = () => {
       firstTitle='Assessments'
       remark='Manage, submit and access your assessments.'
       title='Assessments'
-      metaTitle='Olive Groove ~ Assessments'
+      metaTitle='Olive Grove ~ Assessments'
     >
       {isLoading && <Loader />}
       <div className='p-6 sm:p-8 md:p-12 space-y-5'>
