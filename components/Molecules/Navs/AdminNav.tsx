@@ -1,29 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import { Menu, NotificationsOutlined, Search } from '@mui/icons-material';
-import dummyImage from '@/images/dummy-img.jpg';
-import {
-  DateFormatter,
-  generateDateString,
-} from '@/components/Functions/DateFormatter';
-import Image, { StaticImageData } from 'next/image';
-import Logo from '@/public/image/logo.png';
-import { baseUrl } from '@/components/utils/baseURL';
-import { useAuth } from '@/contexts/AuthContext';
-import axiosInstance from '@/components/utils/axiosInstance';
-import Input from '@/components/Atoms/Input';
-import SearchLayout from '../SearchLayout';
+import React, { useEffect, useState } from "react";
+import { Menu } from "@mui/icons-material";
+import dummyImage from "@/images/dummy-img.jpg";
+import Image from "next/image";
+import Logo from "@/public/image/logo.png";
+import { baseUrl } from "@/components/utils/baseURL";
+import { useAuth } from "@/contexts/AuthContext";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 interface AdminNavType {
   title?: string;
-  firstTitle?: string;
   remark?: string;
   isOpen: boolean;
   toggleSidenav: () => void;
 }
 
 const AdminNav: React.FC<AdminNavType> = ({
-  firstTitle,
   remark,
   title,
   isOpen,
@@ -57,13 +48,13 @@ const AdminNav: React.FC<AdminNavType> = ({
       try {
         let response;
         switch (userRole) {
-          case 'Student':
+          case "Student":
             response = await axiosInstance.get(`${baseUrl}/student`);
             break;
-          case 'Teacher':
+          case "Teacher":
             response = await axiosInstance.get(`${baseUrl}/teacher`);
             break;
-          case 'Admin':
+          case "Admin":
             response = await axiosInstance.get(`${baseUrl}/admin`);
             break;
           default:
@@ -95,8 +86,8 @@ const AdminNav: React.FC<AdminNavType> = ({
   return (
     <div className='flex relative mx-2 max-sm:px-6 items-center bg-[#fafafa] justify-between w-full border-b custom-height max-sm:py-2 my-2 md:my-3'>
       {/* <div className={` md:!hidden ${isOpen ? 'hidden' : 'flex'}`}> */}
-      <div className="flex md:!hidden">
-        <Menu className="!text-2xl cursor-pointer" onClick={toggleSidenav} />
+      <div className='flex md:!hidden'>
+        <Menu className='!text-2xl cursor-pointer' onClick={toggleSidenav} />
       </div>
       <div className='uppercase max-sm:flex hidden items-center font-semibold'>
         <div className=''>
@@ -107,10 +98,10 @@ const AdminNav: React.FC<AdminNavType> = ({
       <div className='flex flex-col md:flex-row items-center md:justify-between w-fit md:w-full pb-2'>
         <div className='max-sm:hidden flex flex-col order-2 space-y-1 pb-2 md:order-1 w-full'>
           <span className='leading-4 font-roboto font-medium text-md md:text-xl text-dark  w-full my-auto'>
-            {title ? title : firstTitle}
+            {title ?? title}
           </span>
           {remark && (
-            <span className="leading-4 font-roboto text-xs md:text-sm text-gray-400">
+            <span className='leading-4 font-roboto text-xs md:text-sm text-gray-400'>
               {remark}
             </span>
           )}

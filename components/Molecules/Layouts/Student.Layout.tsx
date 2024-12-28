@@ -1,33 +1,41 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
 import Meta from "@/components/Atoms/Meta";
 import LogoutWarningModal from "../Modal/LogoutWarningModal";
 import { useRouter } from "next/router";
 import { handleLogout } from "./Admin.Layout";
+import { TUser } from "@/components/utils/types";
+import Cookies from "js-cookie";
+import { getUserFromDB } from "@/components/utils/indexDB";
+import VerificationModal from "../Modal/VerificationModal";
 
 interface AdminWrapperProps {
   children: ReactNode;
-  title?: string;
-  firstTitle?: string;
-  remark?: string;
+  title: string;
+  isPublic?: boolean;
   metaTitle?: string;
   description?: string;
+  className?: string;
+  remark?: string;
+  setUser?: React.Dispatch<React.SetStateAction<TUser | null>>;
 }
 
 const StudentWrapper = ({
   title,
-  firstTitle,
   remark,
   metaTitle,
   description,
+  isPublic = true,
+  setUser,
+  className,
   children,
 }: AdminWrapperProps) => {
-  // const { active } = useSidebarContext();
   const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
   const toggleSidenav = () => {
@@ -38,10 +46,28 @@ const StudentWrapper = ({
     setWarningModal(!warningModal);
   };
 
+  const handleVerifyOpen = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const userId = Cookies.get("userId")!;
+    const userDetails = async () => {
+      const response = await getUserFromDB(userId, userId);
+      if (response && !isPublic) {
+        if (!response.isVerified) {
+          setIsOpen(true);
+        }
+      }
+      if (setUser) setUser(response);
+    };
+    if (userId) {
+      userDetails();
+    }
+  }, [isPublic, setUser]);
+
   return (
     <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
-      {/*<customcursor />*/}
-
       <Meta title={metaTitle || "Dashboard"} description={description} />
       <LogoutWarningModal
         handleModalClose={handleWarning}
@@ -57,6 +83,11 @@ const StudentWrapper = ({
         modalOpen={warningModal}
       />
 
+      <VerificationModal
+        modalOpen={isOpen}
+        handleModalClose={handleVerifyOpen}
+      />
+
       <aside
         className={`absolute left-0 top-0 h-screen overflow-auto w-[16rem] z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? "translate-x-0" : "-translate-x-full"
@@ -65,21 +96,17 @@ const StudentWrapper = ({
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
       <div className='w-full'>
-        <div
-          className={`${
-            active ? "" : ""
-          } absolute right-0 top-0 w-full flex z-30 lg:z-20`}
-        >
+        <div className='absolute right-0 top-0 w-full flex z-30 lg:z-20'>
           <div
             className={`${
               active ? "w-0 lg:w-[22rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
-          ></div>
+          />
           <nav className={`w-full sm:mr-[3.9rem]`}>
             <AdminNav
               isOpen={isSidenavOpen}
               toggleSidenav={toggleSidenav}
-              firstTitle={firstTitle}
+              title={title}
               remark={remark}
             />
           </nav>

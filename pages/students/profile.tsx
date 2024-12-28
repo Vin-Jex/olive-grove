@@ -357,7 +357,6 @@ const Profile = () => {
   return (
     <>
       <StudentWrapper
-        firstTitle='Profile'
         remark='Manage and edit your profile settings.'
         title='Profile'
         metaTitle='Olive Grove ~ Profile'

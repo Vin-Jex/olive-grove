@@ -169,7 +169,6 @@ const Assessments = () => {
   }, []);
   return (
     <StudentWrapper
-      firstTitle='Assessments'
       remark='Manage, submit and access your assessments.'
       title='Assessments'
       metaTitle='Olive Grove ~ Assessments'

@@ -330,7 +330,6 @@ const AssessmentDetailsPage = () => {
 
   return (
     <StudentWrapper
-      firstTitle='Assessment'
       remark='assessment title'
       title={`Assessment`}
       metaTitle={`Olive Grove ~ ${assessmentId} assessment`}

@@ -227,6 +227,8 @@ export type TAdmin = {
   updatedAt: Date;
 };
 
+export type TUser = TStudent | TTeacher | TAdmin;
+
 export type TModalProps<T> = {
   modalOpen: boolean;
   handleModalClose: () => void;

@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import { handleLogout } from "./Admin.Layout";
 import { getUserFromDB } from "@/components/utils/indexDB";
 import VerificationModal from "../Modal/VerificationModal";
-import { TAdmin, TStudent, TTeacher } from "@/components/utils/types";
+import { TUser } from "@/components/utils/types";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -17,6 +17,7 @@ interface AdminWrapperProps {
   metaTitle?: string;
   description?: string;
   className?: string;
+  setUser?: React.Dispatch<React.SetStateAction<TUser | null>>;
 }
 
 const TeachersWrapper = ({
@@ -25,12 +26,12 @@ const TeachersWrapper = ({
   description,
   children,
   isPublic = true,
+  setUser,
   className,
 }: AdminWrapperProps) => {
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const router = useRouter();
-  const [user, setUser] = useState<TStudent | TTeacher | TAdmin | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleVerifyOpen = () => {
@@ -49,20 +50,17 @@ const TeachersWrapper = ({
     const userId = Cookies.get("userId")!;
     const userDetails = async () => {
       const response = await getUserFromDB(userId, userId);
-      setUser(response);
+      if (response && !isPublic) {
+        if (!response.isVerified) {
+          setIsOpen(true);
+        }
+      }
+      if (setUser) setUser(response);
     };
     if (userId) {
       userDetails();
     }
-  }, []);
-
-  useEffect(() => {
-    if (user && !isPublic) {
-      if (!user.isVerified) {
-        setIsOpen(true);
-      }
-    }
-  }, [isPublic, user]);
+  }, [isPublic, setUser]);
 
   return (
     <>

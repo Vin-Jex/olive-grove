@@ -13,19 +13,8 @@ html {
   scroll-behavior: smooth;
 }
 
-*,
-body {
-  /* cursor: none !important; */
-}
-
 #__next {
   width: 100%;
-}
-
-@layer components {
-  a.link {
-    @apply text-primary underline underline-offset-2;
-  }
 }
 
 .MuiFormControlLabel-label {
@@ -36,7 +25,7 @@ body {
   padding-inline-start: 0px;
 }
 
-[data-testid='RadioButtonUncheckedIcon'] {
+[data-testid="RadioButtonUncheckedIcon"] {
   width: 1.4em !important;
   height: 1.4rem !important;
 }
@@ -45,7 +34,7 @@ body {
   margin-inline-start: -9px !important;
 }
 
-[data-testid='RadioButtonCheckedIcon'] {
+[data-testid="RadioButtonCheckedIcon"] {
   left: 4px !important;
   right: -2px !important;
   bottom: 1px !important;
@@ -61,6 +50,14 @@ body {
   .container {
     @apply w-full 3xl:!max-w-[1400px] 2xl:!max-w-[1000px] xl:!max-w-[1700px] lg:!max-w-full md:!max-w-full sm:!max-w-full xs:!max-w-full;
   }
+
+  a.link {
+    @apply text-primary underline underline-offset-2;
+  }
+
+  .shadow-card {
+    @apply shadow-[0px_0px_100px_2px_#1E1E1E1A];
+  }
 }
 
 .input {
@@ -74,7 +71,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 input[type="number"] {
-  -moz-appearance: textfield; /* For Firefox */
+  -moz-appearance: textfield;
 }
 
 .radio {
@@ -106,7 +103,6 @@ input[type="number"] {
   content: "✔"; /* Checkmark symbol */
   font-size: 12px;
   color: white !important;
-
 }
 
 .textarea {
@@ -308,13 +304,6 @@ sidebar-nav.active ul li a span {
   width: 5px;
   height: 20px;
   background: #32a8c4;
-}
-
-.shadow-card {
-  --tw-shadow: 0 10px 45px -3px rgb(0 0 0 / 0.07),
-    0 4px 29px -4px rgb(0 0 0 / 0.01);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
 .shadow-card-2 {

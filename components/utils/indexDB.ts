@@ -1,15 +1,12 @@
 import { openDB } from "idb";
-import { TAdmin, TStudent, TTeacher } from "./types";
+import { TUser } from "./types";
 import { generateEncryptionKey, generateRandomSalt } from "./keyManagement";
 
 const dbName = process.env.NEXT_PUBLIC_DB_NAME;
 const storeName = process.env.NEXT_PUBLIC_STORE_NAME;
 
 // Encrypt data
-const encryptData = async (
-  key: CryptoKey,
-  data: TStudent | TTeacher | TAdmin
-) => {
+const encryptData = async (key: CryptoKey, data: TUser) => {
   const encoder = new TextEncoder();
   const encodedData = encoder.encode(JSON.stringify(data));
   // Random IV for AES-GCM
@@ -38,10 +35,7 @@ const decryptData = async (
 };
 
 // Initialize the database and store user data
-export const initDB = async (
-  user: TStudent | TTeacher | TAdmin,
-  passphrase: string
-) => {
+export const initDB = async (user: TUser, passphrase: string) => {
   // Generate a random salt
   const salt = generateRandomSalt();
   // Derive the encryption key
@@ -62,7 +56,7 @@ export const initDB = async (
 
   // Store encrypted data along with the salt
   await db.put(storeName, {
-    id: user._id,
+    id: user?._id,
     iv: Array.from(iv),
     encryptedData: Array.from(new Uint8Array(encryptedData)),
     salt,
@@ -98,7 +92,7 @@ export const getUserFromDB = async (id: string, passphrase: string) => {
 // Update user data in the database
 export const updateUserInDB = async (
   userId: string,
-  updatedUser: TStudent | TTeacher | TAdmin,
+  updatedUser: TUser,
   passphrase: string
 ) => {
   const db = await openDB(dbName, process.env.NEXT_PUBLIC_DB_VERSION);

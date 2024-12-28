@@ -198,9 +198,8 @@ const SubjectDetailsPage: FC = () => {
       )}
       <TopicContextProvider course={course.data}>
         <StudentWrapper
-          firstTitle='Courses'
           remark='Manage and get updates on your courses'
-          title={`Courses`}
+          title='Courses'
           metaTitle={`Olive Grove ~ ${subjectId}`}
         >
           <div className='space-y-5 max-sm:px-6 max-sm:pt-3 px-12 h-full'>

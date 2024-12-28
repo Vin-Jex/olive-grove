@@ -155,7 +155,6 @@ const Lectures = () => {
       />
       <StudentWrapper
         title='Courses'
-        firstTitle='Courses'
         remark='Manage and get updates on your courses'
         metaTitle='Olive Grove ~ Classes'
       >

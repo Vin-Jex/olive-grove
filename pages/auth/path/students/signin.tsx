@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import useAjaxRequest, { TAxiosError, TAxiosSuccess } from "use-ajax-request";
 import { TLoginResponse } from "@/components/utils/types";
 import AuthLayout from "./layout";
+import { initDB } from "@/components/utils/indexDB";
 
 export type loginType = {
   username: string;
@@ -143,7 +144,7 @@ const StudentLogin = () => {
     }, 7000);
   };
 
-  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"teacher">> = ({
+  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"teacher">> = async ({
     data,
   }) => {
     const accessToken = data.token.accessToken;
@@ -151,7 +152,9 @@ const StudentLogin = () => {
     const userId = data.details._id;
     const userRole = data.details.role;
 
-    const expiryDate = new Date().setDate(new Date().getDate() + 1);
+    const userDetails = data.details;
+    console.log("DETAILS: ", userDetails);
+    await initDB(userDetails, userDetails._id);
 
     accessToken !== undefined &&
       Cookies.set("accessToken", accessToken, { expires: 1 });

@@ -1,14 +1,10 @@
-import Link from 'next/link';
-import React, { useState } from 'react';
+import Link from "next/link";
+import React, { useState } from "react";
 
 interface ClassCardType {
-  title?: 'class' | 'assignment';
-  data?: {
-    subject: string;
-    time: string;
-    description: string;
-    teacher: string;
-  }[];
+  link?: string;
+  title?: "class" | "assignment";
+  data?: any[];
   modalOpen?: () => void;
   editable?: boolean;
   handleEdit?: () => void;
@@ -20,6 +16,7 @@ const ClassCard: React.FC<ClassCardType> = ({
   modalOpen,
   editable = false,
   handleEdit,
+  link,
 }) => {
   const [showAllData, setShowAllData] = useState(false);
 
@@ -35,7 +32,7 @@ const ClassCard: React.FC<ClassCardType> = ({
     <div className='flex flex-col flex-wrap gap-y-3 lg:gap-y-4 border-gray-300 !z-20 relative px-4 py-5 lg:px-7 lg:py-8 w-full h-fit min-h-[350px] rounded-xl'>
       <div className='flex items-center justify-between'>
         <span className='text-dark text-xl lg:text-2xl font-roboto font-medium'>
-          Upcoming {title === 'class' ? 'Lectures' : 'Assignments'}
+          Upcoming {title === "class" ? "Lectures" : "Assignments"}
         </span>
 
         {data && data.length > 6 && (
@@ -43,24 +40,24 @@ const ClassCard: React.FC<ClassCardType> = ({
             className='text-base text-primary cursor-pointer'
             onClick={toggleShowAllData}
           >
-            {showAllData ? 'Show Less' : 'See All'}
+            {showAllData ? "Show Less" : "See All"}
           </button>
         )}
       </div>
       {limitedData.length < 0 ? (
-        [{ subject: 'class Name', time: 'Class Duration' }, ...limitedData].map(
+        [{ subject: "class Name", time: "Class Duration" }, ...limitedData].map(
           (item, index) => (
             <div
               key={index}
               onClick={modalOpen}
               className={`flex items-center justify-between border-b-2  p-3 text-subtext${
-                modalOpen && 'cursor-pointer'
+                modalOpen && "cursor-pointer"
               }`}
             >
               <div className='flex items-center space-x-2'>
                 <h3
                   className={`text-subtext text-sm lg:text-base ${
-                    index === 0 && 'text-black'
+                    index === 0 && "text-black"
                   }`}
                 >
                   {item.subject}
@@ -94,16 +91,11 @@ const ClassCard: React.FC<ClassCardType> = ({
       ) : (
         <div>
           <span className='text-subtext'>
-            You do not have any upcoming{' '}
-            {title === 'class' ? 'Lecture' : 'assessments'} for now.
+            You do not have any upcoming{" "}
+            {title === "class" ? "Lecture" : "assessments"} for now.
           </span>
-          <Link
-            className='block py-3 underline text-primary'
-            href={
-              title === 'class' ? '/student/lectures' : 'student/assessments'
-            }
-          >
-            View all {title === 'class' ? 'lectures.' : 'assessments.'}
+          <Link className='block py-3 underline text-primary' href={link || ""}>
+            View all {title === "class" ? "lectures." : "assessments."}
           </Link>
         </div>
       )}
