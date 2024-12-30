@@ -1,23 +1,15 @@
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import Image from "next/image";
 import React, {
   ChangeEvent,
-  Dispatch,
   FormEvent,
-  SetStateAction,
   useCallback,
   useEffect,
   useState,
 } from "react";
-import dummyImage from "@/images/dummy-img.jpg";
 import Button from "@/components/Atoms/Button";
 import InputField from "@/components/Atoms/InputField";
-import Input, { InputType } from "@/components/Atoms/Input";
-import {
-  Info,
-  VisibilityOffOutlined,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import Input from "@/components/Atoms/Input";
+import { Info } from "@mui/icons-material";
 import withAuth from "@/components/Molecules/WithAuth";
 import { baseUrl } from "@/components/utils/baseURL";
 import { useAuth } from "@/contexts/AuthContext";
@@ -29,6 +21,8 @@ import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
 import { useRouter } from "next/router";
 import useUserVerify from "@/components/utils/hooks/useUserVerify";
 import { formatDate } from "@/components/utils/utils";
+import { ProfilePhotoSection } from "../teachers/profile";
+import { InputType } from "@/components/utils/types";
 
 type TFormState = {
   firstName: string;
@@ -50,11 +44,12 @@ const Profile = () => {
   const {
     otpRequestLoading,
     handleRequestOTP,
-    somethingOccured,
-    setSomethingOccured,
+    message,
+    setMessage,
     verifyOTP,
     OTPTimer,
   } = useUserVerify();
+
   const [formState, setFormState] = useState<TFormState>({
     firstName: "",
     lastName: "",
@@ -177,7 +172,9 @@ const Profile = () => {
 
   const handleChange = ({
     target: { name, value },
-  }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  }: ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >) => {
     setFormState((prevState) => ({
       ...prevState,
       [name]: value as string,
@@ -223,7 +220,7 @@ const Profile = () => {
       console.log(error, "axios error");
       const data = error.response.data;
       // handleErrors(data);
-      setSomethingOccured((err) => ({
+      setMessage((err) => ({
         ...err,
         error: true,
         message: data.message,
@@ -258,14 +255,14 @@ const Profile = () => {
         router.push("/auth/path/students/signin");
       });
 
-      setSomethingOccured((err) => ({
+      setMessage((err) => ({
         ...err,
         success: true,
         error: false,
         message: response?.data?.data.message,
       }));
     } catch (error: AxiosError | any) {
-      setSomethingOccured((err) => ({
+      setMessage((err) => ({
         ...err,
         error: true,
         message: error?.response?.data.message,
@@ -388,13 +385,15 @@ const Profile = () => {
               onSubmit={handleProfileEdit}
             >
               <div className='w-full flex flex-col space-y-5 gap-y-5'>
-                <Header
+                <ProfilePhotoSection
+                  userRole='Student'
                   setFormState={setFormState}
                   setPreviewImage={setPreviewImage}
                   previewImage={previewImage as string}
                   setIsDisabled={setIsDisabled}
                   profileImage={profileImage}
-                  studentName={studentName}
+                  name={studentName}
+                  id={formState.username}
                 />
                 <div className='flex max-sm:flex-col max-sm:items-start max-sm:gap-3 w-full items-center justify-between'>
                   <div className='flex flex-col '>
@@ -529,8 +528,6 @@ const Profile = () => {
                     placeholder='New Password *'
                     // required
                     className='input !rounded-xl'
-                    showIcon={VisibilityOutlined}
-                    hideIcon={VisibilityOffOutlined}
                   />
                   <Input
                     type='password'
@@ -540,8 +537,6 @@ const Profile = () => {
                     placeholder='Confirm Password *'
                     // required
                     className='input !rounded-xl'
-                    showIcon={VisibilityOutlined}
-                    hideIcon={VisibilityOffOutlined}
                   />
                   <div>
                     <Input
@@ -591,11 +586,11 @@ const Profile = () => {
           modalOpen={emailVerifyModal}
         />
       )}
-      {(somethingOccured.error || somethingOccured.success) && (
+      {(message.error || message.success) && (
         <Snackbar
-          open={somethingOccured.error || somethingOccured.success}
+          open={message.error || message.success}
           onClose={() =>
-            setSomethingOccured((err) => ({
+            setMessage((err) => ({
               ...err,
               error: false,
               success: false,
@@ -606,116 +601,17 @@ const Profile = () => {
           className='!z-[999]'
         >
           <Alert
-            severity={somethingOccured.error ? "error" : "success"}
+            severity={message.error ? "error" : "success"}
             onClose={() =>
-              setSomethingOccured((err) => ({ ...err, error: false }))
+              setMessage((err) => ({ ...err, error: false }))
             }
           >
-            {somethingOccured.message}
+            {message.message}
           </Alert>
         </Snackbar>
       )}
     </>
   );
 };
-
-interface HeaderProps {
-  profileImage: string;
-  studentName: string;
-  setIsDisabled: Dispatch<SetStateAction<boolean>>;
-  setPreviewImage: Dispatch<SetStateAction<Blob | null | string>>;
-  previewImage: string;
-  setFormState: Dispatch<SetStateAction<TFormState>>;
-  type?: "security" | string;
-}
-
-function Header({
-  profileImage,
-  previewImage,
-  studentName,
-  setPreviewImage,
-  setIsDisabled,
-  type,
-  setFormState,
-}: HeaderProps) {
-  return (
-    <div className='flex gap-4'>
-      <div className='relative'>
-        <Image
-          src={
-            previewImage
-              ? previewImage
-              : !profileImage
-              ? dummyImage
-              : profileImage
-          }
-          width={300}
-          height={300}
-          alt='Profile Image'
-          className='shadow w-[6rem] h-[6rem] object-cover rounded-full'
-        />
-        {type !== "security" && (
-          <>
-            <label
-              className='absolute -right-2 cursor-pointer top-[60%]'
-              htmlFor='profileImage'
-            >
-              <CameraIcon />
-            </label>
-            <Input
-              type='file'
-              onChange={(e) => {
-                const image = e.target.files?.[0];
-                if (image) {
-                  setFormState &&
-                    setFormState((prevState) => ({
-                      ...prevState,
-                      [e.target.name]: image,
-                    }));
-
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setPreviewImage && setPreviewImage(reader.result as string);
-                    setIsDisabled && setIsDisabled(false);
-                  };
-                  reader.readAsDataURL(image);
-                }
-              }}
-              name='profileImage'
-              accept='image/*'
-              id='profileImage'
-              className='hidden'
-            />
-          </>
-        )}
-      </div>
-      <div className='flex flex-col justify-center'>
-        <span className='text-dark text-lg font-roboto leading-5'>
-          {studentName}
-        </span>
-        <span className='text-subtext'>Student</span>
-      </div>
-    </div>
-  );
-}
-
-function CameraIcon() {
-  return (
-    <svg
-      width='30'
-      height='30'
-      viewBox='0 0 30 30'
-      fill='none'
-      xmlns='http://www.w3.org/2000/svg'
-    >
-      <rect width='30' height='30' rx='15' fill='white' />
-      <path
-        d='M9 9H11.25L12.75 7.5H17.25L18.75 9H21C21.3978 9 21.7794 9.15804 22.0607 9.43934C22.342 9.72064 22.5 10.1022 22.5 10.5V19.5C22.5 19.8978 22.342 20.2794 22.0607 20.5607C21.7794 20.842 21.3978 21 21 21H9C8.60218 21 8.22064 20.842 7.93934 20.5607C7.65804 20.2794 7.5 19.8978 7.5 19.5V10.5C7.5 10.1022 7.65804 9.72064 7.93934 9.43934C8.22064 9.15804 8.60218 9 9 9ZM15 11.25C14.0054 11.25 13.0516 11.6451 12.3483 12.3483C11.6451 13.0516 11.25 14.0054 11.25 15C11.25 15.9946 11.6451 16.9484 12.3483 17.6517C13.0516 18.3549 14.0054 18.75 15 18.75C15.9946 18.75 16.9484 18.3549 17.6516 17.6517C18.3549 16.9484 18.75 15.9946 18.75 15C18.75 14.0054 18.3549 13.0516 17.6516 12.3483C16.9484 11.6451 15.9946 11.25 15 11.25ZM15 12.75C15.5967 12.75 16.169 12.9871 16.591 13.409C17.0129 13.831 17.25 14.4033 17.25 15C17.25 15.5967 17.0129 16.169 16.591 16.591C16.169 17.0129 15.5967 17.25 15 17.25C14.4033 17.25 13.831 17.0129 13.409 16.591C12.9871 16.169 12.75 15.5967 12.75 15C12.75 14.4033 12.9871 13.831 13.409 13.409C13.831 12.9871 14.4033 12.75 15 12.75Z'
-        fill='#1E1E1E'
-        fillOpacity='0.6'
-      />
-    </svg>
-  );
-}
 
 export default withAuth("Student", Profile);
