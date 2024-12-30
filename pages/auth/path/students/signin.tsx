@@ -3,11 +3,7 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import Input from "@/components/Atoms/Input";
 import Button from "@/components/Atoms/Button";
-import {
-  Info,
-  VisibilityOffOutlined,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { Info } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { CircularProgress } from "@mui/material";
 import axiosInstance from "@/components/utils/axiosInstance";
@@ -153,7 +149,6 @@ const StudentLogin = () => {
     const userRole = data.details.role;
 
     const userDetails = data.details;
-    console.log("DETAILS: ", userDetails);
     await initDB(userDetails, userDetails._id);
 
     accessToken !== undefined &&
@@ -289,8 +284,6 @@ const StudentLogin = () => {
             placeholder='Enter Password'
             required
             className='input'
-            showIcon={VisibilityOutlined}
-            hideIcon={VisibilityOffOutlined}
           />
 
           <span className='text-subtext text-sm font-medium font-roboto cursor-pointer ml-auto !mt-1 w-fit whitespace-nowrap'>
