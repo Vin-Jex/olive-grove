@@ -68,7 +68,7 @@ function collectLinearContentIds(data: TCourse): TContentId {
 
 const SubjectDetailsPage: FC = () => {
   const router = useRouter();
-  const { subjectId } = useMemo(() => router.query, [router.query]);
+  const { courseId } = useMemo(() => router.query, [router.query]);
   const [showSideBar, setShowSideBar] = useState(false);
 
   const {
@@ -176,8 +176,8 @@ const SubjectDetailsPage: FC = () => {
   };
 
   useEffect(() => {
-    if (subjectId) getCourse((subjectId as string) || "nil");
-  }, [getCourse, subjectId]);
+    if (courseId) getCourse((courseId as string) || "nil");
+  }, [getCourse, courseId]);
 
   return (
     <>
@@ -200,7 +200,7 @@ const SubjectDetailsPage: FC = () => {
         <StudentWrapper
           remark='Manage and get updates on your courses'
           title='Courses'
-          metaTitle={`Olive Grove ~ ${subjectId}`}
+          metaTitle={`Olive Grove ~ ${courseId}`}
         >
           <div className='space-y-5 max-sm:px-6 max-sm:pt-3 px-12 h-full'>
             {course.loading ? (
@@ -297,13 +297,13 @@ const SubjectDetailsPage: FC = () => {
                     </div>
                     <div className='relative'>
                       <div className='flex-none relative w-full block'>
-                        <SideBar courseId={(subjectId as string) || ""} />
+                        <SideBar courseId={(courseId as string) || ""} />
                       </div>
                       {/* MOBILE SIDEBAR */}
                       <AnimatePresence>
                         {showSideBar && (
                           <MobileSideBar
-                            subjectid={(subjectId as string) || ""}
+                            courseId={(courseId as string) || ""}
                           />
                         )}
                       </AnimatePresence>
