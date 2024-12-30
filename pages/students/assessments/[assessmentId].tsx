@@ -14,7 +14,7 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import { BackButton } from "../lectures/[subjectId]";
+import { BackButton } from "../lectures/[courseId]";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { baseUrl } from "@/components/utils/baseURL";
 import Input from "@/components/Atoms/Input";
