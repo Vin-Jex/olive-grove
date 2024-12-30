@@ -30,7 +30,6 @@ interface AuthProviderProps {
 
 // Auth Provider
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const router = useRouter();
   const [auth, setAuth] = useState<AuthState>({
     loggedIn: false,
     user: null,
