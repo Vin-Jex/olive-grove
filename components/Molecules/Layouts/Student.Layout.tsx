@@ -6,9 +6,8 @@ import LogoutWarningModal from "../Modal/LogoutWarningModal";
 import { useRouter } from "next/router";
 import { handleLogout } from "./Admin.Layout";
 import { TUser } from "@/components/utils/types";
-import Cookies from "js-cookie";
-import { getUserFromDB } from "@/components/utils/indexDB";
 import VerificationModal from "../Modal/VerificationModal";
+import { useUser } from "@/contexts/UserContext";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -16,7 +15,6 @@ interface AdminWrapperProps {
   isPublic?: boolean;
   metaTitle?: string;
   description?: string;
-  className?: string;
   remark?: string;
   setUser?: React.Dispatch<React.SetStateAction<TUser | null>>;
 }
@@ -28,7 +26,6 @@ const StudentWrapper = ({
   description,
   isPublic = true,
   setUser,
-  className,
   children,
 }: AdminWrapperProps) => {
   const active = true;
@@ -37,6 +34,7 @@ const StudentWrapper = ({
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const { user } = useUser();
 
   const toggleSidenav = () => {
     setIsSidenavOpen(!isSidenavOpen);
@@ -51,20 +49,12 @@ const StudentWrapper = ({
   };
 
   useEffect(() => {
-    const userId = Cookies.get("userId")!;
-    const userDetails = async () => {
-      const response = await getUserFromDB(userId, userId);
-      if (response && !isPublic) {
-        if (!response.isVerified) {
-          setIsOpen(true);
-        }
+    if (user && !isPublic) {
+      if (!user.isVerified) {
+        setIsOpen(true);
       }
-      if (setUser) setUser(response);
-    };
-    if (userId) {
-      userDetails();
     }
-  }, [isPublic, setUser]);
+  }, [isPublic, user]);
 
   return (
     <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
@@ -104,7 +94,6 @@ const StudentWrapper = ({
           />
           <nav className={`w-full sm:mr-[3.9rem]`}>
             <AdminNav
-              isOpen={isSidenavOpen}
               toggleSidenav={toggleSidenav}
               title={title}
               remark={remark}
