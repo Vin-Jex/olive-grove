@@ -5,11 +5,7 @@ import logo from "@/public/image/logo.png";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
 import Input from "@/components/Atoms/Input";
-import {
-  Info,
-  VisibilityOffOutlined,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { Info } from "@mui/icons-material";
 import { baseUrl } from "@/components/utils/baseURL";
 
 export type loginType = {
@@ -231,8 +227,6 @@ const AdminAccess = () => {
             placeholder='Password'
             required
             className='input'
-            showIcon={VisibilityOutlined}
-            hideIcon={VisibilityOffOutlined}
           />
 
           <span className='text-subtext text-base font-medium font-roboto cursor-pointer ml-auto w-fit whitespace-nowrap'>

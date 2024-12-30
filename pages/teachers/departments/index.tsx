@@ -349,8 +349,9 @@ const Departments = () => {
         handleAction={deleteDepartment}
       />
       <TeachersWrapper
+        isPublic={true}
         title='Departments'
-        metaTitle='Olive Groove ~ Departments'
+        metaTitle='Olive Grove ~ Departments'
       >
         <div className='space-y-5 h-full'>
           {fetchDepartments.loading ? (
