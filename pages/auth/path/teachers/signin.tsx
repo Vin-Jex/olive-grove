@@ -5,11 +5,7 @@ import logo from "@/public/image/logo.png";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
 import Input from "@/components/Atoms/Input";
-import {
-  Info,
-  VisibilityOffOutlined,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { Info } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
 import useAjaxRequest, { TAxiosError, TAxiosSuccess } from "use-ajax-request";
 import axiosInstance from "@/components/utils/axiosInstance";
@@ -262,8 +258,6 @@ const LoginPath = () => {
             value={formState.password}
             onChange={handleChange}
             placeholder='Password'
-            showIcon={VisibilityOutlined}
-            hideIcon={VisibilityOffOutlined}
             className='input rounded-lg shadow-md p-3'
             required
           />
