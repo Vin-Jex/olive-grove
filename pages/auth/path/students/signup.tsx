@@ -1,25 +1,22 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import Input, { InputType } from "@/components/Atoms/Input";
+import Input from "@/components/Atoms/Input";
 import Button from "@/components/Atoms/Button";
-import {
-  Info,
-  VisibilityOffOutlined,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { Info } from "@mui/icons-material";
 import File from "@/components/Atoms/File";
 import { baseUrl } from "@/components/utils/baseURL";
 import { useRouter } from "next/router";
 import InputField from "@/components/Atoms/InputField";
 import { Alert, CircularProgress, Snackbar } from "@mui/material";
 import { fetchCourses } from "@/components/utils/course";
-import { TCourse } from "@/components/utils/types";
+import { InputType, TCourse } from "@/components/utils/types";
 import OTPInput from "@/components/Molecules/OTPInput";
 import useUserVerify from "@/components/utils/hooks/useUserVerify";
 import MultipleSelect from "@/components/Molecules/MaterialSelect";
 import FormPagination from "@/components/Molecules/FormPagination";
 import axios, { AxiosError } from "axios";
 import AuthLayout from "./layout";
+import Cookies from "js-cookie";
 
 export type SignupType = {
   firstName: string;
@@ -45,8 +42,8 @@ const StudentSignup = () => {
   const {
     otpRequestLoading,
     handleRequestOTP,
-    somethingOccured,
-    setSomethingOccured,
+    message,
+    setMessage,
     verifyOTP,
     OTPTimer,
   } = useUserVerify();
@@ -57,10 +54,10 @@ const StudentSignup = () => {
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [fetchedDept, setFetchedDept] = useState<DeptData[]>([]);
   const [availableCourse, setAvailableCourses] = useState<TCourse[]>([]);
-  const [tokens, setTokens] = useState<{
-    accessToken: string;
-    refreshToken: string;
-  } | null>(null);
+  // const [tokens, setTokens] = useState<{
+  //   accessToken: string;
+  //   refreshToken: string;
+  // } | null>(null);
   const [formState, setFormState] = useState<SignupType>({
     firstName: "",
     lastName: "",
@@ -257,14 +254,14 @@ const StudentSignup = () => {
 
       setCurrentFormIndex((c) => c + 1);
 
-      setSomethingOccured({
+      setMessage({
         success: true,
         error: false,
         message: response.data.message,
       });
     } catch (err: AxiosError | any) {
       console.error("otp error", otp);
-      setSomethingOccured({
+      setMessage({
         success: false,
         error: true,
         message: err.response.data.message,
@@ -415,7 +412,6 @@ const StudentSignup = () => {
     try {
       const response = await fetch(`${baseUrl}/student-signup`, {
         method: "POST",
-        // credentials: 'include',
         body: formData,
       });
 
@@ -428,10 +424,17 @@ const StudentSignup = () => {
       const data = await response.json();
       setCurrentFormIndex((c) => c + 1);
 
-      setTokens({
-        accessToken: data.token.accessToken,
-        refreshToken: data.token.refreshToken,
-      });
+      const accessToken = data.token.accessToken;
+      const refreshToken = data.token.refreshToken;
+      const userId = data.details.id;
+      const userRole = data.details.role;
+
+      accessToken !== undefined &&
+        Cookies.set("accessToken", accessToken, { expires: 1 });
+      refreshToken !== undefined &&
+        Cookies.set("refreshToken", refreshToken, { expires: 1 });
+      userId !== undefined && Cookies.set("userId", userId, { expires: 1 });
+      userRole !== undefined && Cookies.set("role", userRole, { expires: 1 });
       setFormError((prevState) => ({
         ...prevState,
         successError: "Student account created successfully.",
@@ -439,8 +442,6 @@ const StudentSignup = () => {
 
       // Reset the form after successful submission
       resetForm();
-
-      //I need to show the page final page that has a button with which the user can navigate to the dasboard
     } catch (error) {
       console.error("Error: ", error);
     } finally {
@@ -571,6 +572,7 @@ const StudentSignup = () => {
                 {inputFields.map((field) =>
                   field.name !== "password" ? (
                     <InputField
+                      
                       placeholder={field.label}
                       key={field.name}
                       name={field.name}
@@ -602,8 +604,6 @@ const StudentSignup = () => {
                       value={formState[field.name as keyof SignupType]}
                       onChange={handleChange}
                       placeholder='Password'
-                      showIcon={VisibilityOutlined}
-                      hideIcon={VisibilityOffOutlined}
                       required={field.required}
                       className='input rounded-lg p-3'
                     />
@@ -703,7 +703,7 @@ const StudentSignup = () => {
                     width='full'
                     onClick={(e) => {
                       e.preventDefault();
-                      handleRequestOTP("email_verification", tokens);
+                      handleRequestOTP("email_verification");
                       setCurrentFormIndex((c) => c + 1);
                     }}
                     className='mx-auto text-center'
@@ -749,7 +749,7 @@ const StudentSignup = () => {
                   disabled={isDisabled[2]}
                   onClick={async (e) => {
                     e.preventDefault();
-                    await handleEmailVerify(otp, tokens);
+                    await handleEmailVerify(otp);
                   }}
                   className='mx-auto'
                   size='md'
@@ -765,7 +765,7 @@ const StudentSignup = () => {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      handleRequestOTP("email_verification", tokens);
+                      handleRequestOTP("email_verification");
                     }}
                     className='text-primary'
                   >
@@ -817,11 +817,11 @@ const StudentSignup = () => {
         </div>
       </div>
 
-      {(somethingOccured.error || somethingOccured.success) && (
+      {(message.error || message.success) && (
         <Snackbar
-          open={somethingOccured.error || somethingOccured.success}
+          open={message.error || message.success}
           onClose={() =>
-            setSomethingOccured((err) => ({
+            setMessage((err) => ({
               ...err,
               error: false,
               success: false,
@@ -832,12 +832,10 @@ const StudentSignup = () => {
           className='!z-[999]'
         >
           <Alert
-            severity={somethingOccured.error ? "error" : "success"}
-            onClose={() =>
-              setSomethingOccured((err) => ({ ...err, error: false }))
-            }
+            severity={message.error ? "error" : "success"}
+            onClose={() => setMessage((err) => ({ ...err, error: false }))}
           >
-            {somethingOccured.message}
+            {message.message}
           </Alert>
         </Snackbar>
       )}
