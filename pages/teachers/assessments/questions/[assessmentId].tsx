@@ -64,14 +64,15 @@ const EachAssessment = () => {
 
   return (
     <TeachersWrapper
-      title="Assessments"
-      metaTitle="Olive Groove ~ Create or Modify Assessments"
+      isPublic={false}
+      title='Assessments'
+      metaTitle='Olive Grove ~ Create or Modify Assessments'
     >
-      <section className="w-full flex flex-col gap-4 items-center h-full">
-        <div className="flex justify-between gap-4 w-full">
+      <section className='w-full flex flex-col gap-4 items-center h-full'>
+        <div className='flex justify-between gap-4 w-full'>
           {/* Previous page button */}
           <div
-            className="w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full "
+            className='w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full '
             onClick={() =>
               router.push(
                 `/${
@@ -84,12 +85,12 @@ const EachAssessment = () => {
               )
             }
           >
-            <i className="fas fa-arrow-left text-greyed hover:text-dark"></i>
+            <i className='fas fa-arrow-left text-greyed hover:text-dark'></i>
           </div>
           {/* Preview */}
           {!errorFetchingAssessment && !loadingAssessment && (
-            <Button width="fit" className="flex gap-1" size="xs" color="blue">
-              <i className="fas fa-eye"></i> <span>Preview</span>
+            <Button width='fit' className='flex gap-1' size='xs' color='blue'>
+              <i className='fas fa-eye'></i> <span>Preview</span>
             </Button>
           )}
         </div>

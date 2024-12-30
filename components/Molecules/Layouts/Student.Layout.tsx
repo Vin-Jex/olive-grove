@@ -1,36 +1,40 @@
-import React, { ReactNode, useState } from 'react';
-import SideNav from '../Navs/SideNav';
-import AdminNav from '../Navs/AdminNav';
-import { useSidebarContext } from '@/contexts/SidebarContext';
-import Meta from '@/components/Atoms/Meta';
-import LogoutWarningModal from '../Modal/LogoutWarningModal';
-import { useRouter } from 'next/router';
-import CustomCursor from '../CustomCursor';
-import { handleLogout } from './Admin.Layout';
+import React, { ReactNode, useEffect, useState } from "react";
+import SideNav from "../Navs/SideNav";
+import AdminNav from "../Navs/AdminNav";
+import Meta from "@/components/Atoms/Meta";
+import LogoutWarningModal from "../Modal/LogoutWarningModal";
+import { useRouter } from "next/router";
+import { handleLogout } from "./Admin.Layout";
+import { TUser } from "@/components/utils/types";
+import VerificationModal from "../Modal/VerificationModal";
+import { useUser } from "@/contexts/UserContext";
 
 interface AdminWrapperProps {
   children: ReactNode;
-  title?: string;
-  firstTitle?: string;
-  remark?: string;
+  title: string;
+  isPublic?: boolean;
   metaTitle?: string;
   description?: string;
+  remark?: string;
+  setUser?: React.Dispatch<React.SetStateAction<TUser | null>>;
 }
 
 const StudentWrapper = ({
   title,
-  firstTitle,
   remark,
   metaTitle,
   description,
+  isPublic = true,
+  setUser,
   children,
 }: AdminWrapperProps) => {
-  // const { active } = useSidebarContext();
   const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const { user } = useUser();
 
   const toggleSidenav = () => {
     setIsSidenavOpen(!isSidenavOpen);
@@ -40,11 +44,21 @@ const StudentWrapper = ({
     setWarningModal(!warningModal);
   };
 
+  const handleVerifyOpen = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (user && !isPublic) {
+      if (!user.isVerified) {
+        setIsOpen(true);
+      }
+    }
+  }, [isPublic, user]);
+
   return (
     <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
-      {/*<customcursor />*/}
-
-      <Meta title={metaTitle || 'Dashboard'} description={description} />
+      <Meta title={metaTitle || "Dashboard"} description={description} />
       <LogoutWarningModal
         handleModalClose={handleWarning}
         loading={isLogOutLoading}
@@ -53,35 +67,35 @@ const StudentWrapper = ({
           handleLogout().then(() => {
             setIsLogOutLoading(false);
             handleWarning();
-            router.push('/auth/path/students/login/');
+            router.push("/auth/path/students/signin");
           });
         }}
         modalOpen={warningModal}
       />
 
+      <VerificationModal
+        modalOpen={isOpen}
+        handleModalClose={handleVerifyOpen}
+      />
+
       <aside
         className={`absolute left-0 top-0 h-screen overflow-auto w-[16rem] z-30 !bg-white lg:block transition-transform transform ${
-          isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
+          isSidenavOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
       <div className='w-full'>
-        <div
-          className={`${
-            active ? '' : ''
-          } absolute right-0 top-0 w-full flex z-30 lg:z-20`}
-        >
+        <div className='absolute right-0 top-0 w-full flex z-30 lg:z-20'>
           <div
             className={`${
-              active ? 'w-0 lg:w-[22rem]' : 'w-0 lg:w-[98px]'
+              active ? "w-0 lg:w-[22rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
-          ></div>
+          />
           <nav className={`w-full sm:mr-[3.9rem]`}>
             <AdminNav
-              isOpen={isSidenavOpen}
               toggleSidenav={toggleSidenav}
-              firstTitle={firstTitle}
+              title={title}
               remark={remark}
             />
           </nav>
@@ -89,7 +103,7 @@ const StudentWrapper = ({
         <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
           <div
             className={`${
-              active ? 'w-0 lg:w-[18rem]' : 'w-0 lg:w-[98px]'
+              active ? "w-0 lg:w-[18rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
           <div className='min-h-screen w-full z-10'>{children}</div>

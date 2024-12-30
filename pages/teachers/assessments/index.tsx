@@ -667,8 +667,9 @@ const Assessments = () => {
         }
       />
       <TeachersWrapper
+        isPublic={false}
         title='Assessments'
-        metaTitle='Olive Groove ~ Assessments'
+        metaTitle='Olive Grove ~ Assessments'
       >
         <div className='space-y-5 h-full'>
           <>
@@ -745,17 +746,17 @@ const Assessments = () => {
                     <div key={index} className='mt-4 w-full space-y-2'>
                       <TeacherCard
                         academicWeekDate={
-                          (assessment.academicWeek as TAcademicWeek).weekNumber
+                          (assessment.academicWeek as TAcademicWeek)?.weekNumber
                         }
                         key={index}
                         type='assessment'
-                        teacher={assessment.teacher}
+                        teacher={assessment?.teacher}
                         assessmentType={
-                          (assessment.assessmentType as TAssessmentType).name
+                          (assessment?.assessmentType as TAssessmentType)?.name
                         }
                         timeline={assessment.dueDate}
-                        assessmenTClass={(assessment.class as TDepartment).name}
-                        subject={(assessment.subject as TCourse)?.title || ""}
+                        assessmenTClass={(assessment?.class as TDepartment)?.name}
+                        subject={(assessment?.subject as TCourse)?.title || ""}
                         actionClick={() =>
                           toogleModalEdit({
                             ...assessment,

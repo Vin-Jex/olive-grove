@@ -1,20 +1,25 @@
-import { Info } from '@mui/icons-material';
-import React from 'react';
-import { ChangeEvent } from 'react';
-import Input, { InputType } from './Input';
+import { Info } from "@mui/icons-material";
+import React, { ChangeEvent, InputHTMLAttributes } from "react";
+import Input from "./Input";
+import Select from "./Select";
+import { InputType, TSelectOptions } from "../utils/types";
 
-interface InputFieldProps {
+interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   name: string;
   type: InputType;
   pattern?: string;
   className?: string;
   title?: string;
+  label?: string;
   value: string | number | readonly string[] | undefined;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  placeholder: string;
+  onChange: (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  placeholder?: string;
   required?: boolean;
   disabled?: boolean;
   error: string;
+  options?: TSelectOptions;
+  inputSize?: "xs" | "sm";
+  reduceWidth?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -22,6 +27,7 @@ const InputField: React.FC<InputFieldProps> = ({
   type,
   pattern,
   title,
+  label,
   value,
   onChange,
   className,
@@ -29,28 +35,55 @@ const InputField: React.FC<InputFieldProps> = ({
   required,
   error,
   disabled,
+  options,
+  inputSize,
+  reduceWidth,
+  ...inputProps
 }) => (
-  <label htmlFor={name} className='w-full flex flex-col gap-1'>
+  <div className='w-full flex flex-col gap-1'>
     {error && (
       <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-[#F6CE46]'>
-        <Info sx={{ fontSize: '1.1rem' }} />
+        <Info sx={{ fontSize: "1.1rem" }} />
         {error}
       </span>
     )}
-    <Input
-      id={name}
-      name={name}
-      disabled={disabled}
-      type={type}
-      pattern={pattern}
-      title={title}
-      className={`input !py-3 mx-auto ${className}`}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      required={required}
-    />
-  </label>
+    {label && (
+      <label
+        htmlFor={name}
+        className='text-sm font-roboto font-medium text-subtext'
+      >
+        {label}
+      </label>
+    )}
+    {type === "select" && options ? (
+      <Select
+        name={name}
+        options={options}
+        required={required}
+        value={value as string}
+        onChange={onChange as (e: ChangeEvent<HTMLSelectElement>) => void}
+        placeholder={placeholder}
+        className={className}
+        reduceWidth={reduceWidth}
+        inputSize={inputSize}
+      />
+    ) : (
+      <Input
+        id={name}
+        name={name}
+        disabled={disabled}
+        type={type}
+        pattern={pattern}
+        title={title}
+        className={`input !py-3 mx-auto ${className}`}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        required={required}
+        {...inputProps}
+      />
+    )}
+  </div>
 );
 
 export default InputField;

@@ -24,7 +24,7 @@ import Cookies from "js-cookie";
 
 const Subject: FC = () => {
   const router = useRouter();
-  const { subjectid } = useMemo(() => router.query, [router.query]);
+  const { courseId } = useMemo(() => router.query, [router.query]);
   const [userRole, setUserRole] = useState<string>();
   const [showSideBar, setShowSideBar] = useState(false);
   const [classes, seTClasses] = useState<
@@ -175,7 +175,7 @@ const Subject: FC = () => {
         error: undefined,
       });
 
-      router.push("/teachers/subjects");
+      router.push("/teachers/courses");
 
       return true;
     } catch (error: any) {
@@ -186,7 +186,7 @@ const Subject: FC = () => {
           loading: false,
           error: "Course not found",
         });
-        router.push("/teachers/subjects");
+        router.push("/teachers/courses");
         return false;
       }
 
@@ -286,9 +286,9 @@ const Subject: FC = () => {
   };
 
   useEffect(() => {
-    if (subjectid) getCourse((subjectid as string) || "nil");
+    if (courseId) getCourse((courseId as string) || "nil");
     geTClasses();
-  }, [getCourse, subjectid]);
+  }, [getCourse, courseId]);
 
   useEffect(() => {
     const role = Cookies.get("role");
@@ -319,9 +319,9 @@ const Subject: FC = () => {
 
       <TopicContextProvider course={course.data}>
         <TeachersWrapper
+          isPublic={false}
           title='Subjects'
-          metaTitle='Olive Groove ~ Subjects'
-          className='relative'
+          metaTitle='Olive Grove ~ Subjects'
         >
           <div className='space-y-5 h-full relative'>
             {course.loading ? (
@@ -353,7 +353,7 @@ const Subject: FC = () => {
                               : userRole === "student"
                               ? "students"
                               : "admin"
-                          }/subjects`
+                          }/courses`
                         )
                       }
                     >
@@ -390,12 +390,12 @@ const Subject: FC = () => {
                 <div className='flex items-stretch gap-4'>
                   {/* SIDEBAR */}
                   <div className='flex-none hidden xl:block'>
-                    <SideBar courseId={(subjectid as string) || ""} />
+                    <SideBar courseId={(courseId as string) || ""} />
                   </div>
                   {/* MOBILE SIDEBAR */}
                   <AnimatePresence>
                     {showSideBar && (
-                      <MobileSideBar subjectid={(subjectid as string) || ""} />
+                      <MobileSideBar courseId={(courseId as string) || ""} />
                     )}
                   </AnimatePresence>
                   {/* COURSE */}

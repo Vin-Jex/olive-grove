@@ -1,15 +1,19 @@
 import React from "react";
 import { subjectData } from "../lectures";
 import withAuth from "@/components/Molecules/WithAuth";
-import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
 import AssessmentCard from "@/components/Molecules/Card/AssessmentCard";
+import AdminsWrapper from "@/components/Molecules/Layouts/Admin.Layout";
 
 const Assessments = () => {
   const router = useRouter();
   return (
-    <TeachersWrapper title='Assessments' metaTitle='Olive Groove ~ Assessments'>
+    <AdminsWrapper
+      isPublic={false}
+      title='Assessments'
+      metaTitle='Olive Grove ~ Assessments'
+    >
       <div className='p-12 space-y-5'>
         {/* Title */}
         <div className='flex items-center justify-between'>
@@ -63,8 +67,8 @@ const Assessments = () => {
           </div>
         ))}
       </div>
-    </TeachersWrapper>
+    </AdminsWrapper>
   );
 };
 
-export default withAuth("Teacher", Assessments);
+export default withAuth("Admin", Assessments);

@@ -2,7 +2,6 @@ import React, { ReactNode } from 'react';
 import Meta from '../Atoms/Meta';
 import Header from './Header';
 import Footer from './Footer';
-import CustomCursor from './CustomCursor';
 
 interface LayoutProps {
   title: string;

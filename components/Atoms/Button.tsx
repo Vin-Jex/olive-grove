@@ -14,7 +14,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 const Button: React.FC<ButtonProps> = ({
   children,
-  size = "md",
+  size = "sm",
   color = "blue",
   width = "auto",
   className,
@@ -44,7 +44,7 @@ const Button: React.FC<ButtonProps> = ({
   }[width];
 
   const colorClassName = {
-    blue: "bg-primary text-[#fdfdfd] hover:bg-[#28a1b0] transition duration-200 ease-in-out",
+    blue: "bg-primary text-[#fdfdfd] hover:bg-primary/90 transition duration-200 ease-in-out",
     outline:
       "bg-transparent border border-primary hover:border-[transparent] text-primary hover:bg-primary hover:text-white transition duration-200 ease-in-out",
     red: "bg-red-500 text-white hover:bg-red-600 transition duration-200 ease-in-out",

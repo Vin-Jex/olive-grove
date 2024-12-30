@@ -1,19 +1,19 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
-import { useSidebarContext } from "@/contexts/SidebarContext";
 import Meta from "@/components/Atoms/Meta";
 import LogoutWarningModal from "../Modal/LogoutWarningModal";
 import { useRouter } from "next/router";
-import CustomCursor from "../CustomCursor";
 import { handleLogout } from "./Admin.Layout";
+import VerificationModal from "../Modal/VerificationModal";
+import { useUser } from "@/contexts/UserContext";
 
 interface AdminWrapperProps {
   children: ReactNode;
   title: string;
+  isPublic: boolean;
   metaTitle?: string;
   description?: string;
-  className?: string;
 }
 
 const TeachersWrapper = ({
@@ -21,13 +21,17 @@ const TeachersWrapper = ({
   metaTitle,
   description,
   children,
-  className,
+  isPublic = true,
 }: AdminWrapperProps) => {
-  // const { active } = useSidebarContext();
-  const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const { user } = useUser();
+
+  const handleVerifyOpen = () => {
+    setIsOpen((prev) => !prev);
+  };
 
   const toggleSidenav = () => {
     setIsSidenavOpen(!isSidenavOpen);
@@ -37,20 +41,30 @@ const TeachersWrapper = ({
     setWarningModal(!warningModal);
   };
 
+  useEffect(() => {
+    if (user && !isPublic) {
+      if (!user.isVerified) {
+        setIsOpen(true);
+      }
+    }
+  }, [isPublic, user]);
+
   return (
     <>
-      <div className="relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row">
-        {/*<customcursor />*/}
-
+      <div className='relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row'>
         <Meta title={metaTitle || "Dashboard"} description={description} />
         <LogoutWarningModal
           handleModalClose={handleWarning}
           handleConfirm={() => {
             handleLogout().then(() =>
-              router.push("/auth/path/teachers/login/")
+              router.push("/auth/path/teachers/signin")
             );
           }}
           modalOpen={warningModal}
+        />
+        <VerificationModal
+          modalOpen={isOpen}
+          handleModalClose={handleVerifyOpen}
         />
 
         <aside
@@ -60,47 +74,13 @@ const TeachersWrapper = ({
         >
           <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
         </aside>
-        <div className="flex-1 w-full h-full overflow-y-auto relative flex flex-col">
-          {/* <div
-            className={`${
-              active ? "" : ""
-            } absolute right-0 top-0 w-full flex z-40 lg:z-20 bg-milky`}
-          >
-            <div
-              className={`${
-                active ? "w-0 lg:w-[22rem]" : "w-0 lg:w-[98px]"
-              } transition-all ease-in-out duration-500`}
-            ></div>
+        <div className='flex-1 w-full h-full overflow-y-auto relative flex flex-col'>
+          <div className='w-full flex-0 flex z-40 lg:z-20 sticky top-0 right-0 bg-milky mb-2'>
             <nav className={`w-full mr-[2rem] ml-4`}>
-              <AdminNav
-                isOpen={isSidenavOpen}
-                toggleSidenav={toggleSidenav}
-                title={title}
-              />
+              <AdminNav toggleSidenav={toggleSidenav} title={title} />
             </nav>
           </div>
-          <main className="w-full h-full max-h-[calc(100dvh-5rem)] overflow-y-auto overflow-x-hidden flex mt-[6rem] pt-5">
-            <div
-              className={`${
-                active ? "w-0 lg:w-[20rem]" : "w-0 lg:w-[98px]"
-              } transition-all ease-in-out duration-500`}
-            ></div>
-            <div className="min-h-screen w-full z-10 px-[2rem]">{children}</div>
-          </main> */}
-          <div
-            className={`${
-              active ? "" : ""
-            } w-full flex-0 flex z-40 lg:z-20 sticky top-0 right-0 bg-milky mb-2`}
-          >
-            <nav className={`w-full mr-[2rem] ml-4`}>
-              <AdminNav
-                isOpen={isSidenavOpen}
-                toggleSidenav={toggleSidenav}
-                title={title}
-              />
-            </nav>
-          </div>
-          <main className="w-full overflow-x-hidden px-4 flex-1">
+          <main className='w-full overflow-x-hidden px-4 flex-1'>
             {children}
           </main>
         </div>

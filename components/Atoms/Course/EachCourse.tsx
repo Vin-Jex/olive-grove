@@ -54,7 +54,7 @@ enum CONTAINER_STYLES {
 //   return (
 //     <div
 //       className={`flex rounded-lg overflow-hidden ${card_arrangement.container_arrangement} items-start  border border-[#1E1E1E33] cursor-pointer transition hover:scale-105`}
-//       onClick={() => router.push(`/teachers/subjects/${course._id}`)}
+//       onClick={() => router.push(`/teachers/courses/${course._id}`)}
 //       ref={container_ref}
 //     >
 //       {/* IMAGE */}
@@ -239,7 +239,7 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
         error: undefined,
       });
 
-      router.push("/teachers/subjects");
+      router.push("/teachers/courses");
 
       return true;
     } catch (error: any) {
@@ -250,7 +250,7 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
           loading: false,
           error: "Course not found",
         });
-        router.push("/teachers/subjects");
+        router.push("/teachers/courses");
         return false;
       }
 
@@ -333,27 +333,27 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
       {/* IMAGE */}
       <div
         className={`w-full flex-grow h-[175px] rounded-lg overflow-hidden cursor-pointer relative`}
-        onClick={() => router.push(`/teachers/subjects/${course._id}`)}
+        onClick={() => router.push(`/teachers/courses/${course._id}`)}
       >
         {/* Chapter badge */}
-        <div className="flex items-center gap-2 text-[#1E1E1E99] absolute top-2 left-2 bg-white rounded-full px-1.5 py-1 text-2xs">
+        <div className='flex items-center gap-2 text-[#1E1E1E99] absolute top-2 left-2 bg-white rounded-full px-1.5 py-1 text-2xs'>
           <svg
-            width="8"
-            height="12"
-            viewBox="0 0 14 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+            width='8'
+            height='12'
+            viewBox='0 0 14 16'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
           >
             <path
-              d="M13 8V11.75C13 13.1645 13 13.871 12.5605 14.3105C12.121 14.75 11.4145 14.75 10 14.75H2.875C2.37772 14.75 1.90081 14.5525 1.54917 14.2008C1.19754 13.8492 1 13.3723 1 12.875M13 8C13 9.4145 13 10.121 12.5605 10.5605C12.121 11 11.4145 11 10 11H2.875C2.37772 11 1.90081 11.1975 1.54917 11.5492C1.19754 11.9008 1 12.3777 1 12.875M13 8V4.25C13 2.8355 13 2.129 12.5605 1.6895C12.121 1.25 11.4145 1.25 10 1.25H4C2.5855 1.25 1.879 1.25 1.4395 1.6895C1 2.129 1 2.8355 1 4.25V12.875"
-              stroke="#B69302"
-              strokeWidth="1.5"
+              d='M13 8V11.75C13 13.1645 13 13.871 12.5605 14.3105C12.121 14.75 11.4145 14.75 10 14.75H2.875C2.37772 14.75 1.90081 14.5525 1.54917 14.2008C1.19754 13.8492 1 13.3723 1 12.875M13 8C13 9.4145 13 10.121 12.5605 10.5605C12.121 11 11.4145 11 10 11H2.875C2.37772 11 1.90081 11.1975 1.54917 11.5492C1.19754 11.9008 1 12.3777 1 12.875M13 8V4.25C13 2.8355 13 2.129 12.5605 1.6895C12.121 1.25 11.4145 1.25 10 1.25H4C2.5855 1.25 1.879 1.25 1.4395 1.6895C1 2.129 1 2.8355 1 4.25V12.875'
+              stroke='#B69302'
+              strokeWidth='1.5'
             />
             <path
-              d="M4.75 5H9.25"
-              stroke="#B69302"
-              strokeWidth="1.5"
-              strokeLinecap="round"
+              d='M4.75 5H9.25'
+              stroke='#B69302'
+              strokeWidth='1.5'
+              strokeLinecap='round'
             />
           </svg>
 
@@ -368,22 +368,22 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
           alt={course.title}
         />
       </div>
-      <div className="flex flex-col gap-2">
+      <div className='flex flex-col gap-2'>
         {/* BADGES */}
-        <div className="flex justify-between gap-4 items-center">
+        <div className='flex justify-between gap-4 items-center'>
           {/* Class name */}
-          <span className="rounded-full bg-[#B69302]/10 py-1 px-3.5 text-2xs">
+          <span className='rounded-full bg-[#B69302]/10 py-1 px-3.5 text-2xs'>
             {course.department?.name}
           </span>
           {/* More icon container */}
-          <div ref={action_ref} className="relative p-1 cursor-pointer">
+          <div ref={action_ref} className='relative p-1 cursor-pointer'>
             {/* More icon */}
-            <i className="fa-solid fa-ellipsis-vertical cursor-pointer"></i>{" "}
+            <i className='fa-solid fa-ellipsis-vertical cursor-pointer'></i>{" "}
             <AnimatePresence>
               {display_actions && (
                 <>
                   <SideDialog
-                    className="-left-[151px]"
+                    className='-left-[151px]'
                     links={[
                       {
                         icon: "fas fa-pencil",
@@ -405,22 +405,22 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
           </div>
         </div>
         {/* TITLE */}
-        <div className="text-lg font-bold">
+        <div className='text-lg font-bold'>
           {course.title.length > 30
             ? `${course.title.slice(0, 30)}...`
             : course.title}
         </div>
         {/* DESCRIPTION */}
         <div
-          className="font-roboto text-sm !leading-5 text-[#1E1E1E99]"
+          className='font-roboto text-sm !leading-5 text-[#1E1E1E99]'
           dangerouslySetInnerHTML={{ __html: description || "" }}
         ></div>
         {/* BUTTON */}
         <Button
-          size="xs"
-          color="blue"
-          onClick={() => router.push(`/teachers/subjects/${course._id}`)}
-          width="full"
+          size='xs'
+          color='blue'
+          onClick={() => router.push(`/teachers/courses/${course._id}`)}
+          width='full'
         >
           View Course
         </Button>

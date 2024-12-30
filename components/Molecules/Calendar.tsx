@@ -1,19 +1,19 @@
-import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import React, { use, useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import React, { useState } from "react";
 
 const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 const Calendar = () => {
@@ -24,10 +24,6 @@ const Calendar = () => {
   const [lastDayOfCurrentMonth, setLastDayOfCurrentMonth] = useState(
     new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
   );
-  useEffect(() => {
-    console.log(currentDate.toLocaleString(), 'currentDate');
-    // console.log(currentMontFirstDay.toLocaleString(), "currentMontFirstDay");
-  }, [currentDate]);
 
   function handlePreviousMonth() {
     const previousMonth = new Date(
@@ -98,7 +94,7 @@ const Calendar = () => {
             <div
               key={i}
               className={`${
-                markToday(currentDate, i) && 'bg-[#3F51B5] text-white '
+                markToday(currentDate, i) && "bg-[#3F51B5] text-white "
               }  h-[35px] relative pb-2 pt-2 cursor-pointer  w-[35px] flex items-center justify-center px-2 rounded-full`}
             >
               {i < 7 && i < currentMontFirstDay.getDay() ? (
