@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Class, ClassOutlined, Close, Logout, Menu } from "@mui/icons-material";
+import { Logout } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,7 +20,6 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
   isOpen,
   handleOpen,
 }) => {
-  const { active, setActive } = useSidebarContext();
   const router = useRouter();
   const [activeClass, setActiveClass] = useState<string>(
     router.pathname.split("/")[1]
@@ -34,27 +33,10 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
     setIsClient(true);
   }, []);
 
-  const toggleClass = () => {
-    setActive(!active);
-  };
-
   useEffect(() => {
     const baseRoute = router.pathname.split("/")[2];
     setActiveClass(baseRoute);
   }, [router.pathname]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setActive(true);
-      }
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [setActive]);
 
   return (
     <div
@@ -70,36 +52,8 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             }}
             src={Logo}
             alt='Logo'
-            className={`w-14 h-14 ml-4 cursor-pointer object-cover transition-all ease-in-out duration-500 ${
-              // active ? 'flex' : 'hidden'
-              `flex`
-            }`}
+            className='w-14 h-14 ml-4 cursor-pointer object-cover transition-all ease-in-out duration-500 flex'
           />
-
-          {/* {isOpen && (
-            <Close
-              sx={{ color: '#fff', cursor: 'pointer' }}
-              id='btn-bars'
-              onClick={handleOpen}
-              className='transition-all ease-in-out duration-500 hidden lg:flex'
-            />
-          )} */}
-
-          {/* {active ? (
-            <Close
-              sx={{ color: '#fff', cursor: 'pointer' }}
-              id='btn-bars'
-              onClick={toggleClass}
-              className='transition-all ease-in-out duration-500 hidden lg:flex'
-            />
-          ) : (
-            <Menu
-              onClick={toggleClass}
-              id='btn-bars'
-              sx={{ fontSize: '1rem', cursor: 'pointer' }}
-              className='transition-all ease-in-out duration-500  hidden lg:flex'
-            />
-          )} */}
         </div>
 
         <ul className='nav_list space-y-3.5 md:space-y-6 flex-1'>
@@ -486,73 +440,6 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role !== "Teacher" && (
-            <NavItem
-              href={`${
-                isClient && role === "Student"
-                  ? "/students"
-                  : role === "Admin"
-                  ? "/admins"
-                  : ""
-              }/profile`}
-              activeClass={activeClass}
-              setActiveClass={setActiveClass}
-              activeIcon={
-                <svg
-                  width='20'
-                  height='20'
-                  viewBox='0 0 20 20'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'
-                >
-                  <path
-                    d='M11 11C13.2091 11 15 9.20914 15 7C15 4.79086 13.2091 3 11 3C8.79086 3 7 4.79086 7 7C7 9.20914 8.79086 11 11 11Z'
-                    stroke='white'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                  <path
-                    d='M17 17C17 15.4087 16.3679 13.8826 15.2426 12.7574C14.1174 11.6321 12.5913 11 11 11C9.4087 11 7.88258 11.6321 6.75736 12.7574C5.63214 13.8826 5 15.4087 5 17'
-                    stroke='white'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-              }
-              label='profile'
-              icon={
-                <svg
-                  width='20'
-                  height='20'
-                  viewBox='0 0 20 20'
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'
-                >
-                  <path
-                    d='M11 11C13.2091 11 15 9.20914 15 7C15 4.79086 13.2091 3 11 3C8.79086 3 7 4.79086 7 7C7 9.20914 8.79086 11 11 11Z'
-                    stroke='#1E1E1E'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                  <path
-                    d='M17 17C17 15.4087 16.3679 13.8826 15.2426 12.7574C14.1174 11.6321 12.5913 11 11 11C9.4087 11 7.88258 11.6321 6.75736 12.7574C5.63214 13.8826 5 15.4087 5 17'
-                    stroke='#1E1E1E'
-                    strokeOpacity='0.6'
-                    strokeWidth='1.5'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                  />
-                </svg>
-              }
-            />
-          )}
-
           {isClient && role !== "Student" && (
             <NavItem
               href={`${
@@ -561,7 +448,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                   : role === "Admin"
                   ? "/admins"
                   : ""
-              }/subjects`}
+              }/courses`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
               activeIcon={
@@ -579,7 +466,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                   />
                 </svg>
               }
-              label='subjects'
+              label='Courses'
               icon={
                 <svg
                   width='16'
@@ -597,6 +484,71 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
               }
             />
           )}
+
+          <NavItem
+            href={`${
+              isClient && role === "Teacher"
+                ? "/teachers"
+                : role === "Student"
+                ? "/students"
+                : role === "Admin"
+                ? "/admins"
+                : ""
+            }/profile`}
+            activeClass={activeClass}
+            setActiveClass={setActiveClass}
+            activeIcon={
+              <svg
+                width='20'
+                height='20'
+                viewBox='0 0 20 20'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <path
+                  d='M11 11C13.2091 11 15 9.20914 15 7C15 4.79086 13.2091 3 11 3C8.79086 3 7 4.79086 7 7C7 9.20914 8.79086 11 11 11Z'
+                  stroke='#F8F8F8'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+                <path
+                  d='M17 17C17 15.4087 16.3679 13.8826 15.2426 12.7574C14.1174 11.6321 12.5913 11 11 11C9.4087 11 7.88258 11.6321 6.75736 12.7574C5.63214 13.8826 5 15.4087 5 17'
+                  stroke='#F8F8F8'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+              </svg>
+            }
+            label='profile'
+            icon={
+              <svg
+                width='20'
+                height='20'
+                viewBox='0 0 20 20'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <path
+                  d='M11 11C13.2091 11 15 9.20914 15 7C15 4.79086 13.2091 3 11 3C8.79086 3 7 4.79086 7 7C7 9.20914 8.79086 11 11 11Z'
+                  stroke='#1E1E1E'
+                  strokeOpacity='0.6'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+                <path
+                  d='M17 17C17 15.4087 16.3679 13.8826 15.2426 12.7574C14.1174 11.6321 12.5913 11 11 11C9.4087 11 7.88258 11.6321 6.75736 12.7574C5.63214 13.8826 5 15.4087 5 17'
+                  stroke='#1E1E1E'
+                  strokeOpacity='0.6'
+                  strokeWidth='1.5'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                />
+              </svg>
+            }
+          />
         </ul>
 
         <div className='dashboard_logout'>
