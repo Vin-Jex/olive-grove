@@ -13,6 +13,7 @@ import { TLoginResponse } from "@/components/utils/types";
 import Cookies from "js-cookie";
 import { useAuth } from "@/contexts/AuthContext";
 import { initDB } from "@/components/utils/indexDB";
+import toast from "react-hot-toast";
 
 export type loginType = {
   teacherID: string;
@@ -149,18 +150,13 @@ const LoginPath = () => {
     userRole !== undefined && Cookies.set("role", userRole, { expires: 1 });
     Cookies.set("userDetails", JSON.stringify(data.details), { expires: 1 });
 
-    setFormError((prevState) => ({
-      ...prevState,
-      successError: "Teacher successfully logged in.",
-    }));
+    toast.success(
+      "Welcome back, Instructor! You're all set to make a difference today!"
+    );
 
     resetForm();
-
     reCheckUser();
-
-    setTimeout(() => {
-      router.push("/");
-    }, 500);
+    router.push("/");
   };
 
   const handleErrorLogin: TAxiosError<any> = (res) => {

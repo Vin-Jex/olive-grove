@@ -182,12 +182,10 @@ const Profile = () => {
   };
 
   const handleProfileEdit = async (event: FormEvent<HTMLFormElement>) => {
-    const cacheKey = `profileInfo_${role}_${user?.id}`;
     event.preventDefault();
     const formData = new FormData();
 
     Object.entries(formState).forEach(([key, value]) => {
-      console.log(key, value, "key value");
       if (key !== "password" && key !== "otp" && key !== "username") {
         formData.append(key, value);
       }
@@ -202,7 +200,6 @@ const Profile = () => {
       );
 
       const data = await response.data;
-      localStorage.removeItem(cacheKey);
       fetchProfile();
       setFormError((prevState) => ({
         ...prevState,
@@ -217,16 +214,12 @@ const Profile = () => {
         }));
       }, 5000);
     } catch (error: AxiosError | any) {
-      console.log(error, "axios error");
       const data = error.response.data;
-      // handleErrors(data);
       setMessage((err) => ({
         ...err,
         error: true,
         message: data.message,
       }));
-    } finally {
-      // setIsDisabled(true);
     }
   };
 
@@ -246,9 +239,7 @@ const Profile = () => {
       const response = await axiosInstance.post(
         `${baseUrl}/password/change`,
         formData
-      ); //* simulate endpoint for password update
-
-      // handleErrors(data);
+      );
 
       //log the user out on successfull password change
       handleLogout().then(() => {
@@ -273,71 +264,37 @@ const Profile = () => {
   };
 
   const fetchProfile = useCallback(async () => {
-    const cacheKey = `profileInfo_${role}_${user?.id}`;
+    try {
+      const response = await axiosInstance.get(`${baseUrl}/student`);
 
-    const cachedData = localStorage.getItem(cacheKey);
-    if (cachedData) {
-      //removed the timestamp
-      const { data } = JSON.parse(cachedData);
-
+      const data = response.data;
       setFormState({
         profileImage: data.profileImage,
         firstName: data.firstName,
         lastName: data.lastName,
         middleName: data.middleName,
         department: data.department.name,
-        dob: formatDate(data.dob),
         academicStatus: data.department.category,
+        dob: formatDate(data.dob),
         email: data.email,
         username: data.username,
         newPassword: "",
         confirmPassword: "",
         otp: "",
       });
-      setProfileImage(data.profileImage);
-      setStudentName(data.firstName + " " + data.lastName);
-      return;
-    }
+      setProfileImage(data?.profileImage);
 
-    try {
-      const response = await axiosInstance.get(`${baseUrl}/student`);
-
-      const json = response.data;
-      setFormState({
-        profileImage: json.profileImage,
-        firstName: json.firstName,
-        lastName: json.lastName,
-        middleName: json.middleName,
-        department: json.department.name,
-        academicStatus: json.department.category,
-        dob: formatDate(json.dob),
-        email: json.email,
-        username: json.username,
-        newPassword: "",
-        confirmPassword: "",
-        otp: "",
-      });
-      setProfileImage(json.profileImage);
-
-      setStudentName(json.firstName + " " + json.lastName);
-
-      localStorage.setItem(
-        cacheKey,
-        JSON.stringify({
-          data: json,
-        })
-      );
+      setStudentName(data?.firstName + " " + data?.lastName);
     } catch (err: AxiosError | any) {
-      //how to display error.
       if (err.message === "Network Error") console.log("network error");
       if (
-        err.response.data.message ===
+        err.response?.data?.message ===
         "Your account is not verified. Please check your email for the verification code."
       )
         setEmailVerifyModal(true);
       setProfileError("Error occured in fetching user profile");
     }
-  }, [user?.id, role]);
+  }, []);
 
   useEffect(() => {
     if (user) fetchProfile();
@@ -348,7 +305,6 @@ const Profile = () => {
       handleProfileEdit(event);
     }
     setIsDisabled(false);
-    // setIsDisabled;
   };
 
   return (
@@ -602,9 +558,7 @@ const Profile = () => {
         >
           <Alert
             severity={message.error ? "error" : "success"}
-            onClose={() =>
-              setMessage((err) => ({ ...err, error: false }))
-            }
+            onClose={() => setMessage((err) => ({ ...err, error: false }))}
           >
             {message.message}
           </Alert>

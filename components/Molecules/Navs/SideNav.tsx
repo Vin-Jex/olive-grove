@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/public/image/logo.png";
-import { useSidebarContext } from "@/contexts/SidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 
 type NavItemProps = {
@@ -466,7 +465,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                   />
                 </svg>
               }
-              label='Courses'
+              label='courses'
               icon={
                 <svg
                   width='16'

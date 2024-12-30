@@ -112,7 +112,7 @@ export const TopicDetails: FC<{
   const fetchNavigate = useCallback(async () => {
     const contentIds = getContentIds(course!);
     setContentIds(contentIds);
-  }, []);
+  }, [course, getContentIds]);
 
   function handlePreviousTab() {
     if (topicDetails.topic) {
