@@ -295,3 +295,27 @@ export type TWarningModalProps = {
   handleModalClose: () => void;
   handleConfirm?: () => void;
 };
+
+export type InputType =
+  | "button"
+  | "text"
+  | "checkbox"
+  | "color"
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "file"
+  | "hidden"
+  | "image"
+  | "month"
+  | "number"
+  | "password"
+  | "radio"
+  | "reset"
+  | "search"
+  | "submit"
+  | "tel"
+  | "time"
+  | "week"
+  | "url"
+  | "select";
