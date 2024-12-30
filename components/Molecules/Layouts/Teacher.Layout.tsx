@@ -4,11 +4,9 @@ import AdminNav from "../Navs/AdminNav";
 import Meta from "@/components/Atoms/Meta";
 import LogoutWarningModal from "../Modal/LogoutWarningModal";
 import { useRouter } from "next/router";
-import Cookies from "js-cookie";
 import { handleLogout } from "./Admin.Layout";
-import { getUserFromDB } from "@/components/utils/indexDB";
 import VerificationModal from "../Modal/VerificationModal";
-import { TUser } from "@/components/utils/types";
+import { useUser } from "@/contexts/UserContext";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -16,8 +14,6 @@ interface AdminWrapperProps {
   isPublic: boolean;
   metaTitle?: string;
   description?: string;
-  className?: string;
-  setUser?: React.Dispatch<React.SetStateAction<TUser | null>>;
 }
 
 const TeachersWrapper = ({
@@ -26,13 +22,12 @@ const TeachersWrapper = ({
   description,
   children,
   isPublic = true,
-  setUser,
-  className,
 }: AdminWrapperProps) => {
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useUser();
 
   const handleVerifyOpen = () => {
     setIsOpen((prev) => !prev);
@@ -47,20 +42,12 @@ const TeachersWrapper = ({
   };
 
   useEffect(() => {
-    const userId = Cookies.get("userId")!;
-    const userDetails = async () => {
-      const response = await getUserFromDB(userId, userId);
-      if (response && !isPublic) {
-        if (!response.isVerified) {
-          setIsOpen(true);
-        }
+    if (user && !isPublic) {
+      if (!user.isVerified) {
+        setIsOpen(true);
       }
-      if (setUser) setUser(response);
-    };
-    if (userId) {
-      userDetails();
     }
-  }, [isPublic, setUser]);
+  }, [isPublic, user]);
 
   return (
     <>
@@ -90,11 +77,7 @@ const TeachersWrapper = ({
         <div className='flex-1 w-full h-full overflow-y-auto relative flex flex-col'>
           <div className='w-full flex-0 flex z-40 lg:z-20 sticky top-0 right-0 bg-milky mb-2'>
             <nav className={`w-full mr-[2rem] ml-4`}>
-              <AdminNav
-                isOpen={isSidenavOpen}
-                toggleSidenav={toggleSidenav}
-                title={title}
-              />
+              <AdminNav toggleSidenav={toggleSidenav} title={title} />
             </nav>
           </div>
           <main className='w-full overflow-x-hidden px-4 flex-1'>
