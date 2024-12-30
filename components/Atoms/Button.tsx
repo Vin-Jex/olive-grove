@@ -14,7 +14,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 const Button: React.FC<ButtonProps> = ({
   children,
-  size = "md",
+  size = "sm",
   color = "blue",
   width = "auto",
   className,
