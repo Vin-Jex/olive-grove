@@ -45,6 +45,7 @@ const ModifyAssessments = () => {
   };
   return (
     <AdminsWrapper
+      isPublic={false}
       title='Assessments'
       metaTitle='Olive Grove ~ Create or Modify Assessments'
     >

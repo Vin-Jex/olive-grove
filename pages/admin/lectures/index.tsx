@@ -85,7 +85,11 @@ const Departments = () => {
         handleModalClose={handleModalCreate}
         modalOpen={openModalCreate}
       />
-      <AdminsWrapper title='Departments' metaTitle='Olive Grove ~ Departments'>
+      <AdminsWrapper
+        isPublic={false}
+        title='Departments'
+        metaTitle='Olive Grove ~ Departments'
+      >
         <div className='p-12 space-y-5'>
           {/* Title */}
           <div className='flex items-center justify-between'>

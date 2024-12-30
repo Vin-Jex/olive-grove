@@ -9,7 +9,11 @@ import AdminsWrapper from "@/components/Molecules/Layouts/Admin.Layout";
 const Assessments = () => {
   const router = useRouter();
   return (
-    <AdminsWrapper title='Assessments' metaTitle='Olive Grove ~ Assessments'>
+    <AdminsWrapper
+      isPublic={false}
+      title='Assessments'
+      metaTitle='Olive Grove ~ Assessments'
+    >
       <div className='p-12 space-y-5'>
         {/* Title */}
         <div className='flex items-center justify-between'>

@@ -46,6 +46,7 @@ const AssessmentDetailsPage = () => {
 
   return (
     <AdminsWrapper
+      isPublic={false}
       title={`Assessment`}
       metaTitle={`Olive Grove ~ ${assessmentId} assessment`}
     >

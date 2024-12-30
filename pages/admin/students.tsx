@@ -57,7 +57,11 @@ const Students = () => {
   ];
 
   return (
-    <AdminsWrapper title='Student' metaTitle='Olive Grove ~ Student'>
+    <AdminsWrapper
+      isPublic={false}
+      title='Student'
+      metaTitle='Olive Grove ~ Student'
+    >
       <div className='p-12 space-y-5'>
         {/* Title */}
         <div className='flex flex-col'>

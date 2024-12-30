@@ -51,6 +51,7 @@ const Dashboard = () => {
         modalOpen={openModalAss}
       />
       <AdminsWrapper
+        isPublic={false}
         title='Dashboard'
         metaTitle='Olive Grove ~ Dashboard'
         // isPublic={false}
