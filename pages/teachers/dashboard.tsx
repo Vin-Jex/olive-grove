@@ -13,6 +13,7 @@ import UpdateDepartmentModal from "@/components/Molecules/Modal/UpdateDepartment
 import Calendar from "@/components/Molecules/Calendar";
 import { TUser } from "@/components/utils/types";
 import ClassCard from "@/components/Molecules/Card/ClassCard";
+import { useUser } from "@/contexts/UserContext";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -24,8 +25,8 @@ const Dashboard = () => {
     meetingLink: "",
     video: "",
   });
-  const [user, setUser] = useState<TUser | null>(null);
   const [selectedOption, setSelectedOption] = useState<string>("");
+    const { user } = useUser();
   const options = [
     { value: "option1", label: "Option 1" },
     { value: "option2", label: "Option 2" },
@@ -63,7 +64,6 @@ const Dashboard = () => {
         title='Dashboard'
         metaTitle='Olive Grove - Inspire, Guide, and Educate'
         isPublic={false}
-        setUser={setUser}
       >
         <div className='space-y-5 h-full mb-5'>
           <div className='max-sm:space-y-5 xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
