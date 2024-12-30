@@ -1,104 +1,89 @@
-import React, { FormEvent, useEffect, useState } from 'react';
-import axiosInstance from '../axiosInstance';
-import { baseUrl } from '../baseURL';
-import { AxiosError } from 'axios';
+import { useState, useEffect } from "react";
+import axiosInstance from "../axiosInstance";
+import { baseUrl } from "../baseURL";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 const useUserVerify = () => {
-  const [somethingOccured, setSomethingOccured] = useState({
-    message: '',
+  const [message, setMessage] = useState<{
+    message: string;
+    success: boolean;
+    error: boolean;
+  }>({
+    message: "",
     success: false,
     error: false,
   });
   const [otpRequestLoading, setOtpRequestLoading] = useState(false);
-
   const [verifyOTP, setVerifyOTP] = useState({
     status: false,
-    message: 'To change your password,',
+    message: "To change your password,",
   });
   const [OTPTimer, setOTPTimer] = useState(0);
+  const [formattedTimer, setFormattedTimer] = useState("00:00");
 
   useEffect(() => {
     if (OTPTimer > 0) {
       const interval = setInterval(() => {
-        setOTPTimer((timer) => timer - 1);
+        setOTPTimer((prev) => prev - 1);
       }, 1000);
+
+      const minutes = Math.floor(OTPTimer / 60);
+      const seconds = OTPTimer % 60;
+      setFormattedTimer(
+        `${minutes.toString().padStart(2, "0")}:${seconds
+          .toString()
+          .padStart(2, "0")}`
+      );
+
       return () => clearInterval(interval);
+    } else {
+      setFormattedTimer("00:00");
     }
   }, [OTPTimer]);
 
-  //   async function handleRequestOTP(event: FormEvent<HTMLButtonElement>) {
-  //     event.preventDefault();
-  //     try {
-  //         setOTPVerifyLoading(true);
-  //       const request_body = JSON.stringify({ type: 'password_reset' }); //this should be the password chaange equivalent
-  //       const response = await axiosInstance.post(
-  //         `${baseUrl}/otp/request`,
-  //         request_body
-  //       );
-  //       setVerifyOTP({ status: true, message: 'OTP sent to your email' });
-  //       setSomethingOccured((err) => ({
-  //         ...err,
-  //         error: false,
-  //         success: true,
-  //         message: response.data.data.message,
-  //       }));
-  //       setOTPTimer(2 * 60); // 2 minutes
-  //     } catch (error: AxiosError | any) {
-  //       setSomethingOccured((err) => ({
-  //         ...err,
-  //         error: true,
-  //         message: error.response.data.message,
-  //       }));
-  //       console.error(error);
-  //     } finally {
-  //       setVerifyOTP({ status: false, message: 'To change your password' });
-  //     }
-  //   }
+  const handleRequestOTP = async (
+    type: "email_verification" | "password_reset"
+  ) => {
+    setOtpRequestLoading(true);
+    setOTPTimer(2 * 60);
 
-  async function handleRequestOTP(
-    type: 'email_verification' | 'password_reset',
-    token?: { accessToken: string; refreshToken: string } | null
-  ) {
+    const requestBody = { type };
+
     try {
-      setOtpRequestLoading(true);
-      setOTPTimer(2 * 60); // 2 minutes
-      const request_body = JSON.stringify({ type });
-      const response = !token
-        ? await axiosInstance.post(`${baseUrl}/otp/request`, request_body)
-        : await fetch(`${baseUrl}/otp/request`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer accessToken=${token.accessToken};refreshToken=${token.refreshToken}`,
-            },
-            body: request_body,
-          });
-      setVerifyOTP({ status: true, message: 'OTP sent to your email' });
-
-      setSomethingOccured({
-        error: false,
+      const response = await axiosInstance.post(
+        `${baseUrl}/otp/request`,
+        requestBody
+      );
+      setVerifyOTP({ status: true, message: response.data?.message });
+      toast.success(response.data?.message);
+      setMessage({
         success: true,
-        message: 'OTP sent to your email',
+        error: false,
+        message: response.data?.message || "OTP sent to your email",
       });
     } catch (err: AxiosError | any) {
-      setSomethingOccured({
+      const message = err.response?.data?.message;
+      toast.error(message);
+      setMessage({
         success: false,
         error: true,
-        message: !token ? err?.response?.data?.message : err.message,
+        message: err?.response?.data?.message || err.message,
       });
       console.error(err);
     } finally {
       setOtpRequestLoading(false);
     }
-  }
+  };
 
   return {
     otpRequestLoading,
-    setSomethingOccured,
+    message,
+    setMessage,
     handleRequestOTP,
-    somethingOccured,
     verifyOTP,
     OTPTimer,
+    formattedTimer,
   };
 };
 
