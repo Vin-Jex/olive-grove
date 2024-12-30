@@ -5,13 +5,8 @@ import logo from "@/public/image/logo.png";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
 import Input from "@/components/Atoms/Input";
-import {
-  Info,
-  VisibilityOffOutlined,
-  VisibilityOutlined,
-} from "@mui/icons-material";
+import { Info } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
-import CustomCursor from "@/components/Molecules/CustomCursor";
 import { baseUrl } from "@/components/utils/baseURL";
 
 export type loginType = {
@@ -224,8 +219,6 @@ const AdminAccess = () => {
             value={formState.password}
             onChange={handleChange}
             placeholder='Password'
-            showIcon={VisibilityOutlined}
-            hideIcon={VisibilityOffOutlined}
             required
             className='input rounded-lg p-3'
           />
