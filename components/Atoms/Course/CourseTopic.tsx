@@ -109,8 +109,8 @@ export const Topic: FC<{
       onClick={() =>
         navRouter.push(
           `/${
-            user?.role === "Student" ? "students/lectures" : "teachers/subjects"
-          }/${router.query.subjectid ?? router.query.subjectId}/?topic=${
+            user?.role === "Student" ? "students/lectures" : "teachers/courses"
+          }/${router.query.courseId ?? router.query.courseId}/?topic=${
             topic._id
           }`
         )
