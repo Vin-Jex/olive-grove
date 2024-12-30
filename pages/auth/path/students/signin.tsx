@@ -12,6 +12,7 @@ import useAjaxRequest, { TAxiosError, TAxiosSuccess } from "use-ajax-request";
 import { TLoginResponse } from "@/components/utils/types";
 import AuthLayout from "./layout";
 import { initDB } from "@/components/utils/indexDB";
+import toast from "react-hot-toast";
 
 export type loginType = {
   username: string;
@@ -147,7 +148,6 @@ const StudentLogin = () => {
     const refreshToken = data.token.refreshToken;
     const userId = data.details._id;
     const userRole = data.details.role;
-
     const userDetails = data.details;
     await initDB(userDetails, userDetails._id);
 
@@ -159,27 +159,17 @@ const StudentLogin = () => {
     userRole !== undefined && Cookies.set("role", userRole, { expires: 1 });
     Cookies.set("userDetails", JSON.stringify(data.details), { expires: 1 });
 
-    setFormError((prevState) => ({
-      ...prevState,
-      successError: "Student successfully logged in.",
-    }));
+    toast.success(
+      `Welcome back, ${
+        userDetails && "firstName" in userDetails && "lastName" in userDetails
+          ? `${userDetails.firstName} ${userDetails.lastName}`
+          : "Student"
+      }! Your learning journey continues!`
+    );
 
     resetForm();
-
     reCheckUser();
-
-    //update info stored in localStorage
-    const cacheKey = `ProfileInfo_Student_${userRole}_${userId}`;
-    const cachedData = localStorage.getItem(cacheKey);
-
-    if (cachedData) {
-      localStorage.removeItem(cacheKey);
-      localStorage.setItem(cacheKey, JSON.stringify(data.details));
-    }
-
-    setTimeout(() => {
-      router.push("/");
-    }, 500);
+    router.push("/");
   };
 
   const handleErrorLogin: TAxiosError<any> = (res) => {
