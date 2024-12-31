@@ -1,6 +1,5 @@
 import React, {
   ButtonHTMLAttributes,
-  HTMLAttributes,
   ReactNode,
   useEffect,
   useState,
