@@ -267,7 +267,20 @@ export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
 
 export type TAssessmnentQuestionProp = {};
 
-export type TAssessmnentQuestion = { _id: string };
+export type TAssessmnentQuestion = {
+  _id?: string;
+  draft_id: string;
+  questionText: string;
+  questionImage: string;
+  questionType: TAssessmentQuestionType;
+  options?: string[];
+  correctAnswer?: string;
+  fileRequirements?: {
+    maxSizeMB: 5;
+    allowedExtensions: string[];
+  };
+  maxMarks: number;
+};
 
 export type TAssessmentQuestionType =
   | "multiple_choice"
@@ -280,6 +293,11 @@ export type TContentId = { id: string; isViewed: boolean }[];
 export type TAsseessmentQuestionOption = {
   content: string | undefined;
   _id: string;
+};
+
+export type TAssessmentQuestionFileUpload = {
+  maxSizeMB: number;
+  allowedExtensions: string[];
 };
 
 export type TSideDialogContent = {
@@ -319,3 +337,5 @@ export type InputType =
   | "week"
   | "url"
   | "select";
+
+export type TErrorStatus = 404 | 500 | 403 | 401;
