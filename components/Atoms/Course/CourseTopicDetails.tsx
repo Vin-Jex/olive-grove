@@ -19,7 +19,7 @@ import {
   useState,
 } from "react";
 import TopicVideo from "./CourseTopicVideo";
-import NotFoundError from "../NotFoundError";
+import ErrorUI from "../ErrorComponent";
 import { useTopicContext } from "@/contexts/TopicContext";
 import img404 from "@/images/olive-notes-404.png";
 import { Alert, Checkbox, FormControlLabel, Snackbar } from "@mui/material";
@@ -340,11 +340,12 @@ export const TopicDetails: FC<{
           ) : (
             <div>
               {
-                <NotFoundError
+                <ErrorUI
                   msg="No notes provided"
                   width={320}
                   height={320}
                   img={img404.src}
+                  status={404}
                 />
               }
             </div>
@@ -384,7 +385,7 @@ export const TopicDetails: FC<{
         </div>
       ) : (
         <>
-          <NotFoundError msg={"No topic found"} />
+          <ErrorUI msg={"No topic found"} status={404} />
         </>
       )}
       {topicIsCompleted && (

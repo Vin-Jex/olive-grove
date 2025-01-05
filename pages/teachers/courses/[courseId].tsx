@@ -7,12 +7,13 @@ import {
   TCourse,
   TFetchState,
   TResponse,
+  TErrorStatus,
 } from "@/components/utils/types";
 import { useRouter } from "next/router";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
 import { useCourseContext } from "@/contexts/CourseContext";
 import Loader from "@/components/Atoms/Loader";
-import NotFoundError from "@/components/Atoms/NotFoundError";
+import ErrorUI from "@/components/Atoms/ErrorComponent";
 import { AnimatePresence } from "framer";
 import { TopicDetails } from "@/components/Atoms/Course/CourseTopicDetails";
 import SideBar from "@/components/Atoms/Course/CourseSidebar";
@@ -83,7 +84,9 @@ const Subject: FC = () => {
           type: "ERROR_FETCHING_COURSE",
           payload: {
             status: error?.response?.status,
-            message: "An error occurred while retrieving this course",
+            message:
+              error?.response?.message ||
+              "An error occurred while retrieving this course",
           },
         });
         return;
@@ -320,31 +323,34 @@ const Subject: FC = () => {
       <TopicContextProvider course={course.data}>
         <TeachersWrapper
           isPublic={false}
-          title='Subjects'
-          metaTitle='Olive Grove ~ Subjects'
+          title="Subjects"
+          metaTitle="Olive Grove ~ Subjects"
         >
-          <div className='space-y-5 h-full relative'>
+          <div className="space-y-5 h-full relative">
             {course.loading ? (
               <Loader />
             ) : course.error ? (
-              <div className='w-full h-full flex items-center justify-center'>
+              <div className="w-full h-full flex items-center justify-center">
                 {typeof course.error === "object" &&
-                  (course.error.status === 404 ? (
+                  (course.error.status ? (
                     <>
-                      <NotFoundError msg={course.error.message} />
+                      <ErrorUI
+                        msg={course.error.message || undefined}
+                        status={course.error.status as TErrorStatus}
+                      />
                     </>
                   ) : (
-                    <ServerError msg={course.error.message} />
+                    <ErrorUI msg={course.error.message} status={500} />
                   ))}
               </div>
             ) : course.data ? (
               <>
                 {/* Title */}
-                <div className='flex flex-row gap-4 sm:gap-0 sm:flex-row justify-between items-start'>
-                  <div className='flex flex-row gap-2 items-center'>
+                <div className="flex flex-row gap-4 sm:gap-0 sm:flex-row justify-between items-start">
+                  <div className="flex flex-row gap-2 items-center">
                     {/* Previous page button */}
                     <div
-                      className='w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full '
+                      className="w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full "
                       onClick={() =>
                         router.push(
                           `/${
@@ -357,16 +363,16 @@ const Subject: FC = () => {
                         )
                       }
                     >
-                      <i className='fas fa-arrow-left text-greyed hover:text-dark'></i>
+                      <i className="fas fa-arrow-left text-greyed hover:text-dark"></i>
                     </div>
-                    <span className='text-2xl font-medium text-dark font-roboto'>
+                    <span className="text-2xl font-medium text-dark font-roboto">
                       {course.data?.title || "Loading..."}
                     </span>
                   </div>
-                  <div className='flex gap-4 items-center'>
+                  <div className="flex gap-4 items-center">
                     {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
                     <div
-                      className='rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110'
+                      className="rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110"
                       onClick={() => setShowSideBar((prev) => !prev)}
                     >
                       <i
@@ -376,20 +382,20 @@ const Subject: FC = () => {
                       ></i>
                     </div>
                     <Button
-                      width='fit'
-                      size='xs'
-                      color='outline'
+                      width="fit"
+                      size="xs"
+                      color="outline"
                       onClick={openEditCourseModal}
-                      className='flex gap-1'
+                      className="flex gap-1"
                     >
-                      <i className='fas fa-pencil'></i> <span>Edit Course</span>
+                      <i className="fas fa-pencil"></i> <span>Edit Course</span>
                     </Button>
                   </div>
                 </div>
                 {/* <div className="flex items-stretch gap-4 relative"> */}
-                <div className='flex items-stretch gap-4'>
+                <div className="flex items-stretch gap-4">
                   {/* SIDEBAR */}
-                  <div className='flex-none hidden xl:block'>
+                  <div className="flex-none hidden xl:block">
                     <SideBar courseId={(courseId as string) || ""} />
                   </div>
                   {/* MOBILE SIDEBAR */}
@@ -399,7 +405,7 @@ const Subject: FC = () => {
                     )}
                   </AnimatePresence>
                   {/* COURSE */}
-                  <div className='flex-1'>
+                  <div className="flex-1">
                     <TopicDetails course={course.data} />
                   </div>
                 </div>
