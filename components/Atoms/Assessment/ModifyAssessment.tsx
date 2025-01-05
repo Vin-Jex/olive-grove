@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AssessmentTitleHeader from "./TitleHeader";
 import AssessmentQuestion from "./AssessmentQuestion";
 import { useAssessmentQuestionsContext } from "@/contexts/AssessmentQuestionsContext";
@@ -6,6 +6,7 @@ import { v4 as uuidV4 } from "uuid";
 
 const ModifyAssessment = () => {
   const { assessment_questions, dispatch } = useAssessmentQuestionsContext();
+  const [adding_question, setAddingQuestion] = useState(false);
 
   const addQuestion = () => {
     dispatch({ type: "ADD_QUESTION", payload: { _id: uuidV4() } });
@@ -22,17 +23,29 @@ const ModifyAssessment = () => {
         {assessment_questions.data.map((question) => (
           <AssessmentQuestion
             key={question._id}
-            question_id={question._id.toString()}
+            question_id={
+              question.draft_id ? question.draft_id || "" : question?._id || ""
+            }
+            question={question as any}
+            mode="preview"
           />
         ))}
         {/* Add Question */}
-        <div
-          onClick={addQuestion}
-          className="rounded-lg bg-white p-4 flex gap-2 justify-center items-center text-subtext cursor-pointer shadow transition hover:scale-[102%]"
-        >
-          <i className="fas fa-plus"></i>
-          <span>Add new Question</span>
-        </div>
+        {adding_question ? (
+          <AssessmentQuestion
+            question_id={""}
+            mode="create"
+            handleCancel={() => setAddingQuestion(false)}
+          />
+        ) : (
+          <div
+            onClick={() => setAddingQuestion(true)}
+            className="rounded-lg bg-white p-4 flex gap-2 justify-center items-center text-subtext cursor-pointer shadow transition hover:scale-[102%]"
+          >
+            <i className="fas fa-plus"></i>
+            <span>Add new Question</span>
+          </div>
+        )}
       </div>
     </div>
   );
