@@ -112,13 +112,13 @@ const SubjectDetailsPage: FC = () => {
         if (error.status == 404) {
           dispatch({
             type: 'ERROR_FETCHING_COURSE',
-            payload: { status: 404, message: error.response.data.message },
+            payload: { status: 404, message: error?.response?.data?.message },
           });
           setErrorOccured(true);
           return;
         } else if (error.status == 401) {
           // * if the error status is 401, it means the user is not authenticated, hence redirect the user to the login page
-          handleLogout().then(() => router.push('/auth/path/students/signin/'));
+          handleLogout('students');
         }
         // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
         console.error(error);
@@ -137,7 +137,7 @@ const SubjectDetailsPage: FC = () => {
         setErrorOccured(true);
       }
     },
-    [dispatch, router]
+    [dispatch]
   );
 
   useEffect(() => {
@@ -147,18 +147,6 @@ const SubjectDetailsPage: FC = () => {
     if (newCourses.length === 0) return;
 
     const lastViewedIndex = newCourses.findLast((course) => course.isViewed);
-
-    // const nextIndexToView =
-    //   lastViewedIndex +
-    //   1 +
-    //   newCourses
-    //     .slice(lastViewedIndex + 1)
-    //     .findIndex((course) => !course.isViewed);
-
-    console.log(newCourses, 'courses data');
-
-    // if (lastViewedIndex !== -1 && lastViewedIndex < newCourses.length - 1) {
-    //   const nextCourse = newCourses[nextIndexToView];
     if (lastViewedIndex) {
       router.push(`${router.asPath.split('?')[0]}?topic=${lastViewedIndex.id}`);
     } else {
@@ -166,6 +154,7 @@ const SubjectDetailsPage: FC = () => {
       newCourses.length > 1 &&
         router.push(`${router.asPath.split('?')[0]}?topic=${newCourses[0].id}`);
     }
+    //eslint-disable-next-line
   }, [course.data]);
 
   /**
@@ -275,7 +264,7 @@ const SubjectDetailsPage: FC = () => {
                     </div>
                   )}
                 </div>
-                <div className='flex items-stretch max-sm:flex-col pb-7 gap-4 relative'>
+                <div className='flex items-stretch max-sm:flex-col min-h-screen pb-7 gap-4 relative'>
                   {/* SIDEBAR */}
                   <div className='max-md:space-y-6 relative'>
                     <div className='w-full flex gap-0 md:hidden'>
@@ -295,7 +284,7 @@ const SubjectDetailsPage: FC = () => {
                         </>
                       ))}
                     </div>
-                    <div className='relative'>
+                    <div className='sticky top-6'>
                       <div className='flex-none relative w-full block'>
                         <SideBar courseId={(courseId as string) || ''} />
                       </div>
