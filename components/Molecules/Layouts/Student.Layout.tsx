@@ -8,6 +8,7 @@ import { handleLogout } from "./Admin.Layout";
 import { TUser } from "@/components/utils/types";
 import VerificationModal from "../Modal/VerificationModal";
 import { useUser } from "@/contexts/UserContext";
+import useServiceWorkerListener from "@/components/utils/hooks/useServiceWorkerListener";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -35,6 +36,7 @@ const StudentWrapper = ({
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { user } = useUser();
+  const isForbidden = useServiceWorkerListener();
 
   const toggleSidenav = () => {
     setIsSidenavOpen(!isSidenavOpen);
@@ -49,12 +51,14 @@ const StudentWrapper = ({
   };
 
   useEffect(() => {
-    if (user && !isPublic) {
-      if (!user.isVerified) {
-        setIsOpen(true);
-      }
+    if (isForbidden) {
+      setIsOpen(true);
     }
-  }, [isPublic, user]);
+
+    if (user && !isPublic && !user.isVerified) {
+      setIsOpen(true);
+    }
+  }, [isOpen, isForbidden, user, isPublic]);
 
   return (
     <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>

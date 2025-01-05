@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { handleLogout } from "./Admin.Layout";
 import VerificationModal from "../Modal/VerificationModal";
 import { useUser } from "@/contexts/UserContext";
+import useServiceWorkerListener from "@/components/utils/hooks/useServiceWorkerListener";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -28,6 +29,7 @@ const TeachersWrapper = ({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useUser();
+  const isForbidden = useServiceWorkerListener();
 
   const handleVerifyOpen = () => {
     setIsOpen((prev) => !prev);
@@ -42,12 +44,14 @@ const TeachersWrapper = ({
   };
 
   useEffect(() => {
-    if (user && !isPublic) {
-      if (!user.isVerified) {
-        setIsOpen(true);
-      }
+    if (isForbidden) {
+      setIsOpen(true);
     }
-  }, [isPublic, user]);
+
+    if (user && !isPublic && !user.isVerified) {
+      setIsOpen(true);
+    }
+  }, [isOpen, isForbidden, user, isPublic]);
 
   return (
     <>

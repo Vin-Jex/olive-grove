@@ -45,7 +45,6 @@ export const initDB = async (user: TUser, passphrase: string) => {
     upgrade(db, oldVersion) {
       if (oldVersion < process.env.NEXT_PUBLIC_DB_VERSION) {
         if (!db.objectStoreNames.contains(storeName)) {
-          console.log("Creating object store:", storeName);
           db.createObjectStore(storeName, { keyPath: "id" });
         }
       }

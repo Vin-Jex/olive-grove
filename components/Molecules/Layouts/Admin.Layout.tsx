@@ -9,6 +9,7 @@ import { baseUrl } from "@/components/utils/baseURL";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { useUser } from "@/contexts/UserContext";
 import VerificationModal from "../Modal/VerificationModal";
+import useServiceWorkerListener from "@/components/utils/hooks/useServiceWorkerListener";
 
 export const handleLogout = async () => {
   const role = Cookies.get("role");
@@ -49,6 +50,7 @@ const AdminsWrapper = ({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useUser();
+  const isForbidden = useServiceWorkerListener();
 
   const handleVerifyOpen = () => {
     setIsOpen((prev) => !prev);
@@ -63,12 +65,14 @@ const AdminsWrapper = ({
   };
 
   useEffect(() => {
-    if (user && !isPublic) {
-      if (!user.isVerified) {
-        setIsOpen(true);
-      }
+    if (isForbidden) {
+      setIsOpen(true);
     }
-  }, [isPublic, user]);
+
+    if (user && !isPublic && !user.isVerified) {
+      setIsOpen(true);
+    }
+  }, [isOpen, isForbidden, user, isPublic]);
 
   return (
     <div className='w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center'>
