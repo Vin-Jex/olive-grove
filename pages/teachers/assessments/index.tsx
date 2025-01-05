@@ -3,7 +3,7 @@ import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
-import NotFoundError from "@/components/Atoms/NotFoundError";
+import ErrorUI from "@/components/Atoms/ErrorComponent";
 import ServerError from "@/components/Atoms/ServerError";
 import Loader from "@/components/Atoms/Loader";
 import {
@@ -14,6 +14,7 @@ import {
   TCourse,
   TFetchState,
   TTeacher,
+  TErrorStatus,
 } from "@/components/utils/types";
 import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import AsssessmentModal from "@/components/Molecules/Modal/AsssessmentModal";
@@ -595,7 +596,7 @@ const Assessments = () => {
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode='create'
+        mode="create"
         handleModalClose={toogleModalCreate}
         modalOpen={openModalCreate}
         handleAction={createAssessment}
@@ -632,7 +633,7 @@ const Assessments = () => {
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode='edit'
+        mode="edit"
         handleModalClose={toogleModalEdit}
         modalOpen={openModalEdit}
         handleAction={editAssessment}
@@ -668,21 +669,21 @@ const Assessments = () => {
       />
       <TeachersWrapper
         isPublic={false}
-        title='Assessments'
-        metaTitle='Olive Grove ~ Assessments'
+        title="Assessments"
+        metaTitle="Olive Grove ~ Assessments"
       >
-        <div className='space-y-5 h-full'>
+        <div className="space-y-5 h-full">
           <>
-            <div className='flex flex-row items-center justify-between gap-4'>
-              <div className='flex flex-col'>
-                <span className='text-lg font-medium text-dark font-roboto'>
+            <div className="flex flex-row items-center justify-between gap-4">
+              <div className="flex flex-col">
+                <span className="text-lg font-medium text-dark font-roboto">
                   Explore your available assessments.
                 </span>
-                <span className='text-md text-subtext font-roboto'>
+                <span className="text-md text-subtext font-roboto">
                   Manage, edit and create assessments.
                 </span>
               </div>
-              <Button size='xs' width='fit' onClick={toogleModalCreate}>
+              <Button size="xs" width="fit" onClick={toogleModalCreate}>
                 <span>Create Assessment</span>
               </Button>
             </div>
@@ -727,35 +728,45 @@ const Assessments = () => {
             </div> */}
 
             {fetchAssessmentsState.loading ? (
-              <div className='h-full w-full'>
+              <div className="h-full w-full">
                 <Loader />
               </div>
             ) : fetchAssessmentsState.error ? (
               <>
                 {typeof fetchAssessmentsState.error === "object" &&
-                  (fetchAssessmentsState.error.status === 404 ? (
-                    <NotFoundError msg={fetchAssessmentsState.error.message} />
+                  (fetchAssessmentsState.error.status ? (
+                    <ErrorUI
+                      msg={fetchAssessmentsState.error.message}
+                      status={
+                        fetchAssessmentsState.error.status as TErrorStatus
+                      }
+                    />
                   ) : (
-                    <ServerError msg={fetchAssessmentsState.error.message} />
+                    <ErrorUI
+                      msg={fetchAssessmentsState.error.message}
+                      status={500}
+                    />
                   ))}
               </>
             ) : (
               <>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6'>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
                   {fetchAssessmentsState.data.map((assessment, index) => (
-                    <div key={index} className='mt-4 w-full space-y-2'>
+                    <div key={index} className="mt-4 w-full space-y-2">
                       <TeacherCard
                         academicWeekDate={
                           (assessment.academicWeek as TAcademicWeek)?.weekNumber
                         }
                         key={index}
-                        type='assessment'
+                        type="assessment"
                         teacher={assessment?.teacher}
                         assessmentType={
                           (assessment?.assessmentType as TAssessmentType)?.name
                         }
                         timeline={assessment.dueDate}
-                        assessmenTClass={(assessment?.class as TDepartment)?.name}
+                        assessmenTClass={
+                          (assessment?.class as TDepartment)?.name
+                        }
                         subject={(assessment?.subject as TCourse)?.title || ""}
                         actionClick={() =>
                           toogleModalEdit({

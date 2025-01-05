@@ -10,11 +10,12 @@ import {
   TFetchState,
   THandleSearchChange,
   TResponse,
+  TErrorStatus,
 } from "@/components/utils/types";
 import { baseUrl } from "@/components/utils/baseURL";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
 import Loader from "@/components/Atoms/Loader";
-import NotFoundError from "@/components/Atoms/NotFoundError";
+import ErrorUI from "@/components/Atoms/ErrorComponent";
 import ServerError from "@/components/Atoms/ServerError";
 import Course from "@/components/Atoms/Course/EachCourse";
 import { CourseClass, fetchCourses } from "@/components/utils/course";
@@ -323,10 +324,10 @@ const Subjects: FC = () => {
       <CourseModal
         formState={formState}
         setFormState={setFormState}
-        type='course'
+        type="course"
         handleModalClose={handleCloseModal}
         modalOpen={openModalCreate}
-        mode='create'
+        mode="create"
         handleAction={createCourse}
         requestState={createCourseRes}
         departments={departments.data?.map((each) => ({
@@ -343,8 +344,8 @@ const Subjects: FC = () => {
                 handleModalClose={closeModal}
                 requestState={modalRequestState}
                 handleConfirm={handleDelete || (() => undefined)}
-                content='Are you sure you want to delete this course?'
-                subtext='This action CAN NOT be undone!'
+                content="Are you sure you want to delete this course?"
+                subtext="This action CAN NOT be undone!"
               />
             </>
           ) : (
@@ -369,22 +370,22 @@ const Subjects: FC = () => {
 
       <TeachersWrapper
         isPublic={false}
-        title='Subjects'
-        metaTitle='Olive Grove ~ Subjects'
+        title="Subjects"
+        metaTitle="Olive Grove ~ Subjects"
       >
-        <div className='h-full'>
+        <div className="h-full">
           {courses.loading ? (
             <Loader />
           ) : (
             <>
               {/* Title */}
-              <div className='flex justify-between items-start'>
+              <div className="flex justify-between items-start">
                 {typeof courses.error === "object" &&
                   courses.error.status === 404 && (
                     <Button
                       onClick={() => setOpenModalCreate((prev) => !prev)}
-                      width='fit'
-                      size='xs'
+                      width="fit"
+                      size="xs"
                     >
                       <Add />
                       <span>Add subject</span>
@@ -393,11 +394,11 @@ const Subjects: FC = () => {
               </div>
               {/* Searchbars and select fields */}
               {!courses.error && (
-                <div className='flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center'>
-                  <div className='flex justify-start items-center gap-4 w-full md:w-auto'>
+                <div className="flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center">
+                  <div className="flex justify-start items-center gap-4 w-full md:w-auto">
                     <SearchInput
-                      shape='rounded-lg'
-                      placeholder='Search for Subjects'
+                      shape="rounded-lg"
+                      placeholder="Search for Subjects"
                       searchResults={searchResults}
                       setSearchResults={setSearchResults}
                       initialData={courses.data}
@@ -410,19 +411,19 @@ const Subjects: FC = () => {
                           value: type._id || "",
                         })) || []
                       }
-                      name='class'
+                      name="class"
                       required
                       onChange={handleClassFilter}
-                      placeholder='Select class'
-                      inputSize='sm'
-                      className='!py-3'
+                      placeholder="Select class"
+                      inputSize="sm"
+                      className="!py-3"
                     />
                   </div>
                   <div>
                     <Button
                       onClick={() => setOpenModalCreate((prev) => !prev)}
-                      width='fit'
-                      size='xs'
+                      width="fit"
+                      size="xs"
                     >
                       <Add />
                       <span>Add subject</span>
@@ -431,32 +432,29 @@ const Subjects: FC = () => {
                 </div>
               )}
               {courses.error ? (
-                <div className='w-full flex items-center justify-center'>
+                <div className="w-full flex items-center justify-center">
                   {typeof courses.error === "object" &&
-                    (courses.error.status === 404 ? (
-                      <>
-                        <NotFoundError msg={courses.error.message} />
-                      </>
-                    ) : (
-                      <>
-                        <ServerError msg={courses.error.message} />
-                      </>
-                    ))}
+                    courses.error.status && (
+                      <ErrorUI
+                        msg={courses.error.message || undefined}
+                        status={courses.error.status as TErrorStatus}
+                      />
+                    )}
                   {typeof courses.error === "string" && (
-                    <ServerError msg={courses.error} />
+                    <ErrorUI msg={courses.error} status={500} />
                   )}
                 </div>
               ) : searchResults.length < 1 ? (
                 // 404 image
-                <div className='w-full flex items-center justify-center'>
-                  <NotFoundError msg='No courses found' />
+                <div className="w-full flex items-center justify-center">
+                  <ErrorUI msg="No courses found" status={404} />
                 </div>
               ) : (
                 <>
                   {/* Content */}
-                  <div className='mt-4'>
+                  <div className="mt-4">
                     {/* Courses */}
-                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4'>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4">
                       {searchResults &&
                         searchResults.map((course, i) => (
                           <Course course={course} key={i + course.title} />

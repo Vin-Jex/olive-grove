@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { useAuth } from "@/contexts/AuthContext";
 import Button from "@/components/Atoms/Button";
 import Loader from "@/components/Atoms/Loader";
-import NotFoundError from "@/components/Atoms/NotFoundError";
+import ErrorUI from "@/components/Atoms/ErrorComponent";
 import ServerError from "@/components/Atoms/ServerError";
 import { TFetchState } from "@/components/utils/types";
 
@@ -65,14 +65,14 @@ const EachAssessment = () => {
   return (
     <TeachersWrapper
       isPublic={false}
-      title='Assessments'
-      metaTitle='Olive Grove ~ Create or Modify Assessments'
+      title="Assessments"
+      metaTitle="Olive Grove ~ Create or Modify Assessments"
     >
-      <section className='w-full flex flex-col gap-4 items-center h-full'>
-        <div className='flex justify-between gap-4 w-full'>
+      <section className="w-full flex flex-col gap-4 items-center h-full">
+        <div className="flex justify-between gap-4 w-full">
           {/* Previous page button */}
           <div
-            className='w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full '
+            className="w-[30px] h-[30px] border border-greyed hover:border-dark flex items-center justify-center rounded-full "
             onClick={() =>
               router.push(
                 `/${
@@ -85,12 +85,12 @@ const EachAssessment = () => {
               )
             }
           >
-            <i className='fas fa-arrow-left text-greyed hover:text-dark'></i>
+            <i className="fas fa-arrow-left text-greyed hover:text-dark"></i>
           </div>
           {/* Preview */}
           {!errorFetchingAssessment && !loadingAssessment && (
-            <Button width='fit' className='flex gap-1' size='xs' color='blue'>
-              <i className='fas fa-eye'></i> <span>Preview</span>
+            <Button width="fit" className="flex gap-1" size="xs" color="blue">
+              <i className="fas fa-eye"></i> <span>Preview</span>
             </Button>
           )}
         </div>
@@ -100,15 +100,17 @@ const EachAssessment = () => {
           </>
         ) : errorFetchingAssessment ? (
           <>
-            {(errorFetchingAssessment as any).response.status === 404 ? (
-              <NotFoundError
+            {(errorFetchingAssessment as any).response.status ? (
+              <ErrorUI
+                status={(errorFetchingAssessment as any).response.status}
                 msg={
                   (errorFetchingAssessment as any)?.response?.data?.message ||
-                  "Assessment not found"
+                  undefined
                 }
               />
             ) : (
-              <ServerError
+              <ErrorUI
+                status={500}
                 msg={
                   (errorFetchingAssessment as any)?.response?.data?.message ||
                   "Error retrieving assessment"

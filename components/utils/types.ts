@@ -337,3 +337,5 @@ export type InputType =
   | "week"
   | "url"
   | "select";
+
+export type TErrorStatus = 404 | 500 | 403 | 401;
