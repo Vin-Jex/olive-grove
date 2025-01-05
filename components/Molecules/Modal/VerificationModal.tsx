@@ -43,7 +43,12 @@ export default function VerificationModal({
               You need to verify your account to be able to access this page.
             </span>
           </div>
-          <Button size='xs' onClick={handleModalClose}>
+          <Button
+            size='xs'
+            onClick={() => {
+              handleModalClose();
+            }}
+          >
             Verify
           </Button>
         </div>
