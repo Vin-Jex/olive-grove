@@ -19,7 +19,7 @@ const MONTHS = [
 type CalendarProp = {
   startDate?: Date;
   endDate?: Date;
-  setStudentInfoByDate: React.Dispatch<React.SetStateAction<Date>>;
+  setStudentInfoByDate?: React.Dispatch<React.SetStateAction<Date>>;
 };
 
 const Calendar: FC<CalendarProp> = ({
