@@ -6,6 +6,7 @@ import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import { ArrowBackIos } from "@mui/icons-material";
 import UpdateDepartmentModal from "@/components/Molecules/Modal/UpdateDepartmentModal";
+import AdminsWrapper from "@/components/Molecules/Layouts/Admin.Layout";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -49,7 +50,12 @@ const Dashboard = () => {
         handleModalClose={handleModalAssignment}
         modalOpen={openModalAss}
       />
-      <TeachersWrapper title='Dashboard' metaTitle='Olive Groove ~ Dashboard'>
+      <AdminsWrapper
+        isPublic={false}
+        title='Dashboard'
+        metaTitle='Olive Grove ~ Dashboard'
+        // isPublic={false}
+      >
         <div className='max-w-4xl mx-auto w-full grid gap-8 p-12 space-y-5'>
           <div className='max-w-md flex items-center justify-between bg-primary w-full rounded-3xl font-roboto relative'>
             <div className='flex flex-col px-9 py-11'>
@@ -138,9 +144,9 @@ const Dashboard = () => {
             />
           </div>
         </div>
-      </TeachersWrapper>
+      </AdminsWrapper>
     </>
   );
 };
 
-export default withAuth("Teacher", Dashboard);
+export default withAuth("Admin", Dashboard);

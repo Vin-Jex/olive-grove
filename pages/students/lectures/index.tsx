@@ -4,7 +4,6 @@ import SubjectCard from "@/components/Molecules/Card/SubjectCard";
 import Link from "next/link";
 import withAuth from "@/components/Molecules/WithAuth";
 import { TFetchState } from "@/components/utils/types";
-// import { fetchCourses } from "@/components/utils/course";
 import dummyImage from "@/images/dummy-img.jpg";
 import DepartmentModal from "@/components/Molecules/Modal/DepartmentModal";
 import { baseUrl } from "@/components/utils/baseURL";
@@ -17,8 +16,6 @@ import Select from "@/components/Atoms/Select";
 import Image from "next/image";
 import useDebounce from "@/components/utils/useDebounce";
 import Loader from "@/components/Atoms/Loader";
-
-
 
 type TCourse = {
   _id: string;
@@ -46,6 +43,7 @@ const Lectures = () => {
   const [lectureInfoModal, setLectureInfoModal] = useState(false);
   const router = useRouter();
   const [searched, setSearched] = useState(router.query.search ?? "");
+
   useEffect(() => {
     setSearched(router.query.search ?? "");
   }, [router.query.search]);
@@ -76,7 +74,7 @@ const Lectures = () => {
       }
     } catch (error: AxiosError | any) {
       if (error.response && error.response.status === 401) {
-        handleLogout().then(() => router.push("/auth/path/students/login/"));
+        handleLogout().then(() => router.push("/auth/path/students/signin"));
       }
       setCourses({ data: [], loading: false, error: "No courses found" });
     }
@@ -141,13 +139,6 @@ const Lectures = () => {
 
     if (searched.length === 0) {
       router.push(router.pathname);
-      // const { query } = router;
-      // const newQuery = { ...query };
-      // delete newQuery.search;
-      // router.push({
-      //   pathname: router.pathname,
-      //   query: newQuery,
-      // });
       setFilteredCourses({ data: [], loading: false, error: undefined });
     }
   }, [searched, debouncedSearch, router]);
@@ -164,9 +155,8 @@ const Lectures = () => {
       />
       <StudentWrapper
         title='Courses'
-        firstTitle='Courses'
         remark='Manage and get updates on your courses'
-        metaTitle='Olive Groove ~ Classes'
+        metaTitle='Olive Grove ~ Classes'
       >
         <div className='sm:p-12 p-5 space-y-5'>
           {/* Title */}
@@ -227,12 +217,11 @@ const Lectures = () => {
             </div>
           ) : (
             <div className='grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 h-fit w-full gap-3 !mt-8'>
-              {courses.data.map((subject, index) => (
+              {courses.data.map((subject) => (
                 <SubjectCard
                   key={subject._id}
                   name={"No Teacher Name"}
                   role={"Teacher"}
-                  // type="lecture"
                   time={"time"}
                   topic={subject.title as string}
                   subject={subject.title}

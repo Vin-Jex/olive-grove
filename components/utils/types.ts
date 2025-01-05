@@ -163,22 +163,31 @@ export type TAssessment<T extends "post" | "get"> = {
 };
 
 export type TStudent = {
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
   dob: Date;
-  graduated?: boolean | null;
-  graduatedYear?: Date | null;
-  academicSection?: string | null;
-  repeated?: { year?: Date; repeated?: boolean }[];
   department: string;
   username: string;
   password: string;
   studentID: string;
+  role: "Student";
+  archivedAt: Date | null;
+  deletedAt: Date | null;
+  isActive: boolean;
+  isArchived: boolean;
+  isDeleted: boolean;
+  isVerified: boolean;
+  lastLoginAt: Date | null;
+  updatedAt: Date;
   middleName?: string;
   profileImage?: string | null;
-  role?: string;
   enrolledSubjects?: string[];
+  repeated?: { year?: Date; repeated?: boolean }[];
+  graduated?: boolean | null;
+  graduatedYear?: Date | null;
+  academicSection?: string | null;
 };
 
 export type TTeacher = {
@@ -189,17 +198,36 @@ export type TTeacher = {
   address: string;
   password: string;
   profileImage?: string;
-  role?: string;
   _id: string;
+  role: "Teacher";
+  archivedAt: Date | null;
+  deletedAt: Date | null;
+  isActive: boolean;
+  isArchived: boolean;
+  isDeleted: boolean;
+  isVerified: boolean;
+  lastLoginAt: Date | null;
+  updatedAt: Date;
 };
 
 export type TAdmin = {
+  _id: string;
   name: string;
   username: string;
   password: string;
   profileImage?: string;
-  role?: string;
+  role: "Admin";
+  archivedAt: Date | null;
+  deletedAt: Date | null;
+  isActive: boolean;
+  isArchived: boolean;
+  isDeleted: boolean;
+  isVerified: boolean;
+  lastLoginAt: Date | null;
+  updatedAt: Date;
 };
+
+export type TUser = TStudent | TTeacher | TAdmin;
 
 export type TModalProps<T> = {
   modalOpen: boolean;
@@ -281,6 +309,31 @@ export type TSideDialogContent = {
 
 export type TWarningModalProps = {
   modalOpen: boolean;
+  loading?: boolean;
   handleModalClose: () => void;
   handleConfirm?: () => void;
 };
+
+export type InputType =
+  | "button"
+  | "text"
+  | "checkbox"
+  | "color"
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "file"
+  | "hidden"
+  | "image"
+  | "month"
+  | "number"
+  | "password"
+  | "radio"
+  | "reset"
+  | "search"
+  | "submit"
+  | "tel"
+  | "time"
+  | "week"
+  | "url"
+  | "select";

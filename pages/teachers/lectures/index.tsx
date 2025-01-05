@@ -216,7 +216,11 @@ const Lectures = () => {
         courses={courses.data.map((item) => item.title.trim())}
       />
 
-      <TeachersWrapper title='Lectures' metaTitle='Olive Groove ~ Lectures'>
+      <TeachersWrapper
+        isPublic={false}
+        title='Lectures'
+        metaTitle='Olive Grove ~ Lectures'
+      >
         <div className='space-y-5 h-full'>
           <>
             <div className='flex flex-row items-center justify-between gap-4'>

@@ -68,7 +68,7 @@ function collectLinearContentIds(data: TCourse): TContentId {
 
 const SubjectDetailsPage: FC = () => {
   const router = useRouter();
-  const { subjectId } = useMemo(() => router.query, [router.query]);
+  const { courseId } = useMemo(() => router.query, [router.query]);
   const [showSideBar, setShowSideBar] = useState(false);
 
   const {
@@ -93,49 +93,52 @@ const SubjectDetailsPage: FC = () => {
    * @param id The id of the course to be retrieved
    * @returns void
    */
-  const getCourse = useCallback(async (id: string) => {
-    try {
-      // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
-      dispatch({
-        type: "FETCHING_COURSE",
-      });
+  const getCourse = useCallback(
+    async (id: string) => {
+      try {
+        // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
+        dispatch({
+          type: "FETCHING_COURSE",
+        });
 
-      const response = await axiosInstance.get(`${baseUrl}/courses/${id}`);
-      console.log(response, "response from axios");
+        const response = await axiosInstance.get(`${baseUrl}/courses/${id}`);
+        console.log(response, "response from axios");
 
-      // * Display the list of courses returned by the endpoint
-      const responseData = response.data as TResponse<TCourse[]>;
-      console.log(responseData, "this is the response data");
-      dispatch({ type: "ADD_COURSE", payload: responseData.data });
-    } catch (error: AxiosError | any) {
-      if (error.status == 404) {
+        // * Display the list of courses returned by the endpoint
+        const responseData = response.data as TResponse<TCourse[]>;
+        console.log(responseData, "this is the response data");
+        dispatch({ type: "ADD_COURSE", payload: responseData.data });
+      } catch (error: AxiosError | any) {
+        if (error.status == 404) {
+          dispatch({
+            type: "ERROR_FETCHING_COURSE",
+            payload: { status: 404, message: error.response.data.message },
+          });
+          setErrorOccured(true);
+          return;
+        } else if (error.status == 401) {
+          // * if the error status is 401, it means the user is not authenticated, hence redirect the user to the login page
+          handleLogout().then(() => router.push("/auth/path/students/signin/"));
+        }
+        // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
+        console.error(error);
         dispatch({
           type: "ERROR_FETCHING_COURSE",
-          payload: { status: 404, message: error.response.data.message },
+          payload: {
+            status: error.status,
+            message: error.response.data.message,
+          },
         });
+        if (
+          error.response.data.message ===
+          "Your account is not verified. Please check your email for the verification code."
+        )
+          setEmailVerifyModal(true);
         setErrorOccured(true);
-        return;
-      } else if (error.status == 401) {
-        // * if the error status is 401, it means the user is not authenticated, hence redirect the user to the login page
-        handleLogout().then(() => router.push("/auth/path/students/login/"));
       }
-      // * if there was an issue while making the request, or an error response was recieved, display an error message to the user
-      console.error(error);
-      dispatch({
-        type: "ERROR_FETCHING_COURSE",
-        payload: {
-          status: error.status,
-          message: error.response.data.message,
-        },
-      });
-      if (
-        error.response.data.message ===
-        "Your account is not verified. Please check your email for the verification code."
-      )
-        setEmailVerifyModal(true);
-      setErrorOccured(true);
-    }
-  }, [dispatch, router]);
+    },
+    [dispatch, router]
+  );
 
   useEffect(() => {
     const newCourses = collectLinearContentIds(course.data!);
@@ -173,8 +176,8 @@ const SubjectDetailsPage: FC = () => {
   };
 
   useEffect(() => {
-    if (subjectId) getCourse((subjectId as string) || "nil");
-  }, [getCourse, subjectId]);
+    if (courseId) getCourse((courseId as string) || "nil");
+  }, [getCourse, courseId]);
 
   return (
     <>
@@ -195,10 +198,9 @@ const SubjectDetailsPage: FC = () => {
       )}
       <TopicContextProvider course={course.data}>
         <StudentWrapper
-          firstTitle='Courses'
           remark='Manage and get updates on your courses'
-          title={`Courses`}
-          metaTitle={`Olive Groove ~ ${subjectId}`}
+          title='Courses'
+          metaTitle={`Olive Grove ~ ${courseId}`}
         >
           <div className='space-y-5 max-sm:px-6 max-sm:pt-3 px-12 h-full'>
             {course.loading ? (
@@ -295,13 +297,13 @@ const SubjectDetailsPage: FC = () => {
                     </div>
                     <div className='relative'>
                       <div className='flex-none relative w-full block'>
-                        <SideBar courseId={(subjectId as string) || ""} />
+                        <SideBar courseId={(courseId as string) || ""} />
                       </div>
                       {/* MOBILE SIDEBAR */}
                       <AnimatePresence>
                         {showSideBar && (
                           <MobileSideBar
-                            subjectid={(subjectId as string) || ""}
+                            courseId={(courseId as string) || ""}
                           />
                         )}
                       </AnimatePresence>

@@ -169,10 +169,9 @@ const Assessments = () => {
   }, []);
   return (
     <StudentWrapper
-      firstTitle='Assessments'
       remark='Manage, submit and access your assessments.'
       title='Assessments'
-      metaTitle='Olive Groove ~ Assessments'
+      metaTitle='Olive Grove ~ Assessments'
     >
       {isLoading && <Loader />}
       <div className='p-6 sm:p-8 md:p-12 space-y-5'>
@@ -182,15 +181,15 @@ const Assessments = () => {
               key={index}
               assessments
               toggleModal={() => {}}
-              img={subject.teacher.profileImage}
+              img={subject?.teacher?.profileImage}
               // type="assessment"
-              category={subject.assessmentType.name}
-              name={subject.teacher.name}
+              category={subject?.assessmentType?.name}
+              name={subject?.teacher?.name}
               role={"Teacher"}
-              time={subject.dueDate}
-              topic={subject.description}
-              subject={subject.course.title}
-              btnLink2={`/students/assessments/${subject._id?.toLocaleLowerCase()}`}
+              time={subject?.dueDate}
+              topic={subject?.description}
+              subject={subject?.course?.title}
+              btnLink2={`/students/assessments/${subject?._id?.toLocaleLowerCase()}`}
             />
           ))}
         </div>

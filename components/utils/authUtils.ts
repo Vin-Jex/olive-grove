@@ -11,8 +11,6 @@ export const checkLoginStatus = (req?: any) => {
     const userId = cookies.userId;
     const role = cookies.role as TRole | null;
 
-    console.log("User is logged in", role, "server side");
-
     if (!accessToken || !refreshToken || !userId || !role) {
       return { loggedIn: false, message: "Required cookies are missing" };
     }
@@ -28,17 +26,11 @@ export const checkLoginStatus = (req?: any) => {
       message: "User is logged in",
     };
   } else {
-    console.log("CHECKING LOGGED IN FROM THE CLIENT");
-
     // Client-side
     const accessToken = Cookies.get("accessToken");
     const refreshToken = Cookies.get("refreshToken");
     const userId = Cookies.get("userId");
     const role = Cookies.get("role") as TRole | null;
-    console.log(role, "client-side role");
-    console.log(accessToken, "client-side access token");
-    console.log(refreshToken, "client-side refresh token");
-    console.log(userId, "client-side-userId userId");
 
     if (!accessToken || !refreshToken || !userId || !role) {
       return { loggedIn: false, message: "Required cookies are missing" };
@@ -48,8 +40,6 @@ export const checkLoginStatus = (req?: any) => {
     if (!validRoles.includes(role)) {
       return { loggedIn: false, message: "Invalid role" };
     }
-
-    console.log("User is logged in", role, "client side");
 
     return {
       loggedIn: true,

@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
-import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import TableReuse from "@/components/Molecules/Table/TableReuse";
 import Img from "@/public/image/student3.png";
 import SearchInput from "@/components/Atoms/SearchInput";
 import { ArrowBackIos } from "@mui/icons-material";
+import AdminsWrapper from "@/components/Molecules/Layouts/Admin.Layout";
 
 const data = [
   {
@@ -45,9 +45,10 @@ const AssessmentDetailsPage = () => {
   ];
 
   return (
-    <TeachersWrapper
+    <AdminsWrapper
+      isPublic={false}
       title={`Assessment`}
-      metaTitle={`Olive Groove ~ ${assessmentId} assessment`}
+      metaTitle={`Olive Grove ~ ${assessmentId} assessment`}
     >
       <div className='p-12 space-y-5'>
         <div className='flex items-center justify-between'>
@@ -89,8 +90,8 @@ const AssessmentDetailsPage = () => {
           <TableReuse data={searchResults} columns={columns} />
         </div>
       </div>
-    </TeachersWrapper>
+    </AdminsWrapper>
   );
 };
 
-export default withAuth("Teacher", AssessmentDetailsPage);
+export default withAuth("Admin", AssessmentDetailsPage);

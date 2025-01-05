@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
 import Button from '@/components/Atoms/Button';
-import Input from '@/components/Atoms/Input';
 import axiosInstance from '@/components/utils/axiosInstance';
 import { baseUrl } from '@/components/utils/baseURL';
 import { Alert, Snackbar } from '@mui/material';
@@ -25,8 +24,8 @@ export default function EmailVerifyModal({
   const {
     otpRequestLoading,
     handleRequestOTP,
-    somethingOccured,
-    setSomethingOccured,
+    message,
+    setMessage,
     verifyOTP,
     OTPTimer,
   } = useUserVerify();
@@ -42,7 +41,7 @@ export default function EmailVerifyModal({
         `${baseUrl}/email/verify`,
         request_body
       );
-      setSomethingOccured({
+      setMessage({
         success: true,
         error: false,
         message: response.data.message,
@@ -58,6 +57,7 @@ export default function EmailVerifyModal({
   return (
     <div>
       <Modal
+        type='verify_email'
         isOpen={modalOpen}
         onClose={handleModalClose}
         className='w-[80%] sm:w-[70%] md:w-[602px] bg-white backdrop-blur-[10px] rounded-3xl'
@@ -83,10 +83,9 @@ export default function EmailVerifyModal({
           </div>
           <div>
             <OTPInput length={6} onChange={setOtp} />
-            <div>
+            <div className='mx-auto flex items-center gap-4'>
               <Button
                 size='sm'
-                className='mx-auto'
                 onClick={(e) => {
                   e.preventDefault();
                   handleEmailVerify(otp);
@@ -99,16 +98,16 @@ export default function EmailVerifyModal({
                   'send OTP'
                 )}
               </Button>
-              <span>{OTPTimer}</span>
+              {OTPTimer > 0 && <span className='text-subtext'>{OTPTimer}</span>}
             </div>
           </div>
         </div>
       </Modal>
-      {(somethingOccured.error || somethingOccured.success) && (
+      {(message.error || message.success) && (
         <Snackbar
-          open={somethingOccured.success || somethingOccured.error}
+          open={message.success || message.error}
           onClose={() =>
-            setSomethingOccured((err) => ({
+            setMessage((err) => ({
               ...err,
               error: false,
               success: false,
@@ -119,17 +118,17 @@ export default function EmailVerifyModal({
           className='!z-[999]'
         >
           <Alert
-            severity={somethingOccured.error ? 'error' : 'success'}
+            severity={message.error ? 'error' : 'success'}
             onClose={() =>
-              // setSomethingOccured((err) => ({ ...err, error: false }))
-              setSomethingOccured((err) => ({
+              // setMessage((err) => ({ ...err, error: false }))
+              setMessage((err) => ({
                 ...err,
                 error: false,
                 success: false,
               }))
             }
           >
-            {somethingOccured.message}
+            {message.message}
           </Alert>
         </Snackbar>
       )}

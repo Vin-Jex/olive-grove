@@ -1,58 +1,37 @@
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
-import { useSidebarContext } from "@/contexts/SidebarContext";
 import Meta from "@/components/Atoms/Meta";
 import LogoutWarningModal from "../Modal/LogoutWarningModal";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
-import CustomCursor from "../CustomCursor";
 import { baseUrl } from "@/components/utils/baseURL";
 import axiosInstance from "@/components/utils/axiosInstance";
-import { constrainedMemory } from "process";
+import { useUser } from "@/contexts/UserContext";
+import VerificationModal from "../Modal/VerificationModal";
 
 export const handleLogout = async () => {
   const role = Cookies.get("role");
   try {
-    // const refreshToken = Cookies.get('refreshToken');
-    // const accessToken = Cookies.get('accessToken');
-    // const response = await fetch(`${baseUrl}/${role?.toLowerCase()}-logout`, {
-    //   method: 'POST',
-    //   // credentials: 'include',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Authorization: `Bearer accessToken=${accessToken};requestToken=${refreshToken}`,
-    //   },
-    // });
-
-    // if (!response.ok) {
-    //   await response.json();
-    //   console.log(response, 'this section');
-    //   return;
-    // }
-
     const response = await axiosInstance.post(
       `${baseUrl}/${role?.toLowerCase()}-logout`
     );
-    console.log(response, "this section");
+
     if (!response) return;
 
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
     Cookies.remove("role");
     Cookies.remove("userId");
-
-    // setTimeout(() => {
-    //   window.location.href = '/auth/path/teachers/login/';
-    // }, 500);
   } catch (error) {
-    console.log("Status: ", error);
+    console.error("Status: ", error);
   }
 };
 
 interface AdminWrapperProps {
   children: ReactNode;
   title: string;
+  isPublic: boolean;
   metaTitle?: string;
   description?: string;
 }
@@ -61,13 +40,19 @@ const AdminsWrapper = ({
   title,
   metaTitle,
   description,
+  isPublic = true,
   children,
 }: AdminWrapperProps) => {
-  // const { active } = useSidebarContext();
   const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const { user } = useUser();
+
+  const handleVerifyOpen = () => {
+    setIsOpen((prev) => !prev);
+  };
 
   const toggleSidenav = () => {
     setIsSidenavOpen(!isSidenavOpen);
@@ -77,17 +62,28 @@ const AdminsWrapper = ({
     setWarningModal(!warningModal);
   };
 
-  return (
-    <div className="w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center">
-      {/*<customcursor />*/}
+  useEffect(() => {
+    if (user && !isPublic) {
+      if (!user.isVerified) {
+        setIsOpen(true);
+      }
+    }
+  }, [isPublic, user]);
 
+  return (
+    <div className='w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center'>
       <Meta title={metaTitle || "Dashboard"} description={description} />
       <LogoutWarningModal
         handleModalClose={handleWarning}
         handleConfirm={() => {
-          handleLogout().then(() => router.push("/auth/path/teachers/login/"));
+          handleLogout().then(() => router.push("/auth/path/teachers/signin"));
         }}
         modalOpen={warningModal}
+      />
+
+      <VerificationModal
+        modalOpen={isOpen}
+        handleModalClose={handleVerifyOpen}
       />
 
       <aside
@@ -97,7 +93,7 @@ const AdminsWrapper = ({
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
-      <div className="w-full">
+      <div className='w-full'>
         <div
           className={`${
             active ? "" : ""
@@ -109,20 +105,16 @@ const AdminsWrapper = ({
             } transition-all ease-in-out duration-500`}
           ></div>
           <nav className={`w-full md:px-4 lg:px-12`}>
-            <AdminNav
-              isOpen={isSidenavOpen}
-              toggleSidenav={toggleSidenav}
-              title={title}
-            />
+            <AdminNav toggleSidenav={toggleSidenav} title={title} />
           </nav>
         </div>
-        <main className="w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20">
+        <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
           <div
             className={`${
               active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
             } transition-all ease-in-out duration-500`}
           ></div>
-          <div className="min-h-screen w-full z-10">{children}</div>
+          <div className='min-h-screen w-full z-10'>{children}</div>
         </main>
       </div>
     </div>

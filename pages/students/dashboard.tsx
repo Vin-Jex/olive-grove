@@ -1,7 +1,11 @@
-import Cookies from "js-cookie";
 import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
 import React, { useEffect, useState } from "react";
 import Img from "@/public/image/welcome_img.svg";
+import disturbance1 from "@/public/image/disturbance1.png";
+import disturbance2 from "@/public/image/disturbance2.png";
+import disturbance3 from "@/public/image/disturbance3.png";
+import disturbance4 from "@/public/image/disturbance4.png";
+import disturbance5 from "@/public/image/disturbance5.png";
 import Image from "next/image";
 import ClassCard from "@/components/Molecules/Card/ClassCard";
 import withAuth from "@/components/Molecules/WithAuth";
@@ -10,6 +14,7 @@ import Calendar from "@/components/Molecules/Calendar";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { TodayClass } from "@/data/data";
 import DepartmentModal from "@/components/Molecules/Modal/DepartmentModal";
+import { TUser } from "@/components/utils/types";
 
 type TCourseInfo = { courseId: string; courseName: string };
 type TAssessmentInfo = { assessmentId: string; title: string };
@@ -46,9 +51,6 @@ function Card({ header, main, footer = "" }: CardProps) {
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalAss, setOpenModalAss] = useState(false);
-  // const [studentInfo, setStudentInfo] = useState({
-  //   firstName: '',
-  // });
   const [dashboardInfo, setDashboardInfo] = useState({
     deparment: "",
     accademicSession: "",
@@ -56,37 +58,53 @@ const Dashboard = () => {
     upcomingCourses: [] as TCourseInfo[],
     upcomingAssessments: [] as TAssessmentInfo[],
   });
-  const userId = Cookies.get("userId");
-  const firstName = localStorage.getItem(`profileInfo_Student_${userId}`);
+  const [user, setUser] = useState<TUser | null>(null);
+
   useEffect(() => {
     async function getUserInfo() {
-      // async function fetchStudentProfile() {
-      //   try {
-      //     const response = await axiosInstance.get(`${baseUrl}/student`);
-      //     setStudentInfo({
-      //       firstName: response.data.firstName,
-      //     });
-      //   } catch (err) {
-      //     //how to display error.
-      //   }
-      // }
+      async function fetchAcademicSession() {
+        try {
+          const response = await axiosInstance.get(
+            `${baseUrl}/academic-sections`
+          );
+          setDashboardInfo((prev) => ({
+            ...prev,
+            accademicSession: response.data.data[0]?.sectionName,
+          }));
+        } catch (err) {}
+      }
+      async function fetchCourses() {
+        try {
+          const response = await axiosInstance.get(
+            `${baseUrl}/courses/student`
+          );
+          setDashboardInfo((prev) => ({
+            ...prev,
+            enrolledCourses: response.data.data,
+          }));
+        } catch (err) {
+          //how to display error
+          console.error("Error fetching courses", err);
+        }
+      }
       async function fetchDashboardContent() {
         try {
           const response = (await axiosInstance.get(
             `${baseUrl}/student/dashboard`
           )) as TResponse;
-          setDashboardInfo({
+          setDashboardInfo((prev) => ({
+            ...prev,
             deparment: response.data.department,
-            accademicSession: response.data.academicSection,
-            enrolledCourses: response.data.enrolledCourses,
             upcomingAssessments: response.data.upcomingAssessments,
             upcomingCourses: response.data.upcomingCourses,
-          });
-        } catch (err) {
-          //how to display error.
-        }
+          }));
+        } catch (err) {}
       }
-      await Promise.all([fetchDashboardContent()]);
+      await Promise.all([
+        fetchDashboardContent(),
+        fetchAcademicSession(),
+        fetchCourses(),
+      ]);
     }
     getUserInfo();
   }, []);
@@ -110,18 +128,21 @@ const Dashboard = () => {
         modalOpen={openModalAss}
       />
       <StudentWrapper
-        firstTitle='Dashboard'
+        title='Dashboard'
         remark='See overview and summary of your studies.'
-        metaTitle='Olive Groove ~ Dashboard'
+        metaTitle='Olive Grove - Track Your Academic Adventures'
+        setUser={setUser}
+        isPublic={false}
       >
         <div className='p-4 sm:p-6 md:p-8 lg:p-12 space-y-11'>
-          {/* start */}
           <div className='max-sm:space-y-5 xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
-            <div className='bg-primary max-sm:mt-4 max-sm:min-h-[170px] w-full rounded-3xl font-roboto relative overflow-hidden h-full '>
+            <div className='bg-primary max-sm:mt-4 max-sm:min-h-[170px] w-full rounded-3xl font-roboto relative overflow-hidden h-full'>
               <div className='flex flex-col h-full justify-center my-auto px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
                 <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
                   Welcome back,{" "}
-                  {firstName && JSON.parse(firstName!).data.firstName}
+                  {user && ("firstName" && "lastName") in user
+                    ? user?.firstName + " " + user?.lastName
+                    : "Guest"}
                 </h3>
                 <span className='text-base text-light/80 font-roboto'>
                   You have 3 classes and 2 assignments to attend to.
@@ -139,12 +160,36 @@ const Dashboard = () => {
                   height={300}
                 />
               </div>
+              <Image
+                src={disturbance1}
+                alt={`${disturbance1} Pics`}
+                className='absolute left-[25%] top-0 object-scale-down'
+              />
+              <Image
+                src={disturbance5}
+                alt={`${disturbance5} Pics`}
+                className='absolute left-[55%] top-0 object-scale-down'
+              />
+              <Image
+                src={disturbance2}
+                alt={`${disturbance2} Pics`}
+                className='absolute left-0 top-0 object-scale-down'
+              />
+              <Image
+                src={disturbance3}
+                alt={`${disturbance3} Pics`}
+                className='absolute left-0 bottom-0 object-scale-down'
+              />
+              <Image
+                src={disturbance4}
+                alt={`${disturbance4} Pics`}
+                className='absolute left-[35%] bottom-0 object-scale-down'
+              />
             </div>
             <div className=' relative rounded-lg h-max'>
               <Calendar />
             </div>
           </div>
-          {/* <div className="flex flex-col px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 md:py-6 lg:py-7 border-2 w-full rounded-3xl font-roboto gap-4 sm:gap-5 md:gap-6"> */}
 
           <div className='grid  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 max-sm:gap-5 gap-10 '>
             <Card
@@ -165,15 +210,16 @@ const Dashboard = () => {
                   : dashboardInfo.enrolledCourses.length.toString()
               }
               footer={
-                !dashboardInfo.enrolledCourses
-                  ? ""
-                  : dashboardInfo.enrolledCourses.join(" ,")
+                // !dashboardInfo.enrolledCourses
+                //   ? ''
+                //   : dashboardInfo.enrolledCourses.join(' ,')
+                ""
               }
             />
             <Card
               header='Current Session'
               main={dashboardInfo.accademicSession}
-              footer='NExt session starts in 3 months'
+              footer='Next session starts in 3 months'
             />
           </div>
           {/* </div> */}

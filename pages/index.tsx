@@ -42,7 +42,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <Layout title='Olive Groove School'>
+    <Layout title='Olive Grove School'>
       <div className='mx-auto scroll-smooth duration-500 transition-all relative'>
         {/* Hero Section */}
         <Hero />
@@ -289,6 +289,3 @@ const Home: React.FC = () => {
 };
 
 export default Home;
-//  Students have the convenience of submitting their work directly through our platform.
-// Teachers can easily manage and organize their classes through our intuitive teacher portals.
-//  Access your personalized student portal for a tailored learning experience.

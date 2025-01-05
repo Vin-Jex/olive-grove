@@ -2,8 +2,6 @@ import Cookies from "js-cookie";
 import { TCourseModalFormData } from "@/components/utils/types";
 import { TCourse, TFetchState, TResponse } from "../types";
 import { TCourseDispatch } from "@/contexts/CourseContext";
-import { baseUrl } from "../baseURL";
-import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
 import axiosInstance from "../axiosInstance";
 
 /**
@@ -202,7 +200,7 @@ export const editItem = async (
  * }
  */
 export const fetchCourses = async (filter?: {
-  query: "title";
+  query: "title" | string;
   value: string;
 }): Promise<{ data: TCourse[] } | string> => {
   try {
