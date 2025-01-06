@@ -1,22 +1,32 @@
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import React, { useState } from "react";
+import { ChevronLeft, ChevronRight } from '@mui/icons-material';
+import React, { FC, useState } from 'react';
 
 const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
-const Calendar = () => {
+type CalendarProp = {
+  startDate?: Date;
+  endDate?: Date;
+  setStudentInfoByDate?: React.Dispatch<React.SetStateAction<Date>>;
+};
+
+const Calendar: FC<CalendarProp> = ({
+  startDate,
+  endDate,
+  setStudentInfoByDate,
+}) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentMontFirstDay, setCurrentMonthFirstDay] = useState(
     new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
@@ -54,24 +64,28 @@ const Calendar = () => {
       new Date(currentDate.getFullYear(), currentDate.getMonth() + 2, 0)
     );
   }
+
   return (
     <div className='bg-white border p-6 h-full rounded-lg'>
       <header className='flex justify-between items-center w-full'>
-        <button className='' onClick={handlePreviousMonth}>
+        <button
+          disabled={
+            `${currentDate.getFullYear()}-${currentDate.getMonth()}` ===
+            `${startDate?.getFullYear()}-${startDate?.getMonth()}`
+          }
+          className='disabled:cursor-not-allowed'
+          onClick={handlePreviousMonth}
+        >
           <ChevronLeft />
         </button>
         <span className=' text-center'>
           {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
-        </span>
+      </span>
         <button
-          className=''
+          className='disabled:cursor-not-allowed'
           disabled={
-            currentDate.getTime() ===
-            new Date(
-              new Date().getFullYear(),
-              new Date().getMonth(),
-              1
-            ).getTime()
+            `${currentDate.getFullYear()}-${currentDate.getMonth()}` ===
+            `${new Date().getFullYear()}-${new Date().getMonth()}`
           }
           onClick={handleNextMonth}
         >
@@ -91,11 +105,23 @@ const Calendar = () => {
         {Array(currentMontFirstDay.getDay() + lastDayOfCurrentMonth.getDate())
           .fill(0)
           .map((_, i) => (
-            <div
+            <button
               key={i}
+              disabled={
+                startDate && endDate
+                  ? !(
+                      currentDate.setDate(
+                        i + 1 - currentMontFirstDay.getDay()
+                      ) >= startDate?.getTime() &&
+                      currentDate.setDate(
+                        i + 1 - currentMontFirstDay.getDay()
+                      ) <= endDate?.getTime()
+                    )
+                  : true
+              }
               className={`${
-                markToday(currentDate, i) && "bg-[#3F51B5] text-white "
-              }  h-[35px] relative pb-2 pt-2 cursor-pointer  w-[35px] flex items-center justify-center px-2 rounded-full`}
+                markToday(currentDate, i) && 'bg-[#3F51B5] text-white '
+              }  h-[35px] relative pb-2 pt-2 cursor-pointer disabled:cursor-not-allowed w-[35px] flex items-center justify-center px-2 rounded-full`}
             >
               {i < 7 && i < currentMontFirstDay.getDay() ? (
                 <span></span>
@@ -106,7 +132,7 @@ const Calendar = () => {
                   {i + 1 - currentMontFirstDay.getDay()}
                 </div>
               )}
-            </div>
+            </button>
           ))}
       </main>
     </div>

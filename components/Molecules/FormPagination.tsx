@@ -11,7 +11,7 @@ const FormPagination = (props: {
     <div className='flex gap-4 py-4 mx-auto'>
       {Array.from({ length: props.number }, (_, i) => (
         <button
-          disabled={i > 0 && props.isDisabled[i - 1]}
+          disabled={i > props.index}
           key={i}
           onClick={() => {
             props.onChange(i);

@@ -1,22 +1,22 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import Link from "next/link";
-import Input from "@/components/Atoms/Input";
-import Button from "@/components/Atoms/Button";
-import { Info } from "@mui/icons-material";
-import File from "@/components/Atoms/File";
-import { baseUrl } from "@/components/utils/baseURL";
-import { useRouter } from "next/router";
-import InputField from "@/components/Atoms/InputField";
-import { Alert, CircularProgress, Snackbar } from "@mui/material";
-import { fetchCourses } from "@/components/utils/course";
-import { InputType, TCourse } from "@/components/utils/types";
-import OTPInput from "@/components/Molecules/OTPInput";
-import useUserVerify from "@/components/utils/hooks/useUserVerify";
-import MultipleSelect from "@/components/Molecules/MaterialSelect";
-import FormPagination from "@/components/Molecules/FormPagination";
-import axios, { AxiosError } from "axios";
-import AuthLayout from "./layout";
-import Cookies from "js-cookie";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import Link from 'next/link';
+import Input from '@/components/Atoms/Input';
+import Button from '@/components/Atoms/Button';
+import { Info } from '@mui/icons-material';
+import File from '@/components/Atoms/File';
+import { baseUrl } from '@/components/utils/baseURL';
+import { useRouter } from 'next/router';
+import InputField from '@/components/Atoms/InputField';
+import { Alert, CircularProgress, Snackbar } from '@mui/material';
+import { fetchCourses } from '@/components/utils/course';
+import { InputType, TCourse } from '@/components/utils/types';
+import OTPInput from '@/components/Molecules/OTPInput';
+import useUserVerify from '@/components/utils/hooks/useUserVerify';
+import MultipleSelect from '@/components/Molecules/MaterialSelect';
+import FormPagination from '@/components/Molecules/FormPagination';
+import axios, { AxiosError } from 'axios';
+import AuthLayout from './layout';
+import Cookies from 'js-cookie';
 
 export type SignupType = {
   firstName: string;
@@ -39,56 +39,47 @@ type DeptData = {
 
 const StudentSignup = () => {
   const router = useRouter();
-  const {
-    otpRequestLoading,
-    handleRequestOTP,
-    message,
-    setMessage,
-    verifyOTP,
-    OTPTimer,
-  } = useUserVerify();
+  const { otpRequestLoading, handleRequestOTP, message, setMessage, OTPTimer } =
+    useUserVerify();
   const [selectedImage, setSelectedImage] = useState<
     Blob | null | string | undefined
   >(null);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState('');
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [fetchedDept, setFetchedDept] = useState<DeptData[]>([]);
   const [availableCourse, setAvailableCourses] = useState<TCourse[]>([]);
-  // const [tokens, setTokens] = useState<{
-  //   accessToken: string;
-  //   refreshToken: string;
-  // } | null>(null);
   const [formState, setFormState] = useState<SignupType>({
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    department: "",
-    email: "",
-    dob: "",
+    firstName: '',
+    lastName: '',
+    middleName: '',
+    department: '',
+    email: '',
+    dob: '',
     enrolledSubjects: [],
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
   const [formError, setFormError] = useState({
-    internetError: "",
-    firstNameError: "",
-    lastNameError: "",
-    enrolledSubjectsError: "",
-    dobError: "",
-    emailError: "",
-    departmentError: "",
-    usernameError: "",
-    passwordError: "",
-    profileImageError: "",
-    successError: "",
-    generalError: "",
+    internetError: '',
+    firstNameError: '',
+    lastNameError: '',
+    enrolledSubjectsError: '',
+    dobError: '',
+    emailError: '',
+    departmentError: '',
+    usernameError: '',
+    passwordError: '',
+    profileImageError: '',
+    successError: '',
+    generalError: '',
   });
   const [isDisabled, setIsDisabled] = useState<boolean[]>(Array(3).fill(true));
 
   const [isLoading, setIsLoading] = useState(false);
   const [currentFormIndex, setCurrentFormIndex] = useState(0);
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState('');
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
+  const [firstName, setFirstName] = useState('');
 
   const inputFields: (
     | {
@@ -107,31 +98,31 @@ const StudentSignup = () => {
       }
   )[] = [
     {
-      label: "Last Name *",
-      name: "lastName",
-      type: "text",
+      label: 'Last Name *',
+      name: 'lastName',
+      type: 'text',
       required: true,
       error: formError.lastNameError,
     },
     {
-      label: "Date of Birth *",
-      name: "dob",
-      type: "date",
+      label: 'Date of Birth *',
+      name: 'dob',
+      type: 'date',
       required: true,
       error: formError.dobError,
     },
 
     {
-      label: "Username *",
-      name: "username",
-      type: "text",
+      label: 'Username *',
+      name: 'username',
+      type: 'text',
       required: true,
       error: formError.usernameError,
     },
     {
-      label: "Password *",
-      name: "password",
-      type: "password",
+      label: 'Password *',
+      name: 'password',
+      type: 'password',
       required: true,
       error: formError.passwordError,
     },
@@ -139,20 +130,20 @@ const StudentSignup = () => {
 
   useEffect(() => {
     if (
-      formState.dob !== "" &&
-      formState.middleName !== "" &&
-      formState.username !== "" &&
-      formState.firstName !== "" &&
-      formState.lastName !== "" &&
-      formState.department !== "" &&
-      formState.password !== "" &&
+      formState.dob !== '' &&
+      formState.middleName !== '' &&
+      formState.username !== '' &&
+      formState.firstName !== '' &&
+      formState.lastName !== '' &&
+      formState.department !== '' &&
+      formState.password !== '' &&
       selectedImage !== null
     ) {
       setIsDisabled((c) => c.map((e, i) => (i === 0 ? false : e)));
     }
-    if (formState.email !== "" && formState.enrolledSubjects.length !== 0)
+    if (formState.email !== '' && formState.enrolledSubjects.length !== 0)
       setIsDisabled((c) => c.map((e, i) => (i === 1 ? false : e)));
-    if (otp !== "")
+    if (otp !== '')
       setIsDisabled((c) => c.map((e, i) => (i === 2 ? false : e)));
   }, [
     formState.dob,
@@ -175,14 +166,14 @@ const StudentSignup = () => {
         if (!response.ok) {
           setFormError((prevState) => ({
             ...prevState,
-            departmentError: "Error fetching department",
+            departmentError: 'Error fetching department',
           }));
         }
         const dept = await response.json();
 
         setFetchedDept(dept.data);
       } catch (err) {
-        console.error(err, "error");
+        console.error(err, 'error');
       }
     }
     fetchDepartment();
@@ -191,10 +182,10 @@ const StudentSignup = () => {
   useEffect(() => {
     async function getCourses() {
       const courses = await fetchCourses({
-        query: "department",
+        query: 'department',
         value: formState.department,
       });
-      if (typeof courses === "string") return;
+      if (typeof courses === 'string') return;
       else setAvailableCourses(courses.data);
     }
     getCourses();
@@ -214,30 +205,29 @@ const StudentSignup = () => {
   const resetForm = () => {
     setFormState((prevState) => ({
       ...prevState,
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      username: "",
-      department: "",
-      dob: "",
-      email: "",
-      password: "",
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      username: '',
+      department: '',
+      dob: '',
+      email: '',
+      password: '',
     }));
     setSelectedImage(null);
-    setFileName("");
+    setFileName('');
     setPreviewImage(null);
   };
 
   const resetImageField = () => {
     setSelectedImage(null);
-    setFileName("");
+    setFileName('');
     setPreviewImage(null);
   };
 
-  async function handleEmailVerify(
-    otp: string,
-    token?: { accessToken: string; refreshToken: string } | null
-  ) {
+  async function handleEmailVerify(otp: string) {
+    const accessToken = Cookies.get('accessToken');
+    const refreshToken = Cookies.get('refreshToken');
     try {
       setEmailVerifyLoading(true);
       const request_body = JSON.stringify({ otp });
@@ -246,8 +236,8 @@ const StudentSignup = () => {
         request_body,
         {
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer accessToken=${token?.accessToken};refreshToken=${token?.refreshToken}`,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer accessToken=${accessToken};refreshToken=${refreshToken}`,
           },
         }
       );
@@ -260,7 +250,7 @@ const StudentSignup = () => {
         message: response.data.message,
       });
     } catch (err: AxiosError | any) {
-      console.error("otp error", otp);
+      console.error('otp error', otp);
       setMessage({
         success: false,
         error: true,
@@ -276,7 +266,7 @@ const StudentSignup = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       return;
     }
@@ -285,7 +275,7 @@ const StudentSignup = () => {
     if (!formState.email.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        emailError: "Email field cannot be empty",
+        emailError: 'Email field cannot be empty',
       }));
       return;
     }
@@ -293,7 +283,7 @@ const StudentSignup = () => {
     if (!formState.password.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        passwordError: "Password field cannot be empty",
+        passwordError: 'Password field cannot be empty',
       }));
       return;
     }
@@ -334,13 +324,13 @@ const StudentSignup = () => {
         profileImageError: data.message.profileImage,
       }));
     } else {
-      console.error("Error Message: ", data.error);
+      console.error('Error Message: ', data.error);
     }
 
     if (data.error) {
       setFormError((prevState) => ({
         ...prevState,
-        generalError: data.error,
+        generalError: data.message || data.error,
       }));
     }
 
@@ -368,18 +358,18 @@ const StudentSignup = () => {
   const clearError = () => {
     setTimeout(() => {
       setFormError({
-        internetError: "",
-        firstNameError: "",
-        lastNameError: "",
-        enrolledSubjectsError: "",
-        departmentError: "",
-        dobError: "",
-        emailError: "",
-        usernameError: "",
-        passwordError: "",
-        profileImageError: "",
-        successError: "",
-        generalError: "",
+        internetError: '',
+        firstNameError: '',
+        lastNameError: '',
+        enrolledSubjectsError: '',
+        departmentError: '',
+        dobError: '',
+        emailError: '',
+        usernameError: '',
+        passwordError: '',
+        profileImageError: '',
+        successError: '',
+        generalError: '',
       });
     }, 7000);
   };
@@ -392,7 +382,7 @@ const StudentSignup = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       setIsLoading(false);
       clearError();
@@ -400,18 +390,18 @@ const StudentSignup = () => {
     }
 
     const formData = new FormData();
-    formData.append("profileImage", selectedImage as Blob);
+    formData.append('profileImage', selectedImage as Blob);
 
     // Append other form fields to the FormData object
     Object.entries(formState).forEach(([key, value]) => {
-      if (key === "enrolledSubjects") {
+      if (key === 'enrolledSubjects') {
         formData.append(key, JSON.stringify(value));
       } else formData.append(key, value as string);
     });
 
     try {
       const response = await fetch(`${baseUrl}/student-signup`, {
-        method: "POST",
+        method: 'POST',
         body: formData,
       });
 
@@ -422,6 +412,7 @@ const StudentSignup = () => {
       }
 
       const data = await response.json();
+      data && setFirstName(data?.details?.firstName);
       setCurrentFormIndex((c) => c + 1);
 
       const accessToken = data.token.accessToken;
@@ -430,29 +421,27 @@ const StudentSignup = () => {
       const userRole = data.details.role;
 
       accessToken !== undefined &&
-        Cookies.set("accessToken", accessToken, { expires: 1 });
+        Cookies.set('accessToken', accessToken, { expires: 1 });
       refreshToken !== undefined &&
-        Cookies.set("refreshToken", refreshToken, { expires: 1 });
-      userId !== undefined && Cookies.set("userId", userId, { expires: 1 });
-      userRole !== undefined && Cookies.set("role", userRole, { expires: 1 });
+        Cookies.set('refreshToken', refreshToken, { expires: 1 });
+      userId !== undefined && Cookies.set('userId', userId, { expires: 1 });
+      userRole !== undefined && Cookies.set('role', userRole, { expires: 1 });
       setFormError((prevState) => ({
         ...prevState,
-        successError: "Student account created successfully.",
+        successError: 'Student account created successfully.',
       }));
 
-      // Reset the form after successful submission
       resetForm();
     } catch (error) {
-      console.error("Error: ", error);
+      console.error('Error: ', error);
     } finally {
-      setIsDisabled((c) => c.map((_, i) => (i === 3 ? true : false)));
       setIsLoading(false);
       clearError();
     }
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === "Enter") {
+    if (isDisabled && event.key === 'Enter') {
       handleSignup(event);
     }
   };
@@ -484,38 +473,38 @@ const StudentSignup = () => {
 
           {formError.usernameError ? (
             <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: "1.1rem" }} />
+              <Info sx={{ fontSize: '1.1rem' }} />
               {formError.usernameError}
             </span>
           ) : formError.passwordError ? (
             <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: "1.1rem" }} />
+              <Info sx={{ fontSize: '1.1rem' }} />
               {formError.passwordError}
             </span>
           ) : formError.internetError ? (
             <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               {formError.internetError}
             </span>
           ) : formError.successError ? (
             <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               {formError.successError}
             </span>
           ) : formError.departmentError ? (
             <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               {formError.departmentError}
             </span>
           ) : formError.generalError ? (
             <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               <span>{formError.generalError}</span>
             </span>
           ) : null}
-          {formError.profileImageError !== "" && (
+          {formError.profileImageError !== '' && (
             <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-red-600'>
-              <Info sx={{ fontSize: "1.1rem" }} />
+              <Info sx={{ fontSize: '1.1rem' }} />
               {formError.profileImageError}
             </span>
           )}
@@ -547,7 +536,7 @@ const StudentSignup = () => {
                     placeholder='Middle Name'
                     value={formState.middleName}
                     onChange={handleChange}
-                    error={""}
+                    error={''}
                   />
                 </div>
                 <div className='w-full '>
@@ -570,24 +559,23 @@ const StudentSignup = () => {
                   </select>
                 </div>
                 {inputFields.map((field) =>
-                  field.name !== "password" ? (
+                  field.name !== 'password' ? (
                     <InputField
-                      
                       placeholder={field.label}
                       key={field.name}
                       name={field.name}
                       type={field.type}
                       pattern={
-                        field.name === "username"
-                          ? "[a-zA-Z0-9!@#$_%].{5,}$"
+                        field.name === 'username'
+                          ? '[a-zA-Z0-9!@#$_%].{5,}$'
                           : undefined
                       }
                       title={
-                        field.name === "email"
-                          ? "Please enter a valid email address"
-                          : field.name === "username"
-                          ? "Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)"
-                          : ""
+                        field.name === 'email'
+                          ? 'Please enter a valid email address'
+                          : field.name === 'username'
+                          ? 'Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
+                          : ''
                       }
                       value={formState[field.name as keyof SignupType]}
                       onChange={handleChange}
@@ -618,8 +606,9 @@ const StudentSignup = () => {
                     onChange={handleImageChange}
                     disabled={false}
                     resetImageStates={resetImageField}
+                    accept='image/jpeg, image/png, image/jpg'
                     placeholder={
-                      fileName === "" ? fileName : "Upload Profile Picture"
+                      fileName === '' ? fileName : 'Upload Profile Picture'
                     }
                     required
                     fileName={fileName}
@@ -675,23 +664,17 @@ const StudentSignup = () => {
                   disabled={isLoading || isDisabled[1]}
                   width='full'
                   type='submit'
-                  // /*type='submit'*/ onClick={() =>
-                  //   setCurrentFormIndex((c) => c + 1)
-                  // }
                   size='md'
                 >
                   {isLoading ? (
                     <CircularProgress size={20} color='inherit' />
                   ) : (
-                    "Complete"
+                    'Complete'
                   )}
                 </Button>
               </div>
             )}
-            {/* second form step */}
-            {/* third part of the step form */}
 
-            {/**forth part of the form */}
             {currentFormIndex === 2 && (
               <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
                 <span className='text-center text-subtext'>
@@ -703,7 +686,7 @@ const StudentSignup = () => {
                     width='full'
                     onClick={(e) => {
                       e.preventDefault();
-                      handleRequestOTP("email_verification");
+                      handleRequestOTP('email_verification');
                       setCurrentFormIndex((c) => c + 1);
                     }}
                     className='mx-auto text-center'
@@ -711,7 +694,7 @@ const StudentSignup = () => {
                     {otpRequestLoading ? (
                       <CircularProgress size={20} color='inherit' />
                     ) : (
-                      "Verify Now"
+                      'Verify Now'
                     )}
                   </Button>
                   <Link
@@ -757,7 +740,7 @@ const StudentSignup = () => {
                   {emailVerifyLoading ? (
                     <CircularProgress size={20} />
                   ) : (
-                    "Verify"
+                    'Verify'
                   )}
                 </Button>
                 <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
@@ -765,7 +748,8 @@ const StudentSignup = () => {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      handleRequestOTP("email_verification");
+                      setOtp('');
+                      handleRequestOTP('email_verification');
                     }}
                     className='text-primary'
                   >
@@ -773,11 +757,11 @@ const StudentSignup = () => {
                   </button>
                   <span className='text-subtext ml-6'>
                     {String(Math.floor(OTPTimer / 60)).length < 2
-                      ? String(Math.floor(OTPTimer / 60)).padStart(2, "0")
+                      ? String(Math.floor(OTPTimer / 60)).padStart(2, '0')
                       : Math.floor(OTPTimer / 60)}
                     :
                     {String(OTPTimer % 60).length < 2
-                      ? String(OTPTimer % 60).padStart(2, "0")
+                      ? String(OTPTimer % 60).padStart(2, '0')
                       : OTPTimer % 60}
                   </span>
                 </div>
@@ -789,7 +773,7 @@ const StudentSignup = () => {
               <div className='flex flex-col mx-auto gap-y-5 w-[490px] justify-center items-center'>
                 <SignUpCompleteIcon />
                 <h2 className='font-bold text-xl md:text-2xl lg:text-3xl'>
-                  Welcome {"Eniola"}!
+                  Welcome {firstName}!
                 </h2>
                 <span className='text-lg max-sm:text-base text-[#1e1e1e] text-opacity-50'>
                   Your account has been created successfully!
@@ -803,16 +787,14 @@ const StudentSignup = () => {
               </div>
             )}
 
-            {/* second form step */}
-
-            {/* third part of the step form */}
-
-            <FormPagination
-              isDisabled={isDisabled}
-              index={currentFormIndex}
-              number={4}
-              onChange={setCurrentFormIndex}
-            />
+            {currentFormIndex !== 4 && (
+              <FormPagination
+                isDisabled={isDisabled}
+                index={currentFormIndex}
+                number={4}
+                onChange={setCurrentFormIndex}
+              />
+            )}
           </form>
         </div>
       </div>
@@ -828,11 +810,11 @@ const StudentSignup = () => {
             }))
           }
           autoHideDuration={6000}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           className='!z-[999]'
         >
           <Alert
-            severity={message.error ? "error" : "success"}
+            severity={message.error ? 'error' : 'success'}
             onClose={() => setMessage((err) => ({ ...err, error: false }))}
           >
             {message.message}
