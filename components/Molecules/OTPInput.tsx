@@ -23,6 +23,15 @@ const OTPInput: React.FC<OTPInputProps> = ({ length, onChange, className }) => {
     }
   };
 
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
   return (
     <div
       className={className}
@@ -36,6 +45,7 @@ const OTPInput: React.FC<OTPInputProps> = ({ length, onChange, className }) => {
           value={digit}
           ref={(ref) => (inputRefs.current[index] = ref as HTMLInputElement)}
           onChange={(e) => handleChange(e.target.value, index)}
+          onKeyDown={(e) => handleKeyDown(e, index)}
           maxLength={1}
           style={{
             width: '40px',
