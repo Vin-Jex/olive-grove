@@ -131,7 +131,7 @@ const TeachersProfile = () => {
         { value: "prefer_not_to_say", display_value: "Prefer not to say" },
       ],
     },
-  ];
+    ];
 
   const getInfo = useCallback(async () => {
     try {
