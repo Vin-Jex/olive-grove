@@ -1,9 +1,9 @@
-import Meta from "@/components/Atoms/Meta";
-import Image from "next/image";
-import React, { ReactNode } from "react";
-import LayoutImage from "@/public/image/student7.png";
-import Link from "next/link";
-import logo from "@/public/image/logo.png";
+import Meta from '@/components/Atoms/Meta';
+import Image from 'next/image';
+import React, { ReactNode } from 'react';
+import LayoutImage from '@/public/image/student7.png';
+import Link from 'next/link';
+import logo from '@/public/image/logo.png';
 
 interface AuthLayoutProps {
   title: string;
@@ -21,11 +21,11 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
       <Meta title={title} description={description} />
       <main className='flex w-full h-screen relative overflow-hidden'>
         {/* Fixed image on the left */}
-        <aside className='w-[50vw] overflow-hidden h-screen fixed'>
+        <aside className='lg:w-[50vw] overflow-hidden h-screen fixed left-0 hidden lg:block'>
           <Image
             src={LayoutImage}
             alt='Layout content'
-            className='w-[50vw] h-screen object-cover object-[20%] fixed'
+            className='w-[50vw] h-screen object-cover object-[20%] fixed left-0'
           />
 
           <div className='flex flex-col items-center justify-center py-4 absolute bottom-0 z-10 w-full min-h-60 bg-gradient-to-t from-black via-black/70 to-transparent'>
@@ -41,7 +41,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
                 their courses.
               </span>
 
-              <div className='flex items-center justify-center space-x-4 text-white/70 mt-5'>
+              <div className='flex items-center lg:flex-col min-[1385px]:flex-row lg:gap-4 justify-center space-x-4 text-white/70 mt-5'>
                 <span className='bg-[#f8f8f8] bg-opacity-20 px-7 py-2 rounded-full'>
                   Flexibility of Management
                 </span>
@@ -55,8 +55,8 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
 
         {/* Main content, adjust width with calc */}
         <main
-          className='bg-white fixed h-screen w-[50vw] right-0 overflow-hidden'
-          style={{ width: "calc(100% - 50%)" }}
+          className='bg-white fixed h-screen lg:w-[50vw] w-screen right-0 overflow-hidden'
+          // style={{ width: "calc(100% - 50%)" }}
         >
           <Image
             src={logo}
@@ -64,7 +64,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
             width='10000'
             height='10000'
             className='object-cover w-12 h-12 absolute top-4 left-5 cursor-pointer z-10'
-            onClick={() => window.location.replace("/")}
+            onClick={() => window.location.replace('/')}
           />
 
           <div className='absolute -right-[200px] -top-[200px] bg-primary/10 h-[490px] w-[490px] rounded-full blur-xl' />

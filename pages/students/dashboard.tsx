@@ -1,20 +1,20 @@
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import React, { useEffect, useState } from "react";
-import Img from "@/public/image/welcome_img.svg";
-import disturbance1 from "@/public/image/disturbance1.png";
-import disturbance2 from "@/public/image/disturbance2.png";
-import disturbance3 from "@/public/image/disturbance3.png";
-import disturbance4 from "@/public/image/disturbance4.png";
-import disturbance5 from "@/public/image/disturbance5.png";
-import Image from "next/image";
-import ClassCard from "@/components/Molecules/Card/ClassCard";
-import withAuth from "@/components/Molecules/WithAuth";
-import { baseUrl } from "@/components/utils/baseURL";
-import Calendar from "@/components/Molecules/Calendar";
-import axiosInstance from "@/components/utils/axiosInstance";
-import { TodayClass } from "@/data/data";
-import DepartmentModal from "@/components/Molecules/Modal/DepartmentModal";
-import { TUser } from "@/components/utils/types";
+import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
+import React, { useEffect, useState } from 'react';
+import Img from '@/public/image/welcome_img.svg';
+import disturbance1 from '@/public/image/disturbance1.png';
+import disturbance2 from '@/public/image/disturbance2.png';
+import disturbance3 from '@/public/image/disturbance3.png';
+import disturbance4 from '@/public/image/disturbance4.png';
+import disturbance5 from '@/public/image/disturbance5.png';
+import Image from 'next/image';
+import ClassCard from '@/components/Molecules/Card/ClassCard';
+import withAuth from '@/components/Molecules/WithAuth';
+import { baseUrl } from '@/components/utils/baseURL';
+import Calendar from '@/components/Molecules/Calendar';
+import axiosInstance from '@/components/utils/axiosInstance';
+import { TodayClass } from '@/data/data';
+import DepartmentModal from '@/components/Molecules/Modal/DepartmentModal';
+import { TUser } from '@/components/utils/types';
 
 type TCourseInfo = { courseId: string; courseName: string };
 type TAssessmentInfo = { assessmentId: string; title: string };
@@ -34,7 +34,7 @@ type CardProps = {
   footer?: string;
 };
 
-function Card({ header, main, footer = "" }: CardProps) {
+function Card({ header, main, footer = '' }: CardProps) {
   return (
     <div className='flex flex-col justify-between text-start w-full  space-y-3 rounded-md shadow-card py-4 px-6'>
       <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
@@ -52,12 +52,15 @@ const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalAss, setOpenModalAss] = useState(false);
   const [dashboardInfo, setDashboardInfo] = useState({
-    deparment: "",
-    accademicSession: "",
+    deparment: '',
+    accademicSession: '',
     enrolledCourses: [] as TCourseInfo[],
     upcomingCourses: [] as TCourseInfo[],
     upcomingAssessments: [] as TAssessmentInfo[],
   });
+  const [studentDisplayInfoByDate, setStudentDisplayInfoByDate] = useState(
+    new Date()
+  );
   const [user, setUser] = useState<TUser | null>(null);
 
   useEffect(() => {
@@ -84,7 +87,7 @@ const Dashboard = () => {
           }));
         } catch (err) {
           //how to display error
-          console.error("Error fetching courses", err);
+          console.error('Error fetching courses', err);
         }
       }
       async function fetchDashboardContent() {
@@ -139,10 +142,10 @@ const Dashboard = () => {
             <div className='bg-primary max-sm:mt-4 max-sm:min-h-[170px] w-full rounded-3xl font-roboto relative overflow-hidden h-full'>
               <div className='flex flex-col h-full justify-center my-auto px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
                 <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
-                  Welcome back,{" "}
-                  {user && ("firstName" && "lastName") in user
-                    ? user?.firstName + " " + user?.lastName
-                    : "Guest"}
+                  Welcome back,{' '}
+                  {user && ('firstName' && 'lastName') in user
+                    ? user?.firstName + ' ' + user?.lastName
+                    : 'Guest'}
                 </h3>
                 <span className='text-base text-light/80 font-roboto'>
                   You have 3 classes and 2 assignments to attend to.
@@ -187,10 +190,14 @@ const Dashboard = () => {
               />
             </div>
             <div className=' relative rounded-lg h-max'>
-              <Calendar />
+              <Calendar
+                setStudentInfoByDate={setStudentDisplayInfoByDate}
+                startDate={new Date()}
+              />
             </div>
           </div>
 
+          {/* the content in this div should be displayed based on the date selected by the student */}
           <div className='grid  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 max-sm:gap-5 gap-10 '>
             <Card
               header='CGPA'
@@ -206,14 +213,14 @@ const Dashboard = () => {
               header='No. of Courses'
               main={
                 !dashboardInfo.enrolledCourses
-                  ? "0"
+                  ? '0'
                   : dashboardInfo.enrolledCourses.length.toString()
               }
               footer={
                 // !dashboardInfo.enrolledCourses
                 //   ? ''
                 //   : dashboardInfo.enrolledCourses.join(' ,')
-                ""
+                ''
               }
             />
             <Card
@@ -223,6 +230,7 @@ const Dashboard = () => {
             />
           </div>
           {/* </div> */}
+          {/* the content in this div should be displayed based on the date selected by the student */}
 
           <div className='flex flex-col sm:flex-row w-full max-sm:gap-5 gap-10 sm:gap-6 md:gap-8 mt-4 rounded-xl sm:mt-6 md:mt-8 '>
             <div className='w-full sm:w-1/2 shadow-card rounded-xl'>
@@ -243,4 +251,4 @@ const Dashboard = () => {
 };
 // export default Dashboard;
 
-export default withAuth("Student", Dashboard);
+export default withAuth('Student', Dashboard);

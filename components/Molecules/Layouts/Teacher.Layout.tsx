@@ -9,6 +9,7 @@ import VerificationModal from "../Modal/VerificationModal";
 import { useUser } from "@/contexts/UserContext";
 import useServiceWorkerListener from "@/components/utils/hooks/useServiceWorkerListener";
 
+
 interface AdminWrapperProps {
   children: ReactNode;
   title: string;
@@ -56,13 +57,11 @@ const TeachersWrapper = ({
   return (
     <>
       <div className='relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row'>
-        <Meta title={metaTitle || "Dashboard"} description={description} />
+        <Meta title={metaTitle || 'Dashboard'} description={description} />
         <LogoutWarningModal
           handleModalClose={handleWarning}
           handleConfirm={() => {
-            handleLogout().then(() =>
-              router.push("/auth/path/teachers/signin")
-            );
+            handleLogout('teachers');
           }}
           modalOpen={warningModal}
         />
@@ -73,7 +72,7 @@ const TeachersWrapper = ({
 
         <aside
           className={` left-0 top-0 h-screen w-[16.5rem] overflow-auto z-30 !bg-white lg:block transition-transform transform ${
-            isSidenavOpen ? "translate-x-0" : "-translate-x-full"
+            isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
           } lg:translate-x-0`}
         >
           <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />

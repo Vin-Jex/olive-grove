@@ -71,8 +71,8 @@ function getPreviousId(currentId: string, linearIds: string[]): string | null {
 
 function getNextId(currentId: string, linearIds: string[]): string | null {
   const currentIndex = linearIds.indexOf(currentId);
-  if (currentIndex > 0) {
-    return linearIds[currentIndex + 1]; // Return the ID of the previous item
+  if (currentIndex >= 0) {
+    return linearIds[currentIndex + 1]; // Return the ID of the next item
   }
   return null; // Return null if there's no previous item
 }
@@ -355,7 +355,7 @@ export const TopicDetails: FC<{
             <Button
               onClick={handlePreviousTab}
               disabled={
-                getPreviousId &&
+                // getPreviousId &&
                 !getPreviousId(topicDetails.topic._id as string, contentIds)
               }
               size="xs"
@@ -369,7 +369,7 @@ export const TopicDetails: FC<{
 
             <Button
               disabled={
-                getNextId &&
+                // getNextId &&
                 !getNextId(topicDetails.topic._id as string, contentIds)
               }
               onClick={handleNextTab}

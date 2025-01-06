@@ -67,7 +67,7 @@ const SubjectCard: React.FC<SubjectProps> = ({
             }`}
           >
             <b className='font-roboto font-medium block text-dark'>Topic:</b>
-            <span className='sm:block hidden'>
+            <span className='sm:block hidden text-sm'>
               {topic.slice(0, 11) + '...'}{' '}
             </span>
             <span className='max-sm:block hidden'>

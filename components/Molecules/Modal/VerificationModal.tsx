@@ -1,14 +1,18 @@
-import React, { ReactNode } from "react";
-import ReactDOM from "react-dom";
-import Button from "@/components/Atoms/Button";
+import React, { ReactNode } from 'react';
+import ReactDOM from 'react-dom';
+import Button from '@/components/Atoms/Button';
+import { useRouter } from 'next/router';
 
 export default function VerificationModal({
   modalOpen,
   handleModalClose,
+  redirectTo,
 }: {
   modalOpen: boolean;
   handleModalClose: () => void;
+  redirectTo?: string;
 }) {
+  const router = useRouter();
   return (
     <div>
       <Modal isOpen={modalOpen}>
@@ -46,7 +50,7 @@ export default function VerificationModal({
           <Button
             size='xs'
             onClick={() => {
-              handleModalClose();
+              redirectTo ? router.push(redirectTo) : handleModalClose();
             }}
           >
             Verify
