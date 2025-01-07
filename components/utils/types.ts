@@ -267,14 +267,14 @@ export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
 
 export type TAssessmnentQuestionProp = {};
 
-export type TAssessmnentQuestion = {
-  _id?: string;
-  draft_id: string;
+export type TAssessmnentQuestion<T extends "draft" | "preview" = "preview"> = {
+  _id: string;
+  // draft_id: string;
   questionText: string;
   questionImage: string;
   questionType: TAssessmentQuestionType;
-  options?: string[];
-  correctAnswer?: string;
+  options?: T extends "draft" ? TAsseessmentQuestionOption[] : string[];
+  correctAnswer?: T extends "draft" ? TAsseessmentQuestionOption : string;
   fileRequirements?: {
     maxSizeMB: 5;
     allowedExtensions: string[];

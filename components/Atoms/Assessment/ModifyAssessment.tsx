@@ -6,7 +6,6 @@ import { v4 as uuidV4 } from "uuid";
 
 const ModifyAssessment = () => {
   const { assessment_questions, dispatch } = useAssessmentQuestionsContext();
-  const [adding_question, setAddingQuestion] = useState(false);
 
   const addQuestion = () => {
     dispatch({ type: "ADD_QUESTION", payload: { _id: uuidV4() } });
@@ -24,28 +23,21 @@ const ModifyAssessment = () => {
           <AssessmentQuestion
             key={question._id}
             question_id={
-              question.draft_id ? question.draft_id || "" : question?._id || ""
+              // question.draft_id ? question.draft_id || "" : question?._id || ""
+              question._id
             }
             question={question as any}
-            mode="preview"
+            mode="edit"
           />
         ))}
         {/* Add Question */}
-        {adding_question ? (
-          <AssessmentQuestion
-            question_id={""}
-            mode="create"
-            handleCancel={() => setAddingQuestion(false)}
-          />
-        ) : (
-          <div
-            onClick={() => setAddingQuestion(true)}
-            className="rounded-lg bg-white p-4 flex gap-2 justify-center items-center text-subtext cursor-pointer shadow transition hover:scale-[102%]"
-          >
-            <i className="fas fa-plus"></i>
-            <span>Add new Question</span>
-          </div>
-        )}
+        <div
+          onClick={addQuestion}
+          className="rounded-lg bg-white p-4 flex gap-2 justify-center items-center text-subtext cursor-pointer shadow"
+        >
+          <i className="fas fa-plus"></i>
+          <span>Add new Question</span>
+        </div>
       </div>
     </div>
   );

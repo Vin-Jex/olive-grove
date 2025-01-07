@@ -10,21 +10,33 @@ import {
   useState,
 } from "react";
 
-type TAssessmentQuestionsReducerActions = "ADD_QUESTION" | "REMOVE_QUESTION";
+type TAssessmentQuestionsReducerActions =
+  | "ADD_QUESTION"
+  | "REMOVE_QUESTION"
+  | "EDIT_QUESTION"
+  | "ADD_OPTION"
+  | "EDIT_OPTION"
+  | "EDIT_CORRECT_OPTION";
 
 const AssessmentQuestionsContext = createContext<{
-  assessment_questions: TFetchState<TAssessmnentQuestion[]>;
+  assessment_questions: TFetchState<TAssessmnentQuestion<"draft">[]>;
   dispatch: Dispatch<{
     type: TAssessmentQuestionsReducerActions;
     payload?: any;
   }>;
+  handle_question_config_change: (
+    question_id: string,
+    name: string,
+    value: any
+  ) => void;
 }>({
   assessment_questions: { data: [], error: undefined, loading: false },
   dispatch: () => {},
+  handle_question_config_change: () => {},
 });
 
 const QuestionsReducer: Reducer<
-  TFetchState<TAssessmnentQuestion[]>,
+  TFetchState<TAssessmnentQuestion<"draft">[]>,
   { type: TAssessmentQuestionsReducerActions; payload?: any }
 > = (state, action) => {
   if (action.type === "ADD_QUESTION") {
@@ -45,6 +57,78 @@ const QuestionsReducer: Reducer<
     };
   }
 
+  // * Update the question configuration
+  if (action.type === "EDIT_QUESTION") {
+    const old_questions = [...state.data];
+
+    const index = old_questions.findIndex((p) => p._id === action.payload._id);
+
+    if (index < 0) return state;
+
+    old_questions[index] = { ...old_questions[index], ...action.payload };
+
+    return {
+      data: [...old_questions],
+      loading: false,
+      error: undefined,
+    };
+  }
+
+  // * Add a new option to the list of options
+  if (action.type === "ADD_OPTION") {
+    const old_questions = [...state.data];
+
+    const index = old_questions.findIndex(
+      (p) => p._id === action.payload.question_id
+    );
+
+    if (index < 0) return state;
+
+    old_questions[index] = {
+      ...old_questions[index],
+      options: [...(old_questions[index].options || []), action.payload.option],
+    };
+
+    return {
+      data: [...old_questions],
+      loading: false,
+      error: undefined,
+    };
+  }
+
+  // * Update the specified option
+  if (action.type === "EDIT_OPTION") {
+    const old_questions = [...state.data];
+
+    const parent_index = old_questions.findIndex(
+      (p) => p._id === action.payload.question_id
+    );
+
+    if (parent_index < 0) return state;
+
+    const option_index = old_questions[parent_index].options?.findIndex(
+      (p) => p._id === action.payload.option._id
+    );
+
+    if (
+      !old_questions[parent_index].options ||
+      !option_index ||
+      option_index < 0
+    )
+      return state;
+
+    old_questions[parent_index].options[option_index] = {
+      ...old_questions[parent_index].options[option_index],
+      ...action.payload.option.content,
+    };
+
+    return {
+      data: [...old_questions],
+      loading: false,
+      error: undefined,
+    };
+  }
+
   return { data: state.data, loading: false, error: undefined };
 };
 
@@ -57,9 +141,20 @@ const AssessmentQuestionsContextProvider: FC<{ children: ReactNode }> = ({
     error: undefined,
   });
 
+  const handle_question_config_change = (
+    question_id: string,
+    name: string,
+    value: any
+  ) => {
+    dispatch({
+      type: "EDIT_QUESTION",
+      payload: { _id: question_id, [name]: value },
+    });
+  };
+
   return (
     <AssessmentQuestionsContext.Provider
-      value={{ assessment_questions, dispatch }}
+      value={{ assessment_questions, dispatch, handle_question_config_change }}
     >
       {children}
     </AssessmentQuestionsContext.Provider>

@@ -1,5 +1,5 @@
 import { TAsseessmentQuestionOption } from "@/components/utils/types";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { v4 as uuidV4 } from "uuid";
 import EachOption from "./EachOption";
 import Input from "../Input";
@@ -31,6 +31,15 @@ const MultipleChoiceQuestion: FC<{
     setOptions([...new_options]);
   };
 
+  useEffect(() => {
+    setOptions([
+      { content: undefined, _id: uuidV4() },
+      { content: undefined, _id: uuidV4() },
+      { content: undefined, _id: uuidV4() },
+      { content: undefined, _id: uuidV4() },
+    ]);
+  }, []);
+
   return (
     <div className="flex flex-col gap-3">
       {options.map((option, i) => (
@@ -50,6 +59,24 @@ const MultipleChoiceQuestion: FC<{
         <span className="text-primary cursor-pointer" onClick={add_option}>
           Add option
         </span>
+        {/* Question mark */}
+        <div className="flex gap-2 items-center">
+          <span className="text-xs text-nowrap">Question Mark</span>
+          <Input
+            name="maxMarks"
+            // value={formState.maxMarks}
+            type="number"
+            defaultValue={"1"}
+            // onChange={(e) =>
+            //   handleInputChange(
+            //     e.target.name,
+            //     e.target.value,
+            //     setFormState
+            //   )
+            // }
+            className="input !py-1.5 !w-[50px]"
+          />
+        </div>
       </div>
     </div>
   );

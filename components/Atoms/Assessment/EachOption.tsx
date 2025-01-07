@@ -1,5 +1,6 @@
 import { TAsseessmentQuestionOption } from "@/components/utils/types";
 import React, { FC, useState } from "react";
+import DeleteIcon from "../DeleteIcon";
 
 const EachOption: FC<{
   setCorrectOption: Function;
@@ -41,20 +42,23 @@ const EachOption: FC<{
 
   return (
     <div className="flex justify-between">
-      <input
-        type="text"
-        className="border-none outline-none focus:outline-none text-subtext focus:text-black w-full"
-        placeholder={`Enter option ${index} here`}
-        value={option_content}
-        onChange={handle_edit}
-      />
+      <div className="flex items-center gap-2 w-full">
+        <div className="w-[20px] h-[20px] rounded-full border-[2.5px] border-subtext/20"></div>
+        <input
+          type="text"
+          className="border-none outline-none focus:outline-none text-subtext focus:text-black w-full"
+          placeholder={`Enter option ${index} here`}
+          value={option_content}
+          onChange={handle_edit}
+        />
+      </div>
       <div className="flex items-center gap-4 text-lg">
         {/* Delete option */}
         <div
-          className="cursor-pointer transition hover:text-red-400"
+          className="cursor-pointer transition"
           onClick={(e) => remove_option(option._id)}
         >
-          <i className="fas fa-trash"></i>
+          <DeleteIcon width={"16"} height={"18"} />
         </div>
         <label className="radio">
           <input

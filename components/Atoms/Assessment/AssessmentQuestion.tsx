@@ -6,7 +6,7 @@ import {
 } from "@/components/utils/types";
 import { handleInputChange } from "@/components/utils/utils";
 import Image from "next/image";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Select from "../Select";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 import Input from "../Input";
@@ -22,6 +22,7 @@ import Button from "../Button";
 import { v4 as uuidV4 } from "uuid";
 import EachOption from "./EachOption";
 import PreviewOption from "./PreviewOption";
+import DeleteIcon from "../DeleteIcon";
 
 const question_type_options: TSelectOptions = [
   { value: "multiple_choice", display_value: "Multiple Choice" },
@@ -31,25 +32,21 @@ const question_type_options: TSelectOptions = [
 const AssessmentQuestion: FC<{
   question_id: string;
   question?: TAssessmnentQuestion;
-  mode: "create" | "edit" | "preview";
-  handleCancel?: () => void;
-}> = ({ question_id, mode, handleCancel, question }) => {
-  const { dispatch } = useAssessmentQuestionsContext();
+  mode: "edit" | "preview";
+}> = ({ question_id, mode, question }) => {
+  const { dispatch, handle_question_config_change } =
+    useAssessmentQuestionsContext();
   const attachmentState = useFetch();
-  const [questionMode, setQuestionMode] = useState<
-    "create" | "edit" | "preview"
-  >(mode);
+  const [questionMode, setQuestionMode] = useState<"edit" | "preview">(mode);
   const [formState, setFormState] = useState<{
-    question: string;
+    questionText: string;
     questionType: TAssessmentQuestionType;
     questionImage?: string;
     attachmentId?: string;
-    maxMarks: number | string;
   }>({
-    question: "",
+    questionText: "",
     questionType: "multiple_choice",
     questionImage: "",
-    maxMarks: 0,
   });
 
   /**
@@ -154,58 +151,73 @@ const AssessmentQuestion: FC<{
     // * Update the state object attachment property
     handleInputChange("attachment", uploaded_file[0].fileUrl, setFormState);
     handleInputChange("attachmentId", uploaded_file[0].fileId, setFormState);
+    handle_question_config_change(
+      question_id,
+      "questionImage",
+      uploaded_file[0].fileUrl
+    );
     attachmentState.display_success("");
   };
 
   const handleDeleteQuestion = () => {
+    // * Delete the uploaded attachment from the DB
+    if (formState.attachmentId) deleteAttachment(formState.attachmentId);
+
     // * Delete the question from the assessment questions state
     dispatch({ type: "REMOVE_QUESTION", payload: question_id });
   };
 
-  const handleSave = async () => {
-    if (questionMode === "create") {
-      dispatch({ type: "ADD_QUESTION", payload: { _id: uuidV4() } });
-      handleCancel && handleCancel();
-      return;
-    }
+  useEffect(() => {
+    handleInputChange(
+      "questionText",
+      question?.questionText || "",
+      setFormState
+    );
+    handleInputChange(
+      "questionType",
+      question?.questionType || "multiple_choice",
+      setFormState
+    );
+    handleInputChange(
+      "questionImage",
+      question?.questionImage || "",
+      setFormState
+    );
+  }, []);
 
-    if (questionMode === "edit") {
-      // todo: Update the question in the database
-    }
-  };
-
-  const handleCancelAction = () => {
-    if (questionMode === "create") {
-      handleCancel && handleCancel();
-    }
-    if (questionMode === "edit") {
-      setQuestionMode("preview");
-    }
-  };
-
-  if (questionMode === "edit" || questionMode === "create")
+  if (questionMode === "edit")
     return (
       <>
-        <div className="p-6 rounded-xl flex flex-col gap-4 text-subtext bg-white border-t-2 border-primary">
+        <div className="p-6 rounded-xl flex flex-col gap-4 text-subtext bg-white">
           {/* Question  */}
           <div className="w-full flex justify-between gap-4">
             {/* Question description */}
             <input
               type="text"
+              name="questionText"
+              value={formState.questionText}
               className="text-wrap w-[45%] text-lg px-4 py-2 border-b border-black/30 focus:outline-none focus:border-b focus:border-black"
               placeholder="Enter Question description here"
+              onChange={(e) => {
+                handleInputChange(e.target.name, e.target.value, setFormState);
+                handle_question_config_change(
+                  question_id,
+                  e.target.name,
+                  e.target.value
+                );
+              }}
             />
             {/* Question config */}
-            <div className="flex gap-4 items-end text-subtext text-lg">
+            <div className="flex gap-4 items-center text-subtext text-lg">
               {/* Delete Icon */}
-              {/* <div
+              <div
                 onClick={handleDeleteQuestion}
                 className="cursor-pointer transition hover:text-red-400"
               >
-                <i className="fas fa-trash"></i>
-              </div> */}
+                <DeleteIcon width={"16"} height={"18"} />
+              </div>
               {/* Upload Icon */}
-              <label className="block cursor-pointer transition hover:text-primary">
+              <label className="block cursor-pointer transition">
                 {attachmentState.loading ? (
                   <>
                     <CircularProgress size={"15px"} />
@@ -228,7 +240,7 @@ const AssessmentQuestion: FC<{
                   className="relative flex items-center gap-2 w-[30px] h-[30px] cursor-pointer"
                   onClick={handleDeleteAttachment}
                 >
-                  <div className="absolute  text-red-400 -top-3 -right-2">
+                  <div className="absolute text-red-400 -top-3 -right-2">
                     <i className="fas fa-xmark"></i>
                   </div>
                   <Image
@@ -251,30 +263,19 @@ const AssessmentQuestion: FC<{
                   inputSize="sm"
                   options={question_type_options}
                   value={formState.questionType}
-                  onChange={(e) =>
+                  className="!w-[170px]"
+                  onChange={(e) => {
                     handleInputChange(
                       e.target.name,
                       e.target.value,
                       setFormState
-                    )
-                  }
-                />
-              </div>
-              {/* Question mark */}
-              <div className="flex max-h-[inherit] flex-col gap-0">
-                <span className="text-xs">Mark</span>
-                <Input
-                  name="maxMarks"
-                  value={formState.maxMarks}
-                  type="number"
-                  onChange={(e) =>
-                    handleInputChange(
+                    );
+                    handle_question_config_change(
+                      question_id,
                       e.target.name,
-                      e.target.value,
-                      setFormState
-                    )
-                  }
-                  className="input !py-1.5 !w-[50px]"
+                      e.target.value
+                    );
+                  }}
                 />
               </div>
             </div>
@@ -291,15 +292,6 @@ const AssessmentQuestion: FC<{
             ) : (
               <FileUploadQuestion mode="edit" />
             )}
-          </div>
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            <Button size="xs" color="blue" onClick={handleSave}>
-              Save
-            </Button>
-            <Button size="xs" color="red" onClick={handleCancelAction}>
-              Cancel
-            </Button>
           </div>
         </div>
         {attachmentState.error && (
@@ -328,7 +320,7 @@ const AssessmentQuestion: FC<{
   return (
     <>
       {" "}
-      <div className="p-6 rounded-xl flex flex-col gap-4 text-subtext bg-white border-t-2 border-primary">
+      <div className="p-6 rounded-xl flex flex-col gap-4 text-subtext bg-white">
         {/* Question  */}
         <div className="w-full flex justify-between gap-4">
           {/* Question description */}
