@@ -10,6 +10,7 @@ import axiosInstance from "@/components/utils/axiosInstance";
 import { useUser } from "@/contexts/UserContext";
 import VerificationModal from "../Modal/VerificationModal";
 import useServiceWorkerListener from "@/components/utils/hooks/useServiceWorkerListener";
+import { deleteUserFromDB } from "@/components/utils/indexDB";
 
 
 export const handleLogout = async (type: 'students' | 'admin' | 'teachers') => {
@@ -20,6 +21,8 @@ export const handleLogout = async (type: 'students' | 'admin' | 'teachers') => {
     );
 
     if (!response) return;
+
+   await deleteUserFromDB(Cookies.get('userId') as string);
 
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');

@@ -209,11 +209,19 @@ const SubjectDetailsPage: FC = () => {
               <>
                 {/* Title */}
                 <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start'>
-                  <div className='flex gap-4 mt-6 items-center'>
+                  <div className='flex relative gap-4 w-full mt-6 items-center'>
                     <BackButton />
 
                     <span className='text-2xl max-sm:text-lg font-medium text-dark font-roboto'>
                       {course.data?.title || 'Loading...'}
+                    </span>
+                    {/* breadcrumb */}
+                    <span className='absolute right-0 translate-y-1/2'>
+                      <span className='text-sm text-subtext'>courses / </span>
+                      <span className='text-sm text-dark font-semibold'>
+                        {' '}
+                        {course.data?.title}
+                      </span>
                     </span>
                   </div>
                   {userRole === 'Teacher' && (
