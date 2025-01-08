@@ -17,6 +17,7 @@ import FormPagination from '@/components/Molecules/FormPagination';
 import axios, { AxiosError } from 'axios';
 import AuthLayout from './layout';
 import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
 
 export type SignupType = {
   firstName: string;
@@ -39,8 +40,7 @@ type DeptData = {
 
 const StudentSignup = () => {
   const router = useRouter();
-  const { otpRequestLoading, handleRequestOTP, message, setMessage, OTPTimer } =
-    useUserVerify();
+  const { otpRequestLoading, handleRequestOTP, OTPTimer } = useUserVerify();
   const [selectedImage, setSelectedImage] = useState<
     Blob | null | string | undefined
   >(null);
@@ -243,19 +243,10 @@ const StudentSignup = () => {
       );
 
       setCurrentFormIndex((c) => c + 1);
-
-      setMessage({
-        success: true,
-        error: false,
-        message: response.data.message,
-      });
+      toast.success(response.data?.message || 'Email verified successfully');
     } catch (err: AxiosError | any) {
       console.error('otp error', otp);
-      setMessage({
-        success: false,
-        error: true,
-        message: err.response.data.message,
-      });
+      toast.error(err.response?.data?.message || 'An error occurred');
     } finally {
       setEmailVerifyLoading(false);
     }
@@ -738,7 +729,7 @@ const StudentSignup = () => {
                   size='md'
                 >
                   {emailVerifyLoading ? (
-                    <CircularProgress size={20} />
+                    <CircularProgress size={20} color='inherit' />
                   ) : (
                     'Verify'
                   )}
@@ -798,29 +789,6 @@ const StudentSignup = () => {
           </form>
         </div>
       </div>
-
-      {(message.error || message.success) && (
-        <Snackbar
-          open={message.error || message.success}
-          onClose={() =>
-            setMessage((err) => ({
-              ...err,
-              error: false,
-              success: false,
-            }))
-          }
-          autoHideDuration={6000}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          className='!z-[999]'
-        >
-          <Alert
-            severity={message.error ? 'error' : 'success'}
-            onClose={() => setMessage((err) => ({ ...err, error: false }))}
-          >
-            {message.message}
-          </Alert>
-        </Snackbar>
-      )}
     </AuthLayout>
   );
 };

@@ -80,7 +80,7 @@ const Calendar: FC<CalendarProp> = ({
         </button>
         <span className=' text-center'>
           {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
-      </span>
+        </span>
         <button
           className='disabled:cursor-not-allowed'
           disabled={
@@ -105,34 +105,34 @@ const Calendar: FC<CalendarProp> = ({
         {Array(currentMontFirstDay.getDay() + lastDayOfCurrentMonth.getDate())
           .fill(0)
           .map((_, i) => (
-            <button
+            <div
               key={i}
-              disabled={
-                startDate && endDate
-                  ? !(
-                      currentDate.setDate(
-                        i + 1 - currentMontFirstDay.getDay()
-                      ) >= startDate?.getTime() &&
-                      currentDate.setDate(
-                        i + 1 - currentMontFirstDay.getDay()
-                      ) <= endDate?.getTime()
-                    )
-                  : true
-              }
               className={`${
                 markToday(currentDate, i) && 'bg-[#3F51B5] text-white '
-              }  h-[35px] relative pb-2 pt-2 cursor-pointer disabled:cursor-not-allowed w-[35px] flex items-center justify-center px-2 rounded-full`}
+              }  h-[35px] relative pb-2 pt-2 w-[35px] flex items-center justify-center px-2 rounded-full`}
             >
               {i < 7 && i < currentMontFirstDay.getDay() ? (
                 <span></span>
               ) : (
-                <div
-                  className={`font-semibold absolute -translate-y-1/2 top-1/2 text-center align-middle`}
+                <button
+                  disabled={
+                    startDate && endDate
+                      ? !(
+                          currentDate.setDate(
+                            i + 1 - currentMontFirstDay.getDay()
+                          ) >= startDate?.getTime() &&
+                          currentDate.setDate(
+                            i + 1 - currentMontFirstDay.getDay()
+                          ) <= endDate?.getTime()
+                        )
+                      : true
+                  }
+                  className={`font-semibold absolute disabled:cursor-not-allowed -translate-y-1/2 top-1/2 text-center align-middle`}
                 >
                   {i + 1 - currentMontFirstDay.getDay()}
-                </div>
+                </button>
               )}
-            </button>
+            </div>
           ))}
       </main>
     </div>
