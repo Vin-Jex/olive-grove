@@ -1,17 +1,16 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import SideNav from "../Navs/SideNav";
-import AdminNav from "../Navs/AdminNav";
-import Meta from "@/components/Atoms/Meta";
-import LogoutWarningModal from "../Modal/LogoutWarningModal";
-import { useRouter } from "next/router";
-import Cookies from "js-cookie";
-import { baseUrl } from "@/components/utils/baseURL";
-import axiosInstance from "@/components/utils/axiosInstance";
-import { useUser } from "@/contexts/UserContext";
-import VerificationModal from "../Modal/VerificationModal";
-import useServiceWorkerListener from "@/components/utils/hooks/useServiceWorkerListener";
-import { deleteUserFromDB } from "@/components/utils/indexDB";
-
+import React, { ReactNode, useEffect, useState } from 'react';
+import SideNav from '../Navs/SideNav';
+import AdminNav from '../Navs/AdminNav';
+import Meta from '@/components/Atoms/Meta';
+import LogoutWarningModal from '../Modal/LogoutWarningModal';
+import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
+import { baseUrl } from '@/components/utils/baseURL';
+import axiosInstance from '@/components/utils/axiosInstance';
+import { useUser } from '@/contexts/UserContext';
+import VerificationModal from '../Modal/VerificationModal';
+import useServiceWorkerListener from '@/components/utils/hooks/useServiceWorkerListener';
+import { deleteUserFromDB } from '@/components/utils/indexDB';
 
 export const handleLogout = async (type: 'students' | 'admin' | 'teachers') => {
   const role = Cookies.get('role');
@@ -22,7 +21,7 @@ export const handleLogout = async (type: 'students' | 'admin' | 'teachers') => {
 
     if (!response) return;
 
-   await deleteUserFromDB(Cookies.get('userId') as string);
+    await deleteUserFromDB(Cookies.get('userId') as string);
 
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
@@ -91,6 +90,13 @@ const AdminsWrapper = ({
       />
 
       <VerificationModal
+        redirectTo={
+          user?.role === 'Admin'
+            ? '/admin/profile'
+            : user?.role === 'Student'
+            ? 'students/profile'
+            : '/teachers/profile'
+        }
         modalOpen={isOpen}
         handleModalClose={handleVerifyOpen}
       />

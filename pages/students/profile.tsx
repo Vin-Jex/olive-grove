@@ -342,8 +342,8 @@ const Profile = () => {
         metaTitle='Olive Grove ~ Profile'
       >
         <div className='md:px-12 px-6 py-12 space-y-5'>
-          {currentTab !== 'account_verify' && (
-            <div className='w-full max-w-[10rem] flex gap-0'>
+          <div className='w-full flex justify-between items-center'>
+            <div className='max-w-[10rem] flex gap-0'>
               {['Account', 'Security'].map((slug, i) => (
                 <>
                   <div
@@ -362,7 +362,17 @@ const Profile = () => {
                 </>
               ))}
             </div>
-          )}
+            <div
+              className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
+                currentTab === 'account_verify'
+                  ? 'border-primary border-opacity-70  bg-[#32A8C41A] text-primary'
+                  : ''
+              }`}
+              onClick={() => setCurrentTab('account_verify')}
+            >
+              Email Verification
+            </div>
+          </div>
           {/* Title */}
 
           {currentTab === 'Account' && (
@@ -373,6 +383,9 @@ const Profile = () => {
             >
               <div className='w-full flex flex-col space-y-5 gap-y-5'>
                 <ProfilePhotoSection
+                  lastLoginAt={userInfo?.lastLoginAt!}
+                  isVerified={userInfo?.isVerified!}
+                  setCurrentTab={setCurrentTab}
                   userRole='Student'
                   setFormState={setFormState}
                   setPreviewImage={setPreviewImage}
@@ -649,19 +662,7 @@ const Profile = () => {
                     </span>
                   </div>
                 </div>
-                {formError.internetError !== '' ? (
-                  <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
-                    <Info sx={{ fontSize: '1.1rem' }} />
-                    {formError.internetError}
-                  </span>
-                ) : emailOTP.error !== '' ? (
-                  <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
-                    <Info sx={{ fontSize: '1.1rem' }} />
-                    {emailOTP.error}
-                  </span>
-                ) : (
-                  ''
-                )}
+
                 <div className='flex flex-col space-y-2 w-1/2 relative'>
                   <label
                     htmlFor='email_verification_otp'

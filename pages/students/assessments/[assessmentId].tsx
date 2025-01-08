@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Button from '@/components/Atoms/Button';
 import withAuth from '@/components/Molecules/WithAuth';
 import {
+  CircularProgress,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -19,6 +20,9 @@ import axiosInstance from '@/components/utils/axiosInstance';
 import { baseUrl } from '@/components/utils/baseURL';
 import Input from '@/components/Atoms/Input';
 import Loader from '@/components/Atoms/Loader';
+import { TQuestionCard } from '@/components/utils/types';
+import { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
 
 const CustomWrongIcon = () => {
   return (
@@ -91,99 +95,15 @@ const CustomRightIcon = (props: { className?: string }) => {
   );
 };
 
-type TQuestionCard = {
-  _id: string;
-  teacher: {
-    _id: string;
-    name: string;
-    email: string;
-    tel: number;
-    address: string;
-    password: string;
-    profileImage: string;
-    role: string;
-    teacherID: string;
-    __v: number;
-    archivedAt: string | null;
-    deletedAt: string | null;
-    isActive: boolean;
-    isArchived: boolean;
-    isDeleted: boolean;
-    isVerified: boolean;
-    lastLoginAt: string;
-    updatedAt: string;
-  };
-  class: {
-    _id: string;
-    name: string;
-    category: string;
-    description: string;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  };
-  academicWeek: {
-    _id: string;
-    startDate: string;
-    endDate: string;
-    weekNumber: number;
-    academicYear: string;
-    isActive: boolean;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  };
-  course: {
-    startDate: string;
-    endDate: string | null;
-    isActive: boolean;
-    _id: string;
-    classId: string;
-    title: string;
-    courseCover: string;
-    chapters: string[];
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  };
-  assessmentType: {
-    _id: string;
-    name: string;
-    __v: number;
-  };
-  description: string;
-  dueDate: string;
-  active: boolean;
-  questions: {
-    fileRequirements: {
-      maxSizeMB: number;
-      allowedExtensions: string[];
-    };
-    questionText: string;
-    questionType: string;
-    options: string[];
-    yourAnswer: string;
-    correctAnswer: string;
-    maxMarks: number;
-    _id: string;
-  }[];
-  submissions: any[];
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-};
-
 const AssessmentDetailsPage = () => {
   const router = useRouter();
-  console.log(router.query.assessmentId);
-  console.log('I am called!!!!');
   const [startExercise, setStartExercise] = useState(false);
   const [answersReview, setAnswersReview] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState<TQuestionCard | null>(
     null
   );
   const [isLoading, setIsLoading] = useState(false);
-  // const [assessmentType, setAssessmentType] = useState('');
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [currentQxtIndex, setCurrentQxtIndex] = useState(() => {
@@ -200,10 +120,10 @@ const AssessmentDetailsPage = () => {
         : {};
     }
   );
-  const [fileUploadAnswers, setFileUploadAnswers] = useState<Record<
-    string,
-    Blob | File
-  > | null>(null);
+  // const [fileUploadAnswers, setFileUploadAnswers] = useState<Record<
+  //   string,
+  //   Blob | File
+  // > | null>(null);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -242,49 +162,60 @@ const AssessmentDetailsPage = () => {
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    const formData = new FormData();
+    event.preventDefault();
+    if (!router.query.assessmentId) return; //don't proceed if there is no assessmentId
+    // const formData = new FormData();
+    const formData = {
+      academicWeek: quizQuestions?.academicWeek._id,
+      answers: [] as { questionId: string; answer: string }[],
+    };
     // Check if all questions are answered
-    if (!fileUploadAnswers) {
-      alert('Please answer all questions before submitting');
-      return;
-    }
-    if (
-      Object.keys(answeredQxts).length +
-        Object.keys(fileUploadAnswers).length !==
-      quizQuestions?.questions?.length
-    ) {
-      alert('Please answer all questions before submitting');
+    // if (!fileUploadAnswers) {
+    //   alert('Please answer all questions before submitting');
+    //   return;
+    // }
+    if (Object.keys(answeredQxts).length !== quizQuestions?.questions?.length) {
+      toast.error('Please answer all questions before submitting');
       return;
     }
 
     Object.entries(answeredQxts).forEach(([qxtId, answer]) => {
-      formData.append(qxtId, answer);
+      formData.answers.push({
+        questionId: qxtId,
+        answer,
+      });
     });
 
-    Object.entries(fileUploadAnswers).forEach(([qxtId, file]) => {
-      formData.append(qxtId, file);
-    });
+    // if (fileUploadAnswers)
+    //   Object.entries(fileUploadAnswers).forEach(([qxtId, file]) => {
+    //     formData.answers.push({
+    //       questionId: qxtId,
+    //       answer, //image string
+    //     });
+    //   });
 
     //* Functionality to submit the answers to the server
 
     try {
-      const res = await fetch('/api/submit-answers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(answeredQxts),
-      });
+      setIsSubmitLoading(true);
+      const res = await axiosInstance.post(
+        `${baseUrl}/api/v2/assessments/${router.query.assessmentId}/submit`,
+        JSON.stringify(formData)
+      );
 
-      if (!res.ok) {
-        throw new Error('Failed to submit answers');
-      }
-      const data = await res.json();
-      console.log(data);
-      alert('Answers submitted successfully');
-    } catch (error) {
+      toast.success(
+        res.data?.data?.message || 'Assessment submitted successfully'
+      );
+      setIsQuizComplete(true);
+      setAnsweredQxts({});
+      localStorage.setItem('answeredQxts', JSON.stringify({}));
+    } catch (error: AxiosError | any) {
       console.error(error);
-      alert('Failed to submit answers');
+      toast.error(
+        error?.response?.data?.message || 'Failed to submit assessment'
+      );
+    } finally {
+      setIsSubmitLoading(false);
     }
 
     // Check if all answers are correct
@@ -300,9 +231,6 @@ const AssessmentDetailsPage = () => {
 
     alert(`You scored ${score} out of ${questions.length}`);
     **/
-    setAnsweredQxts({});
-    localStorage.setItem('answeredQxts', JSON.stringify({}));
-    setIsQuizComplete(true);
   }
 
   // useEffect(() => {
@@ -335,31 +263,17 @@ const AssessmentDetailsPage = () => {
       metaTitle={`Olive Grove ~ ${router.query.assessmentId} assessment`}
     >
       {isLoading && <Loader />}
-      {isQuizComplete && <SubmissionCard />}
+      {isQuizComplete && <SubmissionCard quizQuestions={quizQuestions} />}
       {quizQuestions && !isQuizComplete && (
         <div className='sm:mx-11 mx-5 py-4 font-roboto sm:max-w-[60vw]'>
-          <div className='flex gap-4 items-center'>
-            <div className='mt-4'>
-              <BackButton />
-            </div>
-            {/* bread crumb */}
-            <div className='flex py-7 mt-4 items-center space-x-2'>
-              <Link href='/students/assessments'>
-                <span className='text-gray pr-2'>Assessments </span>
-              </Link>{' '}
-              /{' '}
-              <span className='text-primary'>
-                {quizQuestions?.course?.title}
-              </span>
-            </div>
-          </div>
+          <BreadCrumb title={quizQuestions?.course?.title} />
           <div className=' py-8 px-6  rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
             <h2 className='text-3xl py-5'>
               {quizQuestions?.course?.title} Class Exercise
             </h2>
             <div className='max-sm:flex-col max-sm:gap-3 flex justify-between'>
               <span>
-                <strong>Topic:</strong> {quizQuestions?.course?.chapters[0]}
+                <strong>Topic:</strong> {quizQuestions?.course?.title}
               </span>
               <span>
                 <strong>Due:</strong>{' '}
@@ -410,7 +324,8 @@ const AssessmentDetailsPage = () => {
                 {!answersReview &&
                   quizQuestions?.questions?.map((question, i) => (
                     <QuestionCard
-                      saveUpload={setFileUploadAnswers}
+                      answeredQxts={answeredQxts}
+                      // saveUpload={setFileUploadAnswers}
                       review={false}
                       value={answeredQxts[question._id.toString()] ?? null}
                       setCurrentQxtIndex={setCurrentQxtIndex}
@@ -423,7 +338,11 @@ const AssessmentDetailsPage = () => {
               </div>
               {!answersReview && (
                 <Button type='submit' size='sm' className='text-left my-4 mb-7'>
-                  Submit
+                  {isSubmitLoading ? (
+                    <CircularProgress size={20} color='inherit' />
+                  ) : (
+                    'Submit'
+                  )}
                 </Button>
               )}
             </form>
@@ -442,7 +361,8 @@ function QuestionCard({
   value,
   review,
   // ref,
-  saveUpload,
+  answeredQxts,
+  // saveUpload,
   setCurrentQxtIndex,
   setAnsweredQxts,
 }: {
@@ -450,9 +370,10 @@ function QuestionCard({
   question: TQuestionCard['questions'][0];
   value: string;
   i: number;
-  saveUpload: React.Dispatch<
-    React.SetStateAction<Record<string, Blob | File> | null>
-  >;
+  // saveUpload: React.Dispatch<
+  //   React.SetStateAction<Record<string, Blob | File> | null>
+  // >;
+  answeredQxts?: Record<string, string>;
   review: boolean;
   setCurrentQxtIndex: React.Dispatch<React.SetStateAction<string>>;
   setAnsweredQxts: React.Dispatch<React.SetStateAction<Record<string, string>>>;
@@ -580,7 +501,9 @@ function QuestionCard({
           <Input
             type='text'
             disabled={review}
-            value={review ? question.yourAnswer : undefined}
+            value={
+              review ? question.yourAnswer : answeredQxts?.[question._id] ?? ''
+            }
             className='!border-b !border-l-0 !border-r-0 !border-t-0 rounded-none w-1/2 border-black bg-white py-1'
             onChange={(e) => {
               const selected = { [question._id.toString()]: e.target.value };
@@ -607,15 +530,37 @@ function QuestionCard({
               disabled={review}
               value={review ? question.yourAnswer : undefined}
               className=' w-1/2 border-black bg-white py-1 hidden'
-              onChange={(e) => {
-                const selected = {
-                  [question._id.toString()]: e.target.files?.[0]!,
-                };
-                setCurrentQxtIndex(question._id.toString());
-                saveUpload((prev) => ({
-                  ...prev,
-                  ...selected,
-                }));
+              onChange={async (e) => {
+                const formData = new FormData();
+                formData.append('files', e.target.files?.[0]!);
+                formData.append('type', 'image');
+                //we want to firsr upload the file to the server and get the url
+                //then save the url in the state
+                try {
+                  const response = await axiosInstance.post(
+                    `${baseUrl}/files/upload`,
+                    formData
+                  );
+                  const selected = {
+                    [question._id.toString()]: response.data.data.fileUrl,
+                  };
+                  setCurrentQxtIndex(question._id.toString());
+                  setAnsweredQxts((prev) => ({
+                    ...prev,
+                    ...selected,
+                  }));
+                  // saveUpload((prev) => ({
+                  //   ...prev,
+                  //   ...selected,
+                  // }));
+                } catch (err: AxiosError | any) {
+                  toast.error(
+                    err.response?.data?.message ||
+                      'An error occurred when uploading the file, reupload the file'
+                  );
+                }
+
+                //get the url of the uploaded i
               }}
             />
           </>
@@ -625,32 +570,58 @@ function QuestionCard({
   );
 }
 
-function SubmissionCard() {
+function SubmissionCard({
+  quizQuestions,
+}: {
+  quizQuestions: TQuestionCard | null;
+}) {
   return (
-    <div className=' py-7 px-6 mx-11  max-w-[60vw]  space-y-4 rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
-      <div>
-        <svg
-          width='40'
-          height='40'
-          viewBox='0 0 58 58'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-        >
-          <rect width='58' height='58' rx='29' fill='#32A8C4' />
-          <path
-            d='M24.5002 35.255L19.2952 30.05C19.0148 29.7695 18.6344 29.612 18.2377 29.612C17.8411 29.612 17.4607 29.7695 17.1802 30.05C16.8998 30.3305 16.7422 30.7109 16.7422 31.1075C16.7422 31.3039 16.7809 31.4984 16.856 31.6798C16.9312 31.8613 17.0413 32.0261 17.1802 32.165L23.4502 38.435C24.0352 39.02 24.9802 39.02 25.5652 38.435L41.4352 22.565C41.7157 22.2845 41.8732 21.9041 41.8732 21.5075C41.8732 21.1109 41.7157 20.7305 41.4352 20.45C41.1548 20.1695 40.7744 20.012 40.3777 20.012C39.9811 20.012 39.6007 20.1695 39.3202 20.45L24.5002 35.255Z'
-            fill='#F8F8F8'
-          />
-        </svg>
+    <div className=''>
+      <div className='mx-11'>
+        <BreadCrumb title={quizQuestions?.course?.title ?? ''} />
       </div>
-      <h2 className='text-3xl py-5'>Exercise Submitted Successfully</h2>
-      <div className='flex justify-between py-3'>
-        You have successfully submitted the Physics class exercise. The results
-        will be sent to you in a few hours. Keep your eyes open!
+      <div className=' py-7 px-6 mx-11 max-w-[60vw] space-y-4 rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
+        <div>
+          <svg
+            width='40'
+            height='40'
+            viewBox='0 0 58 58'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <rect width='58' height='58' rx='29' fill='#32A8C4' />
+            <path
+              d='M24.5002 35.255L19.2952 30.05C19.0148 29.7695 18.6344 29.612 18.2377 29.612C17.8411 29.612 17.4607 29.7695 17.1802 30.05C16.8998 30.3305 16.7422 30.7109 16.7422 31.1075C16.7422 31.3039 16.7809 31.4984 16.856 31.6798C16.9312 31.8613 17.0413 32.0261 17.1802 32.165L23.4502 38.435C24.0352 39.02 24.9802 39.02 25.5652 38.435L41.4352 22.565C41.7157 22.2845 41.8732 21.9041 41.8732 21.5075C41.8732 21.1109 41.7157 20.7305 41.4352 20.45C41.1548 20.1695 40.7744 20.012 40.3777 20.012C39.9811 20.012 39.6007 20.1695 39.3202 20.45L24.5002 35.255Z'
+              fill='#F8F8F8'
+            />
+          </svg>
+        </div>
+        <h2 className='text-3xl py-2'>Exercise Submitted Successfully</h2>
+        <div className='flex justify-between text-lg text-subtext py-3'>
+          You have successfully submitted the Physics class exercise. The
+          results will be sent to you in a few hours. Keep your eyes open!
+        </div>
+        <Button color='blue' className='mt-4 !px-6' size='xs'>
+          Back to Assessment
+        </Button>
       </div>
-      <Button color='blue' className='mt-4' size='xs'>
-        Back to Assessment
-      </Button>
+    </div>
+  );
+}
+
+function BreadCrumb(props: { title: string }) {
+  return (
+    <div className='flex gap-4 items-center'>
+      <div className='mt-4'>
+        <BackButton />
+      </div>
+      {/* bread crumb */}
+      <div className='flex py-7 mt-4 items-center space-x-2'>
+        <Link href='/students/assessments'>
+          <span className='text-gray pr-2'>Assessments </span>
+        </Link>{' '}
+        / <span className='text-primary'>{props.title}</span>
+      </div>
     </div>
   );
 }

@@ -162,6 +162,88 @@ export type TAssessment<T extends "post" | "get"> = {
   class: T extends "post" ? string : TDepartment;
 };
 
+export type TQuestionCard = {
+  _id: string;
+  teacher: {
+    _id: string;
+    name: string;
+    email: string;
+    tel: number;
+    address: string;
+    password: string;
+    profileImage: string;
+    role: string;
+    teacherID: string;
+    __v: number;
+    archivedAt: string | null;
+    deletedAt: string | null;
+    isActive: boolean;
+    isArchived: boolean;
+    isDeleted: boolean;
+    isVerified: boolean;
+    lastLoginAt: string;
+    updatedAt: string;
+  };
+  class: {
+    _id: string;
+    name: string;
+    category: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  academicWeek: {
+    _id: string;
+    startDate: string;
+    endDate: string;
+    weekNumber: number;
+    academicYear: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  course: {
+    startDate: string;
+    endDate: string | null;
+    isActive: boolean;
+    _id: string;
+    classId: string;
+    title: string;
+    courseCover: string;
+    chapters: string[];
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  assessmentType: {
+    _id: string;
+    name: string;
+    __v: number;
+  };
+  description: string;
+  dueDate: string;
+  active: boolean;
+  questions: {
+    fileRequirements: {
+      maxSizeMB: number;
+      allowedExtensions: string[];
+    };
+    questionText: string;
+    questionType: string;
+    options: string[];
+    yourAnswer: string;
+    correctAnswer: string;
+    maxMarks: number;
+    _id: string;
+  }[];
+  submissions: any[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
 export type TStudent = {
   _id: string;
   firstName: string;
