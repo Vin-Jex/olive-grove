@@ -47,6 +47,7 @@ const Profile = () => {
     otpRequestLoading,
     handleRequestOTP,
     formattedTimer,
+    fetchedDept,
     verifyOTP,
     OTPTimer,
   } = useUserVerify();
@@ -90,6 +91,7 @@ const Profile = () => {
   const [passwordChangeLoading, setPasswordChangeLoading] = useState(false);
   const { user } = useAuth();
   const role = user?.role;
+  console.log(userInfo);
 
   const inputFields: (
     | {
@@ -135,7 +137,7 @@ const Profile = () => {
       required: false,
       error: '',
     },
-    { label: 'Department', name: 'department', type: 'text', error: '' },
+    // { label: 'Department', name: 'department', type: 'text', error: '' },
     {
       label: 'Academic Status',
       name: 'academicStatus',
@@ -209,10 +211,13 @@ const Profile = () => {
 
       const data = await response.data;
       fetchProfile();
-      setFormError((prevState) => ({
-        ...prevState,
-        successError: data?.data?.response?.message,
-      }));
+      // setFormError((prevState) => ({
+      //   ...prevState,
+      //   successError: data?.data?.response?.message,
+      // }));
+      toast.success(
+        data?.data?.response?.message || 'Profile updated successfully'
+      );
 
       // Reset the form after successful submission
       setTimeout(() => {
@@ -393,7 +398,11 @@ const Profile = () => {
                   setIsDisabled={setIsDisabled}
                   profileImage={profileImage}
                   name={studentName}
-                  id={formState.username}
+                  id={
+                    userInfo && 'studentID' in userInfo
+                      ? userInfo.studentID
+                      : ''
+                  }
                 />
                 <div className='flex max-sm:flex-col max-sm:items-start max-sm:gap-3 w-full items-center justify-between'>
                   <div className='flex flex-col '>
@@ -424,6 +433,7 @@ const Profile = () => {
                 </span>
                 <div className='grid max-sm:grid-cols-1 grid-cols-2 gap-8 w-full'>
                   <InputField
+                    label='First Name'
                     name='firstName'
                     type='text'
                     placeholder='First Name *'
@@ -434,6 +444,7 @@ const Profile = () => {
                   />
 
                   <InputField
+                    label='Middlename'
                     name='middleName'
                     type='text'
                     placeholder='Middle Name'
@@ -443,28 +454,82 @@ const Profile = () => {
                   />
                   {inputFields.map((field) => (
                     <InputField
+                      label={field.label}
                       placeholder={field.label}
                       key={field.name}
                       name={field.name}
                       type={field.type}
                       className='disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md'
-                      disabled={
-                        field.name === 'department' ||
-                        field.name === 'academicStatus'
-                          ? true
-                          : false
-                      }
+                      disabled={field.name === 'academicStatus' ? true : false}
                       value={
-                        formState[
-                          field.name as keyof Omit<TFormState, 'profileImage'>
-                        ]
+                        field.name === 'academicStatus' &&
+                        formState.academicStatus === ''
+                          ? ' Not Graduated'
+                          : formState[
+                              field.name as keyof Omit<
+                                TFormState,
+                                'profileImage'
+                              >
+                            ]
                       }
                       onChange={handleChange}
                       required={field.required}
                       error={field.error}
                     />
                   ))}
-                  <Input
+                  {/* <InputField
+                    type='select'
+                    label='Department'
+                    error=''
+                    placeholder='Select Department'
+                    options={fetchedDept.map(item => ({value: item._id, display_value: item.name}))}
+                    onChange={handleChange}
+                    disabled={formState.department.length > 0}
+                    value={formState.department}
+                    id='department'
+                    name='department'
+                    required
+                    className='flex items-center h-12 px-2 sm:px-2.5 py-3 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
+                  >
+                    {/* <option value='' disabled selected>
+                      Select Department
+                    </option> */}
+                  {/* {fetchedDept?.map((course) => (
+                      <option value={course._id} key={course._id}>
+                        {course.name}
+                      </option>
+                    ))} */}
+                  {/* </InputField>  */}
+                  <div>
+                    <label htmlFor="department" className='text-sm text-subtext'>Department</label>
+                    <select
+                      onChange={(e) => {
+                        handleChange(e);
+                        setIsDisabled(false);
+                      }}
+                      disabled={formState.department.length > 0}
+                      value={formState.department}
+                      id='department'
+                      name='department'
+                      required
+                      className='flex items-center disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none px-2 sm:px-2.5 py-3.5 rounded-md bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
+                    >
+                      <option value='' disabled selected>
+                        Select Department
+                      </option>
+                      {fetchedDept?.map((course) => (
+                        <option value={course._id} key={course._id}>
+                          {course.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <InputField
+                    label='Role'
+                    name='role'
+                    error=''
+                    onChange={() => {}}
                     placeholder={'Role'}
                     key={role}
                     className='disabled:bg-[#1e1e1e] disabled:bg-opacity-10 !text-subtext disabled:!border-none !rounded-md'

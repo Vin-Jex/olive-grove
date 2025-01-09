@@ -4,6 +4,13 @@ import { baseUrl } from '../baseURL';
 import { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 
+type DeptData = {
+  _id: string;
+  name: string;
+  category: string;
+  description: string;
+};
+
 const useUserVerify = () => {
   const [message, setMessage] = useState<{
     message: string;
@@ -14,6 +21,7 @@ const useUserVerify = () => {
     success: false,
     error: false,
   });
+  const [fetchedDept, setFetchedDept] = useState<DeptData[]>([]);
   const [otpRequestLoading, setOtpRequestLoading] = useState(false);
   const [verifyOTP, setVerifyOTP] = useState({
     status: false,
@@ -21,6 +29,24 @@ const useUserVerify = () => {
   });
   const [OTPTimer, setOTPTimer] = useState(0);
   const [formattedTimer, setFormattedTimer] = useState('00:00');
+
+  useEffect(() => {
+    async function fetchDepartment() {
+      try {
+        const response = await fetch(`${baseUrl}/department/all`);
+        if (!response.ok) {
+          console.log('failed to fetch department');
+        }
+        const dept = await response.json();
+
+        setFetchedDept(dept.data);
+      } catch (err) {
+        toast.error('An error occurred while fetching department');
+        console.error(err, 'error');
+      }
+    }
+    fetchDepartment();
+  }, []);
 
   useEffect(() => {
     if (OTPTimer > 0) {
@@ -82,6 +108,7 @@ const useUserVerify = () => {
     setMessage,
     handleRequestOTP,
     verifyOTP,
+    fetchedDept,
     OTPTimer,
     formattedTimer,
   };
