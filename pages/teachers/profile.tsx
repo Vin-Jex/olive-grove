@@ -1,5 +1,5 @@
-import TeachersWrapper from '@/components/Molecules/Layouts/Teacher.Layout';
-import Image from 'next/image';
+import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
+import Image from "next/image";
 import React, {
   ChangeEvent,
   Dispatch,
@@ -8,25 +8,25 @@ import React, {
   useCallback,
   useEffect,
   useState,
-} from 'react';
-import dummyImage from '@/images/dummy-img.jpg';
-import UnvefiiedIcon from '@/images/unverifiedIcon.svg';
-import Input from '@/components/Atoms/Input';
-import axiosInstance from '@/components/utils/axiosInstance';
-import { PhotoCamera } from '@mui/icons-material';
-import InputField from '@/components/Atoms/InputField';
-import { handleInputChange } from '@/components/utils/utils';
-import Button from '@/components/Atoms/Button';
-import toast from 'react-hot-toast';
-import { InputType } from '@/components/utils/types';
-import useUserVerify from '@/components/utils/hooks/useUserVerify';
-import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
-import { useRouter } from 'next/navigation';
-import { AxiosError } from 'axios';
-import { updateUserInDB } from '@/components/utils/indexDB';
-import { useUser } from '@/contexts/UserContext';
-import { CircularProgress } from '@mui/material';
-import { baseUrl } from '@/components/utils/baseURL';
+} from "react";
+import dummyImage from "@/images/dummy-img.jpg";
+import UnvefiiedIcon from "@/images/unverifiedIcon.svg";
+import Input from "@/components/Atoms/Input";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { PhotoCamera } from "@mui/icons-material";
+import InputField from "@/components/Atoms/InputField";
+import { handleInputChange } from "@/components/utils/utils";
+import Button from "@/components/Atoms/Button";
+import toast from "react-hot-toast";
+import { InputType } from "@/components/utils/types";
+import useUserVerify from "@/components/utils/hooks/useUserVerify";
+import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
+import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
+import { updateUserInDB } from "@/components/utils/indexDB";
+import { useUser } from "@/contexts/UserContext";
+import { CircularProgress } from "@mui/material";
+import { baseUrl } from "@/components/utils/baseURL";
 
 interface IProfilePhotoSectionProps {
   lastLoginAt: string | Date;
@@ -34,7 +34,7 @@ interface IProfilePhotoSectionProps {
   profileImage: string;
   name: string;
   id: string;
-  userRole: 'Teacher' | 'Student' | 'Admin';
+  userRole: "Teacher" | "Student" | "Admin";
   setIsDisabled:
     | Dispatch<SetStateAction<boolean>>
     | React.Dispatch<
@@ -45,11 +45,11 @@ interface IProfilePhotoSectionProps {
       >;
   setPreviewImage: Dispatch<SetStateAction<Blob | null | string>>;
   setCurrentTab: Dispatch<
-    SetStateAction<'Account' | 'Security' | 'account_verify'>
+    SetStateAction<"Account" | "Security" | "account_verify">
   >;
   previewImage: string;
   setFormState: Dispatch<SetStateAction<any>>;
-  type?: 'Account' | 'Security';
+  type?: "Account" | "Security";
 }
 
 type TFormState = {
@@ -65,27 +65,27 @@ type TFormState = {
 };
 const TeachersProfile = () => {
   const [currentTab, setCurrentTab] = useState<
-    'Account' | 'Security' | 'account_verify'
-  >('Account');
+    "Account" | "Security" | "account_verify"
+  >("Account");
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
+  const { user, setUser } = useUser();
   const [formState, setFormState] = useState<TFormState>({
-    name: '',
-    teacherID: '',
-    tel: '',
-    profileImage: '',
-    address: '',
-    email: '',
-    newPassword: '',
-    confirmPassword: '',
-    otp: '',
+    name: (user && "name" in user && user.name) || "",
+    teacherID: (user && "teacherID" in user && user.teacherID) || "",
+    tel: (user && "tel" in user && user.tel) as unknown as string || "",
+    profileImage: user?.profileImage || "",
+    address: (user && "address" in user && user?.address) || "",
+    email: (user && "email" in user && user?.email) || "",
+    newPassword: "",
+    confirmPassword: "",
+    otp: "",
   });
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
-  const [emailOTP, setEmailOTP] = useState({ error: '', value: '' });
+  const [emailOTP, setEmailOTP] = useState({ error: "", value: "" });
   const [isDisabled, setIsDisabled] = useState({
     account: true,
     security: true,
   });
-  const { user, setUser } = useUser();
 
   const {
     otpRequestLoading,
@@ -106,52 +106,52 @@ const TeachersProfile = () => {
     options?: { value: string; display_value: string }[];
   }[] = [
     {
-      label: 'Full Name',
-      name: 'name',
-      type: 'text',
+      label: "Full Name",
+      name: "name",
+      type: "text",
       required: true,
     },
     {
-      label: 'Email Address',
-      name: 'email',
-      type: 'email',
+      label: "Email Address",
+      name: "email",
+      type: "email",
       required: true,
     },
     {
-      label: 'Mobile Number',
-      name: 'tel',
-      type: 'tel',
+      label: "Mobile Number",
+      name: "tel",
+      type: "tel",
       required: false,
     },
     {
-      label: 'Home Address',
-      name: 'address',
-      type: 'text',
+      label: "Home Address",
+      name: "address",
+      type: "text",
       required: false,
     },
     {
-      label: 'Gender',
-      name: 'gender',
-      type: 'select',
+      label: "Gender",
+      name: "gender",
+      type: "select",
       required: true,
       options: [
-        { value: 'male', display_value: 'Male' },
-        { value: 'female', display_value: 'Female' },
-        { value: 'other', display_value: 'Other' },
-        { value: 'prefer_not_to_say', display_value: 'Prefer not to say' },
+        { value: "male", display_value: "Male" },
+        { value: "female", display_value: "Female" },
+        { value: "other", display_value: "Other" },
+        { value: "prefer_not_to_say", display_value: "Prefer not to say" },
       ],
     },
-    ];
+  ];
 
   useEffect(() => {
     if (user) {
-      setCurrentTab(!user?.isVerified ? 'account_verify' : 'Account');
+      setCurrentTab(!user?.isVerified ? "account_verify" : "Account");
     }
   }, [user]);
 
   const getInfo = useCallback(async () => {
     try {
-      const response = await axiosInstance.get('/teacher');
+      const response = await axiosInstance.get("/teacher");
       const data = response.data.data;
       setFormState((prev) => ({
         ...prev,
@@ -170,7 +170,7 @@ const TeachersProfile = () => {
       }));
       setPreviewImage(null);
     } catch (error) {
-      console.error('Error fetching teacher info:', error);
+      console.error("Error fetching teacher info:", error);
     }
   }, [setUser]);
 
@@ -185,18 +185,18 @@ const TeachersProfile = () => {
         const formData = new FormData();
         Object.keys(formState).forEach((key) => {
           // Skip these keys
-          if (['newPassword', 'confirmPassword', 'otp'].includes(key)) {
+          if (["newPassword", "confirmPassword", "otp"].includes(key)) {
             return;
           }
-          if (key === 'profileImage') {
+          if (key === "profileImage") {
             formData.append(key, formState[key as keyof TFormState] as File);
           } else {
             formData.append(key, formState[key as keyof TFormState]);
           }
         });
 
-        const response = await axiosInstance.put('/teacher-user', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+        const response = await axiosInstance.put("/teacher-user", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
 
         const data = response.data.data;
@@ -208,7 +208,7 @@ const TeachersProfile = () => {
         // Fetch updated user data
         getInfo();
       } catch (error: any) {
-        console.error('Error updating teacher info:', error);
+        console.error("Error updating teacher info:", error);
         toast.error(
           `Failed to update teacher info: ${
             error.response?.data?.message || error.message
@@ -230,12 +230,12 @@ const TeachersProfile = () => {
       );
 
       const data = await response.data;
-      toast.success(data?.message || 'Email verified successfully');
+      toast.success(data?.message || "Email verified successfully");
 
-      router.push('/auth/path/teachers/signin');
+      router.push("/auth/path/teachers/signin");
     } catch (error: AxiosError | any) {
       const data = error?.response?.data;
-      toast.error(data?.message || 'Failed to verify email');
+      toast.error(data?.message || "Failed to verify email");
     } finally {
       setEmailVerifyLoading(false);
     }
@@ -248,7 +248,7 @@ const TeachersProfile = () => {
 
     // Append other form fields to the FormData object
     Object.entries(formState).forEach(([key, value]) => {
-      if (key === 'newPassword' || key === 'confirmPassword' || key === 'otp')
+      if (key === "newPassword" || key === "confirmPassword" || key === "otp")
         formData.append(key, value);
     });
 
@@ -263,7 +263,7 @@ const TeachersProfile = () => {
       toast.success(data?.message);
 
       //log the user out on successfull password change
-      handleLogout('students');
+      handleLogout("students");
 
       setMessage((err) => ({
         ...err,
@@ -281,8 +281,8 @@ const TeachersProfile = () => {
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === 'Enter') {
-      if (currentTab === 'Account') {
+    if (isDisabled && event.key === "Enter") {
+      if (currentTab === "Account") {
         updateInfo(event);
       } else {
         handlePasswordChange(event);
@@ -303,16 +303,16 @@ const TeachersProfile = () => {
       <div className='flex flex-col space-y-8'>
         <div className='w-full flex justify-between items-center'>
           <div className='w-full max-w-[20rem] flex gap-0'>
-            {['Account', 'Security'].map((page, index) => (
+            {["Account", "Security"].map((page, index) => (
               <div
                 className={`px-7 py-2 font-medium text-sm text-center border-b-2 cursor-pointer transition w-full ${
                   currentTab === page
-                    ? 'border-primary border-opacity-70  bg-[#32A8C41A] text-primary'
-                    : ''
+                    ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
+                    : ""
                 }`}
                 onClick={() =>
                   setCurrentTab(
-                    page as 'Account' | 'Security' | 'account_verify'
+                    page as "Account" | "Security" | "account_verify"
                   )
                 }
                 key={index}
@@ -323,18 +323,18 @@ const TeachersProfile = () => {
           </div>
           <div
             className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
-              currentTab === 'account_verify'
-                ? 'border-primary border-opacity-70  bg-[#32A8C41A] text-primary'
-                : ''
+              currentTab === "account_verify"
+                ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
+                : ""
             }`}
-            onClick={() => setCurrentTab('account_verify')}
+            onClick={() => setCurrentTab("account_verify")}
           >
             Email Verification
           </div>
         </div>
 
         {/* Tab 1 */}
-        {currentTab === 'Account' && (
+        {currentTab === "Account" && (
           <form
             onSubmit={updateInfo}
             onKeyPress={handleKeyPress}
@@ -350,8 +350,8 @@ const TeachersProfile = () => {
               previewImage={previewImage as string}
               setIsDisabled={setIsDisabled}
               profileImage={formState.profileImage as string}
-              name={user && 'name' in user ? user.name : ''}
-              id={user && 'teacherID' in user ? user.teacherID : ''}
+              name={user && "name" in user ? user.name : ""}
+              id={user && "teacherID" in user ? user.teacherID : ""}
             />
             <div className='flex flex-col'>
               <span className='text-lg lg:text-xl font-normal text-dark font-roboto'>
@@ -370,11 +370,11 @@ const TeachersProfile = () => {
                   name={field.name}
                   type={field.type}
                   className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md ${
-                    field.type === 'select' ? 'text-sm' : 'text-base'
+                    field.type === "select" ? "text-sm" : "text-base"
                   }`}
                   value={
                     formState[
-                      field.name as keyof Omit<TFormState, 'profileImage'>
+                      field.name as keyof Omit<TFormState, "profileImage">
                     ]
                   }
                   onChange={(e) => {
@@ -389,9 +389,9 @@ const TeachersProfile = () => {
                     );
                   }}
                   required={field.required}
-                  error={''}
-                  inputSize={field.type === 'select' ? 'sm' : 'xs'}
-                  {...(field.type === 'select'
+                  error={""}
+                  inputSize={field.type === "select" ? "sm" : "xs"}
+                  {...(field.type === "select"
                     ? { options: field.options }
                     : {})}
                 />
@@ -405,7 +405,7 @@ const TeachersProfile = () => {
         )}
 
         {/* Tab 2 */}
-        {currentTab === 'Security' && (
+        {currentTab === "Security" && (
           <form
             onSubmit={handlePasswordChange}
             onKeyPress={handleKeyPress}
@@ -442,7 +442,7 @@ const TeachersProfile = () => {
                 }}
                 required={true}
                 disabled={otpRequestLoading || OTPTimer > 0}
-                error={''}
+                error={""}
               />
               <InputField
                 label='Confirm Password'
@@ -464,7 +464,7 @@ const TeachersProfile = () => {
                 }}
                 required={true}
                 disabled={otpRequestLoading || OTPTimer > 0}
-                error={''}
+                error={""}
               />
               <div className='flex flex-col space-y-2 relative'>
                 <InputField
@@ -479,19 +479,19 @@ const TeachersProfile = () => {
                       ...prevState,
                       security: false,
                     }));
-                    const value = e.target.value.replace(/\D/g, '');
+                    const value = e.target.value.replace(/\D/g, "");
                     handleInputChange(e.target.name, value, setFormState);
                   }}
                   required={true}
                   disabled={
                     otpRequestLoading ||
-                    formState.newPassword === '' ||
-                    formState.confirmPassword === '' ||
+                    formState.newPassword === "" ||
+                    formState.confirmPassword === "" ||
                     formState.newPassword.length < 8 ||
                     formState.confirmPassword.length < 8 ||
                     formState.newPassword !== formState.confirmPassword
                   }
-                  error={''}
+                  error={""}
                   maxLength={6}
                 />
                 <Button
@@ -501,13 +501,13 @@ const TeachersProfile = () => {
                   className='!text-xs !py-2 !px-4 font-roboto absolute right-2 bottom-[1.4rem] translate-y-1/2'
                   onClick={() => {
                     if (OTPTimer <= 0 && !otpRequestLoading) {
-                      handleRequestOTP('password_reset');
+                      handleRequestOTP("password_reset");
                     }
                   }}
                   disabled={
                     otpRequestLoading ||
-                    formState.newPassword === '' ||
-                    formState.confirmPassword === '' ||
+                    formState.newPassword === "" ||
+                    formState.confirmPassword === "" ||
                     formState.newPassword.length < 8 ||
                     formState.confirmPassword.length < 8 ||
                     formState.newPassword !== formState.confirmPassword ||
@@ -515,12 +515,12 @@ const TeachersProfile = () => {
                   }
                 >
                   {otpRequestLoading
-                    ? 'Requesting OTP...'
+                    ? "Requesting OTP..."
                     : OTPTimer > 0
                     ? formattedTimer
                     : verifyOTP.status
-                    ? 'Resend OTP'
-                    : 'Request OTP'}
+                    ? "Resend OTP"
+                    : "Request OTP"}
                 </Button>
               </div>
             </div>
@@ -531,12 +531,12 @@ const TeachersProfile = () => {
               disabled={
                 isDisabled.security ||
                 otpRequestLoading ||
-                formState.newPassword === '' ||
-                formState.confirmPassword === '' ||
+                formState.newPassword === "" ||
+                formState.confirmPassword === "" ||
                 formState.newPassword.length < 8 ||
                 formState.confirmPassword.length < 8 ||
                 formState.newPassword !== formState.confirmPassword ||
-                formState.otp === '' ||
+                formState.otp === "" ||
                 formState.otp.length < 4
               }
             >
@@ -544,7 +544,7 @@ const TeachersProfile = () => {
             </Button>
           </form>
         )}
-        {currentTab === 'account_verify' && (
+        {currentTab === "account_verify" && (
           <div>
             <form
               className='w-full bg-white space-y-8 px-8 max-sm:px-5 rounded-2xl py-10 shadow-card'
@@ -576,11 +576,11 @@ const TeachersProfile = () => {
                   placeholder='Enter OTP'
                   value={emailOTP.value}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
+                    const value = e.target.value.replace(/\D/g, "");
                     setEmailOTP((prev) => ({ ...prev, value }));
                   }}
                   required
-                  error={''}
+                  error={""}
                   maxLength={6}
                 />
                 <Button
@@ -590,18 +590,18 @@ const TeachersProfile = () => {
                   className='!text-xs !py-2 !px-4 font-roboto absolute right-2 bottom-[1.4rem] translate-y-1/2'
                   onClick={() => {
                     if (OTPTimer <= 0 && !otpRequestLoading) {
-                      handleRequestOTP('email_verification');
+                      handleRequestOTP("email_verification");
                     }
                   }}
                   disabled={otpRequestLoading || OTPTimer > 0}
                 >
                   {otpRequestLoading
-                    ? 'Requesting OTP...'
+                    ? "Requesting OTP..."
                     : OTPTimer > 0
                     ? formattedTimer
                     : verifyOTP.status
-                    ? 'Resend OTP'
-                    : 'Request OTP'}
+                    ? "Resend OTP"
+                    : "Request OTP"}
                 </Button>
               </div>
               <Button
@@ -612,7 +612,7 @@ const TeachersProfile = () => {
                 {emailVerifyLoading ? (
                   <CircularProgress size={20} color='inherit' />
                 ) : (
-                  'Verify'
+                  "Verify"
                 )}
               </Button>
             </form>
@@ -657,7 +657,7 @@ export function ProfilePhotoSection({
             alt='Profile Image'
             className='shadow w-[5.7rem] h-[5.7rem] object-cover rounded-full'
           />
-          {type !== 'Security' && (
+          {type !== "Security" && (
             <>
               <label
                 className='flex items-center justify-center absolute -right-1.5 cursor-pointer bottom-3 bg-white text-[#1E1E1E99] p-1.5 rounded-full'
@@ -683,9 +683,9 @@ export function ProfilePhotoSection({
 
                       // Handle both boolean and object types for setIsDisabled
                       if (setIsDisabled) {
-                        if (typeof setIsDisabled === 'function') {
+                        if (typeof setIsDisabled === "function") {
                           setIsDisabled((prev: any) =>
-                            typeof prev === 'boolean'
+                            typeof prev === "boolean"
                               ? false
                               : { ...prev, account: false, security: false }
                           );
@@ -707,7 +707,7 @@ export function ProfilePhotoSection({
         </div>
         <div className='flex flex-col justify-center font-roboto space-y-1 min-w-[200px]'>
           <span className='text-dark flex items-center text-2xl leading-5'>
-            {name.trim() ? name : 'N/A'}
+            {name.trim() ? name : "N/A"}
             <span className='ml-2'>
               {isVerified ? (
                 <svg
@@ -738,10 +738,10 @@ export function ProfilePhotoSection({
           <div className='flex flex-col justify-center'>
             <span className='text-subtext text-[15px]'>
               <strong>ID: </strong>
-              {id.trim() ? id : 'N/A'}
+              {id.trim() ? id : "N/A"}
               {!isVerified && (
                 <button
-                  onClick={() => setCurrentTab('account_verify')}
+                  onClick={() => setCurrentTab("account_verify")}
                   className='ml-3 text-primary'
                 >
                   verify Now!
@@ -755,8 +755,8 @@ export function ProfilePhotoSection({
       <div className='flex flex-col items-end'>
         <div className='text-subtext'>Last Login</div>
         <span className='font-semibold text-subtext'>
-          {' '}
-          {new Date(lastLoginAt).toLocaleTimeString()},{' '}
+          {" "}
+          {new Date(lastLoginAt).toLocaleTimeString()},{" "}
           {new Date(lastLoginAt).toLocaleDateString()}
         </span>
       </div>
