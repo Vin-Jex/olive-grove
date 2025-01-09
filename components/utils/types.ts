@@ -244,6 +244,13 @@ export type TQuestionCard = {
   __v: number;
 };
 
+export type UserRole = "Teacher" | "Student" | "Admin";
+export enum EUserRole {
+  Admin = "Admin",
+  Student = "Student",
+  Teacher = "Teacher",
+}
+
 export type TStudent = {
   _id: string;
   firstName: string;
@@ -254,7 +261,7 @@ export type TStudent = {
   username: string;
   password: string;
   studentID: string;
-  role: "Student";
+  role: EUserRole;
   archivedAt: Date | null;
   deletedAt: Date | null;
   isActive: boolean;
@@ -270,6 +277,7 @@ export type TStudent = {
   graduated?: boolean | null;
   graduatedYear?: Date | null;
   academicSection?: string | null;
+  gender: string | null;
 };
 
 export type TTeacher = {
@@ -281,7 +289,7 @@ export type TTeacher = {
   password: string;
   profileImage?: string;
   _id: string;
-  role: "Teacher";
+  role: EUserRole;
   archivedAt: Date | null;
   deletedAt: Date | null;
   isActive: boolean;
@@ -290,6 +298,9 @@ export type TTeacher = {
   isVerified: boolean;
   lastLoginAt: Date | null;
   updatedAt: Date;
+  gender: string | null;
+  academicSection: string | null;
+  teachingCourses: [];
 };
 
 export type TAdmin = {
@@ -298,7 +309,7 @@ export type TAdmin = {
   username: string;
   password: string;
   profileImage?: string;
-  role: "Admin";
+  role: EUserRole;
   archivedAt: Date | null;
   deletedAt: Date | null;
   isActive: boolean;
@@ -307,6 +318,8 @@ export type TAdmin = {
   isVerified: boolean;
   lastLoginAt: Date | null;
   updatedAt: Date;
+  gender: string | null;
+  academicSection: string | null;
 };
 
 export type TUser = TStudent | TTeacher | TAdmin;

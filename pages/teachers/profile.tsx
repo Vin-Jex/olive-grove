@@ -18,7 +18,7 @@ import InputField from "@/components/Atoms/InputField";
 import { handleInputChange } from "@/components/utils/utils";
 import Button from "@/components/Atoms/Button";
 import toast from "react-hot-toast";
-import { InputType } from "@/components/utils/types";
+import { EUserRole, InputType } from "@/components/utils/types";
 import useUserVerify from "@/components/utils/hooks/useUserVerify";
 import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
 import { useRouter } from "next/navigation";
@@ -62,6 +62,10 @@ type TFormState = {
   newPassword: string;
   confirmPassword: string;
   otp: string;
+  teachingCourses: [];
+  gender: string | null;
+  academicSection: string | null;
+  role: EUserRole;
 };
 const TeachersProfile = () => {
   const [currentTab, setCurrentTab] = useState<
@@ -72,13 +76,18 @@ const TeachersProfile = () => {
   const [formState, setFormState] = useState<TFormState>({
     name: (user && "name" in user && user.name) || "",
     teacherID: (user && "teacherID" in user && user.teacherID) || "",
-    tel: (user && "tel" in user && user.tel) as unknown as string || "",
+    tel: ((user && "tel" in user && user.tel) as unknown as string) || "",
     profileImage: user?.profileImage || "",
     address: (user && "address" in user && user?.address) || "",
     email: (user && "email" in user && user?.email) || "",
     newPassword: "",
     confirmPassword: "",
     otp: "",
+    teachingCourses:
+      (user && "teachingCourses" in user && user?.teachingCourses) || [],
+    gender: user?.gender || null,
+    academicSection: user?.academicSection || null,
+    role: user?.role!,
   });
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [emailOTP, setEmailOTP] = useState({ error: "", value: "" });
@@ -185,13 +194,25 @@ const TeachersProfile = () => {
         const formData = new FormData();
         Object.keys(formState).forEach((key) => {
           // Skip these keys
-          if (["newPassword", "confirmPassword", "otp"].includes(key)) {
+
+          const value = formState[key as keyof TFormState];
+          if (value === null || value === undefined) {
+            // Skip null or undefined fields
             return;
           }
+
           if (key === "profileImage") {
-            formData.append(key, formState[key as keyof TFormState] as File);
+            if (value instanceof File || value instanceof Blob) {
+              formData.append(key, value);
+            } else if (typeof value === "string") {
+              // Append strings as-is for compatibility
+              formData.append(key, value);
+            }
+          } else if (Array.isArray(value)) {
+            // Handle arrays if necessary (e.g., stringify them)
+            formData.append(key, JSON.stringify(value));
           } else {
-            formData.append(key, formState[key as keyof TFormState]);
+            formData.append(key, value as string);
           }
         });
 
@@ -248,8 +269,12 @@ const TeachersProfile = () => {
 
     // Append other form fields to the FormData object
     Object.entries(formState).forEach(([key, value]) => {
-      if (key === "newPassword" || key === "confirmPassword" || key === "otp")
-        formData.append(key, value);
+      if (key === "newPassword" || key === "confirmPassword" || key === "otp") {
+        if (value !== null && value !== undefined) {
+          // Convert non-string types to string if needed
+          formData.append(key, value.toString());
+        }
+      }
     });
 
     setIsDisabled((prevState) => ({
@@ -321,16 +346,18 @@ const TeachersProfile = () => {
               </div>
             ))}
           </div>
-          <div
-            className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
-              currentTab === "account_verify"
-                ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
-                : ""
-            }`}
-            onClick={() => setCurrentTab("account_verify")}
-          >
-            Email Verification
-          </div>
+          {currentTab === "account_verify" && (
+            <div
+              className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
+                currentTab === "account_verify"
+                  ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
+                  : ""
+              }`}
+              onClick={() => setCurrentTab("account_verify")}
+            >
+              Email Verification
+            </div>
+          )}
         </div>
 
         {/* Tab 1 */}
@@ -375,7 +402,7 @@ const TeachersProfile = () => {
                   value={
                     formState[
                       field.name as keyof Omit<TFormState, "profileImage">
-                    ]
+                    ] ?? ""
                   }
                   onChange={(e) => {
                     setIsDisabled((prevState) => ({
@@ -396,6 +423,31 @@ const TeachersProfile = () => {
                     : {})}
                 />
               ))}
+            </div>
+
+            <div>
+              {formState.teachingCourses &&
+              formState.teachingCourses.length > 0 ? (
+                formState.teachingCourses.map((course, index) => {
+                  return (
+                    <div
+                      key={index}
+                      className='bg-[#1e1e1e] text-subtext mt-3 bg-opacity-10 rounded-lg w-fit py-3 px-4 capitalize'
+                    >
+                      {course}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className='flex flex-col justify-center space-y-2'>
+                  <span className='text-sm font-roboto font-medium text-subtext'>
+                    Courses Being Taught: 
+                  </span>
+                  <span className='bg-[#1e1e1e] text-subtext text-sm bg-opacity-10 rounded-lg w-fit py-3 px-4 capitalize'>
+                    No Course Assigned Yet
+                  </span>
+                </div>
+              )}
             </div>
 
             <Button size='xs' type='submit' disabled={isDisabled.account}>
@@ -742,9 +794,9 @@ export function ProfilePhotoSection({
               {!isVerified && (
                 <button
                   onClick={() => setCurrentTab("account_verify")}
-                  className='ml-3 text-primary'
+                  className='ml-3 text-primary font-semibold'
                 >
-                  verify Now!
+                  Verify Now!
                 </button>
               )}
             </span>
