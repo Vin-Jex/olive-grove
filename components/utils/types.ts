@@ -339,3 +339,5 @@ export type InputType =
   | "select";
 
 export type TErrorStatus = 404 | 500 | 403 | 401;
+
+export type TAsseessmentQuestionMode = "add" | "edit" | "preview";

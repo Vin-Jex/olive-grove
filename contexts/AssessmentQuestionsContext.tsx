@@ -16,7 +16,7 @@ type TAssessmentQuestionsReducerActions =
   | "EDIT_QUESTION"
   | "ADD_OPTION"
   | "EDIT_OPTION"
-  | "EDIT_CORRECT_OPTION";
+  | "DELETE_OPTION";
 
 const AssessmentQuestionsContext = createContext<{
   assessment_questions: TFetchState<TAssessmnentQuestion<"draft">[]>;
@@ -124,6 +124,29 @@ const QuestionsReducer: Reducer<
 
     return {
       data: [...old_questions],
+      loading: false,
+      error: undefined,
+    };
+  }
+
+  // * Delete the specified option
+  if (action.type === "DELETE_OPTION") {
+    const old_questions = [...state.data];
+
+    const parent_index = old_questions.findIndex(
+      (p) => p._id === action.payload.question_id
+    );
+
+    if (parent_index < 0) return state;
+
+    const filtered_options = old_questions[parent_index].options?.filter(
+      (p) => p._id !== action.payload.option._id
+    );
+
+    if (!filtered_options) return state;
+
+    return {
+      data: [...filtered_options],
       loading: false,
       error: undefined,
     };

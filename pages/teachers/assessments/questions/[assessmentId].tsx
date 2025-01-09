@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Tab, { TTabBody } from "@/components/Molecules/Tab/Tab";
@@ -10,53 +10,49 @@ import Button from "@/components/Atoms/Button";
 import Loader from "@/components/Atoms/Loader";
 import ErrorUI from "@/components/Atoms/ErrorComponent";
 import ServerError from "@/components/Atoms/ServerError";
-import { TFetchState } from "@/components/utils/types";
-
-const tab_body: TTabBody[] = [
-  {
-    slug: "questions",
-    content: <ModifyAssessment />,
-  },
-  {
-    slug: "responses",
-    content: <AssessmentResponses />,
-  },
-];
+import { TAssessmnentQuestion, TFetchState } from "@/components/utils/types";
+import useAjaxRequest from "use-ajax-request";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 const EachAssessment = () => {
   const router = useRouter();
   const { role } = useAuth();
   const { assessmentId } = router.query;
-  // const {
-  //   sendRequest: getAssessment,
-  //   loading: loadingAssessment,
-  //   error: errorFetchingAssessment,
-  // } = useAjaxRequest<{ message: string }>({
-  //   config: {},
-  //   instance: axiosInstance,
-  // });
-
-  // ! REMOVE
-  const [
-    {
-      data: assessment,
-      error: errorFetchingAssessment,
-      loading: loadingAssessment,
-    },
-    setFetchAssessmentState,
-  ] = useState<TFetchState<Record<string, any>>>({
-    data: {},
-    loading: false,
-    error: undefined,
+  const {
+    sendRequest: getAssessment,
+    loading: loadingAssessment,
+    error: errorFetchingAssessment,
+    data: assessment,
+  } = useAjaxRequest<{
+    data: { questions: TAssessmnentQuestion<"preview">[] };
+  }>({
+    config: {},
+    instance: axiosInstance,
   });
 
-  const fetchAssessment = async () => {
+  const fetchAssessment = useCallback(async () => {
     try {
-      // await getAssessment(undefined, undefined, {
-      //   url: `/assessment/${assessmentId}`,
-      // });
+      getAssessment(undefined, undefined, {
+        url: `/api/v2/assessments/${assessmentId}`,
+      });
     } catch (error) {}
-  };
+  }, [assessmentId]);
+
+  const tab_body: TTabBody[] = useMemo(
+    () => [
+      {
+        slug: "questions",
+        content: (
+          <ModifyAssessment questions={assessment?.data?.questions || []} />
+        ),
+      },
+      {
+        slug: "responses",
+        content: <AssessmentResponses />,
+      },
+    ],
+    [assessment?.data?.questions]
+  );
 
   useEffect(() => {
     fetchAssessment();

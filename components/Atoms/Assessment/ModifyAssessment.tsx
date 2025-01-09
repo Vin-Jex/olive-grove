@@ -1,11 +1,20 @@
-import React, { useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import AssessmentTitleHeader from "./TitleHeader";
 import AssessmentQuestion from "./AssessmentQuestion";
 import { useAssessmentQuestionsContext } from "@/contexts/AssessmentQuestionsContext";
 import { v4 as uuidV4 } from "uuid";
+import useAjaxRequest from "use-ajax-request";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { useRouter } from "next/router";
+import { TAssessmnentQuestion } from "@/components/utils/types";
+import EachAssessmentQuestionContextProvider from "@/contexts/EachAssessmentQuestionContext";
 
-const ModifyAssessment = () => {
+const ModifyAssessment: FC<{ questions: TAssessmnentQuestion[] }> = ({
+  questions: existing_questions,
+}) => {
+  const router = useRouter();
   const { assessment_questions, dispatch } = useAssessmentQuestionsContext();
+  const { assessmentId } = router.query;
 
   const addQuestion = () => {
     dispatch({ type: "ADD_QUESTION", payload: { _id: uuidV4() } });
@@ -19,15 +28,25 @@ const ModifyAssessment = () => {
         options for each of the questions and click submit when you are done.
       </AssessmentTitleHeader>
       <div className="w-full flex flex-col gap-6">
+        {existing_questions.map((question) => (
+          <EachAssessmentQuestionContextProvider
+            question={question}
+            key={question._id}
+          >
+            <AssessmentQuestion
+              key={question._id}
+              question_id={question._id}
+              question={question as any}
+              mode="preview"
+            />
+          </EachAssessmentQuestionContextProvider>
+        ))}
         {assessment_questions.data.map((question) => (
           <AssessmentQuestion
             key={question._id}
-            question_id={
-              // question.draft_id ? question.draft_id || "" : question?._id || ""
-              question._id
-            }
+            question_id={question._id}
             question={question as any}
-            mode="edit"
+            mode="add"
           />
         ))}
         {/* Add Question */}

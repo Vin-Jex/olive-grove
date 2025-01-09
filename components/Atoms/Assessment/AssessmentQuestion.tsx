@@ -1,4 +1,6 @@
 import {
+  TAsseessmentQuestionMode,
+  TAsseessmentQuestionOption,
   TAssessmentQuestionType,
   TAssessmnentQuestion,
   TFetchState,
@@ -31,23 +33,17 @@ const question_type_options: TSelectOptions = [
 ];
 const AssessmentQuestion: FC<{
   question_id: string;
-  question?: TAssessmnentQuestion;
-  mode: "edit" | "preview";
+  question: TAssessmnentQuestion<"draft">;
+  mode: TAsseessmentQuestionMode;
 }> = ({ question_id, mode, question }) => {
   const { dispatch, handle_question_config_change } =
     useAssessmentQuestionsContext();
   const attachmentState = useFetch();
-  const [questionMode, setQuestionMode] = useState<"edit" | "preview">(mode);
-  const [formState, setFormState] = useState<{
-    questionText: string;
-    questionType: TAssessmentQuestionType;
-    questionImage?: string;
-    attachmentId?: string;
-  }>({
-    questionText: "",
-    questionType: "multiple_choice",
-    questionImage: "",
-  });
+  const [questionMode, setQuestionMode] =
+    useState<TAsseessmentQuestionMode>(mode);
+  const [question_details, editQuestionDetails] = useState<
+    TAssessmnentQuestion<"draft"> & { attachmentId: string }
+  >({ ...question, attachmentId: "" });
 
   /**
    * * Uploads the attachment to the backend
@@ -57,20 +53,20 @@ const AssessmentQuestion: FC<{
     try {
       const formData = new FormData();
       formData.append("files", file);
-      formData.append("type", file.type);
+      formData.append("type", "image");
       const response = await axiosInstance.post<
         any,
-        AxiosResponse<
-          {
+        AxiosResponse<{
+          data: {
             fileUrl: string;
-            fileId: string;
-          }[]
-        >
+            _id: string;
+          }[];
+        }>
       >(`/files/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return undefined;
     }
@@ -104,15 +100,15 @@ const AssessmentQuestion: FC<{
   const handleDeleteAttachment: React.MouseEventHandler<
     HTMLDivElement
   > = async () => {
-    if (!formState.attachmentId) return;
-    const res = await deleteAttachment(formState.attachmentId);
+    if (!question_details.attachmentId) return;
+    const res = await deleteAttachment(question_details.attachmentId);
 
     if (!res) {
       // todo: display error
       return;
     }
 
-    handleInputChange("attachment", undefined, setFormState);
+    handleInputChange("attachment", undefined, editQuestionDetails);
   };
   /**
    * * Function responsible for validating the uploaded image
@@ -149,8 +145,16 @@ const AssessmentQuestion: FC<{
     }
 
     // * Update the state object attachment property
-    handleInputChange("attachment", uploaded_file[0].fileUrl, setFormState);
-    handleInputChange("attachmentId", uploaded_file[0].fileId, setFormState);
+    handleInputChange(
+      "questionImage",
+      uploaded_file[0].fileUrl,
+      editQuestionDetails
+    );
+    handleInputChange(
+      "attachmentId",
+      uploaded_file[0]._id,
+      editQuestionDetails
+    );
     handle_question_config_change(
       question_id,
       "questionImage",
@@ -161,45 +165,94 @@ const AssessmentQuestion: FC<{
 
   const handleDeleteQuestion = () => {
     // * Delete the uploaded attachment from the DB
-    if (formState.attachmentId) deleteAttachment(formState.attachmentId);
+    if (question_details.attachmentId)
+      deleteAttachment(question_details.attachmentId);
 
     // * Delete the question from the assessment questions state
     dispatch({ type: "REMOVE_QUESTION", payload: question_id });
+  };
+
+  /**
+   * * Function responsible for adding an option to the question (edit mode)
+   * @param option The option to be added to the question
+   */
+  const add_option = (option: TAsseessmentQuestionOption) => {
+    editQuestionDetails((prev) => ({
+      ...prev,
+      options: [...(prev.options || []), option],
+    }));
+  };
+
+  /**
+   * * Function responsible for deleting an option from the question (edit mode)
+   * @param id The id of the option to be removed from the question
+   */
+  const delete_option = (id: string) => {
+    editQuestionDetails((prev) => ({
+      ...prev,
+      options: prev.options?.filter((prev_options) => prev_options._id !== id),
+    }));
+  };
+
+  /**
+   * * Function responsible for editing an option in the question (edit mode)
+   * @param option The option to be edited in the question
+   */
+  const edit_option = (option: TAsseessmentQuestionOption) => {
+    const old_options = [...(question_details.options || [])];
+
+    const option_index = old_options.findIndex((p) => p._id === option._id);
+
+    if (!option_index || option_index < 0) return;
+
+    old_options[option_index] = {
+      ...old_options[option_index],
+      content: option.content,
+    };
+
+    editQuestionDetails((prev) => ({
+      ...prev,
+      options: [...old_options],
+    }));
   };
 
   useEffect(() => {
     handleInputChange(
       "questionText",
       question?.questionText || "",
-      setFormState
+      editQuestionDetails
     );
     handleInputChange(
       "questionType",
       question?.questionType || "multiple_choice",
-      setFormState
+      editQuestionDetails
     );
     handleInputChange(
       "questionImage",
       question?.questionImage || "",
-      setFormState
+      editQuestionDetails
     );
   }, []);
 
-  if (questionMode === "edit")
+  if (questionMode === "edit" || questionMode === "add")
     return (
       <>
-        <div className="p-6 rounded-xl flex flex-col gap-4 text-subtext bg-white">
+        <div className="p-6 rounded-xl flex flex-col gap-6 text-subtext bg-white">
           {/* Question  */}
           <div className="w-full flex justify-between gap-4">
             {/* Question description */}
             <input
               type="text"
               name="questionText"
-              value={formState.questionText}
+              value={question_details.questionText}
               className="text-wrap w-[45%] text-lg px-4 py-2 border-b border-black/30 focus:outline-none focus:border-b focus:border-black"
               placeholder="Enter Question description here"
               onChange={(e) => {
-                handleInputChange(e.target.name, e.target.value, setFormState);
+                handleInputChange(
+                  e.target.name,
+                  e.target.value,
+                  editQuestionDetails
+                );
                 handle_question_config_change(
                   question_id,
                   e.target.name,
@@ -235,7 +288,7 @@ const AssessmentQuestion: FC<{
                 )}
               </label>
               {/* Uploaded image */}
-              {formState.questionImage && (
+              {question_details.questionImage && (
                 <div
                   className="relative flex items-center gap-2 w-[30px] h-[30px] cursor-pointer"
                   onClick={handleDeleteAttachment}
@@ -247,12 +300,12 @@ const AssessmentQuestion: FC<{
                     width={30}
                     height={30}
                     src={
-                      typeof formState.questionImage === "object"
-                        ? URL.createObjectURL(formState.questionImage)
-                        : formState.questionImage
+                      typeof question_details.questionImage === "object"
+                        ? URL.createObjectURL(question_details.questionImage)
+                        : question_details.questionImage
                     }
                     alt="Question attachment"
-                    className="object-contain object-top"
+                    className="object-contain object-top rounded-md"
                   />
                 </div>
               )}
@@ -262,13 +315,13 @@ const AssessmentQuestion: FC<{
                   name="questionType"
                   inputSize="sm"
                   options={question_type_options}
-                  value={formState.questionType}
+                  value={question_details.questionType}
                   className="!w-[170px]"
                   onChange={(e) => {
                     handleInputChange(
                       e.target.name,
                       e.target.value,
-                      setFormState
+                      editQuestionDetails
                     );
                     handle_question_config_change(
                       question_id,
@@ -282,12 +335,13 @@ const AssessmentQuestion: FC<{
           </div>
           {/* Question response type */}
           <div className="w-full">
-            {formState.questionType === "multiple_choice" ? (
+            {question_details.questionType === "multiple_choice" ? (
               <MultipleChoiceQuestion
                 assessment_id=""
-                question_id={question_id}
+                mode={mode}
+                question={question as any}
               />
-            ) : formState.questionType === "paragraph" ? (
+            ) : question_details.questionType === "paragraph" ? (
               <ParagrahQuestion />
             ) : (
               <FileUploadQuestion mode="edit" />
@@ -336,7 +390,7 @@ const AssessmentQuestion: FC<{
               {question.options?.map((option, i) => (
                 <PreviewOption
                   question_id={question_id}
-                  option={option}
+                  option={option.content || ""}
                   key={i}
                 />
               ))}

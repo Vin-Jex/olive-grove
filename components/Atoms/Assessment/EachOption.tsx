@@ -1,43 +1,44 @@
-import { TAsseessmentQuestionOption } from "@/components/utils/types";
+import {
+  TAsseessmentQuestionMode,
+  TAsseessmentQuestionOption,
+} from "@/components/utils/types";
 import React, { FC, useState } from "react";
 import DeleteIcon from "../DeleteIcon";
+import { useAssessmentQuestionsContext } from "@/contexts/AssessmentQuestionsContext";
+import { useEachAssessmentQuestionContext } from "@/contexts/EachAssessmentQuestionContext";
 
 const EachOption: FC<{
-  setCorrectOption: Function;
-  edit_option: (a: TAsseessmentQuestionOption) => void;
-  remove_option: Function;
-  question_id: string;
   option: TAsseessmentQuestionOption;
-  correct_option: string;
+  draft_question: TAsseessmentQuestionOption;
   index: number;
-}> = ({
-  edit_option,
-  option,
-  question_id,
-  setCorrectOption,
-  correct_option,
-  remove_option,
-  index,
-}) => {
+  mode: TAsseessmentQuestionMode;
+}> = ({ option, draft_question, mode, index }) => {
   const [option_content, setOptionContent] = useState(option.content);
-  const [prev_timeout, setNewTimeout] = useState<NodeJS.Timeout>();
+  const { dispatch: draft_question_dispatch, handle_question_config_change } =
+    useAssessmentQuestionsContext();
+  const { dispatch: existing_question_dispatch } =
+    useEachAssessmentQuestionContext();
+
+  const remove_option = (id: string) => {
+    // setOptions((prev) => prev.filter((option) => option._id !== id));
+    mode === "add" &&
+      draft_question_dispatch({
+        type: "DELETE_OPTION",
+        payload: { question_id: draft_question._id, option: { _id: id } },
+      });
+
+    mode === "edit" &&
+      existing_question_dispatch({
+        type: "DELETE_OPTION",
+        payload: id,
+      });
+  };
 
   const handle_edit: React.ChangeEventHandler<HTMLInputElement> = ({
     target: { value },
   }) => {
     // * Update the input field
     setOptionContent(value);
-
-    // * Clear the previous timeout function
-    clearTimeout(prev_timeout);
-
-    // * Update the list of options in the next 2 seconds
-    const timeout = setTimeout(() => {
-      console.log("Value during timneout", value);
-      edit_option({ content: value, _id: option._id });
-    }, 1000 * 2);
-
-    setNewTimeout(timeout);
   };
 
   return (
