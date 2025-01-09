@@ -12,10 +12,9 @@ import { Mode } from "@mui/icons-material";
 import { useEachAssessmentQuestionContext } from "@/contexts/EachAssessmentQuestionContext";
 
 const MultipleChoiceQuestion: FC<{
-  assessment_id: string;
   question: TAssessmnentQuestion<"draft">;
   mode: TAsseessmentQuestionMode;
-}> = ({ assessment_id, question, mode }) => {
+}> = ({ question, mode }) => {
   const { dispatch: draft_question_dispatch, handle_question_config_change } =
     useAssessmentQuestionsContext();
   const { dispatch: existing_question_dispatch } =
@@ -38,39 +37,30 @@ const MultipleChoiceQuestion: FC<{
   useEffect(() => {
     if (!question.options?.length || question.options?.length < 1) {
       Array.from({ length: 4 }).forEach(() => {
-        mode === "add" &&
-          draft_question_dispatch({
-            type: "ADD_OPTION",
-            payload: {
-              question_id: question._id,
-              option: { _id: uuidV4(), content: undefined },
-            },
-          });
-
-        mode === "edit" &&
-          existing_question_dispatch({
-            type: "ADD_OPTION",
-            payload: { _id: uuidV4(), content: undefined },
-          });
+        // mode === "add" &&
+        //   draft_question_dispatch({
+        //     type: "ADD_OPTION",
+        //     payload: {
+        //       question_id: question._id,
+        //       option: { _id: uuidV4(), content: undefined },
+        //     },
+        //   });
+        // mode === "edit" &&
+        //   existing_question_dispatch({
+        //     type: "ADD_OPTION",
+        //     payload: { _id: uuidV4(), content: undefined },
+        //   });
       });
     }
-
-    // // * If the question is switched to edit mode, i.e. the question data has been previously published
-    // if (mode === "edit" && draft_question.options) {
-    //   draft_question.options.map((option: any) => ({
-    //     _id: uuidV4(),
-    //     content: option,
-    //   }));
-    // }
   }, []);
 
   return (
     <div className="flex flex-col gap-6">
       {question.options?.map((option, i) => (
         <EachOption
-          key={option.content}
+          key={option._id}
           option={option}
-          draft_question={question as any}
+          question={question as any}
           mode={mode}
           index={i + 1}
         />

@@ -364,7 +364,6 @@ export type TAssessmnentQuestionProp = {};
 
 export type TAssessmnentQuestion<T extends "draft" | "preview" = "preview"> = {
   _id: string;
-  // draft_id: string;
   questionText: string;
   questionImage: string;
   questionType: TAssessmentQuestionType;

@@ -24,11 +24,7 @@ type TEachAssessmentQuestionContext = {
     type: TEachAssessmentQuestionReducerActions;
     payload?: any;
   }>;
-  handle_each_question_config_change: (
-    question_id: string,
-    name: string,
-    value: any
-  ) => void;
+  handle_each_question_config_change: (name: string, value: any) => void;
 };
 
 const EachAssessmentQuestionContext =

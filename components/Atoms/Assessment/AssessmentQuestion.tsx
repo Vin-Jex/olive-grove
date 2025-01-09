@@ -336,11 +336,7 @@ const AssessmentQuestion: FC<{
           {/* Question response type */}
           <div className="w-full">
             {question_details.questionType === "multiple_choice" ? (
-              <MultipleChoiceQuestion
-                assessment_id=""
-                mode={mode}
-                question={question as any}
-              />
+              <MultipleChoiceQuestion mode={mode} question={question as any} />
             ) : question_details.questionType === "paragraph" ? (
               <ParagrahQuestion />
             ) : (

@@ -145,8 +145,10 @@ const QuestionsReducer: Reducer<
 
     if (!filtered_options) return state;
 
+    old_questions[parent_index].options = [...filtered_options];
+
     return {
-      data: [...filtered_options],
+      data: [...old_questions],
       loading: false,
       error: undefined,
     };

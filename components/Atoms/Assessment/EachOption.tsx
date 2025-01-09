@@ -1,6 +1,7 @@
 import {
   TAsseessmentQuestionMode,
   TAsseessmentQuestionOption,
+  TAssessmnentQuestion,
 } from "@/components/utils/types";
 import React, { FC, useState } from "react";
 import DeleteIcon from "../DeleteIcon";
@@ -9,22 +10,24 @@ import { useEachAssessmentQuestionContext } from "@/contexts/EachAssessmentQuest
 
 const EachOption: FC<{
   option: TAsseessmentQuestionOption;
-  draft_question: TAsseessmentQuestionOption;
+  question: TAssessmnentQuestion<"draft">;
   index: number;
   mode: TAsseessmentQuestionMode;
-}> = ({ option, draft_question, mode, index }) => {
+}> = ({ option, question: question, mode, index }) => {
   const [option_content, setOptionContent] = useState(option.content);
   const { dispatch: draft_question_dispatch, handle_question_config_change } =
     useAssessmentQuestionsContext();
-  const { dispatch: existing_question_dispatch } =
-    useEachAssessmentQuestionContext();
+  const {
+    dispatch: existing_question_dispatch,
+    handle_each_question_config_change,
+  } = useEachAssessmentQuestionContext();
 
   const remove_option = (id: string) => {
     // setOptions((prev) => prev.filter((option) => option._id !== id));
     mode === "add" &&
       draft_question_dispatch({
         type: "DELETE_OPTION",
-        payload: { question_id: draft_question._id, option: { _id: id } },
+        payload: { question_id: question._id, option: { _id: id } },
       });
 
     mode === "edit" &&
@@ -39,6 +42,34 @@ const EachOption: FC<{
   }) => {
     // * Update the input field
     setOptionContent(value);
+
+    // * Update the option in the draft question
+    mode === "add" &&
+      draft_question_dispatch({
+        type: "EDIT_OPTION",
+        payload: {
+          question_id: question._id,
+          option: { _id: option._id, content: value },
+        },
+      });
+    mode === "edit" &&
+      existing_question_dispatch({
+        type: "EDIT_OPTION",
+        payload: { _id: option._id, content: value },
+      });
+  };
+
+  const handle_corect_answer: React.ChangeEventHandler<HTMLInputElement> = ({
+    target: { value },
+  }) => {
+    // * Update the input field
+    setOptionContent(value);
+
+    // * Update the option in the draft question
+    mode === "add" &&
+      handle_question_config_change(question._id, "correctAnswer", option);
+    mode === "edit" &&
+      handle_each_question_config_change("correctAnswer", option);
   };
 
   return (
@@ -64,9 +95,9 @@ const EachOption: FC<{
         <label className="radio">
           <input
             type="radio"
-            name={question_id}
-            onChange={(e) => setCorrectOption(e.target.value)}
-            defaultChecked={correct_option === option.content}
+            name={question._id}
+            onChange={handle_corect_answer}
+            defaultChecked={question.correctAnswer?._id === option?._id}
             value={option._id}
           />
           <span className="checkmark"></span>
