@@ -31,22 +31,15 @@ export type SignupType = {
   password: string;
 };
 
-type DeptData = {
-  _id: string;
-  name: string;
-  category: string;
-  description: string;
-};
-
 const StudentSignup = () => {
   const router = useRouter();
-  const { otpRequestLoading, handleRequestOTP, OTPTimer } = useUserVerify();
+  const { otpRequestLoading, handleRequestOTP, fetchedDept, OTPTimer } =
+    useUserVerify();
   const [selectedImage, setSelectedImage] = useState<
     Blob | null | string | undefined
   >(null);
   const [fileName, setFileName] = useState('');
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
-  const [fetchedDept, setFetchedDept] = useState<DeptData[]>([]);
   const [availableCourse, setAvailableCourses] = useState<TCourse[]>([]);
   const [formState, setFormState] = useState<SignupType>({
     firstName: '',
@@ -158,26 +151,6 @@ const StudentSignup = () => {
     formState.username,
     selectedImage,
   ]);
-
-  useEffect(() => {
-    async function fetchDepartment() {
-      try {
-        const response = await fetch(`${baseUrl}/department/all`);
-        if (!response.ok) {
-          setFormError((prevState) => ({
-            ...prevState,
-            departmentError: 'Error fetching department',
-          }));
-        }
-        const dept = await response.json();
-
-        setFetchedDept(dept.data);
-      } catch (err) {
-        console.error(err, 'error');
-      }
-    }
-    fetchDepartment();
-  }, []);
 
   useEffect(() => {
     async function getCourses() {
