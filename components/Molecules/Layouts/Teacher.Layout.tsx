@@ -1,13 +1,13 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import SideNav from '../Navs/SideNav';
-import AdminNav from '../Navs/AdminNav';
-import Meta from '@/components/Atoms/Meta';
-import LogoutWarningModal from '../Modal/LogoutWarningModal';
-import { useRouter } from 'next/router';
-import { handleLogout } from './Admin.Layout';
-import VerificationModal from '../Modal/VerificationModal';
-import { useUser } from '@/contexts/UserContext';
-import useServiceWorkerListener from '@/components/utils/hooks/useServiceWorkerListener';
+import React, { ReactNode, useEffect, useState } from "react";
+import SideNav from "../Navs/SideNav";
+import AdminNav from "../Navs/AdminNav";
+import Meta from "@/components/Atoms/Meta";
+import LogoutWarningModal from "../Modal/LogoutWarningModal";
+import { useRouter } from "next/router";
+import { handleLogout } from "./Admin.Layout";
+import VerificationModal from "../Modal/VerificationModal";
+import { useUser } from "@/contexts/UserContext";
+import useServiceWorkerListener from "@/components/utils/hooks/useServiceWorkerListener";
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -46,21 +46,19 @@ const TeachersWrapper = ({
   useEffect(() => {
     if (isForbidden) {
       setIsOpen(true);
-    }
-
-    if (user && !isPublic && !user.isVerified) {
+    } else if (user && !isPublic && !user.isVerified) {
       setIsOpen(true);
     }
-  }, [isOpen, isForbidden, user, isPublic]);
+  }, [isForbidden, user, isPublic]);
 
   return (
     <>
       <div className='relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row'>
-        <Meta title={metaTitle || 'Dashboard'} description={description} />
+        <Meta title={metaTitle || "Dashboard"} description={description} />
         <LogoutWarningModal
           handleModalClose={handleWarning}
           handleConfirm={() => {
-            handleLogout('teachers');
+            handleLogout("teachers");
           }}
           modalOpen={warningModal}
         />
@@ -72,7 +70,7 @@ const TeachersWrapper = ({
 
         <aside
           className={` left-0 top-0 h-screen w-[16.5rem] overflow-auto z-30 !bg-white lg:block transition-transform transform ${
-            isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
+            isSidenavOpen ? "translate-x-0" : "-translate-x-full"
           } lg:translate-x-0`}
         >
           <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
