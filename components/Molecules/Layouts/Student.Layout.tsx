@@ -107,7 +107,7 @@ const StudentWrapper = ({
         <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
           <div
             className={`${
-              active ? 'w-0 lg:w-[18rem]' : 'w-0 lg:w-[98px]'
+              active ? 'w-0 lg:w-[18rem]' : 'w-0  lg:w-[98px]'
             } transition-all ease-in-out duration-500`}
           ></div>
           <div className='min-h-screen w-full z-10'>{children}</div>
