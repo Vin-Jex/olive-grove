@@ -1,14 +1,13 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import SideNav from "../Navs/SideNav";
-import AdminNav from "../Navs/AdminNav";
-import Meta from "@/components/Atoms/Meta";
-import LogoutWarningModal from "../Modal/LogoutWarningModal";
-import { useRouter } from "next/router";
-import { handleLogout } from "./Admin.Layout";
-import VerificationModal from "../Modal/VerificationModal";
-import { useUser } from "@/contexts/UserContext";
-import useServiceWorkerListener from "@/components/utils/hooks/useServiceWorkerListener";
-
+import React, { ReactNode, useEffect, useState } from 'react';
+import SideNav from '../Navs/SideNav';
+import AdminNav from '../Navs/AdminNav';
+import Meta from '@/components/Atoms/Meta';
+import LogoutWarningModal from '../Modal/LogoutWarningModal';
+import { useRouter } from 'next/router';
+import { handleLogout } from './Admin.Layout';
+import VerificationModal from '../Modal/VerificationModal';
+import { useUser } from '@/contexts/UserContext';
+import useServiceWorkerListener from '@/components/utils/hooks/useServiceWorkerListener';
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -66,6 +65,7 @@ const TeachersWrapper = ({
           modalOpen={warningModal}
         />
         <VerificationModal
+          redirectTo='/teachers/profile'
           modalOpen={isOpen}
           handleModalClose={handleVerifyOpen}
         />
