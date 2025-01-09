@@ -19,10 +19,12 @@ import { Alert, CircularProgress, Snackbar } from '@mui/material';
 import { handleLogout } from '@/components/Molecules/Layouts/Admin.Layout';
 import { useRouter } from 'next/router';
 import useUserVerify from '@/components/utils/hooks/useUserVerify';
-import { formatDate } from '@/components/utils/utils';
+import { formatDate, handleInputChange } from '@/components/utils/utils';
 import { ProfilePhotoSection } from '../teachers/profile';
 import { InputType } from '@/components/utils/types';
 import { useUser } from '@/contexts/UserContext';
+import toast from 'react-hot-toast';
+import { updateUserInDB } from '@/components/utils/indexDB';
 
 type TFormState = {
   firstName: string;
@@ -44,9 +46,8 @@ const Profile = () => {
   const {
     otpRequestLoading,
     handleRequestOTP,
-    message,
     formattedTimer,
-    setMessage,
+    fetchedDept,
     verifyOTP,
     OTPTimer,
   } = useUserVerify();
@@ -87,11 +88,11 @@ const Profile = () => {
     'Account' | 'Security' | 'account_verify'
   >('Account');
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
+  const [passwordChangeLoading, setPasswordChangeLoading] = useState(false);
   const { user } = useAuth();
   const role = user?.role;
-  const [profileError, setProfileError] = useState('');
+  console.log(userInfo);
 
-  console.log(userInfo, ': this is the user info');
   const inputFields: (
     | {
         label: string;
@@ -122,7 +123,6 @@ const Profile = () => {
       required: true,
       error: formError.emailError,
     },
-    //username, dob
     {
       label: 'Username',
       name: 'username',
@@ -137,7 +137,7 @@ const Profile = () => {
       required: false,
       error: '',
     },
-    { label: 'Department', name: 'department', type: 'text', error: '' },
+    // { label: 'Department', name: 'department', type: 'text', error: '' },
     {
       label: 'Academic Status',
       name: 'academicStatus',
@@ -211,10 +211,13 @@ const Profile = () => {
 
       const data = await response.data;
       fetchProfile();
-      setFormError((prevState) => ({
-        ...prevState,
-        successError: data?.data?.response?.message,
-      }));
+      // setFormError((prevState) => ({
+      //   ...prevState,
+      //   successError: data?.data?.response?.message,
+      // }));
+      toast.success(
+        data?.data?.response?.message || 'Profile updated successfully'
+      );
 
       // Reset the form after successful submission
       setTimeout(() => {
@@ -224,13 +227,7 @@ const Profile = () => {
         }));
       }, 5000);
     } catch (error: AxiosError | any) {
-      console.log(error, 'axios error');
-      const data = error.response.data;
-      setMessage((err) => ({
-        ...err,
-        error: true,
-        message: data.message,
-      }));
+      toast.error(error?.response?.data?.message);
     }
   };
 
@@ -246,6 +243,7 @@ const Profile = () => {
     });
 
     try {
+      setPasswordChangeLoading(true);
       setIsDisabledPassword(true);
       const response = await axiosInstance.post(
         `${baseUrl}/password/change`,
@@ -253,21 +251,23 @@ const Profile = () => {
       );
 
       //log the user out on successfull password change
-      handleLogout('students');
-
-      setMessage((err) => ({
-        ...err,
-        success: true,
-        error: false,
-        message: response?.data?.data.message,
-      }));
+      // handleLogout('students');
+      if (userInfo)
+        await updateUserInDB(
+          userInfo._id,
+          { ...userInfo, isVerified: true },
+          userInfo._id
+        );
+      toast.success(
+        response?.data?.data.message || 'Password changed successfully'
+      );
     } catch (error: AxiosError | any) {
-      setMessage((err) => ({
-        ...err,
-        error: true,
-        message: error?.response?.data.message,
-      }));
+      toast.error(
+        error?.response?.data?.message ||
+          'An error occured while trying to change password'
+      );
     } finally {
+      setPasswordChangeLoading(false);
       setIsDisabledPassword(false);
     }
   };
@@ -283,20 +283,12 @@ const Profile = () => {
       );
 
       const data = await response.data;
-      setMessage((err) => ({
-        ...err,
-        success: true,
-        error: false,
-        message: data.message,
-      }));
+      toast.success(data?.message || 'Email verified successfully');
+
       router.push('/auth/path/students/signin');
     } catch (error: AxiosError | any) {
-      const data = error.response.data;
-      setMessage((err) => ({
-        ...err,
-        error: true,
-        message: data.message,
-      }));
+      const data = error?.response?.data;
+      toast.error(data?.message || 'Failed to verify email');
     } finally {
       setEmailVerifyLoading(false);
     }
@@ -308,19 +300,20 @@ const Profile = () => {
 
       const data = response.data;
       setFormState({
-        profileImage: data.profileImage,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        middleName: data.middleName,
-        department: data.department.name,
-        academicStatus: data.department.category,
-        dob: formatDate(data.dob),
-        email: data.email,
-        username: data.username,
+        profileImage: data?.profileImage,
+        firstName: data?.firstName,
+        lastName: data?.lastName,
+        middleName: data?.middleName,
+        department: data?.department?.name ?? '',
+        academicStatus: data?.department?.category ?? '',
+        dob: formatDate(data?.dob),
+        email: data?.email,
+        username: data?.username,
         newPassword: '',
         confirmPassword: '',
         otp: '',
       });
+
       setProfileImage(data?.profileImage);
 
       setStudentName(data?.firstName + ' ' + data?.lastName);
@@ -331,7 +324,7 @@ const Profile = () => {
         'Your account is not verified. Please check your email for the verification code.'
       )
         setCurrentTab('account_verify');
-      setProfileError('Error occured in fetching user profile');
+      toast.error(err.response?.data?.message || 'Failed to fetch user data');
     }
   }, []);
 
@@ -354,8 +347,8 @@ const Profile = () => {
         metaTitle='Olive Grove ~ Profile'
       >
         <div className='md:px-12 px-6 py-12 space-y-5'>
-          {currentTab !== 'account_verify' && (
-            <div className='w-full max-w-[10rem] flex gap-0'>
+          <div className='w-full flex justify-between items-center'>
+            <div className='max-w-[10rem] flex gap-0'>
               {['Account', 'Security'].map((slug, i) => (
                 <>
                   <div
@@ -374,7 +367,17 @@ const Profile = () => {
                 </>
               ))}
             </div>
-          )}
+            <div
+              className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
+                currentTab === 'account_verify'
+                  ? 'border-primary border-opacity-70  bg-[#32A8C41A] text-primary'
+                  : ''
+              }`}
+              onClick={() => setCurrentTab('account_verify')}
+            >
+              Email Verification
+            </div>
+          </div>
           {/* Title */}
 
           {currentTab === 'Account' && (
@@ -385,6 +388,9 @@ const Profile = () => {
             >
               <div className='w-full flex flex-col space-y-5 gap-y-5'>
                 <ProfilePhotoSection
+                  lastLoginAt={userInfo?.lastLoginAt!}
+                  isVerified={userInfo?.isVerified!}
+                  setCurrentTab={setCurrentTab}
                   userRole='Student'
                   setFormState={setFormState}
                   setPreviewImage={setPreviewImage}
@@ -392,7 +398,11 @@ const Profile = () => {
                   setIsDisabled={setIsDisabled}
                   profileImage={profileImage}
                   name={studentName}
-                  id={formState.username}
+                  id={
+                    userInfo && 'studentID' in userInfo
+                      ? userInfo.studentID
+                      : ''
+                  }
                 />
                 <div className='flex max-sm:flex-col max-sm:items-start max-sm:gap-3 w-full items-center justify-between'>
                   <div className='flex flex-col '>
@@ -417,15 +427,13 @@ const Profile = () => {
                 ) : (
                   ''
                 )}
-                <div className='text-red-500'>
-                  {profileError && profileError}
-                </div>
 
                 <span className='text-subtext text-xl font-roboto font-medium -mb-1'>
                   Personal Information
                 </span>
                 <div className='grid max-sm:grid-cols-1 grid-cols-2 gap-8 w-full'>
                   <InputField
+                    label='First Name'
                     name='firstName'
                     type='text'
                     placeholder='First Name *'
@@ -436,6 +444,7 @@ const Profile = () => {
                   />
 
                   <InputField
+                    label='Middlename'
                     name='middleName'
                     type='text'
                     placeholder='Middle Name'
@@ -445,28 +454,82 @@ const Profile = () => {
                   />
                   {inputFields.map((field) => (
                     <InputField
+                      label={field.label}
                       placeholder={field.label}
                       key={field.name}
                       name={field.name}
                       type={field.type}
                       className='disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md'
-                      disabled={
-                        field.name === 'department' ||
-                        field.name === 'academicStatus'
-                          ? true
-                          : false
-                      }
+                      disabled={field.name === 'academicStatus' ? true : false}
                       value={
-                        formState[
-                          field.name as keyof Omit<TFormState, 'profileImage'>
-                        ]
+                        field.name === 'academicStatus' &&
+                        formState.academicStatus === ''
+                          ? ' Not Graduated'
+                          : formState[
+                              field.name as keyof Omit<
+                                TFormState,
+                                'profileImage'
+                              >
+                            ]
                       }
                       onChange={handleChange}
                       required={field.required}
                       error={field.error}
                     />
                   ))}
-                  <Input
+                  {/* <InputField
+                    type='select'
+                    label='Department'
+                    error=''
+                    placeholder='Select Department'
+                    options={fetchedDept.map(item => ({value: item._id, display_value: item.name}))}
+                    onChange={handleChange}
+                    disabled={formState.department.length > 0}
+                    value={formState.department}
+                    id='department'
+                    name='department'
+                    required
+                    className='flex items-center h-12 px-2 sm:px-2.5 py-3 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
+                  >
+                    {/* <option value='' disabled selected>
+                      Select Department
+                    </option> */}
+                  {/* {fetchedDept?.map((course) => (
+                      <option value={course._id} key={course._id}>
+                        {course.name}
+                      </option>
+                    ))} */}
+                  {/* </InputField>  */}
+                  <div>
+                    <label htmlFor="department" className='text-sm text-subtext'>Department</label>
+                    <select
+                      onChange={(e) => {
+                        handleChange(e);
+                        setIsDisabled(false);
+                      }}
+                      disabled={formState.department.length > 0}
+                      value={formState.department}
+                      id='department'
+                      name='department'
+                      required
+                      className='flex items-center disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none px-2 sm:px-2.5 py-3.5 rounded-md bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
+                    >
+                      <option value='' disabled selected>
+                        Select Department
+                      </option>
+                      {fetchedDept?.map((course) => (
+                        <option value={course._id} key={course._id}>
+                          {course.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <InputField
+                    label='Role'
+                    name='role'
+                    error=''
+                    onChange={() => {}}
                     placeholder={'Role'}
                     key={role}
                     className='disabled:bg-[#1e1e1e] disabled:bg-opacity-10 !text-subtext disabled:!border-none !rounded-md'
@@ -519,64 +582,130 @@ const Profile = () => {
                   </span>
                 )}
                 <div className='grid grid-cols-2 max-sm:grid-cols-1 gap-8 w-full'>
-                  <Input
-                    type='password'
+                  <InputField
+                    label='New Password'
+                    placeholder='New Password'
                     name='newPassword'
-                    value={formState.newPassword}
-                    onChange={handleChange}
-                    placeholder='New Password *'
-                    // required
-                    className='input !rounded-xl'
-                  />
-                  <Input
                     type='password'
-                    name='confirmPassword'
-                    value={formState.confirmPassword}
-                    onChange={handleChange}
-                    placeholder='Confirm Password *'
-                    // required
-                    className='input !rounded-xl'
+                    className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md text-base`}
+                    value={formState.newPassword}
+                    pattern='^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$'
+                    title='Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
+                    onChange={(e) => {
+                      // setIsDisabled((prevState) => ({
+                      //   ...prevState,
+                      //   security: false,
+                      // }));
+                      handleInputChange(
+                        e.target.name,
+                        e.target.value,
+                        setFormState
+                      );
+                    }}
+                    required={true}
+                    disabled={otpRequestLoading || OTPTimer > 0}
+                    error={''}
                   />
-                  <div className='flex items-center  '>
-                    <Input
-                      type='number'
+                  <InputField
+                    label='Confirm Password'
+                    placeholder='Confirm Password'
+                    name='confirmPassword'
+                    type='password'
+                    className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md text-base`}
+                    value={formState.confirmPassword}
+                    onChange={(e) => {
+                      // setIsDisabled((prevState) => ({
+                      //   ...prevState,
+                      //   security: false,
+                      // }));
+                      handleInputChange(
+                        e.target.name,
+                        e.target.value,
+                        setFormState
+                      );
+                    }}
+                    required={true}
+                    disabled={otpRequestLoading || OTPTimer > 0}
+                    error={''}
+                  />
+                  <div className='flex flex-col space-y-2 relative'>
+                    <InputField
+                      label='One-Time Password'
+                      placeholder='Enter OTP'
                       name='otp'
+                      type='text'
+                      className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md text-base`}
                       value={formState.otp}
-                      onChange={handleChange}
-                      placeholder='OTP'
-                      //required
-                      className='input !rounded-xl'
+                      onChange={(e) => {
+                        // setIsDisabled((prevState) => ({
+                        //   ...prevState,
+                        //   security: false,
+                        // }));
+                        const value = e.target.value.replace(/\D/g, '');
+                        handleInputChange(e.target.name, value, setFormState);
+                      }}
+                      required={true}
+                      disabled={
+                        otpRequestLoading ||
+                        formState.newPassword === '' ||
+                        formState.confirmPassword === '' ||
+                        formState.newPassword.length < 8 ||
+                        formState.confirmPassword.length < 8 ||
+                        formState.newPassword !== formState.confirmPassword
+                      }
+                      error={''}
+                      maxLength={6}
                     />
-                    <span
-                      className={`text-sm ml-4 ${OTPTimer === 0 && 'hidden'}`}
+                    <Button
+                      size='xs'
+                      type='button'
+                      width='fit'
+                      className='!text-xs !py-2 !px-4 font-roboto absolute right-2 bottom-[1.4rem] translate-y-1/2'
+                      onClick={() => {
+                        if (OTPTimer <= 0 && !otpRequestLoading) {
+                          handleRequestOTP('password_reset');
+                        }
+                      }}
+                      disabled={
+                        otpRequestLoading ||
+                        formState.newPassword === '' ||
+                        formState.confirmPassword === '' ||
+                        formState.newPassword.length < 8 ||
+                        formState.confirmPassword.length < 8 ||
+                        formState.newPassword !== formState.confirmPassword ||
+                        OTPTimer > 0
+                      }
                     >
-                      {OTPTimer}
-                    </span>
+                      {otpRequestLoading
+                        ? 'Requesting OTP...'
+                        : OTPTimer > 0
+                        ? formattedTimer
+                        : verifyOTP.status
+                        ? 'Resend OTP'
+                        : 'Request OTP'}
+                    </Button>
                   </div>
                 </div>
-                <div className='font-roboto text-subtext'>
-                  {verifyOTP.message}{' '}
-                  <button
-                    disabled={
-                      formState.newPassword === '' ||
-                      formState.confirmPassword === '' ||
-                      formState.newPassword !== formState.confirmPassword ||
-                      OTPTimer > 0
-                    }
-                    onClick={() => handleRequestOTP('password_reset')}
-                    className='text-primary font-bold disabled:cursor-not-allowed'
-                  >
-                    {verifyOTP.status ? 'Resend OTP' : ' Request OTP'}
-                  </button>
-                </div>
                 <Button
-                  type='submit'
                   size='xs'
-                  width='fit'
-                  className='!px-8 disabled:cursor-not-allowed'
-                  disabled={isDisabledPassword}
+                  type='submit'
+                  disabled={
+                    // isDisabled.security ||
+                    otpRequestLoading ||
+                    formState.newPassword === '' ||
+                    formState.confirmPassword === '' ||
+                    formState.newPassword.length < 8 ||
+                    formState.confirmPassword.length < 8 ||
+                    formState.newPassword !== formState.confirmPassword ||
+                    formState.otp === '' ||
+                    formState.otp.length < 4
+                  }
                 >
-                  Update
+                  {passwordChangeLoading ? (
+                    <CircularProgress size={20} color='inherit' />
+                  ) : (
+                    'Update'
+                  )}
                 </Button>
               </div>
             </form>
@@ -598,19 +727,7 @@ const Profile = () => {
                     </span>
                   </div>
                 </div>
-                {formError.internetError !== '' ? (
-                  <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-[#d9b749] capitalize -mb-3'>
-                    <Info sx={{ fontSize: '1.1rem' }} />
-                    {formError.internetError}
-                  </span>
-                ) : emailOTP.error !== '' ? (
-                  <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-primary capitalize -mb-3'>
-                    <Info sx={{ fontSize: '1.1rem' }} />
-                    {emailOTP.error}
-                  </span>
-                ) : (
-                  ''
-                )}
+
                 <div className='flex flex-col space-y-2 w-1/2 relative'>
                   <label
                     htmlFor='email_verification_otp'
@@ -659,7 +776,7 @@ const Profile = () => {
                   type='submit'
                 >
                   {emailVerifyLoading ? (
-                    <CircularProgress size={20} />
+                    <CircularProgress size={20} color='inherit' />
                   ) : (
                     'Verify'
                   )}
@@ -669,29 +786,6 @@ const Profile = () => {
           )}
         </div>
       </StudentWrapper>
-
-      {(message.error || message.success) && (
-        <Snackbar
-          open={message.error || message.success}
-          onClose={() =>
-            setMessage((err) => ({
-              ...err,
-              error: false,
-              success: false,
-            }))
-          }
-          autoHideDuration={6000}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          className='!z-[999]'
-        >
-          <Alert
-            severity={message.error ? 'error' : 'success'}
-            onClose={() => setMessage((err) => ({ ...err, error: false }))}
-          >
-            {message.message}
-          </Alert>
-        </Snackbar>
-      )}
     </>
   );
 };

@@ -162,6 +162,95 @@ export type TAssessment<T extends "post" | "get"> = {
   class: T extends "post" ? string : TDepartment;
 };
 
+export type TQuestionCard = {
+  _id: string;
+  teacher: {
+    _id: string;
+    name: string;
+    email: string;
+    tel: number;
+    address: string;
+    password: string;
+    profileImage: string;
+    role: string;
+    teacherID: string;
+    __v: number;
+    archivedAt: string | null;
+    deletedAt: string | null;
+    isActive: boolean;
+    isArchived: boolean;
+    isDeleted: boolean;
+    isVerified: boolean;
+    lastLoginAt: string;
+    updatedAt: string;
+  };
+  class: {
+    _id: string;
+    name: string;
+    category: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  academicWeek: {
+    _id: string;
+    startDate: string;
+    endDate: string;
+    weekNumber: number;
+    academicYear: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  course: {
+    startDate: string;
+    endDate: string | null;
+    isActive: boolean;
+    _id: string;
+    classId: string;
+    title: string;
+    courseCover: string;
+    chapters: string[];
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  };
+  assessmentType: {
+    _id: string;
+    name: string;
+    __v: number;
+  };
+  description: string;
+  dueDate: string;
+  active: boolean;
+  questions: {
+    fileRequirements: {
+      maxSizeMB: number;
+      allowedExtensions: string[];
+    };
+    questionText: string;
+    questionType: string;
+    options: string[];
+    yourAnswer: string;
+    correctAnswer: string;
+    maxMarks: number;
+    _id: string;
+  }[];
+  submissions: any[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
+export type UserRole = "Teacher" | "Student" | "Admin";
+export enum EUserRole {
+  Admin = "Admin",
+  Student = "Student",
+  Teacher = "Teacher",
+}
+
 export type TStudent = {
   _id: string;
   firstName: string;
@@ -172,7 +261,7 @@ export type TStudent = {
   username: string;
   password: string;
   studentID: string;
-  role: "Student";
+  role: EUserRole;
   archivedAt: Date | null;
   deletedAt: Date | null;
   isActive: boolean;
@@ -188,6 +277,7 @@ export type TStudent = {
   graduated?: boolean | null;
   graduatedYear?: Date | null;
   academicSection?: string | null;
+  gender: string | null;
 };
 
 export type TTeacher = {
@@ -199,7 +289,7 @@ export type TTeacher = {
   password: string;
   profileImage?: string;
   _id: string;
-  role: "Teacher";
+  role: EUserRole;
   archivedAt: Date | null;
   deletedAt: Date | null;
   isActive: boolean;
@@ -208,6 +298,9 @@ export type TTeacher = {
   isVerified: boolean;
   lastLoginAt: Date | null;
   updatedAt: Date;
+  gender: string | null;
+  academicSection: string | null;
+  teachingCourses: [];
 };
 
 export type TAdmin = {
@@ -216,7 +309,7 @@ export type TAdmin = {
   username: string;
   password: string;
   profileImage?: string;
-  role: "Admin";
+  role: EUserRole;
   archivedAt: Date | null;
   deletedAt: Date | null;
   isActive: boolean;
@@ -225,6 +318,8 @@ export type TAdmin = {
   isVerified: boolean;
   lastLoginAt: Date | null;
   updatedAt: Date;
+  gender: string | null;
+  academicSection: string | null;
 };
 
 export type TUser = TStudent | TTeacher | TAdmin;

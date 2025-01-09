@@ -273,7 +273,7 @@ const AssessmentQuestion: FC<{
               <label className="block cursor-pointer transition">
                 {attachmentState.loading ? (
                   <>
-                    <CircularProgress size={"15px"} />
+                    <CircularProgress size={"15px"} color="inherit" />
                   </>
                 ) : (
                   <>

@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import Modal from "./Modal";
-import Button from "@/components/Atoms/Button";
-import { TFetchState, TWarningModalProps } from "@/components/utils/types";
-import { CircularProgress } from "@mui/material";
+import React, { useState } from 'react';
+import Modal from './Modal';
+import Button from '@/components/Atoms/Button';
+import { TFetchState, TWarningModalProps } from '@/components/utils/types';
+import { CircularProgress } from '@mui/material';
 
 export default function WarningModal({
   modalOpen,
@@ -11,7 +11,7 @@ export default function WarningModal({
   content,
   subtext,
   requestState,
-}: Omit<TWarningModalProps, "handleConfirm"> & {
+}: Omit<TWarningModalProps, 'handleConfirm'> & {
   content: string;
   subtext: string;
   requestState: TFetchState<any>;
@@ -42,7 +42,7 @@ export default function WarningModal({
                 handleModalClose();
               }}
             >
-              cancel
+              Cancel
             </Button>
             <Button
               size='sm'
@@ -55,7 +55,7 @@ export default function WarningModal({
               {requestState.loading ? (
                 <CircularProgress size={15} color='inherit' />
               ) : (
-                "Confirm"
+                'Confirm'
               )}
             </Button>
           </div>
