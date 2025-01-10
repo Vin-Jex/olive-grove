@@ -33,24 +33,59 @@ export type TChapter<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   lessons: TLesson[];
+  courseId: string;
+  currentTutorial: {
+    type: string;
+    id: string;
+  };
 } & OptionalFields<T>;
 
 export type TLesson<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   sections: TSection[];
+  chapterId: string;
+  viewed: boolean;
+  availableDate: Date;
+  isActive: boolean;
+  currentTutorial: boolean;
+  topicVideo: string | null;
+  youtubeVideo: string | null;
+  embed: string | null;
+  topicNote: string;
+  topicImage: string | null;
 } & OptionalFields<T>;
 
 export type TSection<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   subsections: TSubSection[];
+  lessonId: string;
+  viewed: boolean;
+  availableDate: Date;
+  isActive: boolean;
+  currentTutorial: boolean;
+  topicVideo: string | null;
+  youtubeVideo: string | null;
+  embed: string | null;
+  topicNote: string;
+  topicImage: string | null;
 } & OptionalFields<T>;
 
 export type TSubSection<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   description?: string;
+  lessonId: string;
+  viewed: boolean;
+  availableDate: Date;
+  isActive: boolean;
+  currentTutorial: boolean;
+  topicVideo: string | null;
+  youtubeVideo: string | null;
+  embed: string | null;
+  topicNote: string;
+  topicImage: string | null;
 } & OptionalFields<T>;
 
 export type TResponse<T> = {

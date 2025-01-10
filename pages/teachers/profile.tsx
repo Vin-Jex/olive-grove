@@ -62,7 +62,7 @@ type TFormState = {
   newPassword: string;
   confirmPassword: string;
   otp: string;
-  teachingCourses: [];
+  teachingCourses: [] | null;
   gender: string | null;
   academicSection: string | null;
   role: EUserRole;
@@ -84,8 +84,8 @@ const TeachersProfile = () => {
     confirmPassword: "",
     otp: "",
     teachingCourses:
-      (user && "teachingCourses" in user && user?.teachingCourses) || [],
-    gender: user?.gender || null,
+      (user && "teachingCourses" in user && user?.teachingCourses) || null,
+    gender: user?.gender || "",
     academicSection: user?.academicSection || null,
     role: user?.role!,
   });
@@ -146,8 +146,7 @@ const TeachersProfile = () => {
       options: [
         { value: "male", display_value: "Male" },
         { value: "female", display_value: "Female" },
-        { value: "other", display_value: "Other" },
-        { value: "prefer_not_to_say", display_value: "Prefer not to say" },
+        { value: "undisclosed", display_value: "Prefer not to say" },
       ],
     },
   ];
@@ -170,6 +169,10 @@ const TeachersProfile = () => {
         tel: data.tel,
         address: data.address,
         profileImage: data.profileImage,
+        teachingCourses: data.teachingCourses,
+        gender: data.gender,
+        academicSection: data.academicSection,
+        role: data.role,
       }));
       setUser(data);
       setIsDisabled((prevState) => ({
@@ -192,10 +195,10 @@ const TeachersProfile = () => {
       }));
       try {
         const formData = new FormData();
-        Object.keys(formState).forEach((key) => {
-          // Skip these keys
 
+        Object.keys(formState).forEach((key) => {
           const value = formState[key as keyof TFormState];
+
           if (value === null || value === undefined) {
             // Skip null or undefined fields
             return;
@@ -205,14 +208,31 @@ const TeachersProfile = () => {
             if (value instanceof File || value instanceof Blob) {
               formData.append(key, value);
             } else if (typeof value === "string") {
-              // Append strings as-is for compatibility
               formData.append(key, value);
             }
           } else if (Array.isArray(value)) {
-            // Handle arrays if necessary (e.g., stringify them)
-            formData.append(key, JSON.stringify(value));
+            if (key === "teachingCourses") {
+              const ids = value
+                .filter((course) => {
+                  return (
+                    typeof course === "object" &&
+                    course !== null &&
+                    "_id" in course
+                  );
+                })
+                .map((course: { _id: string }) => course._id);
+              formData.append(key, ids as unknown as string);
+            } else {
+              // Handle other arrays
+              formData.append(key, JSON.stringify(value));
+            }
+          } else if (typeof value === "object" && value !== null) {
+            if (key === "academicSection" && "_id" in value) {
+              const id = (value as { _id: string })._id;
+              formData.append(key, id);
+            }
           } else {
-            formData.append(key, value as string);
+            formData.append(key, String(value));
           }
         });
 
@@ -428,20 +448,22 @@ const TeachersProfile = () => {
             <div>
               {formState.teachingCourses &&
               formState.teachingCourses.length > 0 ? (
-                formState.teachingCourses.map((course, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className='bg-[#1e1e1e] text-subtext mt-3 bg-opacity-10 rounded-lg w-fit py-3 px-4 capitalize'
-                    >
-                      {course}
-                    </div>
-                  );
-                })
+                formState.teachingCourses.map(
+                  (course: { title: string }, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className='bg-[#1e1e1e] text-subtext mt-3 bg-opacity-10 rounded-lg w-fit py-3 px-4 capitalize'
+                      >
+                        {course?.title}
+                      </div>
+                    );
+                  }
+                )
               ) : (
                 <div className='flex flex-col justify-center space-y-2'>
                   <span className='text-sm font-roboto font-medium text-subtext'>
-                    Courses Being Taught: 
+                    Courses Being Taught:
                   </span>
                   <span className='bg-[#1e1e1e] text-subtext text-sm bg-opacity-10 rounded-lg w-fit py-3 px-4 capitalize'>
                     No Course Assigned Yet
