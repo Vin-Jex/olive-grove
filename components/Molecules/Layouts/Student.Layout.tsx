@@ -88,7 +88,7 @@ const StudentWrapper = ({
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
       <div className='w-full'>
-        <div className='absolute right-0 top-0 w-full flex z-30 lg:z-20'>
+        <div className='absolute right-0 bg-milky top-0 w-full flex z-30 lg:z-20'>
           <div
             className={`${
               active ? "w-0 lg:w-[22rem]" : "w-0 lg:w-[98px]"
