@@ -1,12 +1,10 @@
-import { TCourse, TSection, TTopicDetails } from "@/components/utils/types";
+import { TCourse, TTopicDetails } from "@/components/utils/types";
 import { useRouter } from "next/router";
 import {
   createContext,
   useContext,
   useState,
   ReactNode,
-  Dispatch,
-  SetStateAction,
   useEffect,
   useCallback,
 } from "react";
@@ -42,18 +40,18 @@ export const TopicContextProvider: React.FC<{
   const getTopic = useCallback(() => {
     setIsLoading(true);
 
+    let foundTopic = false;
+
     // * Loop through each chapter in the course
     for (const chapter of course?.chapters || []) {
-      // * Loop through each lesson in each chapter
       for (const lesson of chapter.lessons) {
-        // * Search for the topic with the id passed in the query in the list of topics under the current lesson
+        // * Search for the topic with the id passed in the query
         const section = lesson.sections.find(
           (section) => section._id === topic
         );
 
-        // * If the topic was found, update the topic details state and break the loop
         if (section) {
-          console.log("TOPIC", section);
+          foundTopic = true;
           setTopicDetails({
             path: [chapter.title, lesson.title, section?.title],
             topicChapter: chapter._id!,
@@ -63,6 +61,50 @@ export const TopicContextProvider: React.FC<{
           });
           break;
         }
+
+        // * Check if a section has currentTutorial: true
+        const sectionWithCurrentTutorial = lesson.sections.find(
+          (section) => section.currentTutorial
+        );
+
+        if (sectionWithCurrentTutorial && !foundTopic) {
+          foundTopic = true;
+          setTopicDetails({
+            path: [
+              chapter.title,
+              lesson.title,
+              sectionWithCurrentTutorial.title,
+            ],
+            topicChapter: chapter._id!,
+            topicLesson: lesson._id!,
+            type: "section",
+            topic: sectionWithCurrentTutorial,
+          });
+          break;
+        }
+      }
+
+      if (foundTopic) break;
+    }
+
+    // * Fallback: If no section matches the query or currentTutorial, set the first section
+    if (!foundTopic) {
+      for (const chapter of course?.chapters || []) {
+        for (const lesson of chapter.lessons) {
+          const firstSection = lesson.sections[0];
+          if (firstSection) {
+            setTopicDetails({
+              path: [chapter.title, lesson.title, firstSection.title],
+              topicChapter: chapter._id!,
+              topicLesson: lesson._id!,
+              type: "section",
+              topic: firstSection,
+            });
+            foundTopic = true;
+            break;
+          }
+        }
+        if (foundTopic) break;
       }
     }
 

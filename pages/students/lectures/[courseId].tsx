@@ -175,10 +175,10 @@ const SubjectDetailsPage: FC = () => {
           <CourseModal
             formState={modalFormState || ({} as any)}
             setFormState={setModalFormState || ((() => {}) as any)}
-            type={type || 'chapter'}
+            type={type || "chapter"}
             handleModalClose={handleCloseModal}
             modalOpen={true}
-            mode={mode || 'create'}
+            mode={mode || "create"}
             handleAction={handleAction || ((() => {}) as any)}
             handleDelete={handleDelete || ((() => {}) as any)}
             requestState={modalRequestState}
@@ -191,12 +191,12 @@ const SubjectDetailsPage: FC = () => {
           title='Courses'
           metaTitle={`Olive Grove ~ ${courseId}`}
         >
-          <div className='space-y-5 max-sm:px-6 max-sm:pt-3 px-12 h-full'>
+          <div className='flex flex-col space-y-5'>
             {course.loading ? (
               <Loader />
             ) : course.error ? (
               <div className='w-full h-full flex items-center justify-center'>
-                {typeof course.error === 'object' &&
+                {typeof course.error === "object" &&
                 course.error.status === 404 ? (
                   <>
                     <ErrorUI msg={course.error.message} status={404} />
@@ -209,22 +209,22 @@ const SubjectDetailsPage: FC = () => {
               <>
                 {/* Title */}
                 <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-start'>
-                  <div className='flex relative gap-4 w-full mt-6 items-center'>
+                  <div className='flex relative gap-4 w-full items-center'>
                     <BackButton />
 
                     <span className='text-2xl max-sm:text-lg font-medium text-dark font-roboto'>
-                      {course.data?.title || 'Loading...'}
+                      {course.data?.title || "Loading..."}
                     </span>
                     {/* breadcrumb */}
                     <span className='absolute right-0 translate-y-1/2'>
-                      <span className='text-sm text-subtext'>courses / </span>
+                      <span className='text-sm text-subtext'>Courses / </span>
                       <span className='text-sm text-dark font-semibold'>
-                        {' '}
+                        {" "}
                         {course.data?.title}
                       </span>
                     </span>
                   </div>
-                  {userRole === 'Teacher' && (
+                  {userRole === "Teacher" && (
                     <div className='flex gap-4 items-center'>
                       {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
                       <div
@@ -233,7 +233,7 @@ const SubjectDetailsPage: FC = () => {
                       >
                         <i
                           className={`fa fa-${
-                            showSideBar ? 'xmark' : 'bars'
+                            showSideBar ? "xmark" : "bars"
                           } text-primary`}
                         ></i>
                       </div>
@@ -276,13 +276,13 @@ const SubjectDetailsPage: FC = () => {
                   {/* SIDEBAR */}
                   <div className='max-md:space-y-6 relative'>
                     <div className='w-full flex gap-0 md:hidden'>
-                      {['Course Contents', 'Q/A Section'].map((slug, i) => (
+                      {["Course Contents", "Q/A Section"].map((slug, i) => (
                         <>
                           <div
                             className={`px-7 py-2 font-medium text-sm cursor-pointer transition ${
                               activeTab === slug
-                                ? 'border-primary border-opacity-70 border-b-2 bg-[#32A8C41A] text-primary'
-                                : ''
+                                ? "border-primary border-opacity-70 border-b-2 bg-[#32A8C41A] text-primary"
+                                : ""
                             }`}
                             onClick={() => setActiveTab(slug)}
                             key={i}
@@ -294,13 +294,13 @@ const SubjectDetailsPage: FC = () => {
                     </div>
                     <div className='sticky top-6'>
                       <div className='flex-none relative w-full block'>
-                        <SideBar courseId={(courseId as string) || ''} />
+                        <SideBar courseId={(courseId as string) || ""} />
                       </div>
                       {/* MOBILE SIDEBAR */}
                       <AnimatePresence>
                         {showSideBar && (
                           <MobileSideBar
-                            courseId={(courseId as string) || ''}
+                            courseId={(courseId as string) || ""}
                           />
                         )}
                       </AnimatePresence>
@@ -322,7 +322,7 @@ const SubjectDetailsPage: FC = () => {
               open={errorOccured}
               onClose={() => setErrorOccured(false)}
               autoHideDuration={6000}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
               className='!z-[999]'
             >
               <Alert severity='info' onClose={() => setErrorOccured(false)}>

@@ -126,6 +126,11 @@ const courseReducer: Reducer<
         _id: action.payload._id || "",
         title: action.payload?.title || "",
         lessons: [],
+        courseId: action.payload.courseId || "",
+        currentTutorial: {
+          type: "none",
+          id: "",
+        },
       });
 
       console.log("Created chapter");
@@ -139,25 +144,29 @@ const courseReducer: Reducer<
   }
 
   if (action.type === "CREATE_LESSON") {
-    // * Create a new object from the the course details state
+    // Create a new object from the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
-    // * Retrieve the chapter which the lesson will be created in
+    // Retrieve the chapter where the lesson will be created
     const chapterToUpdate = modifiedCourse.chapters?.find(
       (chapter) => chapter._id === action.payload.parentId
     );
 
-    // * Check if a lesson with this id has been previously created
+    // Check if a lesson with this id already exists
     const createdLesson = chapterToUpdate?.lessons?.find(
       (lesson) => lesson._id === action.payload?._id
     );
 
-    // * If the lesson hasn't been created, create it and add it to the list of lessons under this chapter
     if (!createdLesson) {
       chapterToUpdate?.lessons.push({
         _id: action.payload._id || "",
-        title: action.payload?.title || "",
+        title: action.payload.title || "",
         sections: [],
+        chapterId: action.payload.chapterId || "",
+        topicNote: action.payload.topicNote || "",
+        topicImage: action.payload.topicImage || null,
+        topicVideo: action.payload.topicVideo || null,
+        youtubeVideo: action.payload.youtubeVideo || null,
       });
       console.log("Created lesson");
     }
@@ -195,6 +204,8 @@ const courseReducer: Reducer<
             topicNote: action.payload?.topicNote || "",
             topicVideo: action.payload?.topicVideo || "",
             youtubeVideo: action.payload?.youtubeVideo || "",
+            topicImage: action.payload?.topicImage || null,
+            lessonId: action.payload.lessonId || "",
             subsections: [],
           });
           console.log("Created topic");

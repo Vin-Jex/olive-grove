@@ -1,18 +1,18 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import Cookies from "js-cookie";
-import Link from "next/link";
-import Input from "@/components/Atoms/Input";
-import Button from "@/components/Atoms/Button";
-import { Info } from "@mui/icons-material";
-import { useRouter } from "next/router";
-import { CircularProgress } from "@mui/material";
-import axiosInstance from "@/components/utils/axiosInstance";
-import { useAuth } from "@/contexts/AuthContext";
-import useAjaxRequest, { TAxiosError, TAxiosSuccess } from "use-ajax-request";
-import { TLoginResponse } from "@/components/utils/types";
-import AuthLayout from "./layout";
-import { initDB } from "@/components/utils/indexDB";
-import toast from "react-hot-toast";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import Link from 'next/link';
+import Input from '@/components/Atoms/Input';
+import Button from '@/components/Atoms/Button';
+import { Info } from '@mui/icons-material';
+import { useRouter } from 'next/router';
+import { CircularProgress } from '@mui/material';
+import axiosInstance from '@/components/utils/axiosInstance';
+import { useAuth } from '@/contexts/AuthContext';
+import useAjaxRequest, { TAxiosError, TAxiosSuccess } from 'use-ajax-request';
+import { TLoginResponse } from '@/components/utils/types';
+import AuthLayout from './layout';
+import { initDB } from '@/components/utils/indexDB';
+import toast from 'react-hot-toast';
 
 export type loginType = {
   username: string;
@@ -25,23 +25,23 @@ const StudentLogin = () => {
     instance: axiosInstance,
     config: {
       url: `/student-login`,
-      method: "POST",
-      credentials: "include",
+      method: 'POST',
+      credentials: 'include',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     },
   });
   const [formState, setFormState] = useState<loginType>({
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
   const [formError, setFormError] = useState({
-    internetError: "",
-    usernameError: "",
-    passwordError: "",
-    successError: "",
-    generalError: "",
+    internetError: '',
+    usernameError: '',
+    passwordError: '',
+    successError: '',
+    generalError: '',
   });
 
   // const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +49,7 @@ const StudentLogin = () => {
   const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
-    if (formState.username === "" || formState.password === "")
+    if (formState.username === '' || formState.password === '')
       setIsDisabled(true);
     else setIsDisabled(false);
   }, [formState.password, formState.username]);
@@ -66,10 +66,10 @@ const StudentLogin = () => {
   const resetForm = () => {
     setFormState((prevState) => ({
       ...prevState,
-      username: "",
-      password: "",
+      username: '',
+      password: '',
     }));
-    if (formState.username === "" || formState.password === "")
+    if (formState.username === '' || formState.password === '')
       setIsDisabled(true);
     else setIsDisabled(false);
   };
@@ -79,7 +79,7 @@ const StudentLogin = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       return;
     }
@@ -88,7 +88,7 @@ const StudentLogin = () => {
     if (!formState.username.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        usernameError: "Username field cannot be empty",
+        usernameError: 'Username field cannot be empty',
       }));
       return;
     }
@@ -96,7 +96,7 @@ const StudentLogin = () => {
     if (!formState.password.trim()) {
       setFormError((prevState) => ({
         ...prevState,
-        passwordError: "Password field cannot be empty",
+        passwordError: 'Password field cannot be empty',
       }));
       return;
     }
@@ -122,7 +122,7 @@ const StudentLogin = () => {
       }));
     }
 
-    if (formState.username === "" || formState.password === "")
+    if (formState.username === '' || formState.password === '')
       setIsDisabled(true);
     else setIsDisabled(false);
 
@@ -132,18 +132,19 @@ const StudentLogin = () => {
   const clearError = () => {
     setTimeout(() => {
       setFormError({
-        internetError: "",
-        passwordError: "",
-        successError: "",
-        generalError: "",
-        usernameError: "",
+        internetError: '',
+        passwordError: '',
+        successError: '',
+        generalError: '',
+        usernameError: '',
       });
     }, 7000);
   };
 
-  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"teacher">> = async ({
+  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<'student'>> = async ({
     data,
   }) => {
+    console.log(data, 'why is the data not being initialized');
     const accessToken = data.token.accessToken;
     const refreshToken = data.token.refreshToken;
     const userId = data.details._id;
@@ -152,24 +153,24 @@ const StudentLogin = () => {
     await initDB(userDetails, userDetails._id);
 
     accessToken !== undefined &&
-      Cookies.set("accessToken", accessToken, { expires: 1 });
+      Cookies.set('accessToken', accessToken, { expires: 1 });
     refreshToken !== undefined &&
-      Cookies.set("refreshToken", refreshToken, { expires: 1 });
-    userId !== undefined && Cookies.set("userId", userId, { expires: 1 });
-    userRole !== undefined && Cookies.set("role", userRole, { expires: 1 });
-    Cookies.set("userDetails", JSON.stringify(data.details), { expires: 1 });
+      Cookies.set('refreshToken', refreshToken, { expires: 1 });
+    userId !== undefined && Cookies.set('userId', userId, { expires: 1 });
+    userRole !== undefined && Cookies.set('role', userRole, { expires: 1 });
+    Cookies.set('userDetails', JSON.stringify(data.details), { expires: 1 });
 
     toast.success(
       `Welcome back, ${
-        userDetails && "firstName" in userDetails && "lastName" in userDetails
+        userDetails && 'firstName' in userDetails && 'lastName' in userDetails
           ? `${userDetails.firstName} ${userDetails.lastName}`
-          : "Student"
+          : 'Student'
       }! Your learning journey continues!`
     );
 
     resetForm();
     reCheckUser();
-    router.push("/");
+    router.push('/');
   };
 
   const handleErrorLogin: TAxiosError<any> = (res) => {
@@ -183,7 +184,7 @@ const StudentLogin = () => {
     if (!navigator.onLine) {
       setFormError((prevState) => ({
         ...prevState,
-        internetError: "No internet connection",
+        internetError: 'No internet connection',
       }));
       clearError();
       return;
@@ -194,14 +195,14 @@ const StudentLogin = () => {
         data: formState,
       });
     } catch (error) {
-      console.log("Error:", error);
+      console.log('Error:', error);
     } finally {
       clearError();
     }
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === "Enter") {
+    if (isDisabled && event.key === 'Enter') {
       handleSignIn(event);
     }
   };
@@ -225,27 +226,27 @@ const StudentLogin = () => {
         {
           formError.usernameError ? (
             <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: "1.1rem" }} />
+              <Info sx={{ fontSize: '1.1rem' }} />
               {formError.usernameError}
             </span>
           ) : formError.passwordError ? (
             <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: "1.1rem" }} />
+              <Info sx={{ fontSize: '1.1rem' }} />
               {formError.passwordError}
             </span>
           ) : formError.internetError ? (
             <span className='text-yellow-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               {formError.internetError}
             </span>
           ) : formError.successError ? (
             <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               {formError.successError}
             </span>
           ) : formError.generalError ? (
             <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
+              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
               <span>{formError.generalError}</span>
             </span>
           ) : null // Return null if no errors exist
@@ -284,7 +285,7 @@ const StudentLogin = () => {
             {isLoading ? (
               <CircularProgress size={20} color='inherit' />
             ) : (
-              "Sign In"
+              'Sign In'
             )}
           </Button>
           <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
