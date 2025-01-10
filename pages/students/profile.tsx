@@ -21,7 +21,7 @@ import { useRouter } from 'next/router';
 import useUserVerify from '@/components/utils/hooks/useUserVerify';
 import { formatDate, handleInputChange } from '@/components/utils/utils';
 import { ProfilePhotoSection } from '../teachers/profile';
-import { InputType } from '@/components/utils/types';
+import { InputType, TStudent, TStudentCorrect } from '@/components/utils/types';
 import { useUser } from '@/contexts/UserContext';
 import toast from 'react-hot-toast';
 import { updateUserInDB } from '@/components/utils/indexDB';
@@ -38,11 +38,13 @@ type TFormState = {
   username: string;
   newPassword: string;
   confirmPassword: string;
+  gender: string | ''; //refrained from using null in the form field, if is an empty field it should be ablt to be filled by the user
   otp: string;
 };
 
 const Profile = () => {
   const router = useRouter();
+  const { user: userInfo, setUser } = useUser();
   const {
     otpRequestLoading,
     handleRequestOTP,
@@ -53,17 +55,31 @@ const Profile = () => {
   } = useUserVerify();
 
   const [formState, setFormState] = useState<TFormState>({
-    firstName: '',
-    lastName: '',
-    middleName: '',
-    profileImage: '',
-    academicStatus: '',
-    department: '',
-    dob: '',
-    email: '',
-    username: '',
+    firstName:
+      (userInfo && 'firstName' in userInfo && userInfo.firstName) || '',
+    lastName: (userInfo && 'lastName' in userInfo && userInfo.lastName) || '',
+    middleName:
+      (userInfo && 'middleName' in userInfo && userInfo.middleName) || '',
+    profileImage:
+      ((userInfo && 'image' in userInfo && userInfo.image) as string) || '',
+    academicStatus:
+      ((userInfo &&
+        'department' in userInfo &&
+        (userInfo as TStudentCorrect).department?.name &&
+        (userInfo as TStudentCorrect).department?.name) as string) || '', // we have to confirm this
+    department:
+      ((userInfo &&
+        'department' in userInfo &&
+        (userInfo as TStudentCorrect).department?._id &&
+        (userInfo as TStudentCorrect).department?._id) as string) || '',
+    dob:
+      (userInfo && 'dob' in userInfo && formatDate(userInfo.dob as string)) ||
+      '',
+    email: (userInfo && 'email' in userInfo && userInfo.email) || '',
+    username: (userInfo && 'username' in userInfo && userInfo.username) || '',
     newPassword: '',
     confirmPassword: '',
+    gender: (userInfo && 'gender' in userInfo && userInfo.gender) || '', //refraining from using null for the form field
     otp: '',
   });
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
@@ -78,7 +94,7 @@ const Profile = () => {
     passwordError: '',
     successError: '',
   });
-  const { user: userInfo } = useUser();
+
   const [emailOTP, setEmailOTP] = useState({ error: '', value: '' });
   const [isDisabled, setIsDisabled] = useState(true);
   const [isDisabledPassword, setIsDisabledPassword] = useState(true);
@@ -89,26 +105,19 @@ const Profile = () => {
   >('Account');
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
   const [passwordChangeLoading, setPasswordChangeLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
   const { user } = useAuth();
   const role = user?.role;
   console.log(userInfo);
 
-  const inputFields: (
-    | {
-        label: string;
-        name: string;
-        type: InputType;
-        required: boolean;
-        error: string;
-      }
-    | {
-        label: string;
-        name: string;
-        type: InputType;
-        error: string;
-        required?: undefined;
-      }
-  )[] = [
+  const inputFields: {
+    label: string;
+    name: string;
+    type: InputType;
+    required?: boolean;
+    error?: string;
+    options?: { value: string; display_value: string }[];
+  }[] = [
     {
       label: 'Last Name *',
       name: 'lastName',
@@ -143,6 +152,19 @@ const Profile = () => {
       name: 'academicStatus',
       type: 'text',
       error: '',
+    },
+    {
+      label: 'Gender',
+      name: 'gender',
+      type: 'select',
+      required: true,
+
+      options: [
+        { value: 'male', display_value: 'Male' },
+        { value: 'female', display_value: 'Female' },
+        { value: 'other', display_value: 'Other' },
+        { value: 'prefer_not_to_say', display_value: 'Prefer not to say' },
+      ],
     },
   ];
 
@@ -196,12 +218,19 @@ const Profile = () => {
     const formData = new FormData();
 
     Object.entries(formState).forEach(([key, value]) => {
-      if (key !== 'password' && key !== 'otp' && key !== 'username') {
+      if (
+        key !== 'password' &&
+        key !== 'otp' &&
+        key !== 'newPassword' &&
+        key !== 'confirmPassword' &&
+        key !== 'username'
+      ) {
         formData.append(key, value);
       }
     });
 
     try {
+      setEditLoading(true);
       setIsDisabled(true);
       const response = await axiosInstance.put(
         `${baseUrl}/student-user/${formState.username}`,
@@ -228,6 +257,8 @@ const Profile = () => {
       }, 5000);
     } catch (error: AxiosError | any) {
       toast.error(error?.response?.data?.message);
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -284,11 +315,11 @@ const Profile = () => {
 
       const data = await response.data;
       toast.success(data?.message || 'Email verified successfully');
-
-      router.push('/auth/path/students/signin');
+      fetchProfile();
+      // router.push('/auth/path/students/signin');
     } catch (error: AxiosError | any) {
       const data = error?.response?.data;
-      toast.error(data?.message || 'Failed to verify email');
+      toast.error(data?.error || data?.message || 'Failed to verify email');
     } finally {
       setEmailVerifyLoading(false);
     }
@@ -304,15 +335,17 @@ const Profile = () => {
         firstName: data?.firstName,
         lastName: data?.lastName,
         middleName: data?.middleName,
-        department: data?.department?.name ?? '',
+        department: data?.department?._id ?? '',
         academicStatus: data?.department?.category ?? '',
         dob: formatDate(data?.dob),
         email: data?.email,
         username: data?.username,
+        gender: data.gender ?? '',
         newPassword: '',
         confirmPassword: '',
         otp: '',
       });
+      setUser(data);
 
       setProfileImage(data?.profileImage);
 
@@ -326,7 +359,7 @@ const Profile = () => {
         setCurrentTab('account_verify');
       toast.error(err.response?.data?.message || 'Failed to fetch user data');
     }
-  }, []);
+  }, [setUser]);
 
   useEffect(() => {
     if (user) fetchProfile();
@@ -367,16 +400,18 @@ const Profile = () => {
                 </>
               ))}
             </div>
-            <div
-              className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
-                currentTab === 'account_verify'
-                  ? 'border-primary border-opacity-70  bg-[#32A8C41A] text-primary'
-                  : ''
-              }`}
-              onClick={() => setCurrentTab('account_verify')}
-            >
-              Email Verification
-            </div>
+            {currentTab === 'account_verify' && (
+              <div
+                className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
+                  currentTab === 'account_verify'
+                    ? 'border-primary border-opacity-70  bg-[#32A8C41A] text-primary'
+                    : ''
+                }`}
+                onClick={() => setCurrentTab('account_verify')}
+              >
+                Email Verification
+              </div>
+            )}
           </div>
           {/* Title */}
 
@@ -470,11 +505,19 @@ const Profile = () => {
                                 TFormState,
                                 'profileImage'
                               >
-                            ]
+                            ] ?? ''
                       }
-                      onChange={handleChange}
+                      options={field.options}
+                      onChange={(e) => {
+                        setIsDisabled(false);
+                        handleInputChange(
+                          e.target.name,
+                          e.target.value,
+                          setFormState
+                        );
+                      }}
                       required={field.required}
-                      error={field.error}
+                      error={field.error ?? ''}
                     />
                   ))}
                   {/* <InputField
@@ -501,7 +544,12 @@ const Profile = () => {
                     ))} */}
                   {/* </InputField>  */}
                   <div>
-                    <label htmlFor="department" className='text-sm text-subtext'>Department</label>
+                    <label
+                      htmlFor='department'
+                      className='text-sm text-subtext font-roboto font-medium'
+                    >
+                      Department
+                    </label>
                     <select
                       onChange={(e) => {
                         handleChange(e);
@@ -539,12 +587,19 @@ const Profile = () => {
                   />
                 </div>
                 <div>
-                  <span className='text-subtext capitalize'>
+                  <span className='text-sm font-roboto font-medium text-subtext capitalize'>
                     courses offered
                   </span>
-                  <div className='bg-[#1e1e1e] text-subtext mt-3 bg-opacity-10 rounded-lg w-fit py-3 px-4'>
-                    Mathematics
-                  </div>
+                  {(userInfo as TStudent)?.enrolledSubjects?.map(
+                    (subject, i) => (
+                      <div
+                        key={subject + i}
+                        className='bg-[#1e1e1e] text-sm text-subtext bg-opacity-10 rounded-lg w-fit py-3 px-4'
+                      >
+                        {subject}
+                      </div>
+                    )
+                  )}
                 </div>
                 <Button
                   type='submit'
@@ -553,7 +608,11 @@ const Profile = () => {
                   className='!px-8 disabled:cursor-not-allowed'
                   disabled={isDisabled}
                 >
-                  Update
+                  {editLoading ? (
+                    <CircularProgress size={20} color='inherit' />
+                  ) : (
+                    'Update'
+                  )}
                 </Button>
               </div>
             </form>
