@@ -12,31 +12,24 @@ import {
   TResponse,
   TErrorStatus,
 } from "@/components/utils/types";
-import { baseUrl } from "@/components/utils/baseURL";
 import CourseModal from "@/components/Molecules/Modal/CourseModal";
 import Loader from "@/components/Atoms/Loader";
 import ErrorUI from "@/components/Atoms/ErrorComponent";
-import ServerError from "@/components/Atoms/ServerError";
 import Course from "@/components/Atoms/Course/EachCourse";
 import { CourseClass, fetchCourses } from "@/components/utils/course";
 import { Add } from "@mui/icons-material";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { useCourseContext } from "@/contexts/CourseContext";
-import LogoutWarningModal from "@/components/Molecules/Modal/LogoutWarningModal";
 import WarningModal from "@/components/Molecules/Modal/WarningModal";
 
 const Subjects: FC = () => {
   const [searchResults, setSearchResults] = useState<TCourse[]>([]);
   const {
-    course,
-    dispatch,
     modal,
     closeModal,
     modalFormState,
     setModalFormState,
     modalRequestState,
-    setModalRequestState,
-    openModal,
     modalMetadata: { type, mode, handleAction, handleDelete },
   } = useCourseContext();
   const [courses, setCourses] = useState<TFetchState<TCourse[]>>({
@@ -44,6 +37,7 @@ const Subjects: FC = () => {
     loading: true,
     error: undefined,
   });
+  const [isDeleting, setIsDeleting] = useState(false);
   const [departments, setDepartments] = useState<
     TFetchState<TDepartment[] | undefined>
   >({
@@ -332,38 +326,49 @@ const Subjects: FC = () => {
           display_value: each.name,
         }))}
       />
-      {modal.open && (
-        <>
-          {mode === "delete" ? (
-            <>
-              <WarningModal
-                modalOpen={true}
-                handleModalClose={closeModal}
-                requestState={modalRequestState}
-                handleConfirm={handleDelete || (() => undefined)}
-                content='Are you sure you want to delete this course?'
-                subtext='This action CAN NOT be undone!'
-              />
-            </>
-          ) : (
-            <CourseModal
-              formState={modalFormState || ({} as any)}
-              setFormState={setModalFormState || ((() => {}) as any)}
-              type={type || "chapter"}
-              handleModalClose={closeModal}
-              modalOpen={true}
-              mode={mode || "create"}
-              handleAction={handleAction || ((() => {}) as any)}
-              handleDelete={handleDelete || ((() => {}) as any)}
-              requestState={modalRequestState}
-              departments={departments.data?.map((each) => ({
-                value: each._id as string,
-                display_value: each.name,
-              }))}
-            />
-          )}
-        </>
-      )}
+      {modal.open &&
+        (mode === "delete" ? (
+          <WarningModal
+            loading={isDeleting}
+            modalOpen={true}
+            handleModalClose={closeModal}
+            requestState={modalRequestState}
+            handleConfirm={async () => {
+              setIsDeleting(true);
+              try {
+                if (handleDelete) {
+                  await handleDelete();
+                  setIsDeleting(false);
+                  closeModal();
+                  return true; // Success
+                }
+              } catch (error) {
+                console.error("Error during deletion:", error);
+                setIsDeleting(false);
+                return false; // Failure
+              }
+              return false; // Default
+            }}
+            content='Are you sure you want to delete this course?'
+            subtext='This action CAN NOT be undone!'
+          />
+        ) : (
+          <CourseModal
+            formState={modalFormState || ({} as any)}
+            setFormState={setModalFormState || ((() => {}) as any)}
+            type={type || "chapter"}
+            handleModalClose={closeModal}
+            modalOpen={true}
+            mode={mode || "create"}
+            handleAction={handleAction || ((() => {}) as any)}
+            handleDelete={handleDelete || ((() => {}) as any)}
+            requestState={modalRequestState}
+            departments={departments.data?.map((each) => ({
+              value: each._id as string,
+              display_value: each.name,
+            }))}
+          />
+        ))}
 
       <TeachersWrapper
         isPublic={false}
@@ -447,18 +452,15 @@ const Subjects: FC = () => {
                   <ErrorUI msg='No courses found' status={404} />
                 </div>
               ) : (
-                <>
-                  {/* Content */}
-                  <div className='mt-4'>
-                    {/* Courses */}
-                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4'>
-                      {searchResults &&
-                        searchResults.map((course, i) => (
-                          <Course course={course} key={i + course.title} />
-                        ))}
-                    </div>
+                <div className='mt-4'>
+                  {/* Courses */}
+                  <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 xl:gap-5 2xl:gap-7 mt-4'>
+                    {searchResults &&
+                      searchResults.map((course, i) => (
+                        <Course course={course} key={i + course.title} />
+                      ))}
                   </div>
-                </>
+                </div>
               )}
             </>
           )}

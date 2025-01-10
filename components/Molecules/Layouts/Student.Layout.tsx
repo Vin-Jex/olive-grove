@@ -3,7 +3,6 @@ import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
 import Meta from "@/components/Atoms/Meta";
 import LogoutWarningModal from "../Modal/LogoutWarningModal";
-import { useRouter } from "next/router";
 import { handleLogout } from "./Admin.Layout";
 import { TUser } from "@/components/utils/types";
 import VerificationModal from "../Modal/VerificationModal";
@@ -26,7 +25,6 @@ const StudentWrapper = ({
   metaTitle,
   description,
   isPublic = true,
-  setUser,
   children,
 }: AdminWrapperProps) => {
   const active = true;
@@ -34,7 +32,6 @@ const StudentWrapper = ({
   const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
   const { user } = useUser();
   const isForbidden = useServiceWorkerListener();
 
@@ -59,7 +56,7 @@ const StudentWrapper = ({
   }, [isForbidden, user, isPublic]);
 
   return (
-    <div className='w-full h-[100dvh] overflow-hidden container mx-auto flex flex-col items-center justify-center'>
+    <div className='relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row'>
       <Meta title={metaTitle || "Dashboard"} description={description} />
       <LogoutWarningModal
         handleModalClose={handleWarning}
@@ -81,35 +78,19 @@ const StudentWrapper = ({
       />
 
       <aside
-        className={`absolute left-0 top-0 h-screen overflow-auto w-[16rem] z-30 !bg-white lg:block transition-transform transform ${
+        className={`left-0 top-0 h-screen w-[16.5rem] overflow-auto z-30 !bg-white lg:block transition-transform transform ${
           isSidenavOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0`}
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
-      <div className='w-full'>
-        <div className='absolute right-0 bg-milky top-0 w-full flex z-30 lg:z-20'>
-          <div
-            className={`${
-              active ? "w-0 lg:w-[22rem]" : "w-0 lg:w-[98px]"
-            } transition-all ease-in-out duration-500`}
-          />
-          <nav className={`w-full sm:mr-[3.9rem]`}>
-            <AdminNav
-              toggleSidenav={toggleSidenav}
-              title={title}
-              remark={remark}
-            />
+      <div className='flex-1 w-full h-full overflow-y-auto relative flex flex-col'>
+        <div className='w-full flex-0 flex z-40 lg:z-20 sticky top-0 right-0 bg-milky mb-2'>
+          <nav className={`w-full mr-[2rem] ml-2`}>
+            <AdminNav toggleSidenav={toggleSidenav} title={title} />
           </nav>
         </div>
-        <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
-          <div
-            className={`${
-              active ? "w-0 lg:w-[18rem]" : "w-0  lg:w-[98px]"
-            } transition-all ease-in-out duration-500`}
-          ></div>
-          <div className='min-h-screen w-full z-10'>{children}</div>
-        </main>
+        <main className='w-full overflow-x-hidden px-4 flex-1 pb-4'>{children}</main>
       </div>
     </div>
   );

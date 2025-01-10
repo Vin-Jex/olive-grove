@@ -7,6 +7,7 @@ import React, {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import dummyImage from "@/images/dummy-img.jpg";
@@ -21,7 +22,6 @@ import toast from "react-hot-toast";
 import { EUserRole, InputType } from "@/components/utils/types";
 import useUserVerify from "@/components/utils/hooks/useUserVerify";
 import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
-import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { updateUserInDB } from "@/components/utils/indexDB";
 import { useUser } from "@/contexts/UserContext";
@@ -41,6 +41,7 @@ interface IProfilePhotoSectionProps {
         React.SetStateAction<{
           account: boolean;
           security: boolean;
+          verification: boolean;
         }>
       >;
   setPreviewImage: Dispatch<SetStateAction<Blob | null | string>>;
@@ -71,8 +72,8 @@ const TeachersProfile = () => {
   const [currentTab, setCurrentTab] = useState<
     "Account" | "Security" | "account_verify"
   >("Account");
-  const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
   const { user, setUser } = useUser();
+
   const [formState, setFormState] = useState<TFormState>({
     name: (user && "name" in user && user.name) || "",
     teacherID: (user && "teacherID" in user && user.teacherID) || "",
@@ -90,22 +91,20 @@ const TeachersProfile = () => {
     role: user?.role!,
   });
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
-  const [emailOTP, setEmailOTP] = useState({ error: "", value: "" });
   const [isDisabled, setIsDisabled] = useState({
     account: true,
     security: true,
+    verification: true,
   });
 
   const {
     otpRequestLoading,
     handleRequestOTP,
-    message,
     setMessage,
     verifyOTP,
     OTPTimer,
     formattedTimer,
   } = useUserVerify();
-  const router = useRouter();
 
   const inputFields: {
     label: string;
@@ -113,47 +112,50 @@ const TeachersProfile = () => {
     type: InputType;
     required?: boolean;
     options?: { value: string; display_value: string }[];
-  }[] = [
-    {
-      label: "Full Name",
-      name: "name",
-      type: "text",
-      required: true,
-    },
-    {
-      label: "Email Address",
-      name: "email",
-      type: "email",
-      required: true,
-    },
-    {
-      label: "Mobile Number",
-      name: "tel",
-      type: "tel",
-      required: false,
-    },
-    {
-      label: "Home Address",
-      name: "address",
-      type: "text",
-      required: false,
-    },
-    {
-      label: "Gender",
-      name: "gender",
-      type: "select",
-      required: true,
-      options: [
-        { value: "male", display_value: "Male" },
-        { value: "female", display_value: "Female" },
-        { value: "undisclosed", display_value: "Prefer not to say" },
-      ],
-    },
-  ];
+  }[] = useMemo(
+    () => [
+      {
+        label: "Full Name",
+        name: "name",
+        type: "text",
+        required: true,
+      },
+      {
+        label: "Email Address",
+        name: "email",
+        type: "email",
+        required: true,
+      },
+      {
+        label: "Mobile Number",
+        name: "tel",
+        type: "tel",
+        required: true,
+      },
+      {
+        label: "Home Address",
+        name: "address",
+        type: "text",
+        required: true,
+      },
+      {
+        label: "Gender",
+        name: "gender",
+        type: "select",
+        required: true,
+        options: [
+          { value: "male", display_value: "Male" },
+          { value: "female", display_value: "Female" },
+          { value: "undisclosed", display_value: "Prefer not to say" },
+        ],
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     if (user) {
-      setCurrentTab(!user?.isVerified ? "account_verify" : "Account");
+      setCurrentTab(user?.isVerified === false ? "account_verify" : "Account");
     }
   }, [user]);
 
@@ -179,6 +181,7 @@ const TeachersProfile = () => {
         ...prevState,
         account: true,
         security: true,
+        verification: true,
       }));
       setPreviewImage(null);
     } catch (error) {
@@ -264,21 +267,26 @@ const TeachersProfile = () => {
     event.preventDefault();
 
     try {
-      setEmailVerifyLoading(true);
+      setIsDisabled((prevState) => ({
+        ...prevState,
+        verification: true,
+      }));
+
       const response = await axiosInstance.post(
         `${baseUrl}/email/verify`,
-        JSON.stringify({ otp: emailOTP.value })
+        JSON.stringify({ otp: formState.otp })
       );
 
       const data = await response.data;
       toast.success(data?.message || "Email verified successfully");
+      // Update the user data in IndexedDB
+      await updateUserInDB(user?._id!, data?.data, user?._id!);
 
-      router.push("/auth/path/teachers/signin");
+      // Fetch updated user data
+      getInfo();
     } catch (error: AxiosError | any) {
       const data = error?.response?.data;
-      toast.error(data?.message || "Failed to verify email");
-    } finally {
-      setEmailVerifyLoading(false);
+      toast.error(data?.error || data?.message || "Failed to verify email");
     }
   };
 
@@ -308,7 +316,7 @@ const TeachersProfile = () => {
       toast.success(data?.message);
 
       //log the user out on successfull password change
-      handleLogout("students");
+      handleLogout("teachers");
 
       setMessage((err) => ({
         ...err,
@@ -329,8 +337,10 @@ const TeachersProfile = () => {
     if (isDisabled && event.key === "Enter") {
       if (currentTab === "Account") {
         updateInfo(event);
-      } else {
+      } else if (currentTab === "Security") {
         handlePasswordChange(event);
+      } else if (currentTab === "account_verify") {
+        handleEmailVerify(event);
       }
     }
   };
@@ -618,11 +628,12 @@ const TeachersProfile = () => {
             </Button>
           </form>
         )}
+        
         {currentTab === "account_verify" && (
           <div>
             <form
               className='w-full bg-white space-y-8 px-8 max-sm:px-5 rounded-2xl py-10 shadow-card'
-              // onKeyPress={handleKeyPress}
+              onKeyPress={handleKeyPress}
               onSubmit={handleEmailVerify}
             >
               <div className='flex max-sm:flex-col max-sm:items-start max-sm:gap-3 w-full items-center justify-between'>
@@ -648,10 +659,10 @@ const TeachersProfile = () => {
                   name='email_verification_otp'
                   type='text'
                   placeholder='Enter OTP'
-                  value={emailOTP.value}
+                  value={formState.otp}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, "");
-                    setEmailOTP((prev) => ({ ...prev, value }));
+                    setFormState((prev) => ({ ...prev, otp: value }));
                   }}
                   required
                   error={""}
@@ -680,10 +691,10 @@ const TeachersProfile = () => {
               </div>
               <Button
                 size='xs'
-                disabled={emailOTP.value.length < 6 || emailVerifyLoading}
+                disabled={formState.otp.length < 6 || isDisabled.verification}
                 type='submit'
               >
-                {emailVerifyLoading ? (
+                {isDisabled.verification ? (
                   <CircularProgress size={20} color='inherit' />
                 ) : (
                   "Verify"

@@ -1,10 +1,10 @@
-import React, { SetStateAction, useEffect } from 'react';
-import Image, { StaticImageData } from 'next/image';
-import Button from '@/components/Atoms/Button';
-import dummyImage from '@/public/image/tutor.png';
-import Link from 'next/link';
-import { baseUrl } from '@/components/utils/baseURL';
-import axiosInstance from '@/components/utils/axiosInstance';
+import React, { SetStateAction, useEffect } from "react";
+import Image, { StaticImageData } from "next/image";
+import Button from "@/components/Atoms/Button";
+import dummyImage from "@/public/image/tutor.png";
+import Link from "next/link";
+import { baseUrl } from "@/components/utils/baseURL";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 interface SubjectProps {
   assessments?: boolean;
@@ -37,7 +37,7 @@ const SubjectCard: React.FC<SubjectProps> = ({
   return (
     <div
       className={`flex flex-col  justify-center gap-6 ${
-        !assessments && 'max-w-full'
+        !assessments && "max-w-full"
       } border-dark/30 rounded-2xl p-6 shadow-card-2 w-full`}
     >
       <div className='flex items-center gap-3'>
@@ -62,22 +62,24 @@ const SubjectCard: React.FC<SubjectProps> = ({
         <div className='flex pb-2 justify-between gap-5 items-start'>
           <span
             className={`flex  gap-1 text-base  text-subtext ${
-              topic.length >= 10 && assessments && 'items-center' // "flex-col items-start"
+              topic.length >= 10 && assessments && "items-center" // "flex-col items-start"
               // : "items-center"
             }`}
           >
             <b className='font-roboto font-medium block text-dark'>Topic:</b>
-            <span className='sm:block hidden text-sm'>
-              {topic.slice(0, 11) + '...'}{' '}
-            </span>
-            <span className='max-sm:block hidden'>
-              {topic.slice(0, 7) + '...'}{' '}
-            </span>
+            <span
+              className='sm:block hidden text-sm'
+              dangerouslySetInnerHTML={{ __html: topic.slice(0, 11) + "..." }}
+            />
+            <span
+              className='max-sm:block hidden'
+              dangerouslySetInnerHTML={{ __html: topic.slice(0, 7) + "..." }}
+            />
           </span>
           {assessments && (
             <span
               className={`flex  gap-1 text-base  text-subtext ${
-                topic.length >= 10 && assessments && 'items-center' // "flex-col items-start"
+                topic.length >= 10 && assessments && "items-center" // "flex-col items-start"
                 // : "items-center"
               }`}
             >
@@ -89,11 +91,11 @@ const SubjectCard: React.FC<SubjectProps> = ({
         {assessments && (
           <span
             className={`flex pb-3 gap-1 text-base  text-subtext ${
-              topic.length >= 10 && assessments && 'items-center'
+              topic.length >= 10 && assessments && "items-center"
             }`}
           >
             <b className='font-roboto font-medium block text-dark'>
-              Category:{' '}
+              Category:{" "}
             </b>
             <span className='block'>{category}</span>
           </span>
@@ -105,16 +107,16 @@ const SubjectCard: React.FC<SubjectProps> = ({
 
       <div className='flex lg:flex-col lg:items-start min-[1580px]:items-center min-[1580px]:flex-row justify-between items-center gap-4'>
         <Link
-          className='w-fit !text-white bg-primary hover:bg-[#28a1b0] transition duration-200 ease-in-out rounded-[4px] px-2 md:px-3 lg:px-4 !py-1.5 lg:py-3 text-sm md:text-base font-medium'
+          className='bg-primary text-[#fdfdfd] hover:bg-primary/90 transition duration-200 ease-in-out px-2 md:px-2.5 lg:px-3 py-2 lg:py-2.5 text-xs md:text-sm font-medium rounded-md font-roboto'
           href={btnLink2}
           passHref
         >
-          {assessments ? 'View Assessment' : 'View Lecture'}
+          {assessments ? "View Assessment" : "View Lecture"}
         </Link>
         <Label
           date=''
           upcoming={true}
-          type={assessments ? 'assessments' : ''}
+          type={assessments ? "assessments" : ""}
         />
       </div>
     </div>
@@ -136,8 +138,8 @@ function Label({
         <span className='px-3 py-2 flex items-center h-[28px] text-xs rounded-full text-[#1E1E1E] text-opacity-60 bg-[#B69302] bg-opacity-10'>
           <SVGDot className='mr-2 block' />
           <span className='pt-[2px]'>
-            {' '}
-            {type === 'assessments' ? 'New' : 'Upcoming'}
+            {" "}
+            {type === "assessments" ? "New" : "Upcoming"}
           </span>
         </span>
       ) : (
