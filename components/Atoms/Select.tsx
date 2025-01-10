@@ -78,7 +78,7 @@ const Select: FC<
         } h-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext  appearance-none focus:outline-none !pr-10`}
       >
         {placeholder && (
-          <option defaultValue="" value="" disabled>
+          <option selected disabled>
             {placeholder}
           </option>
         )}
