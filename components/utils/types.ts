@@ -443,7 +443,7 @@ export type TSideDialogContent = {
 
 export type TWarningModalProps = {
   modalOpen: boolean;
-  loading?: boolean;
+  loading: boolean;
   handleModalClose: () => void;
   handleConfirm?: () => void;
 };

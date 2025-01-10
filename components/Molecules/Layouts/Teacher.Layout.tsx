@@ -3,7 +3,6 @@ import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
 import Meta from "@/components/Atoms/Meta";
 import LogoutWarningModal from "../Modal/LogoutWarningModal";
-import { useRouter } from "next/router";
 import { handleLogout } from "./Admin.Layout";
 import VerificationModal from "../Modal/VerificationModal";
 import { useUser } from "@/contexts/UserContext";
@@ -26,7 +25,7 @@ const TeachersWrapper = ({
 }: AdminWrapperProps) => {
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
-  const router = useRouter();
+  const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useUser();
   const isForbidden = useServiceWorkerListener();
@@ -57,8 +56,13 @@ const TeachersWrapper = ({
         <Meta title={metaTitle || "Dashboard"} description={description} />
         <LogoutWarningModal
           handleModalClose={handleWarning}
+          loading={isLogOutLoading}
           handleConfirm={() => {
-            handleLogout("teachers");
+            setIsLogOutLoading(true);
+            handleLogout("teachers").then(() => {
+              setIsLogOutLoading(false);
+              handleWarning();
+            });
           }}
           modalOpen={warningModal}
         />

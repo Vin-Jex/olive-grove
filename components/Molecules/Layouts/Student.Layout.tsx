@@ -3,7 +3,6 @@ import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
 import Meta from "@/components/Atoms/Meta";
 import LogoutWarningModal from "../Modal/LogoutWarningModal";
-import { useRouter } from "next/router";
 import { handleLogout } from "./Admin.Layout";
 import { TUser } from "@/components/utils/types";
 import VerificationModal from "../Modal/VerificationModal";
@@ -26,7 +25,6 @@ const StudentWrapper = ({
   metaTitle,
   description,
   isPublic = true,
-  setUser,
   children,
 }: AdminWrapperProps) => {
   const active = true;
@@ -34,7 +32,6 @@ const StudentWrapper = ({
   const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
   const { user } = useUser();
   const isForbidden = useServiceWorkerListener();
 
