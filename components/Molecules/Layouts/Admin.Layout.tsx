@@ -51,7 +51,7 @@ const AdminsWrapper = ({
   const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
-  const router = useRouter();
+  const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useUser();
   const isForbidden = useServiceWorkerListener();
@@ -79,10 +79,16 @@ const AdminsWrapper = ({
   return (
     <div className='w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center'>
       <Meta title={metaTitle || "Dashboard"} description={description} />
+
       <LogoutWarningModal
         handleModalClose={handleWarning}
+        loading={isLogOutLoading}
         handleConfirm={() => {
-          handleLogout("teachers");
+          setIsLogOutLoading(true);
+          handleLogout("admin").then(() => {
+            setIsLogOutLoading(false);
+            handleWarning();
+          });
         }}
         modalOpen={warningModal}
       />
