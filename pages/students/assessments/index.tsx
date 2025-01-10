@@ -174,25 +174,23 @@ const Assessments = () => {
       metaTitle='Olive Grove ~ Assessments'
     >
       {isLoading && <Loader />}
-      <div className='p-6 sm:p-8 md:p-12 space-y-5'>
-        <div className='grid max-md:place-items-center  md:grid-cols-2 lg:grid-cols-3  h-fit w-full gap-8 !mt-8'>
-          {currentAssessments?.map((subject, index) => (
-            <SubjectCard
-              key={index}
-              assessments
-              toggleModal={() => {}}
-              img={subject?.teacher?.profileImage}
-              // type="assessment"
-              category={subject?.assessmentType?.name}
-              name={subject?.teacher?.name}
-              role={"Teacher"}
-              time={subject?.dueDate}
-              topic={subject?.description}
-              subject={subject?.course?.title}
-              btnLink2={`/students/assessments/${subject?._id?.toLocaleLowerCase()}`}
-            />
-          ))}
-        </div>
+      <div className='grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 h-fit w-full gap-8 my-4'>
+        {currentAssessments?.map((subject, index) => (
+          <SubjectCard
+            key={index}
+            assessments
+            toggleModal={() => {}}
+            img={subject?.teacher?.profileImage}
+            // type="assessment"
+            category={subject?.assessmentType?.name}
+            name={subject?.teacher?.name}
+            role={"Teacher"}
+            time={subject?.dueDate}
+            topic={subject?.description}
+            subject={subject?.course?.title}
+            btnLink2={`/students/assessments/${subject?._id?.toLocaleLowerCase()}`}
+          />
+        ))}
       </div>
     </StudentWrapper>
   );

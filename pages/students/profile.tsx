@@ -406,374 +406,369 @@ const Profile = () => {
   }, [getInfo]);
 
   return (
-    <>
-      <StudentWrapper
-        remark='Manage and edit your profile settings.'
-        title='Profile'
-        metaTitle='Olive Grove ~ Profile'
-      >
-        <div className='md:px-12 px-6 py-12 space-y-5'>
-          <div className='w-full flex justify-between items-center'>
-            <div className='max-w-[10rem] flex gap-0'>
-              {["Account", "Security"].map((slug, i) => (
-                <>
-                  <div
-                    className={`px-7 py-2 font-medium text-sm border-b-2 cursor-pointer transition ${
-                      currentTab === slug
-                        ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
-                        : ""
-                    }`}
-                    onClick={() =>
-                      setCurrentTab(slug as "Account" | "Security")
-                    }
-                    key={i}
-                  >
-                    {slug}
-                  </div>
-                </>
-              ))}
-            </div>
-
-            {currentTab === "account_verify" && (
+    <StudentWrapper
+      remark='Manage and edit your profile settings.'
+      title='Profile'
+      metaTitle='Olive Grove ~ Profile'
+    >
+      <div className='flex flex-col space-y-8'>
+        <div className='w-full flex justify-between items-center'>
+          <div className='w-full max-w-[20rem] flex gap-0'>
+            {["Account", "Security"].map((page, index) => (
               <div
-                className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
-                  currentTab === "account_verify"
+                className={`px-7 py-2 font-medium text-sm text-center border-b-2 cursor-pointer transition w-full ${
+                  currentTab === page
                     ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
                     : ""
                 }`}
-                onClick={() => setCurrentTab("account_verify")}
-              >
-                Email Verification
-              </div>
-            )}
-          </div>
-          {/* Title */}
-
-          {currentTab === "Account" && (
-            <form
-              className='flex flex-col space-y-8 shadow-card rounded-2xl py-10 px-6'
-              onKeyPress={handleKeyPress}
-              onSubmit={updateInfo}
-            >
-              <ProfilePhotoSection
-                lastLoginAt={userInfo?.lastLoginAt!}
-                setCurrentTab={setCurrentTab}
-                userRole={userInfo?.role!}
-                isVerified={userInfo?.isVerified!}
-                setFormState={setFormState}
-                setPreviewImage={setPreviewImage}
-                previewImage={previewImage as string}
-                setIsDisabled={setIsDisabled}
-                profileImage={formState.profileImage as string}
-                name={
-                  userInfo && "firstName" in userInfo && "lastName" in userInfo
-                    ? `${userInfo.firstName} ${userInfo.lastName}`
-                    : ""
-                }
-                id={
-                  userInfo && "studentID" in userInfo ? userInfo.studentID : ""
-                }
-              />
-              <div className='flex flex-col'>
-                <span className='text-lg lg:text-xl font-normal text-dark font-roboto'>
-                  Account Information
-                </span>
-                <span className='text-sm text-subtext font-roboto'>
-                  Edit your personal account information.
-                </span>
-              </div>
-              <div className='grid max-sm:grid-cols-1 grid-cols-2 gap-x-12 gap-y-8 w-full'>
-                {inputFields.map((field) => (
-                  <InputField
-                    label={field.label}
-                    placeholder={field.label}
-                    key={field.name}
-                    name={field.name}
-                    type={field.type}
-                    disabled={field.disabled}
-                    className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md ${
-                      field.type === "select" ? "text-sm" : "text-base"
-                    }`}
-                    value={
-                      field.name === "department"
-                        ? (formState.department &&
-                          typeof formState.department === "object"
-                            ? formState.department.name
-                            : formState.department) || ""
-                        : formState[
-                            field.name as keyof Omit<TFormState, "profileImage">
-                          ] ?? ""
-                    }
-                    onChange={(e) => {
-                      setIsDisabled((prevState) => ({
-                        ...prevState,
-                        account: false,
-                      }));
-                      handleInputChange(
-                        e.target.name,
-                        e.target.value,
-                        setFormState
-                      );
-                    }}
-                    required={field.required}
-                    error={""}
-                    inputSize={field.type === "select" ? "sm" : "xs"}
-                    {...(field.type === "select"
-                      ? { options: field.options }
-                      : {})}
-                  />
-                ))}
-              </div>
-
-              <div>
-                {formState.enrolledSubjects &&
-                formState.enrolledSubjects.length > 0 ? (
-                  formState.enrolledSubjects.map(
-                    (course: { title: string }, index) => {
-                      return (
-                        <div
-                          key={index}
-                          className='bg-[#1e1e1e] text-subtext mt-3 bg-opacity-10 rounded-lg w-fit py-3 px-4 capitalize'
-                        >
-                          {course?.title}
-                        </div>
-                      );
-                    }
+                onClick={() =>
+                  setCurrentTab(
+                    page as "Account" | "Security" | "account_verify"
                   )
-                ) : (
-                  <div className='flex flex-col justify-center space-y-2'>
-                    <span className='text-sm font-roboto font-medium text-subtext'>
-                      Your Courses:
-                    </span>
-                    <span className='bg-[#1e1e1e] text-subtext text-sm bg-opacity-10 rounded-lg w-fit py-3 px-4'>
-                      Not offering any course.
-                    </span>
-                  </div>
-                )}
-              </div>
-              <Button size='xs' type='submit' disabled={isDisabled.account}>
-                Update
-              </Button>
-            </form>
-          )}
-
-          {currentTab === "Security" && (
-            <form
-              className='flex flex-col space-y-8 shadow-card rounded-2xl py-10 px-6'
-              onKeyPress={handleKeyPress}
-              onSubmit={handlePasswordChange}
-            >
-              <div className='flex flex-col'>
-                <span className='text-lg lg:text-xl font-normal text-dark font-roboto'>
-                  Security Information
-                </span>
-                <span className='text-sm text-subtext font-roboto'>
-                  Update your security information.
-                </span>
-              </div>
-
-              <div className='grid max-sm:grid-cols-1 grid-cols-2 gap-x-12 gap-y-8 w-full'>
-                <InputField
-                  label='New Password'
-                  placeholder='New Password'
-                  name='newPassword'
-                  type='password'
-                  className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md text-base`}
-                  value={formState.newPassword}
-                  pattern='^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$'
-                  title='Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
-                  onChange={(e) => {
-                    setIsDisabled((prevState) => ({
-                      ...prevState,
-                      security: false,
-                    }));
-                    handleInputChange(
-                      e.target.name,
-                      e.target.value,
-                      setFormState
-                    );
-                  }}
-                  required={true}
-                  disabled={otpRequestLoading || OTPTimer > 0}
-                  error={""}
-                />
-                <InputField
-                  label='Confirm Password'
-                  placeholder='Confirm Password'
-                  name='confirmPassword'
-                  type='password'
-                  className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md text-base`}
-                  value={formState.confirmPassword}
-                  onChange={(e) => {
-                    setIsDisabled((prevState) => ({
-                      ...prevState,
-                      security: false,
-                    }));
-                    handleInputChange(
-                      e.target.name,
-                      e.target.value,
-                      setFormState
-                    );
-                  }}
-                  required={true}
-                  disabled={otpRequestLoading || OTPTimer > 0}
-                  error={""}
-                />
-                <div className='flex flex-col space-y-2 relative'>
-                  <InputField
-                    label='One-Time Password'
-                    placeholder='Enter OTP'
-                    name='otp'
-                    type='text'
-                    className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md text-base`}
-                    value={formState.otp}
-                    onChange={(e) => {
-                      setIsDisabled((prevState) => ({
-                        ...prevState,
-                        security: false,
-                      }));
-                      const value = e.target.value.replace(/\D/g, "");
-                      handleInputChange(e.target.name, value, setFormState);
-                    }}
-                    required={true}
-                    disabled={
-                      otpRequestLoading ||
-                      formState.newPassword === "" ||
-                      formState.confirmPassword === "" ||
-                      formState.newPassword.length < 8 ||
-                      formState.confirmPassword.length < 8 ||
-                      formState.newPassword !== formState.confirmPassword
-                    }
-                    error={""}
-                    maxLength={6}
-                  />
-                  <Button
-                    size='xs'
-                    type='button'
-                    width='fit'
-                    className='!text-xs !py-2 !px-4 font-roboto absolute right-2 bottom-[1.4rem] translate-y-1/2'
-                    onClick={() => {
-                      if (OTPTimer <= 0 && !otpRequestLoading) {
-                        handleRequestOTP("password_reset");
-                      }
-                    }}
-                    disabled={
-                      otpRequestLoading ||
-                      formState.newPassword === "" ||
-                      formState.confirmPassword === "" ||
-                      formState.newPassword.length < 8 ||
-                      formState.confirmPassword.length < 8 ||
-                      formState.newPassword !== formState.confirmPassword ||
-                      OTPTimer > 0
-                    }
-                  >
-                    {otpRequestLoading
-                      ? "Requesting OTP..."
-                      : OTPTimer > 0
-                      ? formattedTimer
-                      : verifyOTP.status
-                      ? "Resend OTP"
-                      : "Request OTP"}
-                  </Button>
-                </div>
-              </div>
-              <Button
-                size='xs'
-                type='submit'
-                disabled={
-                  isDisabled.security ||
-                  otpRequestLoading ||
-                  formState.newPassword === "" ||
-                  formState.confirmPassword === "" ||
-                  formState.newPassword.length < 8 ||
-                  formState.confirmPassword.length < 8 ||
-                  formState.newPassword !== formState.confirmPassword ||
-                  formState.otp === "" ||
-                  formState.otp.length < 4
                 }
+                key={index}
               >
-                Update
-              </Button>
-            </form>
-          )}
-
+                {page}
+              </div>
+            ))}
+          </div>
           {currentTab === "account_verify" && (
-            <div>
-              <form
-                className='w-full bg-white space-y-8 px-8 max-sm:px-5 rounded-2xl py-10 shadow-card'
-                onKeyPress={handleKeyPress}
-                onSubmit={handleEmailVerify}
-              >
-                <div className='flex max-sm:flex-col max-sm:items-start max-sm:gap-3 w-full items-center justify-between'>
-                  <div className='flex flex-col '>
-                    <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
-                      Email Verification
-                    </span>
-                    <span className='text-md text-subtext font-roboto'>
-                      Edit the OTP sent to your email.
-                    </span>
-                  </div>
-                </div>
-
-                <div className='flex flex-col space-y-2 w-1/2 relative'>
-                  <label
-                    htmlFor='email_verification_otp'
-                    className='text-subtext text-sm'
-                  >
-                    OTP
-                  </label>
-                  <InputField
-                    id='email_verificaiton_otp'
-                    name='email_verification_otp'
-                    type='text'
-                    placeholder='Enter OTP'
-                    value={formState.otp}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, "");
-                      setFormState((prev) => ({ ...prev, otp: value }));
-                    }}
-                    required
-                    error={""}
-                    maxLength={6}
-                  />
-                  <Button
-                    size='xs'
-                    type='button'
-                    width='fit'
-                    className='!text-xs !py-2 !px-4 font-roboto absolute right-2 bottom-[1.4rem] translate-y-1/2'
-                    onClick={() => {
-                      if (OTPTimer <= 0 && !otpRequestLoading) {
-                        handleRequestOTP("email_verification");
-                      }
-                    }}
-                    disabled={otpRequestLoading || OTPTimer > 0}
-                  >
-                    {otpRequestLoading
-                      ? "Requesting OTP..."
-                      : OTPTimer > 0
-                      ? formattedTimer
-                      : verifyOTP.status
-                      ? "Resend OTP"
-                      : "Request OTP"}
-                  </Button>
-                </div>
-                <Button
-                  size='xs'
-                  disabled={formState.otp.length < 6 || isDisabled.verification}
-                  type='submit'
-                >
-                  {isDisabled.verification ? (
-                    <CircularProgress size={20} color='inherit' />
-                  ) : (
-                    "Verify"
-                  )}
-                </Button>
-              </form>
+            <div
+              className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
+                currentTab === "account_verify"
+                  ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
+                  : ""
+              }`}
+              onClick={() => setCurrentTab("account_verify")}
+            >
+              Email Verification
             </div>
           )}
         </div>
-      </StudentWrapper>
-    </>
+        {/* Title */}
+
+        {currentTab === "Account" && (
+          <form
+            className='flex flex-col space-y-8 shadow-card rounded-2xl py-10 px-6'
+            onKeyPress={handleKeyPress}
+            onSubmit={updateInfo}
+          >
+            <ProfilePhotoSection
+              lastLoginAt={userInfo?.lastLoginAt!}
+              setCurrentTab={setCurrentTab}
+              userRole={userInfo?.role!}
+              isVerified={userInfo?.isVerified!}
+              setFormState={setFormState}
+              setPreviewImage={setPreviewImage}
+              previewImage={previewImage as string}
+              setIsDisabled={setIsDisabled}
+              profileImage={formState.profileImage as string}
+              name={
+                userInfo && "firstName" in userInfo && "lastName" in userInfo
+                  ? `${userInfo.firstName} ${userInfo.lastName}`
+                  : ""
+              }
+              id={userInfo && "studentID" in userInfo ? userInfo.studentID : ""}
+            />
+            <div className='flex flex-col'>
+              <span className='text-lg lg:text-xl font-normal text-dark font-roboto'>
+                Account Information
+              </span>
+              <span className='text-sm text-subtext font-roboto'>
+                Edit your personal account information.
+              </span>
+            </div>
+            <div className='grid max-sm:grid-cols-1 grid-cols-2 gap-x-12 gap-y-8 w-full'>
+              {inputFields.map((field) => (
+                <InputField
+                  label={field.label}
+                  placeholder={field.label}
+                  key={field.name}
+                  name={field.name}
+                  type={field.type}
+                  disabled={field.disabled}
+                  className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md ${
+                    field.type === "select" ? "text-sm" : "text-base"
+                  }`}
+                  value={
+                    field.name === "department"
+                      ? (formState.department &&
+                        typeof formState.department === "object"
+                          ? formState.department.name
+                          : formState.department) || ""
+                      : formState[
+                          field.name as keyof Omit<TFormState, "profileImage">
+                        ] ?? ""
+                  }
+                  onChange={(e) => {
+                    setIsDisabled((prevState) => ({
+                      ...prevState,
+                      account: false,
+                    }));
+                    handleInputChange(
+                      e.target.name,
+                      e.target.value,
+                      setFormState
+                    );
+                  }}
+                  required={field.required}
+                  error={""}
+                  inputSize={field.type === "select" ? "sm" : "xs"}
+                  {...(field.type === "select"
+                    ? { options: field.options }
+                    : {})}
+                />
+              ))}
+            </div>
+
+            <div>
+              {formState.enrolledSubjects &&
+              formState.enrolledSubjects.length > 0 ? (
+                formState.enrolledSubjects.map(
+                  (course: { title: string }, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className='bg-[#1e1e1e] text-subtext mt-3 bg-opacity-10 rounded-lg w-fit py-3 px-4 capitalize'
+                      >
+                        {course?.title}
+                      </div>
+                    );
+                  }
+                )
+              ) : (
+                <div className='flex flex-col justify-center space-y-2'>
+                  <span className='text-sm font-roboto font-medium text-subtext'>
+                    Your Courses:
+                  </span>
+                  <span className='bg-[#1e1e1e] text-subtext text-sm bg-opacity-10 rounded-lg w-fit py-3 px-4'>
+                    Not offering any course.
+                  </span>
+                </div>
+              )}
+            </div>
+            <Button size='xs' type='submit' disabled={isDisabled.account}>
+              Update
+            </Button>
+          </form>
+        )}
+
+        {currentTab === "Security" && (
+          <form
+            className='flex flex-col space-y-8 shadow-card rounded-2xl py-10 px-6'
+            onKeyPress={handleKeyPress}
+            onSubmit={handlePasswordChange}
+          >
+            <div className='flex flex-col'>
+              <span className='text-lg lg:text-xl font-normal text-dark font-roboto'>
+                Security Information
+              </span>
+              <span className='text-sm text-subtext font-roboto'>
+                Update your security information.
+              </span>
+            </div>
+
+            <div className='grid max-sm:grid-cols-1 grid-cols-2 gap-x-12 gap-y-8 w-full'>
+              <InputField
+                label='New Password'
+                placeholder='New Password'
+                name='newPassword'
+                type='password'
+                className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md text-base`}
+                value={formState.newPassword}
+                pattern='^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$'
+                title='Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
+                onChange={(e) => {
+                  setIsDisabled((prevState) => ({
+                    ...prevState,
+                    security: false,
+                  }));
+                  handleInputChange(
+                    e.target.name,
+                    e.target.value,
+                    setFormState
+                  );
+                }}
+                required={true}
+                disabled={otpRequestLoading || OTPTimer > 0}
+                error={""}
+              />
+              <InputField
+                label='Confirm Password'
+                placeholder='Confirm Password'
+                name='confirmPassword'
+                type='password'
+                className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md text-base`}
+                value={formState.confirmPassword}
+                onChange={(e) => {
+                  setIsDisabled((prevState) => ({
+                    ...prevState,
+                    security: false,
+                  }));
+                  handleInputChange(
+                    e.target.name,
+                    e.target.value,
+                    setFormState
+                  );
+                }}
+                required={true}
+                disabled={otpRequestLoading || OTPTimer > 0}
+                error={""}
+              />
+              <div className='flex flex-col space-y-2 relative'>
+                <InputField
+                  label='One-Time Password'
+                  placeholder='Enter OTP'
+                  name='otp'
+                  type='text'
+                  className={`disabled:bg-[#1e1e1e] disabled:bg-opacity-10 disabled:!border-none !rounded-md text-base`}
+                  value={formState.otp}
+                  onChange={(e) => {
+                    setIsDisabled((prevState) => ({
+                      ...prevState,
+                      security: false,
+                    }));
+                    const value = e.target.value.replace(/\D/g, "");
+                    handleInputChange(e.target.name, value, setFormState);
+                  }}
+                  required={true}
+                  disabled={
+                    otpRequestLoading ||
+                    formState.newPassword === "" ||
+                    formState.confirmPassword === "" ||
+                    formState.newPassword.length < 8 ||
+                    formState.confirmPassword.length < 8 ||
+                    formState.newPassword !== formState.confirmPassword
+                  }
+                  error={""}
+                  maxLength={6}
+                />
+                <Button
+                  size='xs'
+                  type='button'
+                  width='fit'
+                  className='!text-xs !py-2 !px-4 font-roboto absolute right-2 bottom-[1.4rem] translate-y-1/2'
+                  onClick={() => {
+                    if (OTPTimer <= 0 && !otpRequestLoading) {
+                      handleRequestOTP("password_reset");
+                    }
+                  }}
+                  disabled={
+                    otpRequestLoading ||
+                    formState.newPassword === "" ||
+                    formState.confirmPassword === "" ||
+                    formState.newPassword.length < 8 ||
+                    formState.confirmPassword.length < 8 ||
+                    formState.newPassword !== formState.confirmPassword ||
+                    OTPTimer > 0
+                  }
+                >
+                  {otpRequestLoading
+                    ? "Requesting OTP..."
+                    : OTPTimer > 0
+                    ? formattedTimer
+                    : verifyOTP.status
+                    ? "Resend OTP"
+                    : "Request OTP"}
+                </Button>
+              </div>
+            </div>
+            <Button
+              size='xs'
+              type='submit'
+              disabled={
+                isDisabled.security ||
+                otpRequestLoading ||
+                formState.newPassword === "" ||
+                formState.confirmPassword === "" ||
+                formState.newPassword.length < 8 ||
+                formState.confirmPassword.length < 8 ||
+                formState.newPassword !== formState.confirmPassword ||
+                formState.otp === "" ||
+                formState.otp.length < 4
+              }
+            >
+              Update
+            </Button>
+          </form>
+        )}
+
+        {currentTab === "account_verify" && (
+          <div>
+            <form
+              className='w-full bg-white space-y-8 px-8 max-sm:px-5 rounded-2xl py-10 shadow-card'
+              onKeyPress={handleKeyPress}
+              onSubmit={handleEmailVerify}
+            >
+              <div className='flex max-sm:flex-col max-sm:items-start max-sm:gap-3 w-full items-center justify-between'>
+                <div className='flex flex-col '>
+                  <span className='text-lg lg:text-2xl font-normal text-dark font-roboto'>
+                    Email Verification
+                  </span>
+                  <span className='text-md text-subtext font-roboto'>
+                    Edit the OTP sent to your email.
+                  </span>
+                </div>
+              </div>
+
+              <div className='flex flex-col space-y-2 w-1/2 relative'>
+                <label
+                  htmlFor='email_verification_otp'
+                  className='text-subtext text-sm'
+                >
+                  OTP
+                </label>
+                <InputField
+                  id='email_verificaiton_otp'
+                  name='email_verification_otp'
+                  type='text'
+                  placeholder='Enter OTP'
+                  value={formState.otp}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    setFormState((prev) => ({ ...prev, otp: value }));
+                  }}
+                  required
+                  error={""}
+                  maxLength={6}
+                />
+                <Button
+                  size='xs'
+                  type='button'
+                  width='fit'
+                  className='!text-xs !py-2 !px-4 font-roboto absolute right-2 bottom-[1.4rem] translate-y-1/2'
+                  onClick={() => {
+                    if (OTPTimer <= 0 && !otpRequestLoading) {
+                      handleRequestOTP("email_verification");
+                    }
+                  }}
+                  disabled={otpRequestLoading || OTPTimer > 0}
+                >
+                  {otpRequestLoading
+                    ? "Requesting OTP..."
+                    : OTPTimer > 0
+                    ? formattedTimer
+                    : verifyOTP.status
+                    ? "Resend OTP"
+                    : "Request OTP"}
+                </Button>
+              </div>
+              <Button
+                size='xs'
+                disabled={formState.otp.length < 6 || isDisabled.verification}
+                type='submit'
+              >
+                {isDisabled.verification ? (
+                  <CircularProgress size={20} color='inherit' />
+                ) : (
+                  "Verify"
+                )}
+              </Button>
+            </form>
+          </div>
+        )}
+      </div>
+    </StudentWrapper>
   );
 };
 
