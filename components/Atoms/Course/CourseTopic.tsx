@@ -44,10 +44,9 @@ export const Topic: FC<{
   const isViewed = topic.viewed;
   const { openModal, dispatch, setModalRequestState } = useCourseContext();
   const initialFormData: Omit<TSection<"post">, "subsections"> = {
-    _id: topic?._id || "",
+    _id: topic._id || "",
     title: topic?.title || "",
     topicNote: topic?.topicNote || "",
-
     topicVideo: topic?.topicVideo,
     youtubeVideo: topic?.youtubeVideo,
     topicImage: topic.topicImage,

@@ -27,7 +27,6 @@ const StudentWrapper = ({
   isPublic = true,
   children,
 }: AdminWrapperProps) => {
-  const active = true;
   const [warningModal, setWarningModal] = useState(false);
   const [isLogOutLoading, setIsLogOutLoading] = useState(false);
   const [isSidenavOpen, setIsSidenavOpen] = useState(false);
