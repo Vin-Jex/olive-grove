@@ -150,7 +150,7 @@ const Profile = () => {
         options: [
           { value: "male", display_value: "Male" },
           { value: "female", display_value: "Female" },
-          { value: "undisclose", display_value: "Prefer not to say" },
+          { value: "undisclosed", display_value: "Prefer not to say" },
         ],
       },
       {

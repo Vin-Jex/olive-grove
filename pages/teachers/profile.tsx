@@ -90,7 +90,9 @@ const TeachersProfile = () => {
     academicSection: user?.academicSection || null,
     role: user?.role!,
   });
+
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
+ 
   const [isDisabled, setIsDisabled] = useState({
     account: true,
     security: true,
