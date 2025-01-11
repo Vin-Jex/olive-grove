@@ -27,7 +27,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     setSearchValue(inputValue);
 
     // Perform filtering based on input value
-    const filteredResults = initialData.filter((result) => {
+    const filteredResults = initialData?.filter((result) => {
       // Add checks to prevent null or undefined access errors
       const studentName = result?.student?.name?.toLowerCase() || "";
       const submissionDate = result?.submissionDate?.toLowerCase() || "";

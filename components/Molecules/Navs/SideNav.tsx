@@ -151,14 +151,10 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
           )}
 
           {/* Departments */}
-          {isClient && (role === "Admin" || role === "Teacher") && (
+          {isClient && role === "Admin" && (
             <NavItem
               href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Admin"
-                  ? "/admin"
-                  : ""
+                isClient && role === "Admin" ? "/admin" : ""
               }/departments`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -402,51 +398,6 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                   : role === "Admin"
                   ? "/admins"
                   : ""
-              }/students`}
-              activeClass={activeClass}
-              setActiveClass={setActiveClass}
-              activeIcon={
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  className='h-6 w-6'
-                  viewBox='0 0 24 24'
-                  fill='none'
-                >
-                  <path
-                    fillRule='evenodd'
-                    clipRule='evenodd'
-                    d='M24 21H21L22 18H23L24 21ZM11.024 16.457L20 11.882V18C18.993 20.041 14.393 21 11.5 21C8.325 21 4.111 20.006 3 18V11.386L11.024 16.457ZM23 17H22V9.74L11.077 15.308L0 8.308L12 3L23 9.231V17Z'
-                    fill='#FDFDFD'
-                  />
-                </svg>
-              }
-              label='students'
-              icon={
-                <svg
-                  xmlns='http://www.w3.org/2000/svg'
-                  className='h-6 w-6'
-                  viewBox='0 0 24 24'
-                  fill='none'
-                >
-                  <path
-                    fillRule='evenodd'
-                    clipRule='evenodd'
-                    d='M22 9.74L20 10.76V18C18.993 20.041 14.394 21 11.5 21C8.325 21 4.111 20.006 3 18V10.204L0 8.308L12 3L23 9.231V18L24 21H21L22 18V9.74ZM4 10.835V17.708C4.958 18.988 8.217 20 11.5 20C14.394 20 18.089 19.041 19 17.731V11.269L11.077 15.308L4 10.835ZM2.119 8.464L11.13 14.158L20.889 9.184L11.945 4.118L2.119 8.464Z'
-                    fill='#1E1E1E95'
-                  />
-                </svg>
-              }
-            />
-          )}
-
-          {isClient && role !== "Student" && (
-            <NavItem
-              href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Admin"
-                  ? "/admins"
-                  : ""
               }/courses`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -478,6 +429,51 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                   <path
                     d='M2.67733 14.4H16V1.8C16 1.32261 15.8127 0.864773 15.4793 0.527208C15.1459 0.189642 14.6937 0 14.2222 0H2.66667C1.59467 0 0 0.7191 0 2.7V15.3C0 17.2809 1.59467 18 2.66667 18H16V16.2H2.67733C2.26667 16.1892 1.77778 16.0245 1.77778 15.3C1.77778 14.5755 2.26667 14.4108 2.67733 14.4ZM4.44444 3.6H12.4444V5.4H4.44444V3.6Z'
                     fill='#1E1E1E90'
+                  />
+                </svg>
+              }
+            />
+          )}
+
+          {isClient && role !== "Student" && (
+            <NavItem
+              href={`${
+                isClient && role === "Teacher"
+                  ? "/teachers"
+                  : role === "Admin"
+                  ? "/admins"
+                  : ""
+              }/students`}
+              activeClass={activeClass}
+              setActiveClass={setActiveClass}
+              activeIcon={
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='h-6 w-6'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                >
+                  <path
+                    fillRule='evenodd'
+                    clipRule='evenodd'
+                    d='M24 21H21L22 18H23L24 21ZM11.024 16.457L20 11.882V18C18.993 20.041 14.393 21 11.5 21C8.325 21 4.111 20.006 3 18V11.386L11.024 16.457ZM23 17H22V9.74L11.077 15.308L0 8.308L12 3L23 9.231V17Z'
+                    fill='#FDFDFD'
+                  />
+                </svg>
+              }
+              label='students'
+              icon={
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='h-6 w-6'
+                  viewBox='0 0 24 24'
+                  fill='none'
+                >
+                  <path
+                    fillRule='evenodd'
+                    clipRule='evenodd'
+                    d='M22 9.74L20 10.76V18C18.993 20.041 14.394 21 11.5 21C8.325 21 4.111 20.006 3 18V10.204L0 8.308L12 3L23 9.231V18L24 21H21L22 18V9.74ZM4 10.835V17.708C4.958 18.988 8.217 20 11.5 20C14.394 20 18.089 19.041 19 17.731V11.269L11.077 15.308L4 10.835ZM2.119 8.464L11.13 14.158L20.889 9.184L11.945 4.118L2.119 8.464Z'
+                    fill='#1E1E1E95'
                   />
                 </svg>
               }
