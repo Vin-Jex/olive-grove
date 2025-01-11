@@ -58,7 +58,7 @@ const Input: React.FC<InputProps> = ({
         <input
           type={showInput ? "" : Type}
           {...inputProps}
-          className={`${className} flex items-center justify-start px-3 relative py-2 placeholder:text-sm !border-gray-200 rounded-lg`}
+          className={`${className} px-3 relative py-2 placeholder:text-sm !border-gray-200 rounded-lg`}
           style={{
             width: "100%",
             border: `1.5px solid ${statusColor}`,
