@@ -43,7 +43,9 @@ const EachAssessment = () => {
       {
         slug: "questions",
         content: (
-          <ModifyAssessment questions={assessment?.data?.questions || []} />
+          <ModifyAssessment
+            questions={(assessment?.data?.questions as any) || []}
+          />
         ),
       },
       {

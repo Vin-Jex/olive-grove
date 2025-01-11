@@ -10,6 +10,7 @@ import Input from "../Input";
 import { useAssessmentQuestionsContext } from "@/contexts/AssessmentQuestionsContext";
 import { Mode } from "@mui/icons-material";
 import { useEachAssessmentQuestionContext } from "@/contexts/EachAssessmentQuestionContext";
+import QuestionMarkInput from "./QuestionMarkInput";
 
 const MultipleChoiceQuestion: FC<{
   question: TAssessmnentQuestion<"draft">;
@@ -71,23 +72,7 @@ const MultipleChoiceQuestion: FC<{
           Add option
         </span>
         {/* Question mark */}
-        <div className="flex gap-2 items-center">
-          <span className="text-xs text-nowrap">Question Mark</span>
-          <Input
-            name="maxMarks"
-            value={question.maxMarks}
-            type="number"
-            defaultValue={"1"}
-            onChange={(e) =>
-              handle_question_config_change(
-                question._id,
-                e.target.name,
-                e.target.value
-              )
-            }
-            className="input !py-1.5 !w-[50px]"
-          />
-        </div>
+        <QuestionMarkInput question={question} mode={mode} />
       </div>
     </div>
   );

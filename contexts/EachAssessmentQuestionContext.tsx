@@ -16,6 +16,7 @@ type TEachAssessmentQuestionReducerActions =
   | "EDIT_QUESTION"
   | "ADD_OPTION"
   | "EDIT_OPTION"
+  | "EDIT_FILE_CONFIG"
   | "DELETE_OPTION";
 
 type TEachAssessmentQuestionContext = {
@@ -34,7 +35,7 @@ const EachAssessmentQuestionContext =
       questionText: "",
       options: [],
       correctAnswer: { _id: "", content: "" },
-      questionImage: "",
+      questionImages: [""],
       questionType: "multiple_choice",
       maxMarks: 0,
     },
@@ -73,7 +74,7 @@ const EachQuestionReducer: Reducer<
       (p) => p._id === action.payload._id
     );
 
-    if (!option_index || option_index < 0) return;
+    if (option_index < 0) return;
 
     old_options[option_index] = {
       ...old_options[option_index],
@@ -102,6 +103,16 @@ const EachQuestionReducer: Reducer<
     };
   }
 
+  if (action.type === "EDIT_FILE_CONFIG") {
+    const old_question = { ...question };
+    question.fileRequirements = {
+      ...question.fileRequirements,
+      ...action.payload,
+    };
+
+    return { ...old_question };
+  }
+
   return question;
 };
 
@@ -114,7 +125,7 @@ const EachAssessmentQuestionContextProvider: FC<{
     questionText: "",
     options: [],
     correctAnswer: { _id: "", content: "" },
-    questionImage: "",
+    questionImages: [""],
     questionType: "multiple_choice",
     maxMarks: 0,
   });

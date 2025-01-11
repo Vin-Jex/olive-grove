@@ -404,12 +404,12 @@ export type TAssessmnentQuestionProp = {};
 export type TAssessmnentQuestion<T extends "draft" | "preview" = "preview"> = {
   _id: string;
   questionText: string;
-  questionImage: string;
+  questionImages?: [string];
   questionType: TAssessmentQuestionType;
   options?: T extends "draft" ? TAsseessmentQuestionOption[] : string[];
   correctAnswer?: T extends "draft" ? TAsseessmentQuestionOption : string;
   fileRequirements?: {
-    maxSizeMB: 5;
+    maxSizeMB: number;
     allowedExtensions: string[];
   };
   maxMarks: number;

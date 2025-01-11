@@ -25,6 +25,7 @@ import { v4 as uuidV4 } from "uuid";
 import EachOption from "./EachOption";
 import PreviewOption from "./PreviewOption";
 import DeleteIcon from "../DeleteIcon";
+import { useEachAssessmentQuestionContext } from "@/contexts/EachAssessmentQuestionContext";
 
 const question_type_options: TSelectOptions = [
   { value: "multiple_choice", display_value: "Multiple Choice" },
@@ -35,12 +36,13 @@ const AssessmentQuestion: FC<{
   question_id: string;
   question: TAssessmnentQuestion<"draft">;
   mode: TAsseessmentQuestionMode;
-}> = ({ question_id, mode, question }) => {
+}> = ({ question_id, mode: questionMode, question }) => {
   const { dispatch, handle_question_config_change } =
     useAssessmentQuestionsContext();
+  const { handle_each_question_config_change } =
+    useEachAssessmentQuestionContext();
   const attachmentState = useFetch();
-  const [questionMode, setQuestionMode] =
-    useState<TAsseessmentQuestionMode>(mode);
+  const [mode, setMode] = useState<TAsseessmentQuestionMode>(questionMode);
   const [question_details, editQuestionDetails] = useState<
     TAssessmnentQuestion<"draft"> & { attachmentId: string }
   >({ ...question, attachmentId: "" });
@@ -146,8 +148,8 @@ const AssessmentQuestion: FC<{
 
     // * Update the state object attachment property
     handleInputChange(
-      "questionImage",
-      uploaded_file[0].fileUrl,
+      "questionImages",
+      [uploaded_file[0].fileUrl],
       editQuestionDetails
     );
     handleInputChange(
@@ -155,11 +157,14 @@ const AssessmentQuestion: FC<{
       uploaded_file[0]._id,
       editQuestionDetails
     );
-    handle_question_config_change(
-      question_id,
-      "questionImage",
-      uploaded_file[0].fileUrl
-    );
+    mode === "add" &&
+      handle_question_config_change(question_id, "questionImages", [
+        uploaded_file[0].fileUrl,
+      ]);
+    mode === "edit" &&
+      handle_each_question_config_change("questionImages", [
+        uploaded_file[0].fileUrl,
+      ]);
     attachmentState.display_success("");
   };
 
@@ -170,6 +175,14 @@ const AssessmentQuestion: FC<{
 
     // * Delete the question from the assessment questions state
     dispatch({ type: "REMOVE_QUESTION", payload: question_id });
+  };
+
+  /**
+   * * Update the assessment question in the DB
+   */
+  const saveEditedQuestion = () => {
+    console.log("Edited question", question);
+    setMode("preview");
   };
 
   /**
@@ -228,13 +241,14 @@ const AssessmentQuestion: FC<{
       editQuestionDetails
     );
     handleInputChange(
-      "questionImage",
-      question?.questionImage || "",
+      "questionImages",
+      question?.questionImages || "",
       editQuestionDetails
     );
   }, []);
 
-  if (questionMode === "edit" || questionMode === "add")
+  // * Edit OR Add mode
+  if (mode === "edit" || mode === "add")
     return (
       <>
         <div className="p-6 rounded-xl flex flex-col gap-6 text-subtext bg-white">
@@ -253,22 +267,30 @@ const AssessmentQuestion: FC<{
                   e.target.value,
                   editQuestionDetails
                 );
-                handle_question_config_change(
-                  question_id,
-                  e.target.name,
-                  e.target.value
-                );
+                mode === "add" &&
+                  handle_question_config_change(
+                    question_id,
+                    e.target.name,
+                    e.target.value
+                  );
+                mode === "edit" &&
+                  handle_each_question_config_change(
+                    e.target.name,
+                    e.target.value
+                  );
               }}
             />
             {/* Question config */}
             <div className="flex gap-4 items-center text-subtext text-lg">
               {/* Delete Icon */}
-              <div
-                onClick={handleDeleteQuestion}
-                className="cursor-pointer transition hover:text-red-400"
-              >
-                <DeleteIcon width={"16"} height={"18"} />
-              </div>
+              {mode === "add" && (
+                <div
+                  onClick={handleDeleteQuestion}
+                  className="cursor-pointer transition hover:text-red-400"
+                >
+                  <DeleteIcon width={"16"} height={"18"} />
+                </div>
+              )}
               {/* Upload Icon */}
               <label className="block cursor-pointer transition">
                 {attachmentState.loading ? (
@@ -288,7 +310,7 @@ const AssessmentQuestion: FC<{
                 )}
               </label>
               {/* Uploaded image */}
-              {question_details.questionImage && (
+              {question_details.questionImages?.[0] && (
                 <div
                   className="relative flex items-center gap-2 w-[30px] h-[30px] cursor-pointer"
                   onClick={handleDeleteAttachment}
@@ -300,9 +322,11 @@ const AssessmentQuestion: FC<{
                     width={30}
                     height={30}
                     src={
-                      typeof question_details.questionImage === "object"
-                        ? URL.createObjectURL(question_details.questionImage)
-                        : question_details.questionImage
+                      typeof question_details.questionImages[0] === "object"
+                        ? URL.createObjectURL(
+                            question_details.questionImages[0]
+                          )
+                        : question_details.questionImages[0]
                     }
                     alt="Question attachment"
                     className="object-contain object-top rounded-md"
@@ -323,14 +347,31 @@ const AssessmentQuestion: FC<{
                       e.target.value,
                       editQuestionDetails
                     );
-                    handle_question_config_change(
-                      question_id,
-                      e.target.name,
-                      e.target.value
-                    );
+                    mode === "add" &&
+                      handle_question_config_change(
+                        question_id,
+                        e.target.name,
+                        e.target.value
+                      );
+                    mode === "edit" &&
+                      handle_each_question_config_change(
+                        e.target.name,
+                        e.target.value
+                      );
                   }}
                 />
               </div>
+              {/* Save Question */}
+              {mode === "edit" && (
+                <Button
+                  color="blue"
+                  className="w-[80px]"
+                  size="xs"
+                  onClick={saveEditedQuestion}
+                >
+                  Save
+                </Button>
+              )}
             </div>
           </div>
           {/* Question response type */}
@@ -338,9 +379,9 @@ const AssessmentQuestion: FC<{
             {question_details.questionType === "multiple_choice" ? (
               <MultipleChoiceQuestion mode={mode} question={question as any} />
             ) : question_details.questionType === "paragraph" ? (
-              <ParagrahQuestion />
+              <ParagrahQuestion question={question} mode={mode} />
             ) : (
-              <FileUploadQuestion mode="edit" />
+              <FileUploadQuestion question={question} mode={mode} />
             )}
           </div>
         </div>
@@ -367,9 +408,10 @@ const AssessmentQuestion: FC<{
       </>
     );
 
+  // * Preview mode
   return (
     <>
-      {" "}
+      {/* Preview question mode */}
       <div className="p-6 rounded-xl flex flex-col gap-4 text-subtext bg-white">
         {/* Question  */}
         <div className="w-full flex justify-between gap-4">
@@ -377,6 +419,20 @@ const AssessmentQuestion: FC<{
           <span className="text-wrap w-[45%] text-lg px-4 py-2">
             {question?.questionText}
           </span>
+          <div className="flex gap-2 items-center">
+            {/* Edit question */}
+            <Button
+              type="button"
+              color="outline"
+              className="border-subtext/30 text-subtext !py-[2px] !h-[30px]"
+              size="xs"
+              onClick={() => setMode("edit")}
+            >
+              Edit question
+            </Button>
+            {/* Delete question */}
+            <DeleteIcon className="cursor-pointer" width={"20"} height={"22"} />
+          </div>
         </div>
         {/* Question response */}
         <div className="w-full">
@@ -397,11 +453,11 @@ const AssessmentQuestion: FC<{
               <input
                 type="text"
                 className="text-wrap w-[45%] text-lg px-4 py-2 border-b border-black/30 focus:outline-none focus:border-b focus:border-black"
-                placeholder="Enter Question description here"
+                placeholder="Enter Question response here"
               />
             </>
           ) : (
-            <FileUploadQuestion mode="preview" />
+            <FileUploadQuestion question={question} mode="preview" />
           )}
         </div>
       </div>

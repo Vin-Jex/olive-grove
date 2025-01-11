@@ -3,7 +3,7 @@ import {
   TAsseessmentQuestionOption,
   TAssessmnentQuestion,
 } from "@/components/utils/types";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import DeleteIcon from "../DeleteIcon";
 import { useAssessmentQuestionsContext } from "@/contexts/AssessmentQuestionsContext";
 import { useEachAssessmentQuestionContext } from "@/contexts/EachAssessmentQuestionContext";
@@ -63,7 +63,7 @@ const EachOption: FC<{
     target: { value },
   }) => {
     // * Update the input field
-    setOptionContent(value);
+    // setOptionContent(value);
 
     // * Update the option in the draft question
     mode === "add" &&

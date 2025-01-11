@@ -14,8 +14,10 @@ type TAssessmentQuestionsReducerActions =
   | "ADD_QUESTION"
   | "REMOVE_QUESTION"
   | "EDIT_QUESTION"
+  | "EDIT_FILE_CONFIG"
   | "ADD_OPTION"
   | "EDIT_OPTION"
+  | "CLEAR_QUESTIONS"
   | "DELETE_OPTION";
 
 const AssessmentQuestionsContext = createContext<{
@@ -110,16 +112,19 @@ const QuestionsReducer: Reducer<
       (p) => p._id === action.payload.option._id
     );
 
+    console.log("Parent index", parent_index);
+    console.log("Option index", option_index);
+
     if (
       !old_questions[parent_index].options ||
-      !option_index ||
+      option_index === undefined ||
       option_index < 0
     )
       return state;
 
     old_questions[parent_index].options[option_index] = {
       ...old_questions[parent_index].options[option_index],
-      ...action.payload.option.content,
+      content: action.payload.option.content,
     };
 
     return {
@@ -152,6 +157,31 @@ const QuestionsReducer: Reducer<
       loading: false,
       error: undefined,
     };
+  }
+
+  if (action.type === "EDIT_FILE_CONFIG") {
+    const old_questions = [...state.data];
+
+    const parent_index = old_questions.findIndex(
+      (p) => p._id === action.payload.question_id
+    );
+
+    if (parent_index < 0) return state;
+
+    old_questions[parent_index].fileRequirements = {
+      ...old_questions[parent_index].fileRequirements,
+      ...action.payload.fileRequirements,
+    };
+
+    return {
+      data: [...old_questions],
+      loading: false,
+      error: undefined,
+    };
+  }
+
+  if (action.type === "CLEAR_QUESTIONS") {
+    return { data: [], loading: false, error: undefined };
   }
 
   return { data: state.data, loading: false, error: undefined };
