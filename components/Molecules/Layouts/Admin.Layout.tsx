@@ -1,9 +1,8 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
 import Meta from "@/components/Atoms/Meta";
 import LogoutWarningModal from "../Modal/LogoutWarningModal";
-import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import { baseUrl } from "@/components/utils/baseURL";
 import axiosInstance from "@/components/utils/axiosInstance";
@@ -68,13 +67,21 @@ const AdminsWrapper = ({
     setWarningModal(!warningModal);
   };
 
-  useEffect(() => {
+  const shouldOpenModal = useCallback(() => {
     if (isForbidden) {
       setIsOpen(true);
-    } else if (user && !isPublic && !user.isVerified) {
-      setIsOpen(true);
+    } else if (user && !isPublic) {
+      if (user?.isVerified === false) {
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
     }
-  }, [isForbidden, user, isPublic]);
+  }, [isForbidden, isPublic, user]);
+
+  useLayoutEffect(() => {
+    shouldOpenModal();
+  }, [shouldOpenModal]);
 
   return (
     <div className='w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center'>
