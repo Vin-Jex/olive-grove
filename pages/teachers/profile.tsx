@@ -215,16 +215,18 @@ const TeachersProfile = () => {
             }
           } else if (Array.isArray(value)) {
             if (key === "teachingCourses") {
-              const ids = value
-                .filter((course) => {
-                  return (
-                    typeof course === "object" &&
-                    course !== null &&
-                    "_id" in course
-                  );
-                })
-                .map((course: { _id: string }) => course._id);
-              formData.append(key, ids as unknown as string);
+              if (value && value.length > 0) {
+                const ids = value
+                  .filter((course) => {
+                    return (
+                      typeof course === "object" &&
+                      course !== null &&
+                      "_id" in course
+                    );
+                  })
+                  .map((course: { _id: string }) => course._id);
+                formData.append(key, ids as unknown as string);
+              }
             } else {
               // Handle other arrays
               formData.append(key, JSON.stringify(value));
