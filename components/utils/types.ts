@@ -36,7 +36,7 @@ export type TChapter<T extends 'get' | 'post' = 'get'> = {
   _id?: string;
   title: string;
   lessons: TLesson[];
-  isActive?: string  | boolean; //note we are using string her as YES or NO
+  isActive?: string | boolean; //note we are using string her as YES or NO
   startDate?: string;
   endDate?: string;
   courseId: string;
@@ -53,7 +53,7 @@ export type TLesson<T extends 'get' | 'post' = 'get'> = {
   chapterId: string;
   viewed?: boolean;
   availableDate?: Date;
-  isActive?: string  | boolean; //note we are using string her as YES or NO
+  isActive?: string | boolean; //note we are using string her as YES or NO
   startDate?: string;
   endDate?: string;
   currentTutorial?: boolean;
@@ -71,7 +71,7 @@ export type TSection<T extends 'get' | 'post' = 'get'> = {
   lessonId: string;
   viewed?: boolean;
   availableDate?: Date;
-  isActive?: string  | boolean; //note we are using string her as YES or NO
+  isActive?: string | boolean; //note we are using string her as YES or NO
   endDate?: string;
   startDate?: string;
   currentTutorial?: boolean;
@@ -480,6 +480,7 @@ export type InputType =
   | 'time'
   | 'week'
   | 'url'
-  | 'select';
+  | 'select'
+  | 'textarea';
 
 export type TErrorStatus = 404 | 500 | 403 | 401;

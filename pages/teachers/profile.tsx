@@ -90,7 +90,9 @@ const TeachersProfile = () => {
     academicSection: user?.academicSection || null,
     role: user?.role!,
   });
+
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
+ 
   const [isDisabled, setIsDisabled] = useState({
     account: true,
     security: true,
@@ -253,13 +255,19 @@ const TeachersProfile = () => {
 
         // Fetch updated user data
         getInfo();
-      } catch (error: any) {
-        console.error('Error updating teacher info:', error);
-        toast.error(
-          `Failed to update teacher info: ${
-            error.response?.data?.message || error.message
-          }`
-        );
+
+      } catch (error: AxiosError | any) {
+        const data = error.response.data;
+        const messageValues = Object?.values(data?.message);
+
+        if (messageValues.length > 0) {
+          toast.success(messageValues.join("\n"));
+        } else
+          toast.error(
+            `Failed to update teacher info: ${
+              error.response?.data?.message || error.message
+            }`
+          );
       }
     },
     [formState, getInfo, user?._id]
@@ -700,7 +708,7 @@ const TeachersProfile = () => {
                 {/* {isDisabled.verification ? (
                   <CircularProgress size={20} color='inherit' />
                 ) : ( */}
-                "Verify"  
+                Verify
                 {/* )} */}
               </Button>
             </form>

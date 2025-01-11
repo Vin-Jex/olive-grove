@@ -177,8 +177,8 @@ export default function CourseModal({
         onClose={handleModalClose}
         className='w-[80%] sm:w-[70%] md:w-[600px] bg-white backdrop-blur-[10px] rounded-3xl'
       >
-        <div className='flex justify-between items-center px-4 mt-[1rem]'>
-          <span className='text-2xl text-dark font-semibold font-roboto capitalize'>
+        <div className='flex justify-between items-center px-4 mt-[1.1rem]'>
+          <span className='text-xl text-dark font-semibold font-roboto capitalize'>
             {capitalize(mode)} {capitalize(type)}
           </span>
         </div>
@@ -192,24 +192,38 @@ export default function CourseModal({
               </div>
             </>
           )}
+
           {type === 'course' && (
-            <Select
-              name='department'
-              options={departments || []}
+            // <Select
+            //   name='classId'
+            //   options={departments || []}
+            //   required
+            //   placeholder='Select class'
+            //   onChange={handleChange}
+            //   {...(formState.department ? { value: formState.department } : {})}
+            // />
+            <InputField
+              label={`Assign Department`}
+              options={departments}
+              placeholder='Select Department'
+              type='select'
               required
-              placeholder='Select Class'
+              name='department'
+              value={formState.department}
               onChange={handleChange}
-              {...(formState.department ? { value: formState.department } : {})}
+              error={''}
             />
           )}
-          <Input
+
+          <InputField
+            label={`${capitalize(type)} Title`}
+            placeholder={`${capitalize(type)} Title`}
             type='text'
             name='title'
+            required
             value={formState.title}
             onChange={handleChange}
-            placeholder={`${capitalize(type)} Title`}
-            required
-            className='input !rounded-lg'
+            error={''}
           />
 
           <InputField
@@ -276,15 +290,18 @@ export default function CourseModal({
           )}
 
           {/* If the modal is that for creating or editing a course */}
+
           {type === 'course' && (
-            <textarea
-              name='description'
-              value={formState.description}
-              onChange={handleChange}
-              placeholder='Description'
+            <InputField
+              label={`${capitalize(type)} Description`}
+              placeholder={`${capitalize(type)} Description`}
+              type='textarea'
               required
-              className='input textarea'
-            ></textarea>
+              name='description'
+              value={formState.description} // i am not sure of the formstate for descriptoin
+              onChange={handleChange}
+              error={''}
+            />
           )}
 
           {/* {(type === "topic" || type === "course") && (
@@ -310,14 +327,15 @@ export default function CourseModal({
 
           {['topic', 'lesson'].includes(type) && (
             <div className='flex flex-col gap-4'>
-              <Input
+              <InputField
+                label={`${capitalize(type)} Available Date`}
+                placeholder={`Enter the date the ${type} will be available`}
                 type='datetime-local'
                 name='availableDate'
-                placeholder={`Enter the date the ${type} will be available`}
                 value={formState.availableDate}
                 onChange={handleChange}
-                className='input'
                 required
+                error={''}
               />
 
               <Select
@@ -381,16 +399,30 @@ export default function CourseModal({
             />
           )}
 
-          <div className='flex items-center space-x-5 w-full'>
-            <Button size='xs' type='submit' color='outline' {...actionProps}>
+          <div className='flex items-center justify-between space-x-5 w-full'>
+            <Button
+              size='xs'
+              width='fit'
+              className='!px-6'
+              type='submit'
+              color='outline'
+              {...actionProps}
+            >
               {is_loading.saving ? (
                 <CircularProgress size={15} color='inherit' />
               ) : (
                 'Save'
               )}
             </Button>
+
             {mode === 'edit' && handleDelete && (
-              <Button size='xs' color='red' {...deleteActionProps}>
+              <Button
+                size='xs'
+                width='fit'
+                className='!px-6'
+                color='red'
+                {...deleteActionProps}
+              >
                 {is_loading.deleting ? (
                   <CircularProgress size={15} color='inherit' />
                 ) : (
