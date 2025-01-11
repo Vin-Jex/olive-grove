@@ -1,9 +1,9 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
-import withAuth from "@/components/Molecules/WithAuth";
-import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
-import SearchInput from "@/components/Atoms/SearchInput";
-import Button from "@/components/Atoms/Button";
-import Select from "@/components/Atoms/Select";
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import withAuth from '@/components/Molecules/WithAuth';
+import TeachersWrapper from '@/components/Molecules/Layouts/Teacher.Layout';
+import SearchInput from '@/components/Atoms/SearchInput';
+import Button from '@/components/Atoms/Button';
+import Select from '@/components/Atoms/Select';
 import {
   TDepartment,
   TCourse,
@@ -11,16 +11,17 @@ import {
   THandleSearchChange,
   TResponse,
   TErrorStatus,
-} from "@/components/utils/types";
-import CourseModal from "@/components/Molecules/Modal/CourseModal";
-import Loader from "@/components/Atoms/Loader";
-import ErrorUI from "@/components/Atoms/ErrorComponent";
-import Course from "@/components/Atoms/Course/EachCourse";
-import { CourseClass, fetchCourses } from "@/components/utils/course";
-import { Add } from "@mui/icons-material";
-import axiosInstance from "@/components/utils/axiosInstance";
-import { useCourseContext } from "@/contexts/CourseContext";
-import WarningModal from "@/components/Molecules/Modal/WarningModal";
+  TCourseModalFormData,
+} from '@/components/utils/types';
+import CourseModal from '@/components/Molecules/Modal/CourseModal';
+import Loader from '@/components/Atoms/Loader';
+import ErrorUI from '@/components/Atoms/ErrorComponent';
+import Course from '@/components/Atoms/Course/EachCourse';
+import { CourseClass, fetchCourses } from '@/components/utils/course';
+import { Add } from '@mui/icons-material';
+import axiosInstance from '@/components/utils/axiosInstance';
+import { useCourseContext } from '@/contexts/CourseContext';
+import WarningModal from '@/components/Molecules/Modal/WarningModal';
 
 const Subjects: FC = () => {
   const [searchResults, setSearchResults] = useState<TCourse[]>([]);
@@ -46,11 +47,11 @@ const Subjects: FC = () => {
     error: undefined,
   });
   const [openModalCreate, setOpenModalCreate] = useState(false);
-  const [formState, setFormState] = useState<Omit<TCourse<"post">, "chapters">>(
+  const [formState, setFormState] = useState<Omit<TCourse<'post'>, 'chapters'>>(
     {
-      title: "",
-      description: "",
-      department: "",
+      title: '',
+      description: '',
+      department: '',
       courseCover: undefined,
     }
   );
@@ -67,7 +68,7 @@ const Subjects: FC = () => {
    * @param filter The filter object, in the case of retriving courses via a filter, e.g. by their title
    */
   const getCourses = useCallback(
-    async (filter?: { query: "title"; value: string }) => {
+    async (filter?: { query: 'title'; value: string }) => {
       setCourses({
         data: [],
         loading: true,
@@ -78,7 +79,7 @@ const Subjects: FC = () => {
         // Call the reusable getCourses function, passing the setDepartments state updater
         const courses = await fetchCourses(filter);
 
-        if (typeof courses === "object") {
+        if (typeof courses === 'object') {
           // Set the courses state to the fetched list of courses
           setCourses({
             data: courses.data,
@@ -88,7 +89,7 @@ const Subjects: FC = () => {
           setSearchResults(courses.data);
         } else {
           const status = isNaN(Number(courses))
-            ? "Error retrieving courses"
+            ? 'Error retrieving courses'
             : Number(courses);
 
           // * If courses were not found
@@ -96,7 +97,7 @@ const Subjects: FC = () => {
             setCourses({
               data: [],
               loading: false,
-              error: { status: 404, message: "No courses found", state: true },
+              error: { status: 404, message: 'No courses found', state: true },
             });
             setSearchResults([]);
             return;
@@ -105,12 +106,12 @@ const Subjects: FC = () => {
           setCourses({
             data: [],
             loading: false,
-            error: status === 500 ? "Error retrieving courses" : courses,
+            error: status === 500 ? 'Error retrieving courses' : courses,
           });
           setSearchResults([]);
         }
       } catch (error) {
-        console.error("Error fetching courses:", error);
+        console.error('Error fetching courses:', error);
       }
     },
     []
@@ -119,7 +120,7 @@ const Subjects: FC = () => {
   /**
    * * Function responsible from retrieving the departments on the platform
    */
-  const getDepartments = async (filter?: { query: "title"; value: string }) => {
+  const getDepartments = async (filter?: { query: 'title'; value: string }) => {
     try {
       // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
       setDepartments({
@@ -146,7 +147,7 @@ const Subjects: FC = () => {
         setDepartments({
           data: [],
           loading: false,
-          error: "No class found",
+          error: 'No class found',
         });
         return;
       }
@@ -155,7 +156,7 @@ const Subjects: FC = () => {
       setDepartments({
         data: [],
         loading: false,
-        error: "An error occurred while retrieving departments",
+        error: 'An error occurred while retrieving departments',
       });
 
       return;
@@ -177,7 +178,7 @@ const Subjects: FC = () => {
     // Perform filtering based on input value
     const filteredResults = initialData.filter((result) => {
       // Add checks to prevent null or undefined access errors
-      const courseName = result?.title?.toLowerCase() || "";
+      const courseName = result?.title?.toLowerCase() || '';
 
       return courseName.includes(inputValue?.trim());
     });
@@ -193,9 +194,9 @@ const Subjects: FC = () => {
   const handleClassFilter: (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => void = ({ target: { value } }) => {
-    console.log("Filtered class value", value);
+    console.log('Filtered class value', value);
 
-    if (!value || value.includes("Select class"))
+    if (!value || value.includes('Select class'))
       return setSearchResults(courses.data);
 
     // Perform filtering based on class filter
@@ -210,7 +211,7 @@ const Subjects: FC = () => {
    * * Function responsible for creating a new course - Making the API request to the endpoint required to create a Course
    * @returns void
    */
-  const createCourse = async () => {
+  const createCourse = async (formState: TCourseModalFormData) => {
     try {
       // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
       setCreateCourseRes({
@@ -223,17 +224,27 @@ const Subjects: FC = () => {
       const request_data = new FormData();
 
       // * Append the course details to the request body
-      request_data.append("title", formState.title);
-      request_data.append("description", formState.description || "");
-      request_data.append("classId", formState.department || "");
+      // request_data.append("title", formState.title);
+      // request_data.append("description", formState.description || "");
+      // request_data.append("classId", formState.department || "");
+      for (let key in formState) {
+        const value = formState[key as keyof typeof formState];
+        if (value !== undefined) {
+          if (typeof value === 'boolean') {
+          request_data.append(key, value.toString());
+        }else {
+          request_data.append(key, value)
+        }}
+      }
+      console.log(formState, 'this is the formstate')
 
-      typeof formState.courseCover === "object" &&
-        request_data.append("courseCover", formState.courseCover);
-      !formState.courseCover && request_data.append("courseCover", "");
+      // typeof formState.courseCover === 'object' &&
+      //   request_data.append('courseCover', formState.courseCover);
+      // !formState.courseCover && request_data.append('courseCover', '');
 
       // * Make an API request to retrieve the list of courses created by this teacher
       const response = await axiosInstance.post(`/courses`, request_data, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       // * Update the existing data with that returned by the API request
@@ -248,9 +259,9 @@ const Subjects: FC = () => {
       const newCourses = [
         new CourseClass(
           responseData.data.title,
-          responseData.data.description || "",
-          responseData.data._id || "",
-          (responseData.data.courseCover as string) || "",
+          responseData.data.description || '',
+          responseData.data._id || '',
+          (responseData.data.courseCover as string) || '',
           []
         ),
         ...courses.data,
@@ -266,7 +277,7 @@ const Subjects: FC = () => {
 
       return true;
     } catch (error: any) {
-      console.log("Error", error);
+      console.log('Error', error);
 
       // * If it's a 400 error, display message that the input details are incomplete
       if (error?.response?.status == 400) {
@@ -274,7 +285,7 @@ const Subjects: FC = () => {
         setCreateCourseRes({
           data: undefined,
           loading: false,
-          error: "Invalid form data passed",
+          error: 'Invalid form data passed',
         });
         return false;
       }
@@ -283,7 +294,7 @@ const Subjects: FC = () => {
       setCreateCourseRes({
         data: undefined,
         loading: false,
-        error: "An error occurred while creating the course",
+        error: 'An error occurred while creating the course',
       });
 
       return false;
@@ -295,11 +306,11 @@ const Subjects: FC = () => {
    */
   const handleCloseModal = () => {
     setFormState({
-      title: "",
-      department: "",
-      description: "",
-      courseCover: "",
-      topicVideo: "",
+      title: '',
+      department: '',
+      description: '',
+      courseCover: '',
+      topicVideo: '',
     });
     setOpenModalCreate((prev) => !prev);
     setCreateCourseRes({ data: undefined, error: undefined, loading: false });
@@ -319,7 +330,7 @@ const Subjects: FC = () => {
         handleModalClose={handleCloseModal}
         modalOpen={openModalCreate}
         mode='create'
-        handleAction={createCourse}
+        handleAction={createCourse as (formData?: TCourseModalFormData) => Promise<boolean>}
         requestState={createCourseRes}
         departments={departments.data?.map((each) => ({
           value: each._id as string,
@@ -327,7 +338,7 @@ const Subjects: FC = () => {
         }))}
       />
       {modal.open &&
-        (mode === "delete" ? (
+        (mode === 'delete' ? (
           <WarningModal
             loading={isDeleting}
             modalOpen={true}
@@ -343,7 +354,7 @@ const Subjects: FC = () => {
                   return true; // Success
                 }
               } catch (error) {
-                console.error("Error during deletion:", error);
+                console.error('Error during deletion:', error);
                 setIsDeleting(false);
                 return false; // Failure
               }
@@ -356,10 +367,10 @@ const Subjects: FC = () => {
           <CourseModal
             formState={modalFormState || ({} as any)}
             setFormState={setModalFormState || ((() => {}) as any)}
-            type={type || "chapter"}
+            type={type || 'chapter'}
             handleModalClose={closeModal}
             modalOpen={true}
-            mode={mode || "create"}
+            mode={mode || 'create'}
             handleAction={handleAction || ((() => {}) as any)}
             handleDelete={handleDelete || ((() => {}) as any)}
             requestState={modalRequestState}
@@ -382,7 +393,7 @@ const Subjects: FC = () => {
             <>
               {/* Title */}
               <div className='flex justify-between items-start'>
-                {typeof courses.error === "object" &&
+                {typeof courses.error === 'object' &&
                   courses.error.status === 404 && (
                     <Button
                       onClick={() => setOpenModalCreate((prev) => !prev)}
@@ -410,7 +421,7 @@ const Subjects: FC = () => {
                       options={
                         departments.data?.map((type) => ({
                           display_value: type.name,
-                          value: type._id || "",
+                          value: type._id || '',
                         })) || []
                       }
                       name='class'
@@ -435,14 +446,14 @@ const Subjects: FC = () => {
               )}
               {courses.error ? (
                 <div className='w-full flex items-center justify-center'>
-                  {typeof courses.error === "object" &&
+                  {typeof courses.error === 'object' &&
                     courses.error.status && (
                       <ErrorUI
                         msg={courses.error.message || undefined}
                         status={courses.error.status as TErrorStatus}
                       />
                     )}
-                  {typeof courses.error === "string" && (
+                  {typeof courses.error === 'string' && (
                     <ErrorUI msg={courses.error} status={500} />
                   )}
                 </div>
@@ -470,4 +481,4 @@ const Subjects: FC = () => {
   );
 };
 
-export default withAuth("Teacher", Subjects);
+export default withAuth('Teacher', Subjects);
