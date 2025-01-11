@@ -122,8 +122,16 @@ const QuestionsReducer: Reducer<
     )
       return state;
 
-    old_questions[parent_index].options[option_index] = {
-      ...old_questions[parent_index].options[option_index],
+    // // eslint-disable-next-line
+    // old_questions[parent_index]!.options[option_index] = {
+    //   // eslint-disable-next-line
+    //   ...old_questions[parent_index].options[option_index],
+    //   // eslint-disable-next-line
+    //   content: action.payload.option.content,
+    // };
+
+    (old_questions[parent_index] as any).options[option_index] = {
+      ...(old_questions[parent_index] as any).options[option_index],
       content: action.payload.option.content,
     };
 
