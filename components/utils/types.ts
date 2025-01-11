@@ -33,24 +33,59 @@ export type TChapter<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   lessons: TLesson[];
+  courseId: string;
+  currentTutorial: {
+    type: string;
+    id: string;
+  };
 } & OptionalFields<T>;
 
 export type TLesson<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   sections: TSection[];
+  chapterId: string;
+  viewed?: boolean;
+  availableDate?: Date;
+  isActive?: boolean;
+  currentTutorial?: boolean;
+  topicVideo: string | null;
+  youtubeVideo: string | null;
+  embed?: string | null;
+  topicNote: string;
+  topicImage: string | null;
 } & OptionalFields<T>;
 
 export type TSection<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   subsections: TSubSection[];
+  lessonId: string;
+  viewed?: boolean;
+  availableDate?: Date;
+  isActive?: boolean;
+  currentTutorial?: boolean;
+  topicVideo: string | null;
+  youtubeVideo: string | null;
+  embed?: string | null;
+  topicNote: string;
+  topicImage: string | null;
 } & OptionalFields<T>;
 
 export type TSubSection<T extends "get" | "post" = "get"> = {
   _id?: string;
   title: string;
   description?: string;
+  lessonId: string;
+  viewed?: boolean;
+  availableDate?: Date;
+  isActive?: boolean;
+  currentTutorial?: boolean;
+  topicVideo: string | null;
+  youtubeVideo: string | null;
+  embed?: string | null;
+  topicNote: string;
+  topicImage: string | null;
 } & OptionalFields<T>;
 
 export type TResponse<T> = {
@@ -256,7 +291,7 @@ export type TStudent = {
   firstName: string;
   lastName: string;
   email: string;
-  dob: Date;
+  dob: Date | string;
   department: string;
   username: string;
   password: string;
@@ -270,15 +305,19 @@ export type TStudent = {
   isVerified: boolean;
   lastLoginAt: Date | null;
   updatedAt: Date;
-  middleName?: string;
-  profileImage?: string | null;
-  enrolledSubjects?: string[];
-  repeated?: { year?: Date; repeated?: boolean }[];
-  graduated?: boolean | null;
-  graduatedYear?: Date | null;
-  academicSection?: string | null;
+  middleName: string;
+  profileImage: string | null;
+  enrolledSubjects: [];
+  repeated: { year?: Date; repeated?: boolean }[];
+  graduated: boolean | null;
+  graduatedYear: Date | null;
+  academicSection: string | null;
   gender: string | null;
 };
+
+export type TStudentCorrect = {
+  department: { category: string; name: string; _id: string };
+} & TStudent;
 
 export type TTeacher = {
   name: string;
@@ -322,7 +361,7 @@ export type TAdmin = {
   academicSection: string | null;
 };
 
-export type TUser = TStudent | TTeacher | TAdmin;
+export type TUser = TStudent | TTeacher | TAdmin | TStudentCorrect;
 
 export type TModalProps<T> = {
   modalOpen: boolean;
@@ -403,7 +442,7 @@ export type TSideDialogContent = {
 
 export type TWarningModalProps = {
   modalOpen: boolean;
-  loading?: boolean;
+  loading: boolean;
   handleModalClose: () => void;
   handleConfirm?: () => void;
 };

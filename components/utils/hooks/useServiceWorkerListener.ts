@@ -1,17 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 const useServiceWorkerListener = () => {
-  const [isForbiddenError, setIsForbiddenError] = useState<boolean | null>(
-    null
-  );
+  const [isForbiddenError, setIsForbiddenError] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (navigator.serviceWorker) {
       const messageListener = (event: MessageEvent) => {
         if (event.data && event.data.type === "FORBIDDEN_ERROR") {
           setIsForbiddenError(true);
-        } else {
-          setIsForbiddenError(null);
         }
       };
 

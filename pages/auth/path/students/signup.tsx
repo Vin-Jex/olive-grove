@@ -435,7 +435,7 @@ const StudentSignup = () => {
             )}
           </div>
 
-          {formError.usernameError ? (
+          {/* {formError.usernameError ? (
             <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
               <Info sx={{ fontSize: '1.1rem' }} />
               {formError.usernameError}
@@ -471,7 +471,7 @@ const StudentSignup = () => {
               <Info sx={{ fontSize: '1.1rem' }} />
               {formError.profileImageError}
             </span>
-          )}
+          )} */}
           <form
             className='flex flex-col mx-auto gap-y-5 w-[94%] sm:w-[87%] md:w-[470px]'
             onKeyPress={handleKeyPress}
