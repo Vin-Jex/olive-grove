@@ -1,5 +1,10 @@
 import { Info } from "@mui/icons-material";
-import React, { ChangeEvent, InputHTMLAttributes } from "react";
+import React, {
+  ChangeEvent,
+  InputHTMLAttributes,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "react";
 import Input from "./Input";
 import Select from "./Select";
 import { InputType, TSelectOptions } from "../utils/types";
@@ -12,7 +17,11 @@ interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   title?: string;
   label?: string;
   value: string | number | readonly string[] | undefined;
-  onChange: (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  onChange: (
+    event: ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => void;
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
@@ -60,12 +69,26 @@ const InputField: React.FC<InputFieldProps> = ({
         name={name}
         options={options}
         required={required}
-        value={value as string}
+        disabled={disabled}
+        value={value as any}
         onChange={onChange as (e: ChangeEvent<HTMLSelectElement>) => void}
         placeholder={placeholder}
         className={className}
         reduceWidth={reduceWidth}
         inputSize={inputSize}
+        {...(inputProps as SelectHTMLAttributes<HTMLSelectElement>)}
+      />
+    ) : type === "textarea" ? (
+      <textarea
+        id={name}
+        name={name}
+        disabled={disabled}
+        className={`input !py-3 mx-auto min-h-36 ${className}`}
+        placeholder={placeholder}
+        value={value as string}
+        onChange={onChange as (e: ChangeEvent<HTMLTextAreaElement>) => void}
+        required={required}
+        {...(inputProps as TextareaHTMLAttributes<HTMLTextAreaElement>)}
       />
     ) : (
       <Input

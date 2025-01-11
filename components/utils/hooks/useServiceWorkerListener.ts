@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 
 const useServiceWorkerListener = () => {
   const [isForbiddenError, setIsForbiddenError] = useState(false);

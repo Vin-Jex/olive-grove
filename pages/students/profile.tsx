@@ -58,15 +58,11 @@ const Profile = () => {
   } = useUserVerify();
 
   const [formState, setFormState] = useState<TFormState>({
-    firstName:
-      (user && "firstName" in user && user.firstName) || "",
+    firstName: (user && "firstName" in user && user.firstName) || "",
     lastName: (user && "lastName" in user && user.lastName) || "",
-    middleName:
-      (user && "middleName" in user && user.middleName) || "",
+    middleName: (user && "middleName" in user && user.middleName) || "",
     profileImage:
-      ((user &&
-        "profileImage" in user &&
-        user.profileImage) as string) || "",
+      ((user && "profileImage" in user && user.profileImage) as string) || "",
     academicStatus:
       ((user &&
         "department" in user &&
@@ -77,9 +73,7 @@ const Profile = () => {
         "department" in user &&
         (user as TStudentCorrect).department &&
         (user as TStudentCorrect).department) as string) || "",
-    dob:
-      (user && "dob" in user && formatDate(user.dob as string)) ||
-      "",
+    dob: (user && "dob" in user && formatDate(user.dob as string)) || "",
     email: (user && "email" in user && user.email) || "",
     username: (user && "username" in user && user.username) || "",
     newPassword: "",
@@ -88,13 +82,9 @@ const Profile = () => {
     gender: (user && "gender" in user && user.gender) || "",
     academicSection: user?.academicSection || null,
     enrolledSubjects:
-      (user &&
-        "enrolledSubjects" in user &&
-        user.enrolledSubjects) ||
-      null,
+      (user && "enrolledSubjects" in user && user.enrolledSubjects) || null,
     role: user?.role ?? EUserRole.Student,
-    studentID:
-      (user && "studentID" in user && user.studentID) || "",
+    studentID: (user && "studentID" in user && user.studentID) || "",
   });
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [isDisabled, setIsDisabled] = useState({
@@ -188,11 +178,8 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      setCurrentTab(
-        user?.isVerified === false ? "account_verify" : "Account"
-      );
+      setCurrentTab(user?.isVerified === false ? "account_verify" : "Account");
     }
-    console.log("USER: ", user)
   }, [user]);
 
   const getInfo = useCallback(async () => {
@@ -290,9 +277,7 @@ const Profile = () => {
         });
 
         const response = await axiosInstance.put(
-          `/student-user/${
-            user && "username" in user && user.username
-          }`,
+          `/student-user/${user && "username" in user && user.username}`,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -308,12 +293,17 @@ const Profile = () => {
         // Fetch updated user data
         getInfo();
       } catch (error: AxiosError | any) {
-        console.error("Error updating teacher info:", error);
-        toast.error(
-          `Failed to update teacher info: ${
-            error.response?.data?.message || error.message
-          }`
-        );
+        const data = error.response.data;
+        const messageValues = Object?.values(data?.message);
+
+        if (messageValues.length > 0) {
+          toast.success(messageValues.join("\n"));
+        } else
+          toast.error(
+            `Failed to update teacher info: ${
+              error.response?.data?.message || error.message
+            }`
+          );
       }
     },
     [formState, getInfo, user]

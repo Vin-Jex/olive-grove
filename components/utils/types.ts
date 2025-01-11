@@ -470,6 +470,7 @@ export type InputType =
   | "time"
   | "week"
   | "url"
-  | "select";
+  | "select"
+  | "textarea";
 
 export type TErrorStatus = 404 | 500 | 403 | 401;
