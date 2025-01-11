@@ -559,21 +559,21 @@ const Assessments = () => {
                     {searchResults &&
                       searchResults.map((assessment, index) => (
                         <TeacherCard
+                          key={index}
                           assessment={assessment}
                           academicWeekDate={
                             (assessment.academicWeek as TAcademicWeek)
-                              ?.weekNumber ?? "Unknown Week"
+                              ?.weekNumber ?? "Not Specified"
                           }
-                          key={index}
                           type='assessment'
                           assessmentType={
                             (assessment?.assessmentType as TAssessmentType)
-                              ?.name ?? "Unknown Type"
+                              ?.name ?? "Not Specified"
                           }
-                          timeline={assessment?.dueDate ?? "Unknown Timeline"}
+                          timeline={assessment?.dueDate ?? "Not Specified"}
                           assessmenTClass={
                             (assessment?.department as TDepartment)?.name ??
-                            "Unknown Class"
+                            "Not Specified"
                           }
                           course={(assessment?.course as TCourse)?.title ?? ""}
                           actionClick={() =>
