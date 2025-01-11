@@ -19,7 +19,6 @@ import { ProfilePhotoSection } from "../teachers/profile";
 import {
   EUserRole,
   InputType,
-  TStudent,
   TStudentCorrect,
 } from "@/components/utils/types";
 import { useUser } from "@/contexts/UserContext";
@@ -48,7 +47,7 @@ export type TFormState = {
 };
 
 const Profile = () => {
-  const { user: userInfo, setUser } = useUser();
+  const { user, setUser } = useUser();
   const {
     otpRequestLoading,
     handleRequestOTP,
@@ -60,42 +59,42 @@ const Profile = () => {
 
   const [formState, setFormState] = useState<TFormState>({
     firstName:
-      (userInfo && "firstName" in userInfo && userInfo.firstName) || "",
-    lastName: (userInfo && "lastName" in userInfo && userInfo.lastName) || "",
+      (user && "firstName" in user && user.firstName) || "",
+    lastName: (user && "lastName" in user && user.lastName) || "",
     middleName:
-      (userInfo && "middleName" in userInfo && userInfo.middleName) || "",
+      (user && "middleName" in user && user.middleName) || "",
     profileImage:
-      ((userInfo &&
-        "profileImage" in userInfo &&
-        userInfo.profileImage) as string) || "",
+      ((user &&
+        "profileImage" in user &&
+        user.profileImage) as string) || "",
     academicStatus:
-      ((userInfo &&
-        "department" in userInfo &&
-        (userInfo as TStudentCorrect).department?.category &&
-        (userInfo as TStudentCorrect).department?.category) as string) || "", // we have to confirm this
+      ((user &&
+        "department" in user &&
+        (user as TStudentCorrect).department?.category &&
+        (user as TStudentCorrect).department?.category) as string) || "", // we have to confirm this
     department:
-      ((userInfo &&
-        "department" in userInfo &&
-        (userInfo as TStudentCorrect).department &&
-        (userInfo as TStudentCorrect).department) as string) || "",
+      ((user &&
+        "department" in user &&
+        (user as TStudentCorrect).department &&
+        (user as TStudentCorrect).department) as string) || "",
     dob:
-      (userInfo && "dob" in userInfo && formatDate(userInfo.dob as string)) ||
+      (user && "dob" in user && formatDate(user.dob as string)) ||
       "",
-    email: (userInfo && "email" in userInfo && userInfo.email) || "",
-    username: (userInfo && "username" in userInfo && userInfo.username) || "",
+    email: (user && "email" in user && user.email) || "",
+    username: (user && "username" in user && user.username) || "",
     newPassword: "",
     confirmPassword: "",
     otp: "",
-    gender: (userInfo && "gender" in userInfo && userInfo.gender) || "",
-    academicSection: userInfo?.academicSection || null,
+    gender: (user && "gender" in user && user.gender) || "",
+    academicSection: user?.academicSection || null,
     enrolledSubjects:
-      (userInfo &&
-        "enrolledSubjects" in userInfo &&
-        userInfo.enrolledSubjects) ||
+      (user &&
+        "enrolledSubjects" in user &&
+        user.enrolledSubjects) ||
       null,
-    role: userInfo?.role ?? EUserRole.Student,
+    role: user?.role ?? EUserRole.Student,
     studentID:
-      (userInfo && "studentID" in userInfo && userInfo.studentID) || "",
+      (user && "studentID" in user && user.studentID) || "",
   });
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [isDisabled, setIsDisabled] = useState({
@@ -188,12 +187,13 @@ const Profile = () => {
   );
 
   useEffect(() => {
-    if (userInfo) {
+    if (user) {
       setCurrentTab(
-        userInfo?.isVerified === false ? "account_verify" : "Account"
+        user?.isVerified === false ? "account_verify" : "Account"
       );
     }
-  }, [userInfo]);
+    console.log("USER: ", user)
+  }, [user]);
 
   const getInfo = useCallback(async () => {
     try {
@@ -291,7 +291,7 @@ const Profile = () => {
 
         const response = await axiosInstance.put(
           `/student-user/${
-            userInfo && "username" in userInfo && userInfo.username
+            user && "username" in user && user.username
           }`,
           formData,
           {
@@ -303,7 +303,7 @@ const Profile = () => {
         toast.success(data?.message);
 
         // Update the user data in IndexedDB
-        await updateUserInDB(userInfo?._id!, data?.data, userInfo?._id!);
+        await updateUserInDB(user?._id!, data?.data, user?._id!);
 
         // Fetch updated user data
         getInfo();
@@ -316,7 +316,7 @@ const Profile = () => {
         );
       }
     },
-    [formState, getInfo, userInfo]
+    [formState, getInfo, user]
   );
 
   const handlePasswordChange = async (event: FormEvent<HTMLFormElement>) => {
@@ -379,7 +379,7 @@ const Profile = () => {
       const data = await response.data;
       toast.success(data?.message || "Email verified successfully");
       // Update the user data in IndexedDB
-      await updateUserInDB(userInfo?._id!, data?.data, userInfo?._id!);
+      await updateUserInDB(user?._id!, data?.data, user?._id!);
 
       // Fetch updated user data
       getInfo();
@@ -432,6 +432,7 @@ const Profile = () => {
               </div>
             ))}
           </div>
+
           {currentTab === "account_verify" && (
             <div
               className={`px-7 py-2 font-medium text-sm border-b-2  cursor-pointer transition ${
@@ -454,21 +455,21 @@ const Profile = () => {
             onSubmit={updateInfo}
           >
             <ProfilePhotoSection
-              lastLoginAt={userInfo?.lastLoginAt!}
+              lastLoginAt={user?.lastLoginAt!}
               setCurrentTab={setCurrentTab}
-              userRole={userInfo?.role!}
-              isVerified={userInfo?.isVerified!}
+              userRole={user?.role!}
+              isVerified={user?.isVerified!}
               setFormState={setFormState}
               setPreviewImage={setPreviewImage}
               previewImage={previewImage as string}
               setIsDisabled={setIsDisabled}
               profileImage={formState.profileImage as string}
               name={
-                userInfo && "firstName" in userInfo && "lastName" in userInfo
-                  ? `${userInfo.firstName} ${userInfo.lastName}`
+                user && "firstName" in user && "lastName" in user
+                  ? `${user.firstName} ${user.lastName}`
                   : ""
               }
-              id={userInfo && "studentID" in userInfo ? userInfo.studentID : ""}
+              id={user && "studentID" in user ? user.studentID : ""}
             />
             <div className='flex flex-col'>
               <span className='text-lg lg:text-xl font-normal text-dark font-roboto'>
