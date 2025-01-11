@@ -1,4 +1,9 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useLayoutEffect,
+  useState,
+} from "react";
 import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
 import Meta from "@/components/Atoms/Meta";
@@ -42,13 +47,21 @@ const TeachersWrapper = ({
     setWarningModal(!warningModal);
   };
 
-  useEffect(() => {
+  const shouldOpenModal = useCallback(() => {
     if (isForbidden) {
       setIsOpen(true);
-    } else if (user && !isPublic && !user.isVerified) {
-      setIsOpen(true);
+    } else if (user && !isPublic) {
+      if (user?.isVerified === false) {
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
     }
-  }, [isForbidden, user, isPublic]);
+  }, [isForbidden, isPublic, user]);
+
+  useLayoutEffect(() => {
+    shouldOpenModal();
+  }, [shouldOpenModal]);
 
   return (
     <div className='relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row'>

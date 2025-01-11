@@ -628,7 +628,7 @@ const TeachersProfile = () => {
             </Button>
           </form>
         )}
-        
+
         {currentTab === "account_verify" && (
           <div>
             <form
@@ -794,7 +794,7 @@ export function ProfilePhotoSection({
           <span className='text-dark flex items-center text-2xl leading-5'>
             {name.trim() ? name : "N/A"}
             <span className='ml-2'>
-              {isVerified ? (
+              {isVerified === true ? (
                 <svg
                   width='28'
                   height='28'
@@ -824,7 +824,7 @@ export function ProfilePhotoSection({
             <span className='text-subtext text-[15px]'>
               <strong>ID: </strong>
               {id.trim() ? id : "N/A"}
-              {!isVerified && (
+              {isVerified === false && (
                 <button
                   onClick={() => setCurrentTab("account_verify")}
                   className='ml-3 text-primary font-semibold'
