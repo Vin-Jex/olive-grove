@@ -61,7 +61,7 @@ html {
 }
 
 .input {
-  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border !border-subtext/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:!text-subtext/50 first-letter:!uppercase !text-subtext/50 transition duration-200;
+  @apply w-full px-3 sm:px-4 py-3.5 rounded-md !outline-none bg-transparent !border !border-subtext/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:!text-subtext/50 first-letter:!uppercase !text-subtext/50 transition duration-200 resize-none;
 }
 
 input[type="number"]::-webkit-inner-spin-button,

@@ -21,8 +21,9 @@ import { Add } from "@mui/icons-material";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { useCourseContext } from "@/contexts/CourseContext";
 import WarningModal from "@/components/Molecules/Modal/WarningModal";
+import SearchLayout from "@/components/Molecules/SearchLayout";
 
-const Subjects: FC = () => {
+const Courses: FC = () => {
   const [searchResults, setSearchResults] = useState<TCourse[]>([]);
   const {
     modal,
@@ -340,17 +341,17 @@ const Subjects: FC = () => {
                   await handleDelete();
                   setIsDeleting(false);
                   closeModal();
-                  return true; // Success
+                  return true;
                 }
               } catch (error) {
                 console.error("Error during deletion:", error);
                 setIsDeleting(false);
-                return false; // Failure
+                return false;
               }
-              return false; // Default
+              return false;
             }}
             content='Are you sure you want to delete this course?'
-            subtext='This action CAN NOT be undone!'
+            subtext='This course would be deleted permanently if you confirm.'
           />
         ) : (
           <CourseModal
@@ -372,8 +373,8 @@ const Subjects: FC = () => {
 
       <TeachersWrapper
         isPublic={false}
-        title='Subjects'
-        metaTitle='Olive Grove ~ Subjects'
+        title='Olive Grove - Courses'
+        metaTitle='Olive Grove - Courses'
       >
         <div className='h-full'>
           {courses.loading ? (
@@ -390,7 +391,7 @@ const Subjects: FC = () => {
                       size='xs'
                     >
                       <Add />
-                      <span>Add subject</span>
+                      <span>Add Course</span>
                     </Button>
                   )}
               </div>
@@ -400,12 +401,13 @@ const Subjects: FC = () => {
                   <div className='flex justify-start items-center gap-4 w-full md:w-auto'>
                     <SearchInput
                       shape='rounded-lg'
-                      placeholder='Search for Subjects'
+                      placeholder='Search for courses'
                       searchResults={searchResults}
                       setSearchResults={setSearchResults}
                       initialData={courses.data}
                       handleInputChange={handleSearchChange}
                     />
+
                     <Select
                       options={
                         departments.data?.map((type) => ({
@@ -418,7 +420,7 @@ const Subjects: FC = () => {
                       onChange={handleClassFilter}
                       placeholder='Select class'
                       inputSize='sm'
-                      className='!py-3'
+                      className='!py-3 max-w-[9rem]'
                     />
                   </div>
                   <div>
@@ -428,7 +430,7 @@ const Subjects: FC = () => {
                       size='xs'
                     >
                       <Add />
-                      <span>Add subject</span>
+                      <span>Add Course</span>
                     </Button>
                   </div>
                 </div>
@@ -448,8 +450,8 @@ const Subjects: FC = () => {
                 </div>
               ) : searchResults.length < 1 ? (
                 // 404 image
-                <div className='w-full flex items-center justify-center'>
-                  <ErrorUI msg='No courses found' status={404} />
+                <div className='w-full h-[70vh] flex items-center justify-center'>
+                  <ErrorUI msg='No course found' status={404} />
                 </div>
               ) : (
                 <div className='mt-4'>
@@ -470,4 +472,4 @@ const Subjects: FC = () => {
   );
 };
 
-export default withAuth("Teacher", Subjects);
+export default withAuth("Teacher", Courses);

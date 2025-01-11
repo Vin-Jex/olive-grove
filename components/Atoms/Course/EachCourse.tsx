@@ -3,16 +3,9 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FC, useEffect, useRef, useState } from "react";
 import coursePlaceholder from "@/images/course-placeholder.png";
-import Button from "../Button";
-import { AnimatePresence } from "framer-motion";
-import SideDialog from "../DialogAction";
 import { useCourseContext } from "@/contexts/CourseContext";
 import axiosInstance from "@/components/utils/axiosInstance";
-
-enum CONTAINER_STYLES {
-  ROW = "flex-row max-w-[450px]",
-  COL = "flex-col max-w-[300px]",
-}
+import toast from "react-hot-toast";
 
 // const Course: FC<{ course: TCourse }> = ({ course }) => {
 //   const router = useRouter();
@@ -239,6 +232,8 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
         error: undefined,
       });
 
+      toast.success(response.data?.message || "Course successfully deleted.");
+
       router.push("/teachers/courses");
 
       return true;
@@ -248,8 +243,9 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
         setModalRequestState({
           data: undefined,
           loading: false,
-          error: "Course not found",
+          error: undefined,
         });
+        toast.error(error.response.data?.message || "Course not found.");
         router.push("/teachers/courses");
         return false;
       }
@@ -260,8 +256,11 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
         setModalRequestState({
           data: undefined,
           loading: false,
-          error: "Error deleting course",
+          error: undefined,
         });
+        toast.error(
+          error.response.data?.message || "Course deletion was unsuccessful."
+        );
         return false;
       }
 
@@ -269,31 +268,13 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
       setModalRequestState({
         data: undefined,
         loading: false,
-        error: "An error occurred while updating the course",
+        error: undefined,
       });
 
+      
+      toast.error(error.response.data?.message || "Failed to delete course.");
       return false;
     }
-  };
-
-  /**
-   * * Function responsible for opening the course modal to edit the course
-   * */
-  const openEditCourseModal = () => {
-    openModal({
-      modalMetadata: {
-        formData: {
-          title: course?.title || "",
-          department: (course?.department as any) || "",
-          description: course?.description || "",
-          courseCover: course?.courseCover || "",
-        },
-        mode: "edit",
-        type: "course",
-        handleAction: handleEditCourse,
-        // handleDelete: handleDeleteCourse,
-      },
-    });
   };
 
   /**
@@ -313,6 +294,26 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
     });
   };
 
+  /**
+   * * Function responsible for opening the course modal to edit the course
+   * */
+  const openEditCourseModal = () => {
+    openModal({
+      modalMetadata: {
+        formData: {
+          title: course?.title || "",
+          department: (course?.department as any) || "",
+          description: course?.description || "",
+          courseCover: course?.courseCover || "",
+        },
+        mode: "edit",
+        type: "course",
+        handleAction: handleEditCourse,
+        handleDelete: openDeleteCourseModal as any,
+      },
+    });
+  };
+
   useEffect(() => {
     action_ref.current?.addEventListener("mouseover", displayActionHandler);
     action_ref.current?.addEventListener("mouseout", hideActionHandler);
@@ -327,19 +328,17 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
 
   return (
     <div
-      className={`flex flex-col p-3 gap-3 rounded-lg shadow bg-white`}
+      className='flex flex-col p-3 gap-3 rounded-2xl shadow-card'
       ref={container_ref}
     >
-      {/* IMAGE */}
       <div
-        className={`w-full flex-grow h-[175px] rounded-lg overflow-hidden cursor-pointer relative`}
+        className={`w-full flex-grow max-h-[175px] rounded-xl overflow-hidden cursor-pointer relative transition-transform duration-300 ease-in-out hover:scale-95`}
         onClick={() => router.push(`/teachers/courses/${course._id}`)}
       >
-        {/* Chapter badge */}
-        <div className='flex items-center gap-2 text-[#1E1E1E99] absolute top-2 left-2 bg-white rounded-full px-1.5 py-1 text-2xs'>
+        <div className='flex items-center space-x-1.5 bg-white text-subtext rounded-full shadow-md absolute top-2 left-2 py-1.5 px-2.5 text-2xs'>
           <svg
-            width='8'
-            height='12'
+            width='10'
+            height='10'
             viewBox='0 0 14 16'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
@@ -364,66 +363,53 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
           src={(course.courseCover as string) || coursePlaceholder.src}
           width={325}
           height={175}
-          className={`w-full h-[175px] object-cover object-top`}
+          className={`w-full h-[175px] object-cover object-top bg-gray-300`}
           alt={course.title}
         />
       </div>
-      <div className='flex flex-col gap-2'>
-        {/* BADGES */}
+
+      <div className='flex flex-col space-y-5'>
         <div className='flex justify-between gap-4 items-center'>
-          {/* Class name */}
-          <span className='rounded-full bg-[#B69302]/10 py-1 px-3.5 text-2xs'>
+          <span className='rounded-full bg-[#B693021A] text-dark py-1.5 px-5 text-xs font-medium'>
             {course.department?.name}
           </span>
-          {/* More icon container */}
-          <div ref={action_ref} className='relative p-1 cursor-pointer'>
-            {/* More icon */}
-            <i className='fa-solid fa-ellipsis-vertical cursor-pointer'></i>{" "}
-            <AnimatePresence>
-              {display_actions && (
-                <>
-                  <SideDialog
-                    className='-left-[151px]'
-                    links={[
-                      {
-                        icon: "fas fa-pencil",
-                        title: "Edit",
-                        action: openEditCourseModal,
-                        className: "transition hover:text-primary",
-                      },
-                      {
-                        icon: "fas fa-trash",
-                        title: "Delete",
-                        action: openDeleteCourseModal,
-                        className: "transition hover:text-red-400",
-                      },
-                    ]}
-                  />
-                </>
-              )}
-            </AnimatePresence>
-          </div>
+          <button
+            type='button'
+            onClick={(event) => {
+              event.stopPropagation();
+              openEditCourseModal();
+            }}
+            className='flex items-center justify-center space-x-1.5 rounded-full bg-[#32A8C41A] text-primary py-1.5 px-4 text-xs font-medium'
+          >
+            <svg
+              width='9'
+              height='9'
+              viewBox='0 0 9 9'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M1 8H1.7125L6.6 3.1125L5.8875 2.4L1 7.2875V8ZM0 9V6.875L6.6 0.2875C6.7 0.195833 6.8105 0.125 6.9315 0.075C7.0525 0.025 7.1795 0 7.3125 0C7.44583 0 7.575 0.025 7.7 0.075C7.825 0.125 7.93333 0.2 8.025 0.3L8.7125 1C8.8125 1.09167 8.8855 1.2 8.9315 1.325C8.9775 1.45 9.00033 1.575 9 1.7C9 1.83333 8.977 1.9605 8.931 2.0815C8.885 2.2025 8.81217 2.31283 8.7125 2.4125L2.125 9H0ZM6.2375 2.7625L5.8875 2.4L6.6 3.1125L6.2375 2.7625Z'
+                fill='#32A8C4'
+              />
+            </svg>
+            <span className='text-xs'>Edit</span>
+          </button>
         </div>
-        {/* TITLE */}
-        <div className='text-lg font-bold'>
-          {course.title.length > 30
-            ? `${course.title.slice(0, 30)}...`
-            : course.title}
+        <div className='flex flex-col justify-center'>
+          <h4 className='text-dark text-base font-roboto font-bold first-letter:capitalize'>
+            {course?.title?.length > 30
+              ? `${course.title.slice(0, 30)}...`
+              : course.title}
+          </h4>
+
+          <span
+            className='font-roboto text-sm text-[#1E1E1E99] first-letter:capitalize'
+            dangerouslySetInnerHTML={{
+              __html: description || "Please add description for this course.",
+            }}
+          />
         </div>
-        {/* DESCRIPTION */}
-        <div
-          className='font-roboto text-sm !leading-5 text-[#1E1E1E99]'
-          dangerouslySetInnerHTML={{ __html: description || "" }}
-        ></div>
-        {/* BUTTON */}
-        <Button
-          size='xs'
-          color='blue'
-          onClick={() => router.push(`/teachers/courses/${course._id}`)}
-          width='full'
-        >
-          View Course
-        </Button>
       </div>
     </div>
   );
