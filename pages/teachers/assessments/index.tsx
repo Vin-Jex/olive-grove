@@ -4,7 +4,6 @@ import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
 import ErrorUI from "@/components/Atoms/ErrorComponent";
-import ServerError from "@/components/Atoms/ServerError";
 import Loader from "@/components/Atoms/Loader";
 import {
   TAcademicWeek,
@@ -12,15 +11,20 @@ import {
   TAssessmentType,
   TDepartment,
   TCourse,
-  TFetchState,
   TTeacher,
   TErrorStatus,
+  THandleSearchChange,
+  TErrorState,
 } from "@/components/utils/types";
 import TeacherCard from "@/components/Molecules/Card/TeacherSubjectCard";
 import AsssessmentModal from "@/components/Molecules/Modal/AsssessmentModal";
 import { fetchCourses } from "@/components/utils/course";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { useAuth } from "@/contexts/AuthContext";
+import { Add } from "@mui/icons-material";
+import Select from "@/components/Atoms/Select";
+import SearchInput from "@/components/Atoms/SearchInput";
+import toast from "react-hot-toast";
 
 const Assessments = () => {
   const router = useRouter();
@@ -29,471 +33,182 @@ const Assessments = () => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [formState, setFormState] = useState<TAssessment<"post">>({
-    subject: "",
+    course: "",
     assessmentType: "",
     description: "",
     dueDate: "",
     teacher: "",
     academicWeek: "",
-    _id: "",
-    class: "",
+    department: "",
+    title: "",
+    active: false,
   });
-  const [fetchAssessmentsState, setFetchAssessmentsState] = useState<
-    TFetchState<TAssessment<"get">[]>
-  >({
-    data: [],
-    error: undefined,
-    loading: false,
-  });
-  const [fetchAcademicWeekState, setFetchAcademicWeekState] = useState<
-    TFetchState<TAcademicWeek[]>
-  >({
-    data: [],
-    error: undefined,
-    loading: false,
-  });
-  const [createAssessmentState, setCreateAssessmentState] = useState<
-    TFetchState<TAssessment<"post"> | undefined>
-  >({
-    data: undefined,
-    error: undefined,
-    loading: false,
-  });
-  const [fetchCoursesState, setFetchCoursesState] = useState<
-    TFetchState<TCourse[]>
-  >({
-    data: [],
-    loading: true,
-    error: undefined,
-  });
-  const [fetchClassesState, setFetchClassesState] = useState<
-    TFetchState<TDepartment[]>
-  >({
-    data: [],
-    loading: true,
-    error: undefined,
-  });
-  const [fetchAssessmentTypesState, setFetchAssessmentTypesState] = useState<
-    TFetchState<TAssessmentType[]>
-  >({
-    data: [],
-    loading: true,
-    error: undefined,
+  const [searchResults, setSearchResults] = useState<TAssessment<"get">[]>([]);
+
+  const [apiState, setApiState] = useState({
+    courses: { data: [] as TCourse[], loading: false, error: undefined },
+    assessments: {
+      data: [] as TAssessment<"get">[],
+      loading: false,
+      error: undefined as undefined | string | TErrorState,
+    },
+    academicWeeks: {
+      data: [] as TAcademicWeek[],
+      loading: false,
+      error: undefined as undefined | string | TErrorState,
+    },
+    assessmentTypes: {
+      data: [] as TAssessmentType[],
+      loading: false,
+      error: undefined as undefined | string | TErrorState,
+    },
+    departments: {
+      data: [] as TDepartment[],
+      loading: false,
+      error: undefined as undefined | string | TErrorState,
+    },
   });
 
-  /**
-   * Clears the form data
-   */
+  const setApiData = useCallback(
+    (
+      key: keyof typeof apiState,
+      newState: Partial<(typeof apiState)[keyof typeof apiState]>
+    ) => {
+      setApiState((prev) => ({
+        ...prev,
+        [key]: { ...prev[key], ...newState },
+      }));
+    },
+    []
+  );
+
   const clearFormState = () => {
     setFormState({
-      subject: "",
+      course: "",
       assessmentType: "",
       description: "",
       dueDate: "",
       teacher: "",
       academicWeek: "",
-      _id: "",
-      class: "",
+      title: "",
+      department: "",
+      active: false,
     });
   };
 
-  const toogleModalCreate = () => {
+  const toggleModalCreate = () => {
     clearFormState();
-    setCreateAssessmentState({
-      data: undefined,
+    setApiData("assessments", {
       loading: false,
       error: undefined,
+      data: [],
     });
     setOpenModalCreate(!openModalCreate);
   };
 
-  const toogleModalEdit = (existing_data?: TAssessment<"post">) => {
+  const toggleModalEdit = (existing_data?: TAssessment<"post">) => {
     if (openModalEdit) {
       clearFormState();
-      setCreateAssessmentState({
-        data: undefined,
+      setApiData("assessments", {
         loading: false,
         error: undefined,
+        data: [],
       });
     } else existing_data && setFormState(existing_data);
     setOpenModalEdit((prev) => !prev);
   };
 
-  const toogleModalDelete = (existing_data?: TAssessment<"post">) => {
+  const toggleModalDelete = (existing_data?: TAssessment<"post">) => {
     if (openModalDelete) {
       clearFormState();
-      setCreateAssessmentState({
-        data: undefined,
+      setApiData("assessments", {
         loading: false,
         error: undefined,
+        data: [],
       });
     } else existing_data && setFormState(existing_data);
     setOpenModalDelete((prev) => !prev);
   };
 
-  /**
-   * Updates/Deletes class in the local state after it has been edited or deleted
-   */
   const updateAssessments = useCallback(
     (data: TAssessment<"post">, mode: "edit" | "delete" | "create") => {
-      const old_assessments = [...fetchAssessmentsState.data];
-      // console.log("Assesment data", data);
-      // console.log("Fetched courses", fetchCoursesState.data);
-      // console.log(
-      //   "Returned course",
-      //   fetchCoursesState.data?.find((course) => course._id === data.subject)
-      // );
+      const old_assessments = [...apiState.assessments.data];
+
+      const academicWeek =
+        apiState.academicWeeks.data.find(
+          (week) => week._id === data.academicWeek
+        ) || ({} as TAcademicWeek);
+      const course =
+        apiState.courses.data?.find((course) => course._id === data.course) ||
+        ({} as TCourse);
+      const department =
+        apiState.departments.data?.find(
+          (class_) => class_._id === data.department
+        ) || ({} as TDepartment);
+      const assessmentType =
+        apiState.assessmentTypes.data?.find(
+          (type) => type._id === data.assessmentType
+        ) || ({} as TAssessmentType);
+
       const assessmentData: TAssessment<"get"> = {
         ...data,
-        academicWeek: fetchAcademicWeekState.data?.find(
-          (week) => week._id === data.academicWeek
-        )!,
-        subject: fetchCoursesState.data?.find(
-          (course) => course._id === data.subject
-        )!,
-        class: fetchClassesState.data?.find(
-          (class_) => class_._id === data.class
-        )!,
-        assessmentType: fetchAssessmentTypesState.data?.find(
-          (type) => type._id === data.assessmentType
-        )!,
-        teacher: { name: "Dummy" } as TTeacher,
+        academicWeek,
+        course,
+        department,
+        assessmentType,
+        teacher: { name: "" } as TTeacher,
       };
 
       if (mode === "edit") {
         const i = old_assessments.findIndex((each) => each._id === data._id);
-
         if (i < 0) return;
 
         old_assessments[i] = {
           ...assessmentData,
         };
 
-        setFetchAssessmentsState((prev) => ({
-          ...prev,
+        setApiData("assessments", {
           data: [...old_assessments],
-        }));
+        });
       }
+
       if (mode === "delete") {
         const filtered_assessments = old_assessments.filter(
           (each) => each._id !== data._id
         );
-        setFetchAssessmentsState((prev) => ({
-          ...prev,
+
+        setApiData("assessments", {
           data: [...filtered_assessments],
-        }));
+        });
       }
+
       if (mode === "create") {
         const updated_assessments: TAssessment<"get">[] = [
           assessmentData,
           ...old_assessments,
         ];
-        setFetchAssessmentsState((prev) => ({
-          ...prev,
+        setApiData("assessments", {
           data: updated_assessments,
-        }));
+        });
       }
     },
     [
-      fetchAcademicWeekState.data,
-      fetchAssessmentTypesState.data,
-      fetchAssessmentsState.data,
-      fetchClassesState.data,
-      fetchCoursesState.data,
+      apiState.academicWeeks.data,
+      apiState.assessmentTypes.data,
+      apiState.assessments.data,
+      apiState.courses.data,
+      apiState.departments.data,
+      setApiData,
     ]
   );
 
-  /**
-   * Function to retrieve the list of assessment types
-   */
-  const getAssessmentTypes = useCallback(async () => {
-    try {
-      // Display loading state
-      setFetchAssessmentTypesState((prev) => ({
-        ...prev,
-        loading: true,
-        error: undefined,
-      }));
-
-      const response = await axiosInstance.get(`/assessment/type`);
-
-      const { data } = response;
-      // Display data
-      setFetchAssessmentTypesState((prev) => ({
-        data: data?.data,
-        loading: false,
-        error: undefined,
-      }));
-    } catch (err) {
-      // Display error state
-      setFetchAssessmentTypesState((prev) => ({
-        ...prev,
-        loading: false,
-        error: {
-          message: "Failed to load assessments types",
-          status: 500,
-          state: true,
-        },
-      }));
-    } finally {
-      // Remove loading state
-      setFetchAssessmentTypesState((prev) => ({ ...prev, loading: false }));
-    }
-  }, []);
-
-  /**
-   * Function to retrieve the list of academic weeks
-   */
-  const getAcademicWeeks = useCallback(async () => {
-    try {
-      // Display loading state
-      setFetchAcademicWeekState((prev) => ({
-        ...prev,
-        loading: true,
-        error: undefined,
-      }));
-
-      const response = await axiosInstance.get(`/academic-weeks`);
-
-      const { data } = response;
-      // Display data
-      setFetchAcademicWeekState((prev) => ({
-        data: data?.data,
-        loading: false,
-        error: undefined,
-      }));
-    } catch (err) {
-      // Display error state
-      setFetchAcademicWeekState((prev) => ({
-        ...prev,
-        loading: false,
-        error: {
-          message: "Failed to load academic weeks",
-          status: 500,
-          state: true,
-        },
-      }));
-    } finally {
-      // Remove loading state
-      setFetchAcademicWeekState((prev) => ({ ...prev, loading: false }));
-    }
-  }, []);
-
-  /**
-   * Function to retrieve the list of classes
-   */
-  const geTClasses = useCallback(async () => {
-    try {
-      // Display loading state
-      setFetchClassesState((prev) => ({
-        ...prev,
-        loading: true,
-        error: undefined,
-      }));
-
-      const response = await axiosInstance.get(`/department/all`);
-
-      const { data } = response;
-      // Display data
-      setFetchClassesState((prev) => ({
-        data: data?.data,
-        loading: false,
-        error: undefined,
-      }));
-    } catch (err) {
-      // Display error state
-      setFetchClassesState((prev) => ({
-        ...prev,
-        loading: false,
-        error: {
-          message: "Failed to load classes",
-          status: 500,
-          state: true,
-        },
-      }));
-    } finally {
-      // Remove loading state
-      setFetchClassesState((prev) => ({ ...prev, loading: false }));
-    }
-  }, []);
-
-  /**
-   * Function to retrieve list of assessments
-   */
-  const fetchAssessments = useCallback(async () => {
-    try {
-      // Display loading state
-      setFetchAssessmentsState((prev) => ({
-        ...prev,
-        loading: true,
-        error: undefined,
-      }));
-
-      const response = await axiosInstance.get(`/api/v2/assessments`);
-
-      const { data } = response;
-
-      // If the list is not epty
-      if (data?.data?.length > 0)
-        // Display data
-        return setFetchAssessmentsState((prev) => ({
-          data: data?.data,
-          loading: false,
-          error: undefined,
-        }));
-
-      // Display 404 error state
-      setFetchAssessmentsState((prev) => ({
-        ...prev,
-        loading: false,
-        error: {
-          message: "No Assessments found",
-          status: 404,
-          state: true,
-        },
-      }));
-    } catch (err: any) {
-      const status = err?.response?.status;
-
-      // Display error state
-      setFetchAssessmentsState((prev) => ({
-        ...prev,
-        loading: false,
-        error: {
-          message:
-            status === 404
-              ? "No Assessments found"
-              : "Failed to load assessments.",
-          status: status || 500,
-          state: true,
-        },
-      }));
-    } finally {
-      // Remove loading state
-      setFetchAssessmentsState((prev) => ({ ...prev, loading: false }));
-    }
-  }, []);
-
-  /**
-   * Function to create a new class
-   */
-  const createAssessment = useCallback(
-    async (formState: TAssessment<"post">) => {
-      try {
-        // Display loading state
-        setCreateAssessmentState((prev) => ({
-          ...prev,
-          loading: true,
-          error: undefined,
-        }));
-
-        delete formState._id;
-
-        const form_data = new FormData();
-
-        form_data.append("teacher", user?.id || "");
-        form_data.append("course", formState.subject);
-        form_data.append("class", formState.class);
-        form_data.append("assessmentType", formState.assessmentType);
-        form_data.append("academicWeek", formState.academicWeek);
-        form_data.append("dueDate", formState.dueDate as string);
-        form_data.append("description", formState.description);
-        form_data.append("active", true as any);
-
-        const response = await axiosInstance.post(
-          `/api/v2/assessments`,
-          form_data,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
-
-        const { data } = response;
-        // Display data
-        setCreateAssessmentState((prev) => ({
-          data: data?.data,
-          loading: false,
-          error: undefined,
-        }));
-
-        // * Reset the fetch assessment error state
-        setFetchAssessmentsState((prev) => ({
-          ...prev,
-          error: undefined,
-        }));
-
-        // Update the list of assessments
-        updateAssessments(data?.data, "create");
-
-        return true;
-      } catch (err: any) {
-        console.error("ERROR CREATING ASSESSMENT", err);
-        // Display error state
-        setCreateAssessmentState((prev) => ({
-          ...prev,
-          loading: false,
-          error: err?.response?.data?.message || "Failed to create assessment",
-        }));
-
-        return false;
-      } finally {
-        // Remove loading state
-        setCreateAssessmentState((prev) => ({ ...prev, loading: false }));
-      }
-    },
-    [updateAssessments, user?.id]
-  );
-
-  /**
-   * * Function responsible from retrieving the courses made by a teacher
-   * @param filter The filter object, in the case of retriving courses via a filter, e.g. by their title
-   */
-  const getCourses = useCallback(
-    async (filter?: { query: "title"; value: string }) => {
-      setFetchCoursesState({
-        data: [],
-        loading: true,
-        error: undefined,
-      });
-
-      try {
-        // Call the reusable getCourses function, passing the seTClasses state updater
-        const courses = await fetchCourses(filter);
-
-        // console.log("Get courses res", courses);
-
-        if (typeof courses === "object") {
-          // Set the courses state to the fetched list of courses
-          setFetchCoursesState({
-            data: courses.data,
-            loading: false,
-            error: undefined,
-          });
-        } else {
-          setFetchCoursesState({
-            data: [],
-            loading: false,
-            error: courses,
-          });
-        }
-        console.log(courses);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    },
-    []
-  );
-
-  /**
-   * Function to edit an existing class
-   */
   const editAssessment = useCallback(
     async (formState: TAssessment<"post">) => {
       try {
-        // Display loading state
-        setCreateAssessmentState((prev) => ({
-          ...prev,
+        setApiData("assessments", {
           loading: true,
           error: undefined,
-        }));
+        });
 
         const response = await axiosInstance.put(
           `/assessment/${formState._id}`,
@@ -503,298 +218,392 @@ const Assessments = () => {
         );
 
         const { data } = response;
-        // Display data
-        setCreateAssessmentState((prev) => ({
-          data: data?.data,
-          loading: false,
-          error: undefined,
-        }));
 
-        // Update the class in the list of assessments
+        setApiData("assessments", {
+          loading: true,
+          error: undefined,
+          data: data?.data,
+        });
+
         updateAssessments(formState, "edit");
 
         return true;
       } catch (err: any) {
-        // Display error state
-        setCreateAssessmentState((prev) => ({
-          ...prev,
-          loading: false,
-          error: err?.response?.data?.message || "Failed to update assessment",
-        }));
-
-        return false;
-      } finally {
-        // Remove loading state
-        setCreateAssessmentState((prev) => ({ ...prev, loading: false }));
-      }
-    },
-    [updateAssessments]
-  );
-
-  /**
-   * Function to delete an existing class
-   */
-  const deleteAssessment = useCallback(
-    async (formState: TAssessment<"post">) => {
-      try {
-        // Display loading state
-        setCreateAssessmentState((prev) => ({
-          ...prev,
+        setApiData("assessments", {
           loading: true,
           error: undefined,
-        }));
-
-        const response = await axiosInstance.delete(
-          `/assessments/${formState._id}`
+        });
+        toast.error(
+          err?.response?.data?.message || "Failed to update assessment"
         );
 
-        const { data } = response;
-        // Display data
-        setCreateAssessmentState((prev) => ({
-          data: data?.data,
-          loading: false,
-          error: undefined,
-        }));
-
-        // Remove the class from the list of assessmentss
-        updateAssessments(formState, "delete");
-
-        return true;
-      } catch (err: any) {
-        // Display error state
-        setCreateAssessmentState((prev) => ({
-          ...prev,
-          loading: false,
-          error: err?.response?.data?.message || "Failed to delete class",
-        }));
-
         return false;
-      } finally {
-        // Remove loading state
-        setCreateAssessmentState((prev) => ({ ...prev, loading: false }));
       }
     },
-    [updateAssessments]
+    [setApiData, updateAssessments]
   );
+
+  const getAssessmentTypes = useCallback(async () => {
+    try {
+      setApiData("assessmentTypes", { loading: true });
+      const response = await axiosInstance.get(`/assessment/type`);
+      const { data } = response;
+      setApiData("assessmentTypes", { loading: false, data: data?.data });
+    } catch (err) {
+      setApiData("assessmentTypes", {
+        loading: false,
+        error: {
+          message: "Failed to load assessments types",
+          status: 500,
+          state: true,
+        },
+      });
+    }
+  }, [setApiData]);
+
+  const getAcademicWeeks = useCallback(async () => {
+    try {
+      setApiData("academicWeeks", { loading: true, error: undefined });
+      const response = await axiosInstance.get(`/academic-weeks`);
+      const { data } = response;
+      setApiData("academicWeeks", { data: data?.data, loading: false });
+    } catch (err) {
+      setApiData("academicWeeks", {
+        loading: false,
+        error: {
+          message: "Failed to load academic weeks",
+          status: 500,
+          state: true,
+        },
+      });
+    }
+  }, [setApiData]);
+
+  const geTClasses = useCallback(async () => {
+    try {
+      setApiData("departments", { loading: true, error: undefined });
+      const response = await axiosInstance.get(`/department/all`);
+      const { data } = response;
+      setApiData("departments", { data: data?.data, loading: false });
+    } catch (err) {
+      setApiData("departments", {
+        loading: false,
+        error: { message: "Failed to load classes", status: 500, state: true },
+      });
+    }
+  }, [setApiData]);
+
+  const fetchAssessments = useCallback(async () => {
+    try {
+      setApiData("assessments", { loading: true });
+      const response = await axiosInstance.get(`/api/v2/assessments`);
+      const { data } = response;
+      if (data?.data && data.data.length > 0) {
+        setApiData("assessments", { data: data?.data, loading: false });
+        setSearchResults(data?.data);
+      } else {
+        setApiData("assessments", {
+          loading: false,
+          error: { message: "No Assessments found", status: 404, state: true },
+        });
+        setSearchResults([]);
+      }
+    } catch (err: any) {
+      const status = err?.response?.status;
+      setApiData("assessments", {
+        loading: false,
+        error: {
+          message:
+            status === 404
+              ? "No Assessments found"
+              : "Failed to load assessments.",
+          status: status || 500,
+          state: true,
+        },
+      });
+      setSearchResults([]);
+    }
+  }, [setApiData]);
+
+  const createAssessment = useCallback(
+    async (formState: TAssessment<"post">) => {
+      try {
+        setApiData("assessments", { loading: true });
+        delete formState._id;
+        const form_data = new FormData();
+        form_data.append("teacher", user?.id || "");
+        form_data.append("course", formState.course);
+        form_data.append("department", formState.department);
+        form_data.append("assessmentType", formState.assessmentType);
+        form_data.append("academicWeek", formState.academicWeek);
+        form_data.append("dueDate", formState.dueDate as string);
+        form_data.append("description", formState.description);
+        form_data.append("title", formState.title);
+        form_data.append("active", true as any);
+
+        const response = await axiosInstance.post(
+          `/api/v2/assessments`,
+          form_data,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        const { data } = response;
+        setApiData("assessments", {
+          data: [...apiState.assessments.data, data?.data],
+          loading: false,
+        });
+        return true;
+      } catch (err: any) {
+        setApiData("assessments", { loading: false });
+        toast.error(
+          err.response.data?.message || "Failed to create assessment"
+        );
+        return false;
+      }
+    },
+    [apiState.assessments.data, setApiData, user?.id]
+  );
+
+  const handleSearchChange: THandleSearchChange<any> = (
+    e,
+    { setSearchResults, initialData, setSearchValue }
+  ) => {
+    const inputValue = e.target.value?.toLowerCase();
+    setSearchValue(inputValue);
+
+    // Perform filtering based on input value
+    const filteredResults = initialData?.filter((result) => {
+      // Add checks to prevent null or undefined access errors
+      const courseName = result?.title?.toLowerCase() || "";
+
+      return courseName.includes(inputValue?.trim());
+    });
+
+    setSearchResults(filteredResults);
+  };
+
+  const handleClassFilter: (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => void = ({ target: { value } }) => {
+    console.log("Filtered class value", value);
+
+    if (!value || value.includes("Select class")) return;
+    setApiData("assessments", {
+      data: [...apiState.assessments.data],
+    });
+
+    const filteredResults = apiState.assessments.data.filter(
+      (result) => result?.department?._id === value
+    );
+
+    setApiData("assessments", {
+      data: filteredResults,
+    });
+  };
 
   useEffect(() => {
     fetchAssessments();
     getAssessmentTypes();
-    getCourses();
+    fetchCourses();
     getAcademicWeeks();
     geTClasses();
-  }, [
-    fetchAssessments,
-    getAssessmentTypes,
-    getCourses,
-    getAcademicWeeks,
-    geTClasses,
-  ]);
+  }, [fetchAssessments, getAssessmentTypes, getAcademicWeeks, geTClasses]);
 
   return (
     <>
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode="create"
-        handleModalClose={toogleModalCreate}
+        mode='create'
+        handleModalClose={toggleModalCreate}
         modalOpen={openModalCreate}
         handleAction={createAssessment}
-        requestState={createAssessmentState}
+        requestState={apiState.assessments}
         subjects={
-          fetchCoursesState.data.map((course) => ({
-            display_value: course.title,
-            value: course._id || "",
-          })) || []
+          apiState.courses?.data?.map((course) => ({
+            display_value: course?.title ?? "Unknown Title",
+            value: course?._id ?? "",
+          })) ?? []
         }
         assessmentTypes={
-          fetchAssessmentTypesState.data?.map((type) => ({
-            display_value: type.name,
-            value: type._id || "",
-          })) || []
+          apiState.assessmentTypes?.data?.map((type) => ({
+            display_value: type?.name ?? "Unknown Type",
+            value: type?._id ?? "",
+          })) ?? []
         }
         academicWeeks={
-          fetchAcademicWeekState.data?.map((type) => ({
-            display_value: `Week ${type.weekNumber}, ${new Date(
-              type.startDate
-            ).toDateString()} - ${new Date(type.endDate).toDateString()}, ${
-              type.academicYear
-            }`,
-            value: type._id || "",
-          })) || []
+          apiState.academicWeeks?.data?.map((type) => ({
+            display_value: `Week ${type?.weekNumber ?? "N/A"}, ${new Date(
+              type?.startDate ?? ""
+            ).toDateString()} - ${new Date(
+              type?.endDate ?? ""
+            ).toDateString()}, ${type?.academicYear ?? "Not Specified"}`,
+            value: type?._id ?? "",
+          })) ?? []
         }
         assessmenTClasses={
-          fetchClassesState.data?.map((type) => ({
-            display_value: type.name,
-            value: type._id || "",
-          })) || []
+          apiState.departments?.data?.map((type) => ({
+            display_value: type?.name ?? "Not Specified",
+            value: type?._id ?? "",
+          })) ?? []
         }
       />
       <AsssessmentModal
         formState={formState}
         setFormState={setFormState}
-        mode="edit"
-        handleModalClose={toogleModalEdit}
+        mode='edit'
+        handleModalClose={toggleModalEdit}
         modalOpen={openModalEdit}
         handleAction={editAssessment}
-        requestState={createAssessmentState}
+        requestState={apiState.assessments}
         subjects={
-          fetchCoursesState.data.map((course) => ({
-            display_value: course.title,
-            value: course._id || "",
-          })) || []
+          apiState.courses?.data?.map((course) => ({
+            display_value: course?.title ?? "Not Specified",
+            value: course?._id ?? "",
+          })) ?? []
         }
         assessmentTypes={
-          fetchAssessmentTypesState.data?.map((type) => ({
-            display_value: type.name,
-            value: type._id || "",
-          })) || []
+          apiState.assessmentTypes?.data?.map((type) => ({
+            display_value: type?.name ?? "Not Specified",
+            value: type?._id ?? "",
+          })) ?? []
         }
         academicWeeks={
-          fetchAcademicWeekState.data?.map((type) => ({
-            display_value: `Week ${type.weekNumber}, ${new Date(
-              type.startDate
-            ).toDateString()} - ${new Date(type.endDate).toDateString()}, ${
-              type.academicYear
-            }`,
-            value: type._id || "",
-          })) || []
+          apiState.academicWeeks?.data?.map((type) => ({
+            display_value: `Week ${type?.weekNumber ?? "N/A"}, ${new Date(
+              type?.startDate ?? ""
+            ).toDateString()} - ${new Date(
+              type?.endDate ?? ""
+            ).toDateString()}, ${type?.academicYear ?? "Not Specified"}`,
+            value: type?._id ?? "",
+          })) ?? []
         }
         assessmenTClasses={
-          fetchClassesState.data?.map((type) => ({
-            display_value: type.name,
-            value: type._id || "",
-          })) || []
+          apiState.departments?.data?.map((type) => ({
+            display_value: type?.name ?? "Not Specified",
+            value: type?._id ?? "",
+          })) ?? []
         }
       />
       <TeachersWrapper
         isPublic={false}
-        title="Assessments"
-        metaTitle="Olive Grove ~ Assessments"
+        title='Olive Grove - Assessments'
+        metaTitle='Olive Grove - Assessments'
       >
-        <div className="space-y-5 h-full">
-          <>
-            <div className="flex flex-row items-center justify-between gap-4">
-              <div className="flex flex-col">
-                <span className="text-lg font-medium text-dark font-roboto">
-                  Explore your available assessments.
-                </span>
-                <span className="text-md text-subtext font-roboto">
-                  Manage, edit and create assessments.
-                </span>
-              </div>
-              <Button size="xs" width="fit" onClick={toogleModalCreate}>
-                <span>Create Assessment</span>
-              </Button>
+        <div className='space-y-5 h-full'>
+          {apiState.assessments?.loading ? (
+            <div className='h-full w-full'>
+              <Loader />
             </div>
+          ) : (
+            <>
+              {!apiState.assessments?.error && (
+                <div className='flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center'>
+                  <div className='flex justify-start items-center gap-4 w-full md:w-auto'>
+                    <SearchInput
+                      shape='rounded-lg'
+                      placeholder='Search for assessment'
+                      searchResults={searchResults}
+                      setSearchResults={setSearchResults}
+                      initialData={apiState.assessments?.data}
+                      handleInputChange={handleSearchChange}
+                    />
 
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
-              {demo_assessments.map((assessment, index) => (
-                <div key={index} className="mt-4 w-full space-y-2">
-                  <TeacherCard
-                    academicWeekDate={
-                      (assessment.academicWeek as TAcademicWeek).weekNumber
-                    }
-                    key={index}
-                    type="assessment"
-                    teacher={assessment.teacher}
-                    assessmentType={(assessment.type as TAssessmentType).name}
-                    timeline={assessment.timeline}
-                    assessmenTClass={(assessment.class as TClass).name}
-                    subject={(assessment.subject as TCourse)?.title || ""}
-                    actionClick={() =>
-                      toogleModalEdit({
-                        ...assessment,
-                        academicWeek: assessment.academicWeek._id!,
-                        class: assessment.class._id!,
-                        subject: assessment.subject._id!,
-                        type: assessment.type._id!,
-                        teacher: assessment.teacher._id!,
-                      })
-                    }
-                    btnLink1={() => {
-                      router.push(
-                        `/teachers/assessments/submissions/${assessment._id}`
-                      );
-                    }}
-                    btnLink2={() =>
-                      router.push(
-                        `/teachers/assessments/questions/${assessment._id}`
-                      )
-                    }
-                  />
-                </div>
-              ))}
-            </div> */}
-
-            {fetchAssessmentsState.loading ? (
-              <div className="h-full w-full">
-                <Loader />
-              </div>
-            ) : fetchAssessmentsState.error ? (
-              <>
-                {typeof fetchAssessmentsState.error === "object" &&
-                  (fetchAssessmentsState.error.status ? (
-                    <ErrorUI
-                      msg={fetchAssessmentsState.error.message}
-                      status={
-                        fetchAssessmentsState.error.status as TErrorStatus
+                    <Select
+                      options={
+                        apiState.departments?.data?.map((type) => ({
+                          display_value: type?.name ?? "Unknown Department",
+                          value: type?._id ?? "",
+                        })) ?? []
                       }
+                      name='department'
+                      required
+                      onChange={handleClassFilter}
+                      placeholder='Department'
+                      inputSize='sm'
+                      className='!py-3 max-w-[9rem]'
                     />
-                  ) : (
-                    <ErrorUI
-                      msg={fetchAssessmentsState.error.message}
-                      status={500}
-                    />
-                  ))}
-              </>
-            ) : (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 xl:gap-6 2xl:gap-6">
-                  {fetchAssessmentsState.data.map((assessment, index) => (
-                    <div key={index} className="mt-4 w-full space-y-2">
-                      <TeacherCard
-                        academicWeekDate={
-                          (assessment.academicWeek as TAcademicWeek)?.weekNumber
-                        }
-                        key={index}
-                        type="assessment"
-                        teacher={assessment?.teacher}
-                        assessmentType={
-                          (assessment?.assessmentType as TAssessmentType)?.name
-                        }
-                        timeline={assessment.dueDate}
-                        assessmenTClass={
-                          (assessment?.class as TDepartment)?.name
-                        }
-                        subject={(assessment?.subject as TCourse)?.title || ""}
-                        actionClick={() =>
-                          toogleModalEdit({
-                            ...assessment,
-                            academicWeek: assessment.academicWeek._id!,
-                            class: assessment.class._id!,
-                            subject: assessment.subject._id!,
-                            assessmentType: assessment.assessmentType._id!,
-                            teacher: assessment.teacher._id!,
-                          })
-                        }
-                        btnLink1={() => {
-                          router.push(
-                            `/teachers/assessments/submissions/${assessment._id}`
-                          );
-                        }}
-                        btnLink2={() =>
-                          router.push(
-                            `/teachers/assessments/questions/${assessment._id}`
-                          )
+                  </div>
+                  <div>
+                    <Button onClick={toggleModalCreate} width='fit' size='xs'>
+                      <Add />
+                      <span>Create Assessment</span>
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {apiState.assessments.error ? (
+                <div className='w-full flex items-center justify-center'>
+                  {typeof apiState.assessments.error === "object" &&
+                    apiState.assessments.error.status && (
+                      <ErrorUI
+                        msg={apiState.assessments.error.message || undefined}
+                        status={
+                          apiState.assessments.error.status as TErrorStatus
                         }
                       />
-                    </div>
-                  ))}
+                    )}
+                  {typeof apiState.assessments.error === "string" && (
+                    <ErrorUI msg={apiState.assessments.error} status={500} />
+                  )}
                 </div>
-              </>
-            )}
-          </>
+              ) : searchResults.length < 1 ? (
+                // 404 image
+                <div className='w-full h-[70vh] flex items-center justify-center'>
+                  <ErrorUI msg='No assessment found' status={404} />
+                </div>
+              ) : (
+                <div className='mt-4'>
+                  {/* Courses */}
+                  <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 xl:gap-7 2xl:gap-10 mt-4'>
+                    {searchResults &&
+                      searchResults.map((assessment, index) => (
+                        <TeacherCard
+                          assessment={assessment}
+                          academicWeekDate={
+                            (assessment.academicWeek as TAcademicWeek)
+                              ?.weekNumber ?? "Unknown Week"
+                          }
+                          key={index}
+                          type='assessment'
+                          assessmentType={
+                            (assessment?.assessmentType as TAssessmentType)
+                              ?.name ?? "Unknown Type"
+                          }
+                          timeline={assessment?.dueDate ?? "Unknown Timeline"}
+                          assessmenTClass={
+                            (assessment?.department as TDepartment)?.name ??
+                            "Unknown Class"
+                          }
+                          course={(assessment?.course as TCourse)?.title ?? ""}
+                          actionClick={() =>
+                            toggleModalEdit({
+                              ...assessment,
+                              academicWeek: assessment.academicWeek?._id ?? "",
+                              department: assessment.department?._id ?? "",
+                              course: assessment.course?._id ?? "",
+                              assessmentType:
+                                assessment.assessmentType?._id ?? "",
+                              teacher: assessment.teacher?._id ?? "",
+                            })
+                          }
+                          btnLink1={() => {
+                            router.push(
+                              `/teachers/assessments/submissions/${assessment?._id}`
+                            );
+                          }}
+                          btnLink2={() =>
+                            router.push(
+                              `/teachers/assessments/questions/${assessment?._id}`
+                            )
+                          }
+                        />
+                      ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </TeachersWrapper>
     </>

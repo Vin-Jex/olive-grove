@@ -1,16 +1,14 @@
 import React from "react";
-import Image from "next/image";
 import Button from "@/components/Atoms/Button";
-import dummy_img from "@/images/dummy-img.jpg";
-import { TTeacher } from "@/components/utils/types";
+import { TAssessment, TTeacher } from "@/components/utils/types";
 
 interface TTeacherCardProps {
   type: "assessment" | "lecture";
   academicWeekDate: number;
   assessmentType?: string;
-  teacher?: TTeacher;
   timeline?: string | Date;
-  subject: string;
+  course: string;
+  assessment: TAssessment<"get">;
   lectureTopic?: string;
   time?: string | Date;
   assessmenTClass?: string;
@@ -28,22 +26,22 @@ const truncateAndElipses = (text: string, limit: number): string => {
 
 const TeacherCard: React.FC<TTeacherCardProps> = ({
   type,
-  subject,
+  course,
+  assessment,
   time,
   academicWeekDate,
   lectureTopic,
   assessmentType,
   assessmenTClass,
   timeline,
-  teacher,
   actionClick,
   btnLink1,
   btnLink2,
 }) => {
   return (
-    <div className='flex flex-col justify-center gap-6 border-[1.2px] border-dark/30 rounded-lg px-4 py-4 shadow-md w-full max-h-[300px]'>
+    <div className='flex flex-col gap-3 rounded-2xl shadow-card px-4 py-5 w-full max-h-[300px]'>
       <div className='flex items-start justify-between'>
-        <div className='flex items-center gap-3'>
+        {/* <div className='flex items-center gap-3'>
           <Image
             src={teacher?.profileImage || dummy_img.src}
             alt='Profile Pics'
@@ -57,8 +55,8 @@ const TeacherCard: React.FC<TTeacherCardProps> = ({
             </span>
             <span className='text-subtext text-xs sm:text-sm'>Teacher</span>
           </div>
-        </div>
-        <div
+        </div> */}
+        {/* <div
           className='flex items-center justify-center rounded-full cursor-pointer bg-white border-2 h-9 w-9 transition hover:scale-110'
           {...(actionClick ? { onClick: actionClick } : {})}
         >
@@ -82,14 +80,18 @@ const TeacherCard: React.FC<TTeacherCardProps> = ({
               />
             </svg>
           )}
-        </div>
+        </div> */}
       </div>
+
       <div className='flex flex-col justify-center'>
         <span className='text-dark text-sm sm:text-base md:text-lg font-medium font-roboto'>
-          {subject}
+          {course}
         </span>
         {type === "assessment" ? (
           <div className='flex flex-col gap-1'>
+            <span className='font-bold font-roboto text-2xl text-dark'>
+              {assessment.title}
+            </span>
             <span className='w-full flex gap-1 text-xs sm:text-sm md:text-base text-subtext'>
               <b className='font-roboto font-medium text-dark'>Due:</b>
               <p>
