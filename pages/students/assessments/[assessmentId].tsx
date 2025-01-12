@@ -1,12 +1,9 @@
-import { useRouter } from 'next/router';
-import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
-import React, { FormEvent, useCallback, useEffect, useState } from 'react';
-import Image, { StaticImageData } from 'next/image';
-import img from '@/public/image/tutor.png';
-import TestImage from '@/images/test-assessment-testing.png';
-import Link from 'next/link';
-import Button from '@/components/Atoms/Button';
-import withAuth from '@/components/Molecules/WithAuth';
+import { useRouter } from "next/router";
+import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
+import React, { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
+import Button from "@/components/Atoms/Button";
+import withAuth from "@/components/Molecules/WithAuth";
 import {
   CircularProgress,
   FormControl,
@@ -14,15 +11,15 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
-} from '@mui/material';
-import { BackButton } from '../lectures/[courseId]';
-import axiosInstance from '@/components/utils/axiosInstance';
-import { baseUrl } from '@/components/utils/baseURL';
-import Input from '@/components/Atoms/Input';
-import Loader from '@/components/Atoms/Loader';
-import { TQuestionCard } from '@/components/utils/types';
-import { AxiosError } from 'axios';
-import toast from 'react-hot-toast';
+} from "@mui/material";
+import { BackButton } from "../lectures/[courseId]";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { baseUrl } from "@/components/utils/baseURL";
+import Input from "@/components/Atoms/Input";
+import Loader from "@/components/Atoms/Loader";
+import { TQuestionCard } from "@/components/utils/types";
+import { AxiosError } from "axios";
+import toast from "react-hot-toast";
 
 const CustomWrongIcon = () => {
   return (
@@ -57,9 +54,9 @@ const CustomWrongIcon = () => {
 };
 
 enum QuestionType {
-  MULTIPLE_CHOICE = 'multiple_choice',
-  PARAGRAGH = 'paragraph',
-  FILE_UPLOAD = 'file_upload',
+  MULTIPLE_CHOICE = "multiple_choice",
+  PARAGRAGH = "paragraph",
+  FILE_UPLOAD = "file_upload",
 }
 
 const CustomRightIcon = (props: { className?: string }) => {
@@ -107,15 +104,15 @@ const AssessmentDetailsPage = () => {
 
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [currentQxtIndex, setCurrentQxtIndex] = useState(() => {
-    const index = localStorage.getItem('currentQxtIndex');
-    return index ? index : '';
+    const index = localStorage.getItem("currentQxtIndex");
+    return index ? index : "";
   });
 
   const [answeredQxts, setAnsweredQxts] = useState<Record<string, string>>(
     () => {
-      const answeredQxts = localStorage.getItem('answeredQxts');
-      console.log(answeredQxts, 'answeredQxts');
-      return answeredQxts !== 'undefined' && answeredQxts
+      const answeredQxts = localStorage.getItem("answeredQxts");
+      console.log(answeredQxts, "answeredQxts");
+      return answeredQxts !== "undefined" && answeredQxts
         ? JSON.parse(answeredQxts)
         : {};
     }
@@ -146,18 +143,18 @@ const AssessmentDetailsPage = () => {
   // const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    localStorage.setItem('currentQxtIndex', currentQxtIndex.toString());
-    localStorage.setItem('answeredQxts', JSON.stringify(answeredQxts));
+    localStorage.setItem("currentQxtIndex", currentQxtIndex.toString());
+    localStorage.setItem("answeredQxts", JSON.stringify(answeredQxts));
   }, [currentQxtIndex, answeredQxts]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = 'The quiz duration is still ongoing';
+      e.returnValue = "The quiz duration is still ongoing";
     };
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
 
@@ -175,7 +172,7 @@ const AssessmentDetailsPage = () => {
     //   return;
     // }
     if (Object.keys(answeredQxts).length !== quizQuestions?.questions?.length) {
-      toast.error('Please answer all questions before submitting');
+      toast.error("Please answer all questions before submitting");
       return;
     }
 
@@ -204,15 +201,15 @@ const AssessmentDetailsPage = () => {
       );
 
       toast.success(
-        res.data?.data?.message || 'Assessment submitted successfully'
+        res.data?.data?.message || "Assessment submitted successfully"
       );
       setIsQuizComplete(true);
       setAnsweredQxts({});
-      localStorage.setItem('answeredQxts', JSON.stringify({}));
+      localStorage.setItem("answeredQxts", JSON.stringify({}));
     } catch (error: AxiosError | any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || 'Failed to submit assessment'
+        error?.response?.data?.message || "Failed to submit assessment"
       );
     } finally {
       setIsSubmitLoading(false);
@@ -247,20 +244,22 @@ const AssessmentDetailsPage = () => {
 
   const resetQuiz = () => {
     // Clear local storage and reset state
-    localStorage.removeItem('quizCurrentQuestion');
-    localStorage.removeItem('quizSelectedAnswers');
-    localStorage.removeItem('quizScore');
+    localStorage.removeItem("quizCurrentQuestion");
+    localStorage.removeItem("quizSelectedAnswers");
+    localStorage.removeItem("quizScore");
 
-    setCurrentQxtIndex('');
+    setCurrentQxtIndex("");
     setAnsweredQxts({});
     setIsQuizComplete(false);
   };
 
   return (
     <StudentWrapper
-      remark='assessment title'
-      title={`Assessment`}
-      metaTitle={`Olive Grove ~ ${router.query.assessmentId} assessment`}
+      remark='Assessment'
+      title='Olive Grove - Assessment'
+      metaTitle={`Olive Grove - ${
+        quizQuestions?.course?.title ?? ""
+      } assessment`}
     >
       {isLoading && <Loader />}
       {isQuizComplete && <SubmissionCard quizQuestions={quizQuestions} />}
@@ -276,18 +275,18 @@ const AssessmentDetailsPage = () => {
                 <strong>Topic:</strong> {quizQuestions?.course?.title}
               </span>
               <span>
-                <strong>Due:</strong>{' '}
+                <strong>Due:</strong>{" "}
                 {new Date(quizQuestions?.dueDate)
                   .toLocaleDateString([], {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
                   })
-                  .replaceAll('/', '-')}
-                ,{' '}
+                  .replaceAll("/", "-")}
+                ,{" "}
                 {new Date(quizQuestions?.dueDate).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
+                  hour: "2-digit",
+                  minute: "2-digit",
                 })}
               </span>
             </div>
@@ -341,7 +340,7 @@ const AssessmentDetailsPage = () => {
                   {isSubmitLoading ? (
                     <CircularProgress size={20} color='inherit' />
                   ) : (
-                    'Submit'
+                    "Submit"
                   )}
                 </Button>
               )}
@@ -367,7 +366,7 @@ function QuestionCard({
   setAnsweredQxts,
 }: {
   // question: TQuestionCard;
-  question: TQuestionCard['questions'][0];
+  question: TQuestionCard["questions"][0];
   value: string;
   i: number;
   // saveUpload: React.Dispatch<
@@ -380,13 +379,13 @@ function QuestionCard({
 }) {
   return (
     <div className='bg-white p-10 rounded-2xl'>
-      <FormControl style={{ width: '100%' }}>
+      <FormControl style={{ width: "100%" }}>
         <FormLabel
           style={{
             fontSize: 18,
-            fontWeight: 'normal',
-            width: '100%',
-            color: 'black',
+            fontWeight: "normal",
+            width: "100%",
+            color: "black",
             marginBlockEnd: 24,
           }}
           id='demo-radio-buttons-group-label'
@@ -405,7 +404,7 @@ function QuestionCard({
           {question.questionText}
         </FormLabel>
         <RadioGroup
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
           value={value}
           onChange={(e) => {
             const selected = { [question._id.toString()]: e.target.value };
@@ -429,12 +428,12 @@ function QuestionCard({
                     review
                       ? option === question.correctAnswer
                         ? {
-                            height: '32px',
-                            width: '50%',
+                            height: "32px",
+                            width: "50%",
                             paddingInlineEnd: 17,
-                            textOverflow: 'ellipsis',
+                            textOverflow: "ellipsis",
                             paddingBlock: 2,
-                            backgroundColor: '#cbf5ff',
+                            backgroundColor: "#cbf5ff",
                             marginLeft: -3,
                             fillOpacity: 0.6,
                             borderRadius: 5,
@@ -443,12 +442,12 @@ function QuestionCard({
                         : option === question.yourAnswer &&
                           option !== question.correctAnswer
                         ? {
-                            height: '32px',
-                            width: '50%',
+                            height: "32px",
+                            width: "50%",
                             paddingInlineEnd: 17,
                             paddingBlock: 2,
                             marginLeft: -3,
-                            backgroundColor: '#fdd9d9',
+                            backgroundColor: "#fdd9d9",
                             fillOpacity: 0.6,
                             borderRadius: 5,
                             marginBlock: 7,
@@ -502,7 +501,7 @@ function QuestionCard({
             type='text'
             disabled={review}
             value={
-              review ? question.yourAnswer : answeredQxts?.[question._id] ?? ''
+              review ? question.yourAnswer : answeredQxts?.[question._id] ?? ""
             }
             className='!border-b !border-l-0 !border-r-0 !border-t-0 rounded-none w-1/2 border-black bg-white py-1'
             onChange={(e) => {
@@ -532,8 +531,8 @@ function QuestionCard({
               className=' w-1/2 border-black bg-white py-1 hidden'
               onChange={async (e) => {
                 const formData = new FormData();
-                formData.append('files', e.target.files?.[0]!);
-                formData.append('type', 'image');
+                formData.append("files", e.target.files?.[0]!);
+                formData.append("type", "image");
                 //we want to firsr upload the file to the server and get the url
                 //then save the url in the state
                 try {
@@ -556,7 +555,7 @@ function QuestionCard({
                 } catch (err: AxiosError | any) {
                   toast.error(
                     err.response?.data?.message ||
-                      'An error occurred when uploading the file, reupload the file'
+                      "An error occurred when uploading the file, reupload the file"
                   );
                 }
 
@@ -578,7 +577,7 @@ function SubmissionCard({
   return (
     <div className=''>
       <div className='mx-11'>
-        <BreadCrumb title={quizQuestions?.course?.title ?? ''} />
+        <BreadCrumb title={quizQuestions?.course?.title ?? ""} />
       </div>
       <div className=' py-7 px-6 mx-11 max-w-[60vw] space-y-4 rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
         <div>
@@ -619,7 +618,7 @@ function BreadCrumb(props: { title: string }) {
       <div className='flex py-7 mt-4 items-center space-x-2'>
         <Link href='/students/assessments'>
           <span className='text-gray pr-2'>Assessments </span>
-        </Link>{' '}
+        </Link>{" "}
         / <span className='text-primary'>{props.title}</span>
       </div>
     </div>
@@ -763,4 +762,4 @@ const WrongCrossMark = () => {
 
 // export default AssessmentDetailsPage;
 
-export default withAuth('Student', AssessmentDetailsPage);
+export default withAuth("Student", AssessmentDetailsPage);

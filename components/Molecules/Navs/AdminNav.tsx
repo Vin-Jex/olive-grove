@@ -1,6 +1,6 @@
 import React from "react";
 import { Menu } from "@mui/icons-material";
-import dummyImage from "@/images/dummy-img.jpg";
+import dummyImage from "@/public/image/dummy-img.jpg";
 import Image from "next/image";
 import Logo from "@/public/image/logo.png";
 import { useUser } from "@/contexts/UserContext";
