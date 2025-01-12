@@ -22,7 +22,6 @@ import { Add } from '@mui/icons-material';
 import axiosInstance from '@/components/utils/axiosInstance';
 import { useCourseContext } from '@/contexts/CourseContext';
 import WarningModal from '@/components/Molecules/Modal/WarningModal';
-import SearchLayout from '@/components/Molecules/SearchLayout';
 
 const Courses: FC = () => {
   const [searchResults, setSearchResults] = useState<TCourse[]>([]);

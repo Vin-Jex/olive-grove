@@ -201,11 +201,16 @@ export type TAssessment<T extends 'post' | 'get'> = {
   _id?: string;
   subject: T extends 'post' ? string : TCourse;
   assessmentType: T extends 'post' ? string : TAssessmentType;
+
   description: string;
+  title: string;
   dueDate: string | Date;
-  teacher: T extends 'post' ? string : TTeacher;
-  academicWeek: T extends 'post' ? string : TAcademicWeek;
-  class: T extends 'post' ? string : TDepartment;
+
+  teacher: T extends "post" ? string : TTeacher;
+  academicWeek: T extends "post" ? string : TAcademicWeek;
+  department: T extends "post" ? string : TDepartment;
+  course: T extends "post" ? string : TCourse;
+  active: boolean;
 };
 
 export type TQuestionCard = {
