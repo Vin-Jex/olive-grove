@@ -1,20 +1,21 @@
-import React, { ChangeEvent, useState } from "react";
-import Modal from "./Modal";
-import Button, { ButtonProps } from "@/components/Atoms/Button";
-import Input from "@/components/Atoms/Input";
-import TextEditor from "@/components/Atoms/TextEditor";
-import { TFetchState } from "@/components/utils/types";
-import File from "@/components/Atoms/File";
-import { CircularProgress } from "@mui/material";
-import Select from "@/components/Atoms/Select";
+import React, { ChangeEvent, useState } from 'react';
+import Modal from './Modal';
+import Button, { ButtonProps } from '@/components/Atoms/Button';
+import Input from '@/components/Atoms/Input';
+import TextEditor from '@/components/Atoms/TextEditor';
+import { TFetchState } from '@/components/utils/types';
+import File from '@/components/Atoms/File';
+import { CircularProgress } from '@mui/material';
+import Select from '@/components/Atoms/Select';
+import toast from 'react-hot-toast';
 
 type LectureModalProps = {
   modalOpen: boolean;
   handleModalClose: () => void;
   handleDelete?: () => void;
   handleAction?: () => Promise<boolean>;
-  type: "lecture" | "assessment" | "course";
-  mode?: "create" | "edit" | "delete";
+  type: 'lecture' | 'assessment' | 'course';
+  mode?: 'create' | 'edit' | 'delete';
   formState: {
     subject: string;
     description: string;
@@ -52,8 +53,11 @@ export default function LectureModal({
   courses,
 }: LectureModalProps) {
   const [selectedImage, setSelectedImage] = useState<Blob | null | string>();
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>("");
+  const [preview, setPreview] = useState<{
+    type: 'video' | 'image';
+    value: Blob | null | string;
+  } | null>(null);
+  const [fileName, setFileName] = useState<string>('');
   const [isLoading, setIsLoading] = useState({
     saving: false,
     deleting: false,
@@ -70,30 +74,51 @@ export default function LectureModal({
     }));
   };
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    type: string
+  ) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormState((prevState) => ({
         ...prevState,
         recordedLecture: file as unknown as string,
       }));
+      setPreview;
       setSelectedImage(file);
-      setPreviewImage(URL.createObjectURL(file));
+      if (type === 'video') {
+        setPreview({ type: 'video', value: URL.createObjectURL(file) });
+      } else {
+        setPreview({ type: 'image', value: URL.createObjectURL(file) });
+      }
       setFileName(file.name);
     }
   };
 
   const resetImageField = () => {
     setSelectedImage(null);
-    setPreviewImage(null);
-    setFileName("");
+    setPreview(null);
+    setFileName('');
   };
 
-  const actionProps: Omit<ButtonProps, "children"> = {
+  const actionProps: Omit<ButtonProps, 'children'> = {
     onClick: async (e) => {
       e.preventDefault();
-      const result = await (handleAction && handleAction());
-      if (result) handleModalClose();
+      try {
+        setIsLoading((prevState) => ({ ...prevState, saving: true }));
+        const result = await (handleAction && handleAction());
+        if (result) handleModalClose();
+        if (result) toast.success('Lecture created successfully');
+      } catch (err: Error | any) {
+        toast.error(
+          err.error ||
+            err.message ||
+            'An error occurred while creating the lecture'
+        );
+        console.log(err);
+      } finally {
+        setIsLoading((prevState) => ({ ...prevState, saving: false }));
+      }
     },
     disabled: requestState?.loading || false,
   };
@@ -108,7 +133,7 @@ export default function LectureModal({
         {/* Modal Header */}
         <div className='flex justify-between items-center px-4 mt-[1.2rem]'>
           <span className='text-2xl text-dark font-semibold font-roboto capitalize'>
-            {mode} {type === "lecture" ? "Lecture" : type}
+            {mode} {type === 'lecture' ? 'Lecture' : type}
           </span>
         </div>
 
@@ -160,7 +185,7 @@ export default function LectureModal({
               value={formState.meetingLink}
               onChange={handleChange}
               placeholder='Meeting Link'
-              required={type === "lecture"}
+              required={type === 'lecture'}
               className='input'
             />
           </label>
@@ -179,29 +204,38 @@ export default function LectureModal({
           </label>
 
           <File
+            accept='video/*'
             selectedImage={selectedImage}
             setSelectedImage={setSelectedImage}
-            previewImage={previewImage}
-            onChange={handleImageChange}
+            previewImage={preview!} //hmm forcing this hmm
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              handleImageChange(e, 'video')
+            }
             resetImageStates={resetImageField}
-            placeholder={fileName !== "" ? fileName : "Upload Video"}
+            placeholder={fileName !== '' ? fileName : 'Upload Video'}
             required
             fileName={fileName}
           />
 
           {/* Action Buttons */}
-          {typeof requestState?.error === "string" && (
+          {typeof requestState?.error === 'string' && (
             <div className='text-red-500 text-center'>
               {requestState?.error}
             </div>
           )}
 
           <div className='flex items-center space-x-5 w-full'>
-            <Button size='xs' color='outline' {...actionProps}>
+            <Button
+              size='xs'
+              className='disabled:cursor-not-allowed'
+              disabled={isLoading.saving}
+              color='outline'
+              {...actionProps}
+            >
               {isLoading.saving ? (
                 <CircularProgress size={15} color='inherit' />
               ) : (
-                "Save"
+                'Save'
               )}
             </Button>
             {handleDelete && (
@@ -216,7 +250,7 @@ export default function LectureModal({
                 {isLoading.deleting ? (
                   <CircularProgress size={15} color='inherit' />
                 ) : (
-                  "Delete"
+                  'Delete'
                 )}
               </Button>
             )}

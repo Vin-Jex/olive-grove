@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, ReactNode } from "react";
+import { InputHTMLAttributes, ReactNode } from 'react';
 
 export type TSubject = {
   image_url: string;
@@ -6,10 +6,11 @@ export type TSubject = {
   lessons_no: number;
 };
 
-type OptionalFields<T extends "get" | "post" = "get"> = {
-  department?: T extends "post" ? string : TDepartment;
+type OptionalFields<T extends 'get' | 'post' = 'get'> = {
+  department?: T extends 'post' ? string : TDepartment;
   // courseInfo?: { description: string };
   chapterId?: string;
+  embed?: string;
   topicNote?: string;
   topicVideo?: string;
   youtubeVideo?: string;
@@ -20,19 +21,25 @@ type OptionalFields<T extends "get" | "post" = "get"> = {
   availableDate?: string;
 };
 
-export type TCourse<T extends "get" | "post" = "get"> = {
+export type TCourse<T extends 'get' | 'post' = 'get'> = {
   _id?: string;
   title: string;
   description?: string;
   image?: string;
+  isActive?: string | boolean; //note we are using string her as YES or NO
+  startDate?: string;
+  endDate?: string;
   chapters?: TChapter[];
   courseCover?: string | File | undefined;
 } & OptionalFields<T>;
 
-export type TChapter<T extends "get" | "post" = "get"> = {
+export type TChapter<T extends 'get' | 'post' = 'get'> = {
   _id?: string;
   title: string;
   lessons: TLesson[];
+  isActive?: string | boolean; //note we are using string her as YES or NO
+  startDate?: string;
+  endDate?: string;
   courseId: string;
   currentTutorial: {
     type: string;
@@ -40,46 +47,50 @@ export type TChapter<T extends "get" | "post" = "get"> = {
   };
 } & OptionalFields<T>;
 
-export type TLesson<T extends "get" | "post" = "get"> = {
+export type TLesson<T extends 'get' | 'post' = 'get'> = {
   _id?: string;
   title: string;
   sections: TSection[];
   chapterId: string;
   viewed?: boolean;
   availableDate?: Date;
-  isActive?: boolean;
+  isActive?: string | boolean; //note we are using string her as YES or NO
+  startDate?: string;
+  endDate?: string;
   currentTutorial?: boolean;
   topicVideo: string | null;
   youtubeVideo: string | null;
-  embed?: string | null;
+  embed: string | null;
   topicNote: string;
   topicImage: string | null;
 } & OptionalFields<T>;
 
-export type TSection<T extends "get" | "post" = "get"> = {
+export type TSection<T extends 'get' | 'post' = 'get'> = {
   _id?: string;
   title: string;
   subsections: TSubSection[];
   lessonId: string;
   viewed?: boolean;
   availableDate?: Date;
-  isActive?: boolean;
+  isActive?: string | boolean; //note we are using string her as YES or NO
+  endDate?: string;
+  startDate?: string;
   currentTutorial?: boolean;
   topicVideo: string | null;
   youtubeVideo: string | null;
-  embed?: string | null;
+  embed: string | null;
   topicNote: string;
   topicImage: string | null;
 } & OptionalFields<T>;
 
-export type TSubSection<T extends "get" | "post" = "get"> = {
+export type TSubSection<T extends 'get' | 'post' = 'get'> = {
   _id?: string;
   title: string;
   description?: string;
   lessonId: string;
   viewed?: boolean;
   availableDate?: Date;
-  isActive?: boolean;
+  isActive?: string; //note we are using string her as YES or NO
   currentTutorial?: boolean;
   topicVideo: string | null;
   youtubeVideo: string | null;
@@ -132,7 +143,7 @@ export interface IImageUploadProps
   >;
   resetImageStates: () => void;
   selectedImage: Blob | null | undefined | string;
-  previewImage: Blob | null | string;
+  previewImage: { type: 'video' | 'image'; value: Blob | null | string };
   fileName: string;
 }
 
@@ -159,18 +170,18 @@ export type TSelectOptions = (
 )[];
 
 export type TCourseModalFormData =
-  | Omit<TCourse<"post">, "chapters">
-  | Omit<TChapter<"post">, "lessons">
-  | Omit<TLesson<"post">, "sections">
-  | Omit<TSection<"post">, "subsections">;
+  | Omit<TCourse<'post'>, 'chapters'>
+  | Omit<TChapter<'post'>, 'lessons'>
+  | Omit<TLesson<'post'>, 'sections'>
+  | Omit<TSection<'post'>, 'subsections'>;
 
 export type TCourseModalProps = {
   modalOpen: boolean;
   handleModalClose: () => void;
   handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
   handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
-  type: "course" | "chapter" | "lesson" | "topic";
-  mode: "create" | "edit" | "delete";
+  type: 'course' | 'chapter' | 'lesson' | 'topic';
+  mode: 'create' | 'edit' | 'delete';
   formState: TCourseModalFormData;
   setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
   requestState?: TFetchState<any>;
@@ -186,17 +197,19 @@ export type TAcademicWeek = {
   _id?: string;
 };
 
-
-export type TAssessment<T extends "post" | "get"> = {
+export type TAssessment<T extends 'post' | 'get'> = {
   _id?: string;
-  assessmentType: T extends "post" ? string : TAssessmentType;
+  // subject?: T extends 'post' ? string : TCourse;
+  assessmentType: T extends 'post' ? string : TAssessmentType;
+
   description: string;
   title: string;
   dueDate: string | Date;
-  teacher: T extends "post" ? string : TTeacher;
-  academicWeek: T extends "post" ? string : TAcademicWeek;
-  department: T extends "post" ? string : TDepartment;
-  course: T extends "post" ? string : TCourse;
+
+  teacher: T extends 'post' ? string : TTeacher;
+  academicWeek: T extends 'post' ? string : TAcademicWeek;
+  department: T extends 'post' ? string : TDepartment;
+  course: T extends 'post' ? string : TCourse;
   active: boolean;
 };
 
@@ -282,11 +295,11 @@ export type TQuestionCard = {
   __v: number;
 };
 
-export type UserRole = "Teacher" | "Student" | "Admin";
+export type UserRole = 'Teacher' | 'Student' | 'Admin';
 export enum EUserRole {
-  Admin = "Admin",
-  Student = "Student",
-  Teacher = "Teacher",
+  Admin = 'Admin',
+  Student = 'Student',
+  Teacher = 'Teacher',
 }
 
 export type TStudent = {
@@ -372,7 +385,7 @@ export type TModalProps<T> = {
   handleAction?: (formData: T) => Promise<boolean>;
   handleDelete?: (formData: T) => Promise<boolean>;
   requestState?: TFetchState<any>;
-  mode: "create" | "edit";
+  mode: 'create' | 'edit';
   formState: T;
   setFormState: React.Dispatch<React.SetStateAction<T>>;
 };
@@ -386,18 +399,18 @@ export type TTopicDetails = {
   path: [string, string, string] | undefined;
   topicChapter: string;
   topicLesson: string;
-  type: "section" | "lesson";
+  type: 'section' | 'lesson';
   topic: TSection | undefined;
 };
 
-export type TLoginResponse<T extends "student" | "teacher" | "admin"> = {
+export type TLoginResponse<T extends 'student' | 'teacher' | 'admin'> = {
   token: {
     accessToken: string;
     refreshToken: string;
   };
-  details: T extends "student"
+  details: T extends 'student'
     ? TStudent
-    : T extends "teacher"
+    : T extends 'teacher'
     ? TTeacher
     : TAdmin;
 };
@@ -419,10 +432,10 @@ export type TAssessmnentQuestion<T extends "draft" | "preview" = "preview"> = {
 };
 
 export type TAssessmentQuestionType =
-  | "multiple_choice"
-  | "paragraph"
-  | "file_upload"
-  | "select_many";
+  | 'multiple_choice'
+  | 'paragraph'
+  | 'file_upload'
+  | 'select_many';
 
 export type TContentId = { id: string; isViewed: boolean }[];
 
@@ -451,29 +464,29 @@ export type TWarningModalProps = {
 };
 
 export type InputType =
-  | "button"
-  | "text"
-  | "checkbox"
-  | "color"
-  | "date"
-  | "datetime-local"
-  | "email"
-  | "file"
-  | "hidden"
-  | "image"
-  | "month"
-  | "number"
-  | "password"
-  | "radio"
-  | "reset"
-  | "search"
-  | "submit"
-  | "tel"
-  | "time"
-  | "week"
-  | "url"
-  | "select"
-  | "textarea";
+  | 'button'
+  | 'text'
+  | 'checkbox'
+  | 'color'
+  | 'date'
+  | 'datetime-local'
+  | 'email'
+  | 'file'
+  | 'hidden'
+  | 'image'
+  | 'month'
+  | 'number'
+  | 'password'
+  | 'radio'
+  | 'reset'
+  | 'search'
+  | 'submit'
+  | 'tel'
+  | 'time'
+  | 'week'
+  | 'url'
+  | 'select'
+  | 'textarea';
 
 export type TErrorStatus = 404 | 500 | 403 | 401;
 

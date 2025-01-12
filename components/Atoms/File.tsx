@@ -1,6 +1,6 @@
-import Image from "next/image";
-import React, { ChangeEvent, useRef } from "react";
-import { IImageUploadProps } from "../utils/types";
+import Image from 'next/image';
+import React, { ChangeEvent, useRef } from 'react';
+import { IImageUploadProps } from '../utils/types';
 
 const File: React.FC<IImageUploadProps> = ({
   placeholder,
@@ -35,14 +35,18 @@ const File: React.FC<IImageUploadProps> = ({
         onClick={handleDivClick}
       >
         <div className='flex items-center justify-center w-[30px] h-[30px] sm:w-[45px] sm:h-[45px] border-[1.5px] border-[#1E1E1E60] rounded-md p-1.5'>
-          {previewImage ? (
+          {previewImage && previewImage.type === 'image' ? (
             <Image
-              src={previewImage as string}
+              src={previewImage.value as string}
               alt='Preview'
               width='10000'
               height='10000'
               className='w-full h-full object-scale-down rounded-xl'
             />
+          ) : previewImage && previewImage.type === 'video' ? (
+            <video className='w-full h-full '>
+              <source src={previewImage.value as string} type='video/mp4' />
+            </video>
           ) : (
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -60,14 +64,14 @@ const File: React.FC<IImageUploadProps> = ({
           )}
         </div>
         <span className='font-normal font-roboto text-[16px] sm:text-[17px] my-auto text-[#1E1E1E60] whitespace-nowrap'>
-          {fileName === "" ? placeholder || `Upload Profile Picture` : fileName}
+          {fileName === '' ? placeholder || `Upload Profile Picture` : fileName}
         </span>
       </label>
       <input
         ref={fileInputRef}
-        type={type || "file"}
+        type={type || 'file'}
         onChange={handleImageChange}
-        style={{ display: "none" }}
+        style={{ display: 'none' }}
         {...inputProps}
       />
     </button>

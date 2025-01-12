@@ -566,7 +566,7 @@ const StudentSignup = () => {
                   <File
                     selectedImage={selectedImage}
                     setSelectedImage={setSelectedImage}
-                    previewImage={previewImage}
+                    previewImage={{ type: 'image', value: previewImage }}
                     onChange={handleImageChange}
                     disabled={false}
                     resetImageStates={resetImageField}
