@@ -1,6 +1,6 @@
 import Button from "@/components/Atoms/Button";
 import { useAuth } from "@/contexts/AuthContext";
-import NotFoundImage from "@/images/NotFoundImage.svg";
+import NotFoundImage from "@/public/image/NotFoundImage.svg";
 import Image from "next/image";
 import Link from "next/link";
 

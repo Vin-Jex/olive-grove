@@ -34,7 +34,6 @@ const TeachersWrapper = ({
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useUser();
   const isForbidden = useServiceWorkerListener();
-  console.log(user)
   //for now forbidden is causing some issues I am not sure of, and I'm not sure of this logic cos I am already verified, so it should not
 
   const handleVerifyOpen = () => {

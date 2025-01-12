@@ -4,7 +4,7 @@ import SubjectCard from "@/components/Molecules/Card/SubjectCard";
 import Link from "next/link";
 import withAuth from "@/components/Molecules/WithAuth";
 import { TFetchState } from "@/components/utils/types";
-import dummyImage from "@/images/dummy-img.jpg";
+import dummyImage from "@/public/image/dummy-img.jpg";
 import DepartmentModal from "@/components/Molecules/Modal/DepartmentModal";
 import { baseUrl } from "@/components/utils/baseURL";
 import axiosInstance from "@/components/utils/axiosInstance";
@@ -154,9 +154,9 @@ const Lectures = () => {
         modalOpen={lectureInfoModal!}
       />
       <StudentWrapper
-        title='Courses'
+        title='Olive Grove - Lectures'
         remark='Manage and get updates on your courses'
-        metaTitle='Olive Grove ~ Classes'
+        metaTitle='Olive Grove - Lectures'
       >
         <div className='flex flex-col space-y-8'>
           <div className='flex items-center max-sm:gap-5 justify-between'>
@@ -195,7 +195,7 @@ const Lectures = () => {
             <Select
               name=''
               className='max-w-[120px] max-sm:max-w-[180px]'
-              inputSize="sm"
+              inputSize='sm'
               onChange={() => {}}
               options={["ascending", "latest"]}
               placeholder='filter'

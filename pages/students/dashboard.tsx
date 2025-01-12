@@ -163,7 +163,7 @@ const Dashboard = () => {
                 className='absolute left-[35%] bottom-0 object-scale-down'
               />
             </div>
-            <div className=' relative rounded-lg h-max'>
+            <div className='relative rounded-lg h-max'>
               <Calendar
                 setStudentInfoByDate={setStudentDisplayInfoByDate}
                 startDate={new Date()}
@@ -176,7 +176,7 @@ const Dashboard = () => {
             <Card
               header='CGPA'
               main='3.42'
-              footer='You are top 5 in the class, keep diong well'
+              footer='Keep striving to be the best.'
             />
             <Card
               header='Grade'
