@@ -199,7 +199,7 @@ export type TAcademicWeek = {
 
 export type TAssessment<T extends 'post' | 'get'> = {
   _id?: string;
-  subject?: T extends 'post' ? string : TCourse;
+  // subject?: T extends 'post' ? string : TCourse;
   assessmentType: T extends 'post' ? string : TAssessmentType;
 
   description: string;
