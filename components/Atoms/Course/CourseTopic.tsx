@@ -55,6 +55,7 @@ export const Topic: FC<{
     lessonId,
   };
   const { user } = useAuth();
+  const userRole = user?.role;
   const title_ref = useRef<HTMLDivElement>(null);
   const [display_tooltip, setDisplayTooltip] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -117,69 +118,75 @@ export const Topic: FC<{
           }`
         )
       }
-      className={`flex items-center gap-4 px-3 ${
+      className={`flex items-center gap-4 ${
         isActive ? 'text-[#1E1E1E]' : 'text-subtext'
       } cursor-pointer relative`}
       // {...(topic.title.length > 18 ? { title: topic.title } : {})}
     >
-      {/* Edit Icon */}
-      {user?.role === 'Teacher' && (
-        <>
-          {/* Edit Icon */}
-          <div className='relative'>
-            <button
-              onClick={() => {
-                setModalOpen(!modalOpen);
-                console.log('click detecetd');
-              }}
-              className='z-50'
-            >
+      <div className='flex items-center gap-4'>
+        {/* Edit Icon */}
+        {user?.role === 'Teacher' && (
+          <>
+            {/* Edit Icon */}
+            <div className='relative'>
+              <button
+                onClick={() => {
+                  setModalOpen(!modalOpen);
+                  console.log('click detecetd');
+                }}
+                className='z-50 pt-2'
+              >
+                <svg
+                  width='4'
+                  height='15'
+                  viewBox='0 0 4 15'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path
+                    d='M1.99967 0C1.08301 0 0.333008 0.75 0.333008 1.66667C0.333008 2.58333 1.08301 3.33333 1.99967 3.33333C2.91634 3.33333 3.66634 2.58333 3.66634 1.66667C3.66634 0.75 2.91634 0 1.99967 0ZM1.99967 11.6667C1.08301 11.6667 0.333008 12.4167 0.333008 13.3333C0.333008 14.25 1.08301 15 1.99967 15C2.91634 15 3.66634 14.25 3.66634 13.3333C3.66634 12.4167 2.91634 11.6667 1.99967 11.6667ZM1.99967 5.83333C1.08301 5.83333 0.333008 6.58333 0.333008 7.5C0.333008 8.41667 1.08301 9.16667 1.99967 9.16667C2.91634 9.16667 3.66634 8.41667 3.66634 7.5C3.66634 6.58333 2.91634 5.83333 1.99967 5.83333Z'
+                    fill='#1E1E1E'
+                    fill-opacity='0.6'
+                  />
+                </svg>
+              </button>
+              <SidebarEditModal
+                handleModalClose={() => setModalOpen(false)}
+                modalOpen={modalOpen}
+              />
+            </div>
+
+            {/* Check Icon */}
+            {userRole === 'Student' && (
               <svg
-                width='4'
-                height='15'
-                viewBox='0 0 4 15'
+                width='18'
+                height='18'
+                viewBox='0 0 18 18'
                 fill='none'
                 xmlns='http://www.w3.org/2000/svg'
               >
-                <path
-                  d='M1.99967 0C1.08301 0 0.333008 0.75 0.333008 1.66667C0.333008 2.58333 1.08301 3.33333 1.99967 3.33333C2.91634 3.33333 3.66634 2.58333 3.66634 1.66667C3.66634 0.75 2.91634 0 1.99967 0ZM1.99967 11.6667C1.08301 11.6667 0.333008 12.4167 0.333008 13.3333C0.333008 14.25 1.08301 15 1.99967 15C2.91634 15 3.66634 14.25 3.66634 13.3333C3.66634 12.4167 2.91634 11.6667 1.99967 11.6667ZM1.99967 5.83333C1.08301 5.83333 0.333008 6.58333 0.333008 7.5C0.333008 8.41667 1.08301 9.16667 1.99967 9.16667C2.91634 9.16667 3.66634 8.41667 3.66634 7.5C3.66634 6.58333 2.91634 5.83333 1.99967 5.83333Z'
-                  fill='#1E1E1E'
-                  fill-opacity='0.6'
-                />
+                <g clipPath='url(#clip0_605_243)'>
+                  <path
+                    d='M9 0C4.02947 0 0 4.02947 0 9C0 13.9708 4.02947 18 9 18C13.9708 18 18 13.9708 18 9C18 4.02947 13.9708 0 9 0ZM9 16.8927C4.65778 16.8927 1.125 13.3422 1.125 8.99996C1.125 4.65775 4.65778 1.12496 9 1.12496C13.3422 1.12496 16.875 4.65776 16.875 8.99996C16.875 13.3422 13.3422 16.8927 9 16.8927ZM12.5918 5.70684L7.31136 11.0205L4.93339 8.64253C4.71373 8.42288 4.35767 8.42288 4.13773 8.64253C3.91808 8.86219 3.91808 9.21825 4.13773 9.43791L6.92183 12.2223C7.14148 12.4417 7.49754 12.4417 7.71748 12.2223C7.74279 12.197 7.76447 12.1694 7.78416 12.1407L13.3878 6.50248C13.6072 6.28283 13.6072 5.92676 13.3878 5.70684C13.1678 5.48719 12.8118 5.48719 12.5918 5.70684Z'
+                    fill={isActive || isViewed ? '#32A8C4' : '#1E1E1E80'}
+                    fillOpacity='0.5'
+                  />
+                </g>
+                <defs>
+                  <clipPath id='clip0_605_243'>
+                    <rect width='18' height='18' fill='white' />
+                  </clipPath>
+                </defs>
               </svg>
-            </button>
-            <SidebarEditModal
-              handleModalClose={() => setModalOpen(false)}
-              modalOpen={modalOpen}
-            />
-          </div>
+            )}
+          </>
+        )}
+        {user?.role === 'Student' && <CheckSvg isActive={isActive} />}
 
-          {/* Check Icon */}
-          <svg
-            width='18'
-            height='18'
-            viewBox='0 0 18 18'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <g clipPath='url(#clip0_605_243)'>
-              <path
-                d='M9 0C4.02947 0 0 4.02947 0 9C0 13.9708 4.02947 18 9 18C13.9708 18 18 13.9708 18 9C18 4.02947 13.9708 0 9 0ZM9 16.8927C4.65778 16.8927 1.125 13.3422 1.125 8.99996C1.125 4.65775 4.65778 1.12496 9 1.12496C13.3422 1.12496 16.875 4.65776 16.875 8.99996C16.875 13.3422 13.3422 16.8927 9 16.8927ZM12.5918 5.70684L7.31136 11.0205L4.93339 8.64253C4.71373 8.42288 4.35767 8.42288 4.13773 8.64253C3.91808 8.86219 3.91808 9.21825 4.13773 9.43791L6.92183 12.2223C7.14148 12.4417 7.49754 12.4417 7.71748 12.2223C7.74279 12.197 7.76447 12.1694 7.78416 12.1407L13.3878 6.50248C13.6072 6.28283 13.6072 5.92676 13.3878 5.70684C13.1678 5.48719 12.8118 5.48719 12.5918 5.70684Z'
-                fill={isActive || isViewed ? '#32A8C4' : '#1E1E1E80'}
-                fillOpacity='0.5'
-              />
-            </g>
-            <defs>
-              <clipPath id='clip0_605_243'>
-                <rect width='18' height='18' fill='white' />
-              </clipPath>
-            </defs>
-          </svg>
-        </>
-      )}
-      {user?.role === 'Student' && <CheckSvg isActive={isActive} />}
-
-      {topic.title.length > 18 ? `${topic.title.slice(0, 18)}...` : topic.title}
+        {topic.title.length > 18
+          ? `${topic.title.slice(0, 18)}...`
+          : topic.title}
+      </div>
 
       {/* Tool Tip */}
       {topic.title.length > 18 && (

@@ -135,6 +135,7 @@ export type THandleSearchChange<T> = (
 
 export interface IImageUploadProps
   extends InputHTMLAttributes<HTMLInputElement> {
+  fileType?: 'video' | 'image';
   placeholder?: string;
   type?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -143,7 +144,7 @@ export interface IImageUploadProps
   >;
   resetImageStates: () => void;
   selectedImage: Blob | null | undefined | string;
-  previewImage: { type: 'video' | 'image'; value: Blob | null | string };
+  previewImage: Blob | null | string;
   fileName: string;
 }
 

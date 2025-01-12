@@ -468,7 +468,7 @@ const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const formData = config.modalMetadata.formData;
     setModalMetadata({ ...config.modalMetadata });
     formData && setModalFormState(formData);
-    setModal({ open: true, modal: config.modal });
+    setModal({ open: true, modal: config?.modal });
   };
   const closeModal = () => {
     setRequestState({

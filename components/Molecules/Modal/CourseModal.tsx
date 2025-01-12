@@ -344,10 +344,11 @@ export default function CourseModal({
               />
               {topicVideoType === 'topicVideo' ? (
                 <File
+                  fileType='video'
                   selectedImage={selectedImage}
                   name={'topicVideo'}
                   setSelectedImage={setSelectedImage}
-                  previewImage={{ type: 'image', value: previewImage }}
+                  previewImage={previewImage}
                   onChange={handleImageChange}
                   disabled={false}
                   resetImageStates={resetImageField}
@@ -398,7 +399,7 @@ export default function CourseModal({
               accept='image/png, image/jpeg, image/jpg'
               name={'courseCover'}
               setSelectedImage={setSelectedImage}
-              previewImage={{ type: 'image', value: previewImage }}
+              previewImage={previewImage}
               onChange={handleImageChange}
               disabled={false}
               resetImageStates={resetImageField}

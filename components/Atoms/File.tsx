@@ -7,6 +7,7 @@ const File: React.FC<IImageUploadProps> = ({
   type,
   onChange,
   selectedImage,
+  fileType,
   setSelectedImage,
   fileName,
   previewImage,
@@ -35,18 +36,20 @@ const File: React.FC<IImageUploadProps> = ({
         onClick={handleDivClick}
       >
         <div className='flex items-center justify-center w-[30px] h-[30px] sm:w-[45px] sm:h-[45px] border-[1.5px] border-[#1E1E1E60] rounded-md p-1.5'>
-          {previewImage && previewImage.type === 'image' ? (
-            <Image
-              src={previewImage.value as string}
-              alt='Preview'
-              width='10000'
-              height='10000'
-              className='w-full h-full object-scale-down rounded-xl'
-            />
-          ) : previewImage && previewImage.type === 'video' ? (
-            <video className='w-full h-full '>
-              <source src={previewImage.value as string} type='video/mp4' />
-            </video>
+          {previewImage ? (
+            fileType === 'video' ? (
+              <video className='w-full h-full '>
+                <source src={previewImage as string} type='video/mp4' />
+              </video>
+            ) : (
+              <Image
+                src={previewImage as string}
+                alt='Preview'
+                width='10000'
+                height='10000'
+                className='w-full h-full object-scale-down rounded-xl'
+              />
+            )
           ) : (
             <svg
               xmlns='http://www.w3.org/2000/svg'
