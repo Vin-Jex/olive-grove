@@ -2,7 +2,7 @@ import {
   TCourse,
   TFetchState,
   TCourseModalFormData,
-} from "@/components/utils/types";
+} from '@/components/utils/types';
 import {
   createContext,
   FC,
@@ -11,26 +11,26 @@ import {
   useContext,
   useReducer,
   useState,
-} from "react";
+} from 'react';
 
 type TCourseReducerAction =
-  | "FETCHING_COURSE"
-  | "ERROR_FETCHING_COURSE"
-  | "ADD_COURSE"
-  | "EDIT_COURSE"
-  | "CREATE_CHAPTER"
-  | "CREATE_LESSON"
-  | "CREATE_TOPIC"
-  | "EDIT_CHAPTER"
-  | "EDIT_LESSON"
-  | "EDIT_TOPIC"
-  | "DELETE_CHAPTER"
-  | "DELETE_LESSON"
-  | "DELETE_TOPIC";
+  | 'FETCHING_COURSE'
+  | 'ERROR_FETCHING_COURSE'
+  | 'ADD_COURSE'
+  | 'EDIT_COURSE'
+  | 'CREATE_CHAPTER'
+  | 'CREATE_LESSON'
+  | 'CREATE_TOPIC'
+  | 'EDIT_CHAPTER'
+  | 'EDIT_LESSON'
+  | 'EDIT_TOPIC'
+  | 'DELETE_CHAPTER'
+  | 'DELETE_LESSON'
+  | 'DELETE_TOPIC';
 
 type TModalMetadata = {
-  type: "course" | "chapter" | "lesson" | "topic" | undefined;
-  mode: "create" | "edit" | "delete" | undefined;
+  type: 'course' | 'chapter' | 'lesson' | 'topic' | undefined;
+  mode: 'create' | 'edit' | 'delete' | undefined;
   handleAction?: (
     formData: TCourseModalFormData
   ) => Promise<boolean> | undefined;
@@ -70,7 +70,7 @@ const courseReducer: Reducer<
   TFetchState<TCourse | undefined>,
   { type: TCourseReducerAction; payload?: any }
 > = (state, action) => {
-  if (action.type === "ADD_COURSE") {
+  if (action.type === 'ADD_COURSE') {
     return {
       data: action.payload,
       loading: false,
@@ -78,7 +78,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "FETCHING_COURSE") {
+  if (action.type === 'FETCHING_COURSE') {
     return {
       data: undefined,
       loading: true,
@@ -86,7 +86,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "ERROR_FETCHING_COURSE") {
+  if (action.type === 'ERROR_FETCHING_COURSE') {
     return {
       data: undefined,
       loading: false,
@@ -94,12 +94,12 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "EDIT_COURSE") {
+  if (action.type === 'EDIT_COURSE') {
     if (state.data) {
       const newState = { ...state.data };
-      newState.title = action.payload.title || "";
-      newState.description = action.payload.description || "";
-      newState.department = action.payload.classId || "";
+      newState.title = action.payload.title || '';
+      newState.description = action.payload.description || '';
+      newState.department = action.payload.classId || '';
       action.payload.courseCover &&
         (newState.courseCover = action.payload.courseCover);
 
@@ -111,7 +111,7 @@ const courseReducer: Reducer<
     }
   }
 
-  if (action.type === "CREATE_CHAPTER") {
+  if (action.type === 'CREATE_CHAPTER') {
     // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -123,17 +123,17 @@ const courseReducer: Reducer<
     // * If the chapter with this id hasn't been created, create one
     if (!chapterExists) {
       modifiedCourse.chapters?.push({
-        _id: action.payload._id || "",
-        title: action.payload?.title || "",
+        _id: action.payload._id || '',
+        title: action.payload?.title || '',
         lessons: [],
-        courseId: action.payload.courseId || "",
+        courseId: action.payload.courseId || '',
         currentTutorial: {
-          type: "none",
-          id: "",
+          type: 'none',
+          id: '',
         },
       });
 
-      console.log("Created chapter");
+      console.log('Created chapter');
     }
 
     return {
@@ -143,7 +143,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "CREATE_LESSON") {
+  if (action.type === 'CREATE_LESSON') {
     // Create a new object from the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -159,16 +159,17 @@ const courseReducer: Reducer<
 
     if (!createdLesson) {
       chapterToUpdate?.lessons.push({
-        _id: action.payload._id || "",
-        title: action.payload.title || "",
+        _id: action.payload._id || '',
+        title: action.payload.title || '',
         sections: [],
-        chapterId: action.payload.chapterId || "",
-        topicNote: action.payload.topicNote || "",
+        chapterId: action.payload.chapterId || '',
+        topicNote: action.payload.topicNote || '',
         topicImage: action.payload.topicImage || null,
         topicVideo: action.payload.topicVideo || null,
         youtubeVideo: action.payload.youtubeVideo || null,
+        embed: action.payload.embed || null,
       });
-      console.log("Created lesson");
+      console.log('Created lesson');
     }
 
     return {
@@ -178,7 +179,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "CREATE_TOPIC") {
+  if (action.type === 'CREATE_TOPIC') {
     // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -199,16 +200,17 @@ const courseReducer: Reducer<
         // * If the topic with this id hasn't been created in this lesson yet, create it
         if (!sectionExists) {
           lessonToUpdate?.sections?.push({
-            _id: action.payload._id || "",
-            title: action.payload?.title || "",
-            topicNote: action.payload?.topicNote || "",
-            topicVideo: action.payload?.topicVideo || "",
-            youtubeVideo: action.payload?.youtubeVideo || "",
+            _id: action.payload._id || '',
+            title: action.payload?.title || '',
+            topicNote: action.payload?.topicNote || '',
+            topicVideo: action.payload?.topicVideo || '',
+            youtubeVideo: action.payload?.youtubeVideo || '',
+            embed: action.payload?.embed || '',
             topicImage: action.payload?.topicImage || null,
-            lessonId: action.payload.lessonId || "",
+            lessonId: action.payload.lessonId || '',
             subsections: [],
           });
-          console.log("Created topic");
+          console.log('Created topic');
           break;
         }
       }
@@ -221,7 +223,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "EDIT_CHAPTER") {
+  if (action.type === 'EDIT_CHAPTER') {
     // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -236,7 +238,7 @@ const courseReducer: Reducer<
         ...modifiedCourse.chapters?.[chapterToUpdateIndex],
       };
 
-      console.log("Edit chapter payload", action.payload);
+      console.log('Edit chapter payload', action.payload);
       modifiedCourse.chapters[chapterToUpdateIndex] = {
         ...oldChapterDetails,
         ...action.payload,
@@ -250,7 +252,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "EDIT_LESSON") {
+  if (action.type === 'EDIT_LESSON') {
     // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -266,7 +268,7 @@ const courseReducer: Reducer<
 
     // * If the lesson was found update it
     if (createdLessonIndex !== undefined && chapterToUpdate?.lessons) {
-      console.log("Edit lesson payload", action.payload);
+      console.log('Edit lesson payload', action.payload);
 
       const oldLessonData = {
         ...chapterToUpdate.lessons?.[createdLessonIndex],
@@ -284,7 +286,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "EDIT_TOPIC") {
+  if (action.type === 'EDIT_TOPIC') {
     // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -304,7 +306,7 @@ const courseReducer: Reducer<
 
         // * If the section/topic exists, update it's details
         if (createdSectionId !== undefined && lessonToUpdate?.sections) {
-          console.log("Edit section payload", action.payload);
+          console.log('Edit section payload', action.payload);
 
           const oldSectionDetails = {
             ...lessonToUpdate.sections?.[createdSectionId],
@@ -326,7 +328,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "DELETE_CHAPTER") {
+  if (action.type === 'DELETE_CHAPTER') {
     // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -338,7 +340,7 @@ const courseReducer: Reducer<
     // * Replace the list of chapters with the filtered chapters
     if (filteredChapters) modifiedCourse.chapters = [...filteredChapters];
 
-    console.log("GOT HERE: CHAPTER", filteredChapters, action.payload);
+    console.log('GOT HERE: CHAPTER', filteredChapters, action.payload);
 
     return {
       data: modifiedCourse,
@@ -347,7 +349,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "DELETE_LESSON") {
+  if (action.type === 'DELETE_LESSON') {
     // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -365,7 +367,7 @@ const courseReducer: Reducer<
     if (filteredLessons && chapterToUpdate)
       chapterToUpdate.lessons = [...filteredLessons];
 
-    console.log("GOT HERE: LESSON", filteredLessons, action.payload);
+    console.log('GOT HERE: LESSON', filteredLessons, action.payload);
 
     return {
       data: modifiedCourse,
@@ -374,7 +376,7 @@ const courseReducer: Reducer<
     };
   }
 
-  if (action.type === "DELETE_TOPIC") {
+  if (action.type === 'DELETE_TOPIC') {
     // * Create a new object from the the course details state
     const modifiedCourse = { ...(state.data || {}) };
 
@@ -400,14 +402,14 @@ const courseReducer: Reducer<
         }
 
         console.log(
-          "GOT HERE: SECTIONS lessons",
+          'GOT HERE: SECTIONS lessons',
           lessonToUpdate,
           action.payload
         );
       }
 
       console.log(
-        "GOT HERE: SECTIONS chapters",
+        'GOT HERE: SECTIONS chapters',
         chapter,
         lessonToUpdate,
         action.payload
@@ -426,15 +428,19 @@ const courseReducer: Reducer<
 
 const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const initialFormState: TCourseModalFormData = {
-    title: "",
-    _id: "",
-    department: "",
-    description: "vvv",
-    image: "",
-    topicNote: "",
-    topicVideo: "",
-    youtubeVideo: "",
-    availableDate: "",
+    title: '',
+    _id: '',
+    department: '',
+    // isActive: false, //isActive is false by default
+    // startDate: '',
+    // endDate: '',
+    description: '',
+    image: '',
+    topicNote: '',
+    topicVideo: '',
+    youtubeVideo: '',
+    embed: '',
+    availableDate: '',
   };
   const [modal, setModal] = useState<TModalState>({
     open: false,
@@ -511,7 +517,7 @@ export const useCourseContext = () => {
 
   if (!context)
     throw new Error(
-      "useCourseContext must be used within the CourseContextProvider"
+      'useCourseContext must be used within the CourseContextProvider'
     );
 
   return context;

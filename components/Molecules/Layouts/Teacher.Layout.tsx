@@ -3,15 +3,15 @@ import React, {
   useCallback,
   useLayoutEffect,
   useState,
-} from "react";
-import SideNav from "../Navs/SideNav";
-import AdminNav from "../Navs/AdminNav";
-import Meta from "@/components/Atoms/Meta";
-import LogoutWarningModal from "../Modal/LogoutWarningModal";
-import { handleLogout } from "./Admin.Layout";
-import VerificationModal from "../Modal/VerificationModal";
-import { useUser } from "@/contexts/UserContext";
-import useServiceWorkerListener from "@/components/utils/hooks/useServiceWorkerListener";
+} from 'react';
+import SideNav from '../Navs/SideNav';
+import AdminNav from '../Navs/AdminNav';
+import Meta from '@/components/Atoms/Meta';
+import LogoutWarningModal from '../Modal/LogoutWarningModal';
+import { handleLogout } from './Admin.Layout';
+import VerificationModal from '../Modal/VerificationModal';
+import { useUser } from '@/contexts/UserContext';
+import useServiceWorkerListener from '@/components/utils/hooks/useServiceWorkerListener';
 
 interface AdminWrapperProps {
   children: ReactNode;
@@ -34,6 +34,8 @@ const TeachersWrapper = ({
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useUser();
   const isForbidden = useServiceWorkerListener();
+  console.log(user)
+  //for now forbidden is causing some issues I am not sure of, and I'm not sure of this logic cos I am already verified, so it should not
 
   const handleVerifyOpen = () => {
     setIsOpen((prev) => !prev);
@@ -65,13 +67,13 @@ const TeachersWrapper = ({
 
   return (
     <div className='relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row'>
-      <Meta title={metaTitle || "Dashboard"} description={description} />
+      <Meta title={metaTitle || 'Dashboard'} description={description} />
       <LogoutWarningModal
         handleModalClose={handleWarning}
         loading={isLogOutLoading}
         handleConfirm={() => {
           setIsLogOutLoading(true);
-          handleLogout("teachers").then(() => {
+          handleLogout('teachers').then(() => {
             setIsLogOutLoading(false);
             handleWarning();
           });
@@ -86,7 +88,7 @@ const TeachersWrapper = ({
 
       <aside
         className={` left-0 top-0 h-screen w-[16.5rem] overflow-auto z-30 !bg-white lg:block transition-transform transform ${
-          isSidenavOpen ? "translate-x-0" : "-translate-x-full"
+          isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />

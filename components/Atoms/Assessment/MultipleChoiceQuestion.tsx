@@ -1,47 +1,68 @@
-import { TAsseessmentQuestionOption } from "@/components/utils/types";
-import React, { FC, useState } from "react";
+import {
+  TAsseessmentQuestionMode,
+  TAsseessmentQuestionOption,
+  TAssessmnentQuestion,
+} from "@/components/utils/types";
+import React, { FC, useEffect, useState } from "react";
 import { v4 as uuidV4 } from "uuid";
 import EachOption from "./EachOption";
 import Input from "../Input";
+import { useAssessmentQuestionsContext } from "@/contexts/AssessmentQuestionsContext";
+import { Mode } from "@mui/icons-material";
+import { useEachAssessmentQuestionContext } from "@/contexts/EachAssessmentQuestionContext";
+import QuestionMarkInput from "./QuestionMarkInput";
 
 const MultipleChoiceQuestion: FC<{
-  assessment_id: string;
-  question_id: string;
-}> = ({ assessment_id, question_id }) => {
-  const [options, setOptions] = useState<TAsseessmentQuestionOption[]>([]);
-  const [correct_option, setCorrectOption] = useState("");
+  question: TAssessmnentQuestion<"draft">;
+  mode: TAsseessmentQuestionMode;
+}> = ({ question, mode }) => {
+  const { dispatch: draft_question_dispatch, handle_question_config_change } =
+    useAssessmentQuestionsContext();
+  const { dispatch: existing_question_dispatch } =
+    useEachAssessmentQuestionContext();
 
   const add_option = () => {
-    setOptions((prev) => [...prev, { content: undefined, _id: uuidV4() }]);
+    const option = { _id: uuidV4(), content: undefined };
+    mode === "add" &&
+      draft_question_dispatch({
+        type: "ADD_OPTION",
+        payload: {
+          question_id: question._id,
+          option,
+        },
+      });
+    mode === "edit" &&
+      existing_question_dispatch({ type: "ADD_OPTION", payload: option });
   };
-  const remove_option = (id: string) => {
-    setOptions((prev) => prev.filter((option) => option._id !== id));
-  };
-  const edit_option = (option: TAsseessmentQuestionOption) => {
-    const new_options = [...options];
 
-    const index = options.findIndex((each) => option._id === each._id);
-
-    if (index < 0) return;
-
-    console.log("Option to update", option);
-
-    new_options[index] = { ...option };
-
-    setOptions([...new_options]);
-  };
+  useEffect(() => {
+    if (!question.options?.length || question.options?.length < 1) {
+      Array.from({ length: 4 }).forEach(() => {
+        // mode === "add" &&
+        //   draft_question_dispatch({
+        //     type: "ADD_OPTION",
+        //     payload: {
+        //       question_id: question._id,
+        //       option: { _id: uuidV4(), content: undefined },
+        //     },
+        //   });
+        // mode === "edit" &&
+        //   existing_question_dispatch({
+        //     type: "ADD_OPTION",
+        //     payload: { _id: uuidV4(), content: undefined },
+        //   });
+      });
+    }
+  }, []);
 
   return (
-    <div className="flex flex-col gap-3">
-      {options.map((option, i) => (
+    <div className="flex flex-col gap-6">
+      {question.options?.map((option, i) => (
         <EachOption
-          key={option.content}
-          edit_option={edit_option}
-          remove_option={remove_option}
-          setCorrectOption={setCorrectOption}
-          correct_option={correct_option}
+          key={option._id}
           option={option}
-          question_id={question_id}
+          question={question as any}
+          mode={mode}
           index={i + 1}
         />
       ))}
@@ -50,6 +71,8 @@ const MultipleChoiceQuestion: FC<{
         <span className="text-primary cursor-pointer" onClick={add_option}>
           Add option
         </span>
+        {/* Question mark */}
+        <QuestionMarkInput question={question} mode={mode} />
       </div>
     </div>
   );

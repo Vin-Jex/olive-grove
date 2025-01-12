@@ -108,10 +108,11 @@ const AsssessmentModal: FC<
               </div>
             </>
           )}
+
           <Select
             name='subject'
             onChange={handleChange}
-            value={(formState.subject as string).toLowerCase()}
+            value={(formState.course as string).toLowerCase()}
             options={subjects}
             placeholder='Subject'
             required
@@ -136,11 +137,11 @@ const AsssessmentModal: FC<
           />
 
           <Select
-            name='class'
+            name='department'
             onChange={handleChange}
-            value={(formState.class as string).toLowerCase()}
+            value={(formState.department as string).toLowerCase()}
             options={assessmenTClasses}
-            placeholder='Class'
+            placeholder='Department'
             required
           />
 
@@ -153,7 +154,7 @@ const AsssessmentModal: FC<
                 ?.slice(
                   0,
                   16
-                ) /* new Date(formState.timeline).toLocaleString() */
+                )
             }
             onChange={handleChange}
             placeholder='Timeline'

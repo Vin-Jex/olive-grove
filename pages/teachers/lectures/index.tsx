@@ -272,7 +272,7 @@ const Lectures = () => {
                             time={new Date(
                               lectureItem.classTime
                             ).toLocaleString()}
-                            subject={
+                            course={
                               (lectureItem.subject as TCourse)?.title || ""
                             }
                             lectureTopic={lectureItem.description}
@@ -300,7 +300,7 @@ const Lectures = () => {
                               time={new Date(
                                 lectureItem.classTime
                               ).toLocaleString()}
-                              subject={(lectureItem.subject as TCourse).title}
+                              course={(lectureItem.subject as TCourse).title}
                               lectureTopic={lectureItem.description}
                               btnLink1={() => {}}
                               btnLink2={() => {

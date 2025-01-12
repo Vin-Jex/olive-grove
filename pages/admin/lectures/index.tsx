@@ -141,7 +141,7 @@ const Departments = () => {
                           // role={subject.isActive ? "Active" : "Inactive"}
                           time={new Date(subject.time).toLocaleString()}
                           // description={subject.subject}
-                          subject={(subject.subject as TCourse).title}
+                          course={(subject.subject as TCourse).title}
                           btnLink1={() => {}}
                           btnLink2={handleModalEdit}
                         />
@@ -160,7 +160,7 @@ const Departments = () => {
                         // role={subject.isActive ? "Active" : "Inactive"}
                         time={new Date(subject.time).toLocaleString()}
                         // description={subject.topic}
-                        subject={(subject.subject as TCourse).title}
+                        course={(subject.subject as TCourse).title}
                         btnLink1={() => {}}
                         btnLink2={handleModalEdit}
                       />
