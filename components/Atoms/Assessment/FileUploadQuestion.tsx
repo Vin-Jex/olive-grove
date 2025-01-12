@@ -2,64 +2,85 @@ import React, { FC, useState } from "react";
 import Input from "../Input";
 import Select from "../Select";
 import { handleInputChange } from "@/components/utils/utils";
-import { TAssessmentQuestionFileUpload } from "@/components/utils/types";
+import {
+  TAsseessmentQuestionMode,
+  TAssessmentQuestionFileUpload,
+  TAssessmnentQuestion,
+} from "@/components/utils/types";
+import QuestionMarkInput from "./QuestionMarkInput";
+import { useAssessmentQuestionsContext } from "@/contexts/AssessmentQuestionsContext";
+import { useEachAssessmentQuestionContext } from "@/contexts/EachAssessmentQuestionContext";
 
 const FileUploadQuestion: FC<{
-  mode: "edit" | "preview";
-  config?: TAssessmentQuestionFileUpload;
-}> = ({ mode, config }) => {
+  mode: TAsseessmentQuestionMode;
+  question: TAssessmnentQuestion<"draft">;
+}> = ({ mode, question }) => {
+  const { dispatch: draft_question_dispatch } = useAssessmentQuestionsContext();
+  const { dispatch: existing_question_dispatch } =
+    useEachAssessmentQuestionContext();
   const [form_state, setFormState] = useState<{
     maxFileSize: number;
     maxFiles: number;
-    fileSizeSI: "KB" | "MB" | "GB";
-  }>({ fileSizeSI: "KB", maxFiles: 1, maxFileSize: 10 });
+    allowedExtensions: string[];
+  }>({ maxFiles: 1, maxFileSize: 5, allowedExtensions: [] });
 
-  if (mode === "edit")
+  if (mode === "edit" || mode === "add")
     return (
-      <div className="flex flex-col gap-4 w-fit">
-        <label className="flex gap-4 items-end">
-          <span className="text-nowrap">Maximum number of files</span>
-          <Input
-            type="number"
-            name="maxFiles"
-            className="input !py-1.5 !w-[70px]"
-            defaultValue={"1"}
-            value={form_state.maxFiles}
-            onChange={(e) =>
-              handleInputChange(e.target.name, e.target.value, setFormState)
-            }
-          />
-        </label>
-        <label className="flex gap-4 items-end">
-          <span className="text-nowrap">Maximum File size</span>
-          <Input
-            type="number"
-            name="maxFileSize"
-            className="input !py-1.5 !w-[none] !max-w-[70px]"
-            defaultValue={"10"}
-            value={form_state.maxFileSize}
-            onChange={(e) =>
-              handleInputChange(e.target.name, e.target.value, setFormState)
-            }
-          />
-          <Select
-            name="fileSizeSI"
-            options={["KB", "MB", "GB"]}
-            className="!max-w-[70px]"
-            inputSize="xs"
-            value={form_state.fileSizeSI}
-            onChange={(e) =>
-              handleInputChange(e.target.name, e.target.value, setFormState)
-            }
-          />
-        </label>
+      <div className="flex justify-between items-end gap-4">
+        <div className="flex flex-col gap-4 w-fit">
+          <label className="flex gap-4 items-end">
+            <span className="text-nowrap">Maximum number of files</span>
+            <Input
+              type="number"
+              name="maxFiles"
+              className="input !py-1.5 !w-[70px]"
+              defaultValue={"1"}
+              value={form_state.maxFiles}
+              onChange={(e) =>
+                handleInputChange(e.target.name, e.target.value, setFormState)
+              }
+            />
+          </label>
+          <label className="flex gap-4 items-end">
+            <span className="text-nowrap">Maximum File size (MB)</span>
+            <Input
+              type="number"
+              name="maxFileSize"
+              className="input !py-1.5 !w-[none] !max-w-[70px]"
+              defaultValue={"5"}
+              value={question.fileRequirements?.maxSizeMB || ""}
+              onChange={(e) => {
+                handleInputChange(e.target.name, e.target.value, setFormState);
+                mode === "add" &&
+                  draft_question_dispatch({
+                    type: "EDIT_FILE_CONFIG",
+                    payload: {
+                      question_id: question._id,
+                      fileRequirements: {
+                        maxSizeMB: e.target.value,
+                      },
+                    },
+                  });
+                mode === "edit" &&
+                  existing_question_dispatch({
+                    type: "EDIT_FILE_CONFIG",
+                    payload: {
+                      maxSizeMB: e.target.value,
+                    },
+                  });
+              }}
+            />
+          </label>
+        </div>
+        {/* Question mark */}
+        <QuestionMarkInput mode={mode} question={question} />
       </div>
     );
 
   return (
     <div className="flex flex-col gap-3">
       {/* Upload btn */}
-      <div className="flex rounded-lg border border-subtext p-2 text-xs gap-2 w-fit items-center cursor-pointer transition hover:bg-subtext/5">
+      <label className="flex rounded-lg border border-subtext p-2 text-xs gap-2 w-fit items-center cursor-pointer transition hover:bg-subtext/5">
         {/* Icon */}
         <svg
           width="16"
@@ -77,9 +98,9 @@ const FileUploadQuestion: FC<{
             stroke-linejoin="round"
           />
         </svg>
-
         <span>Upload file</span>
-      </div>
+        <input type="file" name="file" hidden />
+      </label>
     </div>
   );
 };
