@@ -53,10 +53,7 @@ export default function LectureModal({
   courses,
 }: LectureModalProps) {
   const [selectedImage, setSelectedImage] = useState<Blob | null | string>();
-  const [preview, setPreview] = useState<{
-    type: 'video' | 'image';
-    value: Blob | null | string;
-  } | null>(null);
+  const [preview, setPreview] = useState<string | Blob | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [isLoading, setIsLoading] = useState({
     saving: false,
@@ -87,9 +84,9 @@ export default function LectureModal({
       setPreview;
       setSelectedImage(file);
       if (type === 'video') {
-        setPreview({ type: 'video', value: URL.createObjectURL(file) });
+        setPreview(URL.createObjectURL(file));
       } else {
-        setPreview({ type: 'image', value: URL.createObjectURL(file) });
+        setPreview(URL.createObjectURL(file));
       }
       setFileName(file.name);
     }
