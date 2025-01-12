@@ -6,6 +6,7 @@ import { editItem } from '../../utils/course';
 import { useCourseContext } from '@/contexts/CourseContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
+import SidebarEditModal from '@/components/Molecules/Modal/SidebarEditModal';
 
 function CheckSvg({ isActive }: { isActive: boolean }) {
   return (
@@ -49,12 +50,14 @@ export const Topic: FC<{
     topicNote: topic?.topicNote || '',
     topicVideo: topic?.topicVideo,
     youtubeVideo: topic?.youtubeVideo,
+    embed: topic?.embed || '',
     topicImage: topic.topicImage,
     lessonId,
   };
   const { user } = useAuth();
   const title_ref = useRef<HTMLDivElement>(null);
   const [display_tooltip, setDisplayTooltip] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   /**
    * * Function responsible for opening the modal
@@ -123,19 +126,33 @@ export const Topic: FC<{
       {user?.role === 'Teacher' && (
         <>
           {/* Edit Icon */}
-          <svg
-            width='4'
-            height='15'
-            viewBox='0 0 4 15'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path
-              d='M1.99967 0C1.08301 0 0.333008 0.75 0.333008 1.66667C0.333008 2.58333 1.08301 3.33333 1.99967 3.33333C2.91634 3.33333 3.66634 2.58333 3.66634 1.66667C3.66634 0.75 2.91634 0 1.99967 0ZM1.99967 11.6667C1.08301 11.6667 0.333008 12.4167 0.333008 13.3333C0.333008 14.25 1.08301 15 1.99967 15C2.91634 15 3.66634 14.25 3.66634 13.3333C3.66634 12.4167 2.91634 11.6667 1.99967 11.6667ZM1.99967 5.83333C1.08301 5.83333 0.333008 6.58333 0.333008 7.5C0.333008 8.41667 1.08301 9.16667 1.99967 9.16667C2.91634 9.16667 3.66634 8.41667 3.66634 7.5C3.66634 6.58333 2.91634 5.83333 1.99967 5.83333Z'
-              fill='#1E1E1E'
-              fill-opacity='0.6'
+          <div className='relative'>
+            <button
+              onClick={() => {
+                setModalOpen(!modalOpen);
+                console.log('click detecetd');
+              }}
+              className='z-50'
+            >
+              <svg
+                width='4'
+                height='15'
+                viewBox='0 0 4 15'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <path
+                  d='M1.99967 0C1.08301 0 0.333008 0.75 0.333008 1.66667C0.333008 2.58333 1.08301 3.33333 1.99967 3.33333C2.91634 3.33333 3.66634 2.58333 3.66634 1.66667C3.66634 0.75 2.91634 0 1.99967 0ZM1.99967 11.6667C1.08301 11.6667 0.333008 12.4167 0.333008 13.3333C0.333008 14.25 1.08301 15 1.99967 15C2.91634 15 3.66634 14.25 3.66634 13.3333C3.66634 12.4167 2.91634 11.6667 1.99967 11.6667ZM1.99967 5.83333C1.08301 5.83333 0.333008 6.58333 0.333008 7.5C0.333008 8.41667 1.08301 9.16667 1.99967 9.16667C2.91634 9.16667 3.66634 8.41667 3.66634 7.5C3.66634 6.58333 2.91634 5.83333 1.99967 5.83333Z'
+                  fill='#1E1E1E'
+                  fill-opacity='0.6'
+                />
+              </svg>
+            </button>
+            <SidebarEditModal
+              handleModalClose={() => setModalOpen(false)}
+              modalOpen={modalOpen}
             />
-          </svg>
+          </div>
 
           {/* Check Icon */}
           <svg

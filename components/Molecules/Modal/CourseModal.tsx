@@ -10,6 +10,7 @@ import Select from '@/components/Atoms/Select';
 import { CircularProgress } from '@mui/material';
 import { Info } from '@mui/icons-material';
 import InputField from '@/components/Atoms/InputField';
+import toast from 'react-hot-toast';
 
 export default function CourseModal({
   modalOpen,
@@ -28,7 +29,7 @@ export default function CourseModal({
   >(null);
   const [fileName, setFileName] = useState('');
   const [topicVideoType, setTopicVideoType] = useState<
-    'topicVideo' | 'youtubeVideo'
+    'topicVideo' | 'youtubeVideo' | 'embed'
   >(formState.topicVideo ? 'topicVideo' : 'youtubeVideo');
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [is_loading, setIsLoading] = useState({
@@ -142,6 +143,7 @@ export default function CourseModal({
       const result = handleAction && (await handleAction(formState));
       // * If the request was completed successfully, close the modal
       if (result) handleModalClose();
+      if (result) toast.success('Course created successfully');
       // * Remove the saving loading state
       setIsLoading({ saving: false, deleting: false });
     },
@@ -231,11 +233,6 @@ export default function CourseModal({
             type='datetime-local'
             name='startDate'
             value={formState.startDate ?? ''}
-            // value={
-            //   !!formState.startDate
-            //     ? new Date(formState.startDate).toISOString() ?? ''
-            //     : ''
-            // }
             label={`Enter the date the course will start`}
             onChange={handleChange}
             className='input'
@@ -245,11 +242,6 @@ export default function CourseModal({
             error=''
             type='datetime-local'
             name='endDate'
-            // value={
-            //   !!formState.startDate
-            //     ? new Date(formState.startDate).toISOString() ?? ''
-            //     : ''
-            // }
             label={`Enter the date the course will End`}
             value={formState.endDate ?? ''}
             onChange={handleChange}
@@ -346,6 +338,7 @@ export default function CourseModal({
                 options={[
                   { display_value: 'Upload Video', value: 'topicVideo' },
                   { display_value: 'YouTube Video URL', value: 'youtubeVideo' },
+                  { display_value: 'Embeded Site URL', value: 'embed' },
                 ]}
                 onChange={(e) => setTopicVideoType(e.target.value as any)}
               />
@@ -354,7 +347,7 @@ export default function CourseModal({
                   selectedImage={selectedImage}
                   name={'topicVideo'}
                   setSelectedImage={setSelectedImage}
-                  previewImage={previewImage}
+                  previewImage={{ type: 'image', value: previewImage }}
                   onChange={handleImageChange}
                   disabled={false}
                   resetImageStates={resetImageField}
@@ -362,7 +355,7 @@ export default function CourseModal({
                   required
                   fileName={fileName}
                 />
-              ) : (
+              ) : topicVideoType === 'youtubeVideo' ? (
                 <div className='flex w-full flex-col gap-2 text-subtext'>
                   <Input
                     type='url'
@@ -379,6 +372,22 @@ export default function CourseModal({
                     {formState.youtubeVideo}
                   </div>
                 </div>
+              ) : (
+                <div className='flex w-full flex-col gap-2 text-subtext'>
+                  <Input
+                    type='url'
+                    name='embed'
+                    value={formState.embed}
+                    onChange={handleChange}
+                    placeholder={`Embed  URL`}
+                    required
+                    className='w-full input !rounded-lg'
+                  />
+                  <div className='bg-primary/10 rounded-lg p-4'>
+                    {/* eslint-disable-next-line react/no-unescaped-entities */}
+                    Here's the Embed URL that will be used: {formState.embed}
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -389,7 +398,7 @@ export default function CourseModal({
               accept='image/png, image/jpeg, image/jpg'
               name={'courseCover'}
               setSelectedImage={setSelectedImage}
-              previewImage={previewImage}
+              previewImage={{ type: 'image', value: previewImage }}
               onChange={handleImageChange}
               disabled={false}
               resetImageStates={resetImageField}

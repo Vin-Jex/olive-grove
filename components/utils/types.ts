@@ -10,6 +10,7 @@ type OptionalFields<T extends 'get' | 'post' = 'get'> = {
   department?: T extends 'post' ? string : TDepartment;
   // courseInfo?: { description: string };
   chapterId?: string;
+  embed?: string;
   topicNote?: string;
   topicVideo?: string;
   youtubeVideo?: string;
@@ -59,7 +60,7 @@ export type TLesson<T extends 'get' | 'post' = 'get'> = {
   currentTutorial?: boolean;
   topicVideo: string | null;
   youtubeVideo: string | null;
-  embed?: string | null;
+  embed: string | null;
   topicNote: string;
   topicImage: string | null;
 } & OptionalFields<T>;
@@ -77,7 +78,7 @@ export type TSection<T extends 'get' | 'post' = 'get'> = {
   currentTutorial?: boolean;
   topicVideo: string | null;
   youtubeVideo: string | null;
-  embed?: string | null;
+  embed: string | null;
   topicNote: string;
   topicImage: string | null;
 } & OptionalFields<T>;
@@ -142,7 +143,7 @@ export interface IImageUploadProps
   >;
   resetImageStates: () => void;
   selectedImage: Blob | null | undefined | string;
-  previewImage: Blob | null | string;
+  previewImage: {type: 'video' | 'image', value: Blob | null | string};
   fileName: string;
 }
 

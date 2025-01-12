@@ -312,6 +312,7 @@ const Courses: FC = () => {
       department: '',
       description: '',
       courseCover: '',
+      embed: '',
       topicVideo: '',
     });
     setOpenModalCreate((prev) => !prev);

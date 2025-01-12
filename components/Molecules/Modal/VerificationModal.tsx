@@ -2,7 +2,6 @@ import React, { ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import Button from '@/components/Atoms/Button';
 import { useRouter } from 'next/router';
-import { updateUserInDB } from '@/components/utils/indexDB';
 
 export default function VerificationModal({
   modalOpen,

@@ -46,6 +46,7 @@ const Add: FC<{
 
           req_body.append(key, value as string);
         }
+        console.log(entries, 'req_body');
 
         // if (!formState.topicVideo) {
         //   req_body.append("topicVideo", null as any);
@@ -102,6 +103,7 @@ const Add: FC<{
           topicNote: responseData.data?.topicNote,
           topicVideo: responseData.data?.topicVideo,
           youtubeVideo: responseData.data?.youtubeVideo,
+          embed: responseData.data?.embed,
           _id: responseData.data._id,
         },
       });

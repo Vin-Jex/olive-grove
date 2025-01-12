@@ -167,6 +167,7 @@ const courseReducer: Reducer<
         topicImage: action.payload.topicImage || null,
         topicVideo: action.payload.topicVideo || null,
         youtubeVideo: action.payload.youtubeVideo || null,
+        embed: action.payload.embed || null,
       });
       console.log('Created lesson');
     }
@@ -204,6 +205,7 @@ const courseReducer: Reducer<
             topicNote: action.payload?.topicNote || '',
             topicVideo: action.payload?.topicVideo || '',
             youtubeVideo: action.payload?.youtubeVideo || '',
+            embed: action.payload?.embed || '',
             topicImage: action.payload?.topicImage || null,
             lessonId: action.payload.lessonId || '',
             subsections: [],
@@ -437,6 +439,7 @@ const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     topicNote: '',
     topicVideo: '',
     youtubeVideo: '',
+    embed: '',
     availableDate: '',
   };
   const [modal, setModal] = useState<TModalState>({
