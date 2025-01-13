@@ -25,7 +25,6 @@ import { handleLogout } from "@/components/Molecules/Layouts/Admin.Layout";
 import { AxiosError } from "axios";
 import { updateUserInDB } from "@/components/utils/indexDB";
 import { useUser } from "@/contexts/UserContext";
-import { CircularProgress } from "@mui/material";
 import { baseUrl } from "@/components/utils/baseURL";
 
 interface IProfilePhotoSectionProps {
@@ -106,6 +105,8 @@ const TeachersProfile = () => {
     verifyOTP,
     OTPTimer,
     formattedTimer,
+    setOTPTimer,
+    setFormattedTimer,
   } = useUserVerify();
 
   const inputFields: {
@@ -374,11 +375,19 @@ const TeachersProfile = () => {
                     ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
                     : ""
                 }`}
-                onClick={() =>
+                onClick={() => {
+                  setFormState((prevState) => ({
+                    ...prevState,
+                    otp: "",
+                    newPassword: "",
+                    confirmPassword: "",
+                  }));
+                  setFormattedTimer("00:00");
+                  setOTPTimer(0);
                   setCurrentTab(
                     page as "Account" | "Security" | "account_verify"
                   )
-                }
+                }}
                 key={index}
               >
                 {page}
@@ -392,7 +401,17 @@ const TeachersProfile = () => {
                   ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
                   : ""
               }`}
-              onClick={() => setCurrentTab("account_verify")}
+              onClick={() => {
+                setFormState((prevState) => ({
+                  ...prevState,
+                  otp: "",
+                  newPassword: "",
+                  confirmPassword: "",
+                }));
+                setFormattedTimer("00:00");
+                setOTPTimer(0);
+                setCurrentTab("account_verify")
+              }}
             >
               Email Verification
             </div>
