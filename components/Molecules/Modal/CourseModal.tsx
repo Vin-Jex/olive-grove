@@ -1,3 +1,4 @@
+
 import React, { ChangeEvent, useEffect, useState } from "react";
 import Modal from "./Modal";
 import Button, { ButtonProps } from "@/components/Atoms/Button";
@@ -114,6 +115,7 @@ export default function CourseModal({
     }
   };
 
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -129,6 +131,7 @@ export default function CourseModal({
         isActive: false,
       }));
     }
+
     const result = handleAction && (await handleAction(formState));
     if (result) handleModalClose();
     setIsLoading({ saving: false, deleting: false });
@@ -167,6 +170,7 @@ export default function CourseModal({
           </span>
         </div>
         <form
+
           className='flex flex-col justify-center py-4 my-2 px-4 w-full space-y-6'
           onSubmit={handleFormSubmit}
         >
@@ -221,7 +225,7 @@ export default function CourseModal({
             label={`Course Start Date`}
             onChange={handleChange}
             className='input'
-            required
+            required={true}
           />
           <InputField
             error=''
@@ -231,7 +235,7 @@ export default function CourseModal({
             value={formState.endDate ?? ""}
             onChange={handleChange}
             className='input'
-            required
+            required={true}
           />
           <InputField
             onChange={handleChange}
@@ -239,6 +243,7 @@ export default function CourseModal({
             label='Accessibility Status'
             value={formState.isActive as string}
             error=''
+            required
             type='select'
             name='isActive'
             options={[
@@ -407,7 +412,14 @@ export default function CourseModal({
               className='!px-6'
               type='submit'
               color='outline'
-              disabled={requestState?.loading || is_loading.saving}
+              disabled={
+                requestState?.loading ||
+                formState.department === '' ||
+                formState.endDate === '' ||
+                formState.startDate === '' ||
+                is_loading.saving
+              }
+              // 
             >
               {is_loading.saving ? (
                 <CircularProgress size={15} color='inherit' />
@@ -416,7 +428,8 @@ export default function CourseModal({
               )}
             </Button>
 
-            {mode === "edit" && handleDelete && (
+            {/* {mode === 'edit' && handleDelete && (
+
               <Button
                 size='xs'
                 width='fit'
@@ -430,7 +443,7 @@ export default function CourseModal({
                   "Delete"
                 )}
               </Button>
-            )}
+            )} */}
           </div>
         </form>
       </Modal>

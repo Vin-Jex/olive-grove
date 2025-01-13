@@ -50,9 +50,13 @@ const Courses: FC = () => {
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [formState, setFormState] = useState<Omit<TCourse<"post">, "chapters">>(
     {
-      title: "",
-      description: "",
-      department: "",
+      title: '',
+      description: '',
+      department: '',
+      startDate: '',
+      endDate: '',
+      isActive: false,
+
       courseCover: undefined,
     }
   );
