@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Logout } from "@mui/icons-material";
-import { useRouter } from "next/router";
-import Link from "next/link";
-import Image from "next/image";
-import Logo from "@/public/image/logo.png";
-import { useAuth } from "@/contexts/AuthContext";
+import React, { useEffect, useRef, useState } from 'react';
+import { Logout } from '@mui/icons-material';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import Image from 'next/image';
+import Logo from '@/public/image/logo.png';
+import { useAuth } from '@/contexts/AuthContext';
 
 type NavItemProps = {
   href: string;
@@ -21,7 +21,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
 }) => {
   const router = useRouter();
   const [activeClass, setActiveClass] = useState<string>(
-    router.pathname.split("/")[1]
+    router.pathname.split('/')[1]
   );
   const navRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState<boolean>(false);
@@ -33,7 +33,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
   }, []);
 
   useEffect(() => {
-    const baseRoute = router.pathname.split("/")[2];
+    const baseRoute = router.pathname.split('/')[2];
     setActiveClass(baseRoute);
   }, [router.pathname]);
 
@@ -47,7 +47,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
           <Image
             onClick={() => {
               window.scrollTo(0, 0);
-              router.push("/");
+              router.push('/');
             }}
             src={Logo}
             alt='Logo'
@@ -58,13 +58,13 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
         <ul className='nav_list space-y-3.5 md:space-y-6 flex-1'>
           <NavItem
             href={`${
-              isClient && role === "Teacher"
-                ? "/teachers"
-                : role === "Student"
-                ? "/students"
-                : role === "Admin"
-                ? "/admins"
-                : ""
+              isClient && role === 'Teacher'
+                ? '/teachers'
+                : role === 'Student'
+                ? '/students'
+                : role === 'Admin'
+                ? '/admins'
+                : ''
             }/dashboard`}
             activeClass={activeClass}
             setActiveClass={setActiveClass}
@@ -107,14 +107,14 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
           />
 
           {/* LECTURES */}
-          {isClient && role !== "Admin" && (
+          {isClient && role !== 'Admin' && (
             <NavItem
               href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Student"
-                  ? "/students"
-                  : ""
+                isClient && role === 'Teacher'
+                  ? '/teachers'
+                  : role === 'Student'
+                  ? '/students'
+                  : ''
               }/lectures`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -151,10 +151,10 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
           )}
 
           {/* Departments */}
-          {isClient && role === "Admin" && (
+          {isClient && role === 'Admin' && (
             <NavItem
               href={`${
-                isClient && role === "Admin" ? "/admin" : ""
+                isClient && role === 'Admin' ? '/admin' : ''
               }/departments`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -226,14 +226,14 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role !== "Admin" && (
+          {isClient && role !== 'Admin' && (
             <NavItem
               href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Student"
-                  ? "/students"
-                  : ""
+                isClient && role === 'Teacher'
+                  ? '/teachers'
+                  : role === 'Student'
+                  ? '/students'
+                  : ''
               }/assessments`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -351,7 +351,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role === "Admin" && (
+          {isClient && role === 'Admin' && (
             <NavItem
               href={`/admins/teachers`}
               activeClass={activeClass}
@@ -390,14 +390,14 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role !== "Student" && (
+          {isClient && role !== 'Student' && (
             <NavItem
               href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Admin"
-                  ? "/admins"
-                  : ""
+                isClient && role === 'Teacher'
+                  ? '/teachers'
+                  : role === 'Admin'
+                  ? '/admins'
+                  : ''
               }/courses`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -435,14 +435,14 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
             />
           )}
 
-          {isClient && role !== "Student" && (
+          {isClient && role !== 'Student' && (
             <NavItem
               href={`${
-                isClient && role === "Teacher"
-                  ? "/teachers"
-                  : role === "Admin"
-                  ? "/admins"
-                  : ""
+                isClient && role === 'Teacher'
+                  ? '/teachers'
+                  : role === 'Admin'
+                  ? '/admins'
+                  : ''
               }/students`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
@@ -482,13 +482,13 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
 
           <NavItem
             href={`${
-              isClient && role === "Teacher"
-                ? "/teachers"
-                : role === "Student"
-                ? "/students"
-                : role === "Admin"
-                ? "/admins"
-                : ""
+              isClient && role === 'Teacher'
+                ? '/teachers'
+                : role === 'Student'
+                ? '/students'
+                : role === 'Admin'
+                ? '/admins'
+                : ''
             }/profile`}
             activeClass={activeClass}
             setActiveClass={setActiveClass}
@@ -576,8 +576,8 @@ const NavItem: React.FC<NavItemProps> = ({
         href={href}
         className={`px-5 py-1.5 space-x-3 flex items-center ${
           activeClass === label
-            ? "bg-primary rounded-tr-2xl rounded-br-2xl"
-            : ""
+            ? 'bg-primary rounded-tr-2xl rounded-br-2xl'
+            : ''
         }`}
         onClick={() => setActiveClass(label)}
       >
@@ -588,7 +588,7 @@ const NavItem: React.FC<NavItemProps> = ({
         </div>
         <span
           className={`links_name capitalize text-base md:text-lg ${
-            activeClass !== label ? "text-subtext/60" : "text-white font-medium"
+            activeClass !== label ? 'text-subtext/60' : 'text-white font-medium'
           }`}
         >
           {label}

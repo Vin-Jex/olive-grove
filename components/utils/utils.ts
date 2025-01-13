@@ -31,3 +31,10 @@ export const formatDate = (isoString: string): string => {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 };
+
+
+export const formatDateToISO = (date: Date | string | undefined): string => {
+  if (!date) return "";
+  const d = new Date(date);
+  return d.toISOString().slice(0, 16); // Format to 'YYYY-MM-DDTHH:MM'
+};

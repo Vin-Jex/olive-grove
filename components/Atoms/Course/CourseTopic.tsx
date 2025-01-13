@@ -1,5 +1,5 @@
 import { FC, LegacyRef, useEffect, useRef, useState } from 'react';
-import { TSection, TSubSection } from '../../utils/types';
+import { TCourseModalFormData, TSection, TSubSection } from '../../utils/types';
 import { useRouter } from 'next/router';
 import { useRouter as useNavRouter } from 'next/navigation';
 import { editItem } from '../../utils/course';
@@ -25,7 +25,7 @@ function CheckSvg({ isActive }: { isActive: boolean }) {
   );
 }
 
-const tooltip_variants: Variants = {
+export const tooltip_variants: Variants = {
   initial: {
     opacity: 0,
   },
@@ -63,6 +63,16 @@ export const Topic: FC<{
   /**
    * * Function responsible for opening the modal
    */
+
+  const handleDelete = (formState: TCourseModalFormData) =>
+    editItem(
+      'topic',
+      setModalRequestState,
+      formState || { title: '' },
+      dispatch,
+      'DELETE'
+    );
+
   const handleOpenModal = () => {
     openModal({
       modalMetadata: {
@@ -71,14 +81,6 @@ export const Topic: FC<{
         type: 'topic',
         handleAction: (formState) =>
           editItem('topic', setModalRequestState, formState, dispatch, 'PUT'),
-        handleDelete: (formState) =>
-          editItem(
-            'topic',
-            setModalRequestState,
-            formState || { title: '' },
-            dispatch,
-            'DELETE'
-          ),
       },
     });
   };
@@ -132,7 +134,6 @@ export const Topic: FC<{
               <button
                 onClick={() => {
                   setModalOpen(!modalOpen);
-                  console.log('click detecetd');
                 }}
                 className='z-50 pt-2'
               >
@@ -151,13 +152,15 @@ export const Topic: FC<{
                 </svg>
               </button>
               <SidebarEditModal
+                openEditModal={handleOpenModal}
                 handleModalClose={() => setModalOpen(false)}
+                deleteAction={() => handleDelete(initialFormData)}
                 modalOpen={modalOpen}
               />
             </div>
 
             {/* Check Icon */}
-            {userRole === 'Student' && (
+            {/* {userRole === 'Student' && (
               <svg
                 width='18'
                 height='18'
@@ -178,7 +181,7 @@ export const Topic: FC<{
                   </clipPath>
                 </defs>
               </svg>
-            )}
+            )} */}
           </>
         )}
         {user?.role === 'Student' && <CheckSvg isActive={isActive} />}

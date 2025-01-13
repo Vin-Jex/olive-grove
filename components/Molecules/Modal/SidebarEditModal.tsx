@@ -1,24 +1,43 @@
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
 import CourseDeleteModal from './CourseDeleteModal';
 
 const SidebarEditModal: FC<{
   modalOpen: boolean;
+  openEditModal?: () => void;
+  deleteAction?: () => Promise<boolean>;
   handleModalClose: () => void;
-}> = ({ modalOpen, handleModalClose }) => {
+}> = ({ modalOpen, handleModalClose, openEditModal, deleteAction }) => {
   const [loading, setLoading] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
   return (
-    <>
+    <div>
       <CourseDeleteModal
         handleModalClose={() => setDeleteModalOpen(false)}
         loading={loading}
         modalOpen={deleteModalOpen}
-        // handleConfirm={}
+        handleConfirm={async () => {
+          setLoading(true);
+          try {
+            deleteAction && (await deleteAction());
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setLoading(false);
+          }
+        }}
       />
+
       <Modal handleClose={handleModalClose} isOpen={modalOpen}>
-        <div className='space-y-2'>
-          <button className='flex gap-2'>
+        <div className=''>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              openEditModal && openEditModal();
+              // openEditCourseModal();
+            }}
+            className='flex gap-2 hover:bg-black/10 pr-10 w-full py-2 pl-3 rounded-tr-lg rounded-tl-lg'
+          >
             <svg
               width='16'
               height='17'
@@ -34,7 +53,13 @@ const SidebarEditModal: FC<{
             </svg>
             <span>Edit</span>
           </button>
-          <button className='flex gap-2'>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteModalOpen(true);
+            }}
+            className='flex gap-2 pr-10 hover:bg-black/10  rounded-bl-lg rounded-br-lg py-2 pl-3'
+          >
             <svg
               width='16'
               height='17'
@@ -52,7 +77,7 @@ const SidebarEditModal: FC<{
           </button>
         </div>
       </Modal>
-    </>
+    </div>
   );
 };
 
@@ -100,7 +125,7 @@ export const Modal = ({
   return (
     <div
       ref={modalRef}
-      className='transform absolute z-[1000] top-[100%] bg-white py-2 pl-3 pr-10 text-left shadow-xl transition-all rounded-lg'
+      className='transform absolute z-[1000] top-[100%] bg-white text-left shadow-xl rounded-lg transition-all'
     >
       <div>{children}</div>
     </div>
