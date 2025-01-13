@@ -188,8 +188,8 @@ const SubjectDetailsPage: FC = () => {
       <TopicContextProvider course={course.data}>
         <StudentWrapper
           remark='Manage and get updates on your courses'
-          title='Courses'
-          metaTitle={`Olive Grove ~ ${courseId}`}
+          title={`Olive Grove - ${course?.data?.title ?? "Lecture"} `}
+          metaTitle={`Olive Grove - ${course?.data?.title ?? "Lecture"} `}
         >
           <div className='flex flex-col space-y-5'>
             {course.loading ? (
@@ -348,9 +348,10 @@ export const BackButton = () => {
     <Button
       onClick={() => router.back()}
       size='xs'
-      className='p-2 rouded-md !w-6 !h-6 !bg-white'
+      width='fit'
+      className='!p-1.5 rouded-md !bg-white'
     >
-      <ChevronLeft className='text-black' />
+      <ChevronLeft className='text-black !text-xl' />
     </Button>
   );
 };

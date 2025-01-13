@@ -418,16 +418,15 @@ export type TLoginResponse<T extends 'student' | 'teacher' | 'admin'> = {
 
 export type TAssessmnentQuestionProp = {};
 
-export type TAssessmnentQuestion = {
-  _id?: string;
-  draft_id: string;
+export type TAssessmnentQuestion<T extends "draft" | "preview" = "preview"> = {
+  _id: string;
   questionText: string;
-  questionImage: string;
+  questionImages?: [string];
   questionType: TAssessmentQuestionType;
-  options?: string[];
-  correctAnswer?: string;
+  options?: T extends "draft" ? TAsseessmentQuestionOption[] : string[];
+  correctAnswer?: T extends "draft" ? TAsseessmentQuestionOption : string;
   fileRequirements?: {
-    maxSizeMB: 5;
+    maxSizeMB: number;
     allowedExtensions: string[];
   };
   maxMarks: number;
@@ -491,3 +490,5 @@ export type InputType =
   | 'textarea';
 
 export type TErrorStatus = 404 | 500 | 403 | 401;
+
+export type TAsseessmentQuestionMode = "add" | "edit" | "preview";

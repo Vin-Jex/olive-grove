@@ -32,15 +32,16 @@ const Assessments = () => {
   const [openModalEdit, setOpenModalEdit] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [openModalCreate, setOpenModalCreate] = useState(false);
-  const [formState, setFormState] = useState<TAssessment<'post'>>({
-    course: '',
-    assessmentType: '',
-    description: '',
-    dueDate: '',
-    teacher: '',
-    academicWeek: '',
-    department: '',
-    title: '',
+  const [formState, setFormState] = useState<TAssessment<"post">>({
+    _id: "",
+    course: "",
+    assessmentType: "",
+    description: "",
+    dueDate: "",
+    teacher: "",
+    academicWeek: "",
+    department: "",
+    title: "",
     active: false,
   });
   const [searchResults, setSearchResults] = useState<TAssessment<'get'>[]>([]);
@@ -384,7 +385,6 @@ const Assessments = () => {
   const handleClassFilter: (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => void = ({ target: { value } }) => {
-    console.log('Filtered class value', value);
 
     if (!value || value.includes('Select class')) return;
     setApiData('assessments', {
@@ -420,14 +420,14 @@ const Assessments = () => {
         requestState={apiState.assessments}
         subjects={
           apiState.courses?.data?.map((course) => ({
-            display_value: course?.title ?? 'Unknown Title',
-            value: course?._id ?? '',
+            display_value: course?.title ?? "Not Specified",
+            value: course?._id ?? "",
           })) ?? []
         }
         assessmentTypes={
           apiState.assessmentTypes?.data?.map((type) => ({
-            display_value: type?.name ?? 'Unknown Type',
-            value: type?._id ?? '',
+            display_value: type?.name ?? "Not Specified",
+            value: type?._id ?? "",
           })) ?? []
         }
         academicWeeks={
@@ -589,14 +589,12 @@ const Assessments = () => {
                           }
                           btnLink1={() => {
                             router.push(
-                              `/teachers/assessments/submissions/${assessment?._id}`
+                              `/teachers/assessments/questions/${assessment?._id}`
                             );
                           }}
-                          btnLink2={() =>
-                            router.push(
-                              `/teachers/assessments/questions/${assessment?._id}`
-                            )
-                          }
+                          btnLink2={() => {
+                            toggleModalEdit();
+                          }}
                         />
                       ))}
                   </div>

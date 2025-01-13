@@ -1,23 +1,13 @@
-import React, {
-  ChangeEvent,
-  FormEvent,
-  FormEventHandler,
-  MouseEventHandler,
-  useEffect,
-  useState,
-} from 'react';
-import Modal from './Modal';
-import Button, { ButtonProps } from '@/components/Atoms/Button';
-import Input from '@/components/Atoms/Input';
-import TextEditor from '@/components/Atoms/TextEditor';
-import File from '@/components/Atoms/File';
-import { capitalize } from '@/components/utils/utils';
-import { TCourse, TCourseModalProps } from '@/components/utils/types';
-import Select from '@/components/Atoms/Select';
-import { CircularProgress } from '@mui/material';
-import { Info } from '@mui/icons-material';
-import InputField from '@/components/Atoms/InputField';
-import toast from 'react-hot-toast';
+
+import React, { ChangeEvent, useEffect, useState } from "react";
+import Modal from "./Modal";
+import Button, { ButtonProps } from "@/components/Atoms/Button";
+import TextEditor from "@/components/Atoms/TextEditor";
+import File from "@/components/Atoms/File";
+import { capitalize } from "@/components/utils/utils";
+import { TCourse, TCourseModalProps } from "@/components/utils/types";
+import { CircularProgress } from "@mui/material";
+import InputField from "@/components/Atoms/InputField";
 
 export default function CourseModal({
   modalOpen,
@@ -34,10 +24,10 @@ export default function CourseModal({
   const [selectedImage, setSelectedImage] = useState<
     Blob | null | string | undefined
   >(null);
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
   const [topicVideoType, setTopicVideoType] = useState<
-    'topicVideo' | 'youtubeVideo' | 'embed'
-  >(formState.topicVideo ? 'topicVideo' : 'youtubeVideo');
+    "topicVideo" | "youtubeVideo" | "embed"
+  >(formState.topicVideo ? "topicVideo" : "youtubeVideo");
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [is_loading, setIsLoading] = useState({
     saving: false,
@@ -47,15 +37,15 @@ export default function CourseModal({
     formState.youtubeVideo
   );
 
-  const textEditorValue = ['topic', 'lesson'].includes(type)
-    ? 'topicNote'
-    : type === 'course'
-    ? 'description'
-    : '';
+  const textEditorValue = ["topic", "lesson"].includes(type)
+    ? "topicNote"
+    : type === "course"
+    ? "description"
+    : "";
 
   const resetImageField = () => {
     setSelectedImage(null);
-    setFileName('');
+    setFileName("");
     setPreviewImage(null);
   };
 
@@ -100,19 +90,17 @@ export default function CourseModal({
     const updateYTURL = (ytEmbedURL: string) => {
       // * Update the youtube video with the correct embed URL
       handleChange({
-        target: { name: 'youtubeVideo', value: ytEmbedURL || '' },
+        target: { name: "youtubeVideo", value: ytEmbedURL || "" },
       } as React.ChangeEvent<HTMLInputElement>);
     };
 
     try {
       setTopicYouTubeUrl(value);
 
-      const ytVideoId = new URL(value).searchParams.get('v');
+      const ytVideoId = new URL(value).searchParams.get("v");
 
       // * If the user added the embed url direcly
-      if (value.includes('/embed/')) {
-        console.log('Here...');
-        console.log('Value', value);
+      if (value.includes("/embed/")) {
         // * Update the youtube video with the entered URL
         updateYTURL(value);
         return;
@@ -123,18 +111,16 @@ export default function CourseModal({
       // * Update the youtube video with the correct embed URL
       updateYTURL(ytEmbedURL);
     } catch (error) {
-      console.log('Error', error);
+      console.log("Error", error);
     }
   };
 
-  const handleEdit = async (e: FormEvent) => {
-    console.log('Onsubmit: Form state', formState);
-    // * Prevent's the page from getting reloaded on submit
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // * Display the saving loading state
 
     setIsLoading({ saving: true, deleting: false });
-    if (formState.isActive === 'true') {
+    if (formState.isActive === "true") {
       setFormState((prevState: any) => ({
         ...prevState,
         isActive: true,
@@ -145,49 +131,14 @@ export default function CourseModal({
         isActive: false,
       }));
     }
-    // * Make the request to handle the form submission
+
     const result = handleAction && (await handleAction(formState));
-    // * If the request was completed successfully, close the modal
     if (result) handleModalClose();
-    if (result) toast.success('Course Edited successfully');
-    // * Remove the saving loading state
     setIsLoading({ saving: false, deleting: false });
   };
 
-  // const actionProps: Omit<ButtonProps, 'children'> = {
-  //   onClick: async (e) => {
-  //     console.log('Onsubmit: Form state', formState);
-  //     // * Prevent's the page from getting reloaded on submit
-  //     e.preventDefault();
-  //     // * Display the saving loading state
-
-  //     setIsLoading({ saving: true, deleting: false });
-  //     if (formState.isActive === 'true') {
-  //       setFormState((prevState: any) => ({
-  //         ...prevState,
-  //         isActive: true,
-  //       }));
-  //     } else {
-  //       setFormState((prevState: any) => ({
-  //         ...prevState,
-  //         isActive: false,
-  //       }));
-  //     }
-  //     // * Make the request to handle the form submission
-  //     const result = handleAction && (await handleAction(formState));
-  //     // * If the request was completed successfully, close the modal
-  //     if (result) handleModalClose();
-  //     if (result) toast.success('Course created successfully');
-  //     // * Remove the saving loading state
-  //     setIsLoading({ saving: false, deleting: false });
-  //   },
-  //   disabled: requestState?.loading || false,
-  // };
-
-  const deleteActionProps: Omit<ButtonProps, 'children'> = {
+  const deleteActionProps: Omit<ButtonProps, "children"> = {
     onClick: async (e) => {
-      console.log('Onsubmit: Form state', formState);
-      console.log(formState);
       // * Prevent's the page from getting reloaded on submit
       e.preventDefault();
       // * Display the deleting loading state
@@ -219,10 +170,11 @@ export default function CourseModal({
           </span>
         </div>
         <form
-          onSubmit={handleEdit}
+
           className='flex flex-col justify-center py-4 my-2 px-4 w-full space-y-6'
+          onSubmit={handleFormSubmit}
         >
-          {requestState?.error && (
+          {/* {requestState?.error && (
             <>
               <div className='text-red-500 text-center'>
                 <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
@@ -230,9 +182,9 @@ export default function CourseModal({
                   (requestState.error as string)}
               </div>
             </>
-          )}
+          )} */}
 
-          {type === 'course' && (
+          {type === "course" && (
             // <Select
             //   name='classId'
             //   options={departments || []}
@@ -250,7 +202,7 @@ export default function CourseModal({
               name='department'
               value={formState.department}
               onChange={handleChange}
-              error={''}
+              error={""}
             />
           )}
 
@@ -262,15 +214,15 @@ export default function CourseModal({
             required
             value={formState.title}
             onChange={handleChange}
-            error={''}
+            error={""}
           />
 
           <InputField
             error=''
             type='datetime-local'
             name='startDate'
-            value={formState.startDate ?? ''}
-            label={`Enter the date the course will start`}
+            value={formState.startDate ?? ""}
+            label={`Course Start Date`}
             onChange={handleChange}
             className='input'
             required={true}
@@ -279,36 +231,36 @@ export default function CourseModal({
             error=''
             type='datetime-local'
             name='endDate'
-            label={`Enter the date the course will End`}
-            value={formState.endDate ?? ''}
+            label={`Course End Date`}
+            value={formState.endDate ?? ""}
             onChange={handleChange}
             className='input'
             required={true}
           />
           <InputField
             onChange={handleChange}
-            placeholder='Select the active status'
+            placeholder='Choose accessibility status'
+            label='Accessibility Status'
             value={formState.isActive as string}
             error=''
             required
             type='select'
             name='isActive'
-            label='Is Active'
             options={[
-              { display_value: 'Yes', value: 'true' },
-              { display_value: 'No', value: 'false' },
+              { display_value: "Yes", value: "true" },
+              { display_value: "No", value: "false" },
             ]}
           />
 
-          {['topic', 'lesson'].includes(type) && (
+          {["topic", "lesson"].includes(type) && (
             <TextEditor
               value={(formState as any)[textEditorValue]}
               placeholder={`${capitalize(type)} ${
-                ['topic', 'lesson'].includes(type)
-                  ? 'Notes'
-                  : type === 'course'
-                  ? 'Description'
-                  : ''
+                ["topic", "lesson"].includes(type)
+                  ? "Notes"
+                  : type === "course"
+                  ? "Description"
+                  : ""
               }`}
               onChange={(e: any) => {
                 setFormState((prevState: any) => ({
@@ -321,7 +273,7 @@ export default function CourseModal({
 
           {/* If the modal is that for creating or editing a course */}
 
-          {type === 'course' && (
+          {type === "course" && (
             <InputField
               label={`${capitalize(type)} Description`}
               placeholder={`${capitalize(type)} Description`}
@@ -330,7 +282,7 @@ export default function CourseModal({
               name='description'
               value={formState.description} // i am not sure of the formstate for descriptoin
               onChange={handleChange}
-              error={''}
+              error={""}
             />
           )}
 
@@ -355,7 +307,7 @@ export default function CourseModal({
             />
           )} */}
 
-          {['topic', 'lesson'].includes(type) && (
+          {["topic", "lesson"].includes(type) && (
             <div className='flex flex-col gap-4'>
               <InputField
                 label={`${capitalize(type)} Available Date`}
@@ -365,83 +317,89 @@ export default function CourseModal({
                 value={formState.availableDate}
                 onChange={handleChange}
                 required
-                error={''}
+                error={""}
               />
 
-              <Select
+              <InputField
+                label={`Select Upload Type`}
+                placeholder={`Choose Type`}
+                type='select'
                 name='topicVideoType'
-                required
-                placeholder='Choose topic video type'
                 value={topicVideoType}
-                options={[
-                  { display_value: 'Upload Video', value: 'topicVideo' },
-                  { display_value: 'YouTube Video URL', value: 'youtubeVideo' },
-                  { display_value: 'Embeded Site URL', value: 'embed' },
-                ]}
                 onChange={(e) => setTopicVideoType(e.target.value as any)}
+                options={[
+                  { display_value: "Upload Video", value: "topicVideo" },
+                  { display_value: "YouTube Video URL", value: "youtubeVideo" },
+                  { display_value: "Embeded Site URL", value: "embed" },
+                ]}
+                required
+                error={""}
               />
-              {topicVideoType === 'topicVideo' ? (
+
+              {topicVideoType === "topicVideo" ? (
                 <File
                   fileType='video'
                   selectedImage={selectedImage}
-                  name={'topicVideo'}
+                  name={"topicVideo"}
                   setSelectedImage={setSelectedImage}
                   previewImage={previewImage}
                   onChange={handleImageChange}
                   disabled={false}
                   resetImageStates={resetImageField}
-                  placeholder={fileName !== '' ? fileName : 'Upload Video'}
+                  placeholder={fileName !== "" ? fileName : "Upload Video"}
                   required
                   fileName={fileName}
                 />
-              ) : topicVideoType === 'youtubeVideo' ? (
-                <div className='flex w-full flex-col gap-2 text-subtext'>
-                  <Input
+              ) : topicVideoType === "youtubeVideo" ? (
+                <div className='flex w-full flex-col space-y-4 text-subtext'>
+                  <InputField
+                    label={`YouTube URL`}
+                    placeholder={`Enter YouTube URL`}
                     type='url'
                     name='youtubeVideo'
                     value={topicYouTubeUrl}
-                    onChange={modifyYouTubeLink}
-                    placeholder={`Youtube video URL`}
+                    onChange={(e) => modifyYouTubeLink(e as any)}
                     required
-                    className='w-full input !rounded-lg'
+                    error={""}
                   />
                   <div className='bg-primary/10 rounded-lg p-4'>
                     {/* eslint-disable-next-line react/no-unescaped-entities */}
-                    Here's the YouTube Embed URL that will be used:{' '}
+                    Here's the YouTube Embed URL that will be used:{" "}
                     {formState.youtubeVideo}
                   </div>
                 </div>
               ) : (
                 <div className='flex w-full flex-col gap-2 text-subtext'>
-                  <Input
+                  <InputField
+                    label={`Website URL For Embedding`}
+                    placeholder={`Enter Website URL`}
                     type='url'
                     name='embed'
                     value={formState.embed}
                     onChange={handleChange}
-                    placeholder={`Embed  URL`}
                     required
-                    className='w-full input !rounded-lg'
+                    error={""}
                   />
                   <div className='bg-primary/10 rounded-lg p-4'>
                     {/* eslint-disable-next-line react/no-unescaped-entities */}
-                    Here's the Embed URL that will be used: {formState.embed}
+                    Here's the Website URL that will be used: {formState.embed}
                   </div>
                 </div>
               )}
             </div>
           )}
 
-          {type === 'course' && (
+          {type === "course" && (
             <File
               selectedImage={selectedImage}
               accept='image/png, image/jpeg, image/jpg'
-              name={'courseCover'}
+              name={"courseCover"}
               setSelectedImage={setSelectedImage}
               previewImage={previewImage}
               onChange={handleImageChange}
               disabled={false}
               resetImageStates={resetImageField}
-              placeholder={fileName !== '' ? fileName : 'Upload course image'}
+              placeholder={fileName !== "" ? fileName : "Upload course image"}
               required
               fileName={fileName}
             />
@@ -459,18 +417,19 @@ export default function CourseModal({
                 formState.department === '' ||
                 formState.endDate === '' ||
                 formState.startDate === '' ||
-                false
+                is_loading.saving
               }
-              // {...actionProps}
+              // 
             >
               {is_loading.saving ? (
                 <CircularProgress size={15} color='inherit' />
               ) : (
-                'Save'
+                "Save"
               )}
             </Button>
 
             {/* {mode === 'edit' && handleDelete && (
+
               <Button
                 size='xs'
                 width='fit'
@@ -481,7 +440,7 @@ export default function CourseModal({
                 {is_loading.deleting ? (
                   <CircularProgress size={15} color='inherit' />
                 ) : (
-                  'Delete'
+                  "Delete"
                 )}
               </Button>
             )} */}

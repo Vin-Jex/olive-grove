@@ -1,11 +1,12 @@
-import { TCourse, TResponse } from '@/components/utils/types';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { FC, useEffect, useRef, useState } from 'react';
-import coursePlaceholder from '@/images/course-placeholder.png';
-import { useCourseContext } from '@/contexts/CourseContext';
-import axiosInstance from '@/components/utils/axiosInstance';
-import toast from 'react-hot-toast';
+
+import { TCourse, TResponse } from "@/components/utils/types";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { FC, useEffect, useRef, useState } from "react";
+import coursePlaceholder from "@/public/image/course-placeholder.png";
+import { useCourseContext } from "@/contexts/CourseContext";
+import axiosInstance from "@/components/utils/axiosInstance";
+import toast from "react-hot-toast";
 
 // const Course: FC<{ course: TCourse }> = ({ course }) => {
 //   const router = useRouter();
@@ -275,6 +276,7 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
       });
 
       toast.error(error.response.data?.message || 'Failed to delete course.');
+
       return false;
     }
   };

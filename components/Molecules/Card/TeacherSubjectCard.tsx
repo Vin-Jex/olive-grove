@@ -17,7 +17,7 @@ interface TTeacherCardProps {
   btnLink2: () => any;
 }
 
-const truncateAndElipses = (text: string, limit: number): string => {
+export const truncateAndElipses = (text: string, limit: number): string => {
   if (text.length > limit) {
     return text.substring(0, limit) + "...";
   }

@@ -53,7 +53,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`flex items-center justify-center space-x-1 rounded-md font-roboto font-medium ${widthClassName} text-center ${sizeClassName} ${colorClassName} whitespace-nowrap disabled:text-[#F8F8F8D9] disabled:cursor-no-drop  disabled:bg-[#1E1E1E4D] cursor-pointer ${className}`}
+      className={`flex items-center justify-center space-x-1 rounded-md font-roboto font-medium ${widthClassName} text-center ${sizeClassName} ${colorClassName} whitespace-nowrap disabled:text-[#F8F8F8D9] disabled:cursor-no-drop  disabled:bg-[#1E1E1E4D] disabled:!border-[#1E1E1E4D] cursor-pointer ${className} !outline-none`}
       {...props}
     >
       {children}

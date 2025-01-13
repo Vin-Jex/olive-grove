@@ -398,8 +398,8 @@ const Profile = () => {
   return (
     <StudentWrapper
       remark='Manage and edit your profile settings.'
-      title='Profile'
-      metaTitle='Olive Grove ~ Profile'
+      title='Olive Grove - Profile'
+      metaTitle='Olive Grove - Profile'
     >
       <div className='flex flex-col space-y-8'>
         <div className='w-full flex justify-between items-center'>

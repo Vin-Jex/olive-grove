@@ -170,8 +170,8 @@ const Assessments = () => {
   return (
     <StudentWrapper
       remark='Manage, submit and access your assessments.'
-      title='Assessments'
-      metaTitle='Olive Grove ~ Assessments'
+      title={`Olive Grove - Assessments`}
+      metaTitle='Olive Grove - Assessments'
     >
       {isLoading && <Loader />}
       <div className='grid max-md:place-items-center md:grid-cols-2 lg:grid-cols-3 h-fit w-full gap-8 my-4'>

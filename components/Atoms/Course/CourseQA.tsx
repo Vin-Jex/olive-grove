@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import dummyImage from "@/images/dummy-img.jpg";
+import dummyImage from "@/public/image/dummy-img.jpg";
 import Image, { StaticImageData } from "next/image";
 import Input from "../Input";
 import SendIcon from "./CourseSendIcon";
@@ -102,27 +102,27 @@ const CourseQA = () => {
   return (
     <>
       <div>
-        <div className="grid grid-cols-[50px_1fr] py-8 gap-4 w-full">
+        <div className='grid grid-cols-[50px_1fr] py-8 gap-4 w-full'>
           <div>
             <Image
               src={dummyImage.src}
               width={40}
               height={40}
-              className="rounded-full"
-              alt="student profile"
+              className='rounded-full'
+              alt='student profile'
             />
           </div>
           {/**profil imega */}
-          <div className="relative ">
+          <div className='relative '>
             <Input
-              name="text"
-              className="rounded-full w-full px-3 py-3"
-              placeholder="Share your thoughts"
-              value=""
+              name='text'
+              className='rounded-full w-full px-3 py-3'
+              placeholder='Share your thoughts'
+              value=''
               onChange={() => {}}
             />
-            <button className="h-full absolute right-2 top-0  rounded-full">
-              <SendIcon className="w-full h-[75%]" />
+            <button className='h-full absolute right-2 top-0  rounded-full'>
+              <SendIcon className='w-full h-[75%]' />
             </button>
           </div>
         </div>
