@@ -110,6 +110,8 @@ const useUserVerify = () => {
     verifyOTP,
     fetchedDept,
     OTPTimer,
+    setOTPTimer,
+    setFormattedTimer,
     formattedTimer,
   };
 };
