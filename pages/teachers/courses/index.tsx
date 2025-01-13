@@ -52,6 +52,9 @@ const Courses: FC = () => {
       title: '',
       description: '',
       department: '',
+      startDate: '',
+      endDate: '',
+      isActive: false,
       courseCover: undefined,
     }
   );

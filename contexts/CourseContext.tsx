@@ -96,10 +96,17 @@ const courseReducer: Reducer<
 
   if (action.type === 'EDIT_COURSE') {
     if (state.data) {
+      //the fields we need
+      //department, title, chapters, courseCover, description, startDate, endDate, isActive.
       const newState = { ...state.data };
+      console.log(newState, 'newState');
       newState.title = action.payload.title || '';
       newState.description = action.payload.description || '';
       newState.department = action.payload.classId || '';
+      // newState.department = action.payload.department || '';
+      // newState.startDate = action.payload.startDate || '';
+      // newState.endDate = action.payload.endDate || '';
+      // newState.isActive = action.payload.isActive || false;
       action.payload.courseCover &&
         (newState.courseCover = action.payload.courseCover);
 
@@ -431,9 +438,9 @@ const CourseContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     title: '',
     _id: '',
     department: '',
-    // isActive: false, //isActive is false by default
-    // startDate: '',
-    // endDate: '',
+    isActive: false, //isActive is false by default
+    startDate: '',
+    endDate: '',
     description: '',
     image: '',
     topicNote: '',

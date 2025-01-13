@@ -1,4 +1,11 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FormEvent,
+  FormEventHandler,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from 'react';
 import Modal from './Modal';
 import Button, { ButtonProps } from '@/components/Atoms/Button';
 import Input from '@/components/Atoms/Input';
@@ -120,35 +127,62 @@ export default function CourseModal({
     }
   };
 
-  const actionProps: Omit<ButtonProps, 'children'> = {
-    onClick: async (e) => {
-      console.log('Onsubmit: Form state', formState);
-      // * Prevent's the page from getting reloaded on submit
-      e.preventDefault();
-      // * Display the saving loading state
+  const handleEdit = async (e: FormEvent) => {
+    console.log('Onsubmit: Form state', formState);
+    // * Prevent's the page from getting reloaded on submit
+    e.preventDefault();
+    // * Display the saving loading state
 
-      setIsLoading({ saving: true, deleting: false });
-      if (formState.isActive === 'true') {
-        setFormState((prevState: any) => ({
-          ...prevState,
-          isActive: true,
-        }));
-      } else {
-        setFormState((prevState: any) => ({
-          ...prevState,
-          isActive: false,
-        }));
-      }
-      // * Make the request to handle the form submission
-      const result = handleAction && (await handleAction(formState));
-      // * If the request was completed successfully, close the modal
-      if (result) handleModalClose();
-      if (result) toast.success('Course created successfully');
-      // * Remove the saving loading state
-      setIsLoading({ saving: false, deleting: false });
-    },
-    disabled: requestState?.loading || false,
+    setIsLoading({ saving: true, deleting: false });
+    if (formState.isActive === 'true') {
+      setFormState((prevState: any) => ({
+        ...prevState,
+        isActive: true,
+      }));
+    } else {
+      setFormState((prevState: any) => ({
+        ...prevState,
+        isActive: false,
+      }));
+    }
+    // * Make the request to handle the form submission
+    const result = handleAction && (await handleAction(formState));
+    // * If the request was completed successfully, close the modal
+    if (result) handleModalClose();
+    if (result) toast.success('Course Edited successfully');
+    // * Remove the saving loading state
+    setIsLoading({ saving: false, deleting: false });
   };
+
+  // const actionProps: Omit<ButtonProps, 'children'> = {
+  //   onClick: async (e) => {
+  //     console.log('Onsubmit: Form state', formState);
+  //     // * Prevent's the page from getting reloaded on submit
+  //     e.preventDefault();
+  //     // * Display the saving loading state
+
+  //     setIsLoading({ saving: true, deleting: false });
+  //     if (formState.isActive === 'true') {
+  //       setFormState((prevState: any) => ({
+  //         ...prevState,
+  //         isActive: true,
+  //       }));
+  //     } else {
+  //       setFormState((prevState: any) => ({
+  //         ...prevState,
+  //         isActive: false,
+  //       }));
+  //     }
+  //     // * Make the request to handle the form submission
+  //     const result = handleAction && (await handleAction(formState));
+  //     // * If the request was completed successfully, close the modal
+  //     if (result) handleModalClose();
+  //     if (result) toast.success('Course created successfully');
+  //     // * Remove the saving loading state
+  //     setIsLoading({ saving: false, deleting: false });
+  //   },
+  //   disabled: requestState?.loading || false,
+  // };
 
   const deleteActionProps: Omit<ButtonProps, 'children'> = {
     onClick: async (e) => {
@@ -184,7 +218,10 @@ export default function CourseModal({
             {capitalize(mode)} {capitalize(type)}
           </span>
         </div>
-        <form className='flex flex-col justify-center py-4 my-2 px-4 w-full space-y-6'>
+        <form
+          onSubmit={handleEdit}
+          className='flex flex-col justify-center py-4 my-2 px-4 w-full space-y-6'
+        >
           {requestState?.error && (
             <>
               <div className='text-red-500 text-center'>
@@ -236,7 +273,7 @@ export default function CourseModal({
             label={`Enter the date the course will start`}
             onChange={handleChange}
             className='input'
-            required
+            required={true}
           />
           <InputField
             error=''
@@ -246,13 +283,14 @@ export default function CourseModal({
             value={formState.endDate ?? ''}
             onChange={handleChange}
             className='input'
-            required
+            required={true}
           />
           <InputField
             onChange={handleChange}
             placeholder='Select the active status'
             value={formState.isActive as string}
             error=''
+            required
             type='select'
             name='isActive'
             label='Is Active'
@@ -416,7 +454,14 @@ export default function CourseModal({
               className='!px-6'
               type='submit'
               color='outline'
-              {...actionProps}
+              disabled={
+                requestState?.loading ||
+                formState.department === '' ||
+                formState.endDate === '' ||
+                formState.startDate === '' ||
+                false
+              }
+              // {...actionProps}
             >
               {is_loading.saving ? (
                 <CircularProgress size={15} color='inherit' />
@@ -425,7 +470,7 @@ export default function CourseModal({
               )}
             </Button>
 
-            {mode === 'edit' && handleDelete && (
+            {/* {mode === 'edit' && handleDelete && (
               <Button
                 size='xs'
                 width='fit'
@@ -439,7 +484,7 @@ export default function CourseModal({
                   'Delete'
                 )}
               </Button>
-            )}
+            )} */}
           </div>
         </form>
       </Modal>

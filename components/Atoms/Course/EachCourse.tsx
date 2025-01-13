@@ -1,11 +1,11 @@
-import { TCourse, TResponse } from "@/components/utils/types";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { FC, useEffect, useRef, useState } from "react";
-import coursePlaceholder from "@/images/course-placeholder.png";
-import { useCourseContext } from "@/contexts/CourseContext";
-import axiosInstance from "@/components/utils/axiosInstance";
-import toast from "react-hot-toast";
+import { TCourse, TResponse } from '@/components/utils/types';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { FC, useEffect, useRef, useState } from 'react';
+import coursePlaceholder from '@/images/course-placeholder.png';
+import { useCourseContext } from '@/contexts/CourseContext';
+import axiosInstance from '@/components/utils/axiosInstance';
+import toast from 'react-hot-toast';
 
 // const Course: FC<{ course: TCourse }> = ({ course }) => {
 //   const router = useRouter();
@@ -160,19 +160,22 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
       const request_data = new FormData();
 
       // * Append the course details to the request body
-      request_data.append("title", formState.title);
-      request_data.append("description", formState.description || "");
-      request_data.append("classId", formState.classId || "");
+      request_data.append('title', formState.title);
+      request_data.append('description', formState.description || '');
+      request_data.append('department', formState.department || '');
+      request_data.append('startDate', formState.startDate || '');
+      request_data.append('endDate', formState.endDate || '');
+      request_data.append('isActive', formState.isActive || false);
 
-      typeof formState.courseCover === "object" &&
-        request_data.append("courseCover", formState.courseCover);
-      !formState.courseCover && request_data.append("courseCover", "");
+      typeof formState.courseCover === 'object' &&
+        request_data.append('courseCover', formState.courseCover);
+      !formState.courseCover && request_data.append('courseCover', '');
 
       // * Make an API request to retrieve the list of courses created by this teacher
       const response = await axiosInstance.put(
         `/courses/${course?._id}`,
         request_data,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
 
       // * Update the existing data with that returned by the API request
@@ -183,9 +186,9 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
         error: undefined,
       });
 
-      dispatch({ type: "EDIT_COURSE", payload: responseData.data });
+      dispatch({ type: 'EDIT_COURSE', payload: responseData.data });
 
-      return true;
+      return true; //why are we returning true here?
     } catch (error: any) {
       // * If it's a 400 error, display message that the input details are incomplete
       if (error?.response?.status == 400) {
@@ -193,16 +196,16 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
         setModalRequestState({
           data: undefined,
           loading: false,
-          error: "Invalid form data passed",
+          error: 'Invalid form data passed',
         });
         return false;
       }
-
+      toast.error(error.response.data?.message || 'Failed to update course.');
       // * If it's any other error code, display default error msg
       setModalRequestState({
         data: undefined,
         loading: false,
-        error: "An error occurred while updating the course",
+        error: 'An error occurred while updating the course',
       });
 
       return false;
@@ -232,9 +235,9 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
         error: undefined,
       });
 
-      toast.success(response.data?.message || "Course successfully deleted.");
+      toast.success(response.data?.message || 'Course successfully deleted.');
 
-      router.push("/teachers/courses");
+      router.push('/teachers/courses');
 
       return true;
     } catch (error: any) {
@@ -245,8 +248,8 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
           loading: false,
           error: undefined,
         });
-        toast.error(error.response.data?.message || "Course not found.");
-        router.push("/teachers/courses");
+        toast.error(error.response.data?.message || 'Course not found.');
+        router.push('/teachers/courses');
         return false;
       }
 
@@ -259,7 +262,7 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
           error: undefined,
         });
         toast.error(
-          error.response.data?.message || "Course deletion was unsuccessful."
+          error.response.data?.message || 'Course deletion was unsuccessful.'
         );
         return false;
       }
@@ -271,8 +274,7 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
         error: undefined,
       });
 
-      
-      toast.error(error.response.data?.message || "Failed to delete course.");
+      toast.error(error.response.data?.message || 'Failed to delete course.');
       return false;
     }
   };
@@ -285,10 +287,10 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
       modalMetadata: {
         formData: {
           _id: course._id,
-          title: "",
+          title: '',
         },
-        mode: "delete",
-        type: "course",
+        mode: 'delete',
+        type: 'course',
         handleDelete: handleDeleteCourse,
       },
     });
@@ -298,16 +300,20 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
    * * Function responsible for opening the course modal to edit the course
    * */
   const openEditCourseModal = () => {
+    console.log(course, 'this is the course from the openeditmodal');
     openModal({
       modalMetadata: {
         formData: {
-          title: course?.title || "",
-          department: (course?.department as any) || "",
-          description: course?.description || "",
-          courseCover: course?.courseCover || "",
+          title: course?.title || '',
+          startDate: course?.startDate || '',
+          endDate: course?.endDate || '',
+          isActive: course?.isActive || false, //this, hmmmm setting it to false by default.
+          department: (course?.department?._id as string) || '',
+          description: course?.description || '',
+          courseCover: course?.courseCover || '',
         },
-        mode: "edit",
-        type: "course",
+        mode: 'edit',
+        type: 'course',
         handleAction: handleEditCourse,
         handleDelete: openDeleteCourseModal as any,
       },
@@ -315,14 +321,14 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
   };
 
   useEffect(() => {
-    action_ref.current?.addEventListener("mouseover", displayActionHandler);
-    action_ref.current?.addEventListener("mouseout", hideActionHandler);
+    action_ref.current?.addEventListener('mouseover', displayActionHandler);
+    action_ref.current?.addEventListener('mouseout', hideActionHandler);
     return () => {
       action_ref.current?.removeEventListener(
-        "mouseover",
+        'mouseover',
         displayActionHandler
       );
-      action_ref.current?.removeEventListener("mouseout", hideActionHandler);
+      action_ref.current?.removeEventListener('mouseout', hideActionHandler);
     };
   }, []);
 
@@ -406,7 +412,7 @@ const Course: FC<{ course: TCourse }> = ({ course }) => {
           <span
             className='font-roboto text-sm text-[#1E1E1E99] first-letter:capitalize'
             dangerouslySetInnerHTML={{
-              __html: description || "Please add description for this course.",
+              __html: description || 'Please add description for this course.',
             }}
           />
         </div>
