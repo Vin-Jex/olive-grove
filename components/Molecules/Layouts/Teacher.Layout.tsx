@@ -86,9 +86,9 @@ const TeachersWrapper = ({
       />
 
       <aside
-        className={` left-0 top-0 h-screen w-[16.5rem] overflow-auto z-30 !bg-white lg:block transition-transform transform ${
+        className={` left-0 top-0 h-screen max-md:hidden w-[16.5rem] overflow-auto z-30 !bg-white block transition-transform transform ${
           isSidenavOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0`}
+        } md:translate-x-0`}
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>

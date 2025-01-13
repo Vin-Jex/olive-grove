@@ -3,6 +3,7 @@ import { TCourseModalFormData } from "@/components/utils/types";
 import { TCourse, TFetchState, TResponse } from "../types";
 import { TCourseDispatch } from "@/contexts/CourseContext";
 import axiosInstance from "../axiosInstance";
+import toast from "react-hot-toast";
 
 /**
  * * Class responsible for creating a new course/subject object
@@ -101,6 +102,8 @@ export const editItem = async (
       error: undefined,
     });
 
+    toast.success(`Successfully ${method === "PUT" ? "edited" : "deleted"} ${type}`);
+
     console.log("Edit data response", responseData, method);
 
     // * Edit/Delete an existing item (chapter/lesson/topic) with the details of the updated/deleted item to the Course reducer
@@ -150,6 +153,7 @@ export const editItem = async (
     return true;
   } catch (error: any) {
     // * If it's a 400 error, display message that the input details are incomplete
+    toast.error(`An error occurred while ${method === "PUT" ? "editing" : "deleting"} ${type}`);
     if (error?.response?.status == 400) {
       const data =
         method === "PUT"

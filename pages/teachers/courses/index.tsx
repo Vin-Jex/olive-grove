@@ -427,7 +427,7 @@ const Courses: FC = () => {
               </div>
               {/* Searchbars and select fields */}
               {!courses.error && (
-                <div className='flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 xl:items-center'>
+                <div className='flex items-start justify-start gap-4 flex-col md:justify-between md:flex-row xl:gap-0 md:items-center'>
                   <div className='flex justify-start items-center gap-4 w-full md:w-auto'>
                     <SearchInput
                       shape='rounded-lg'

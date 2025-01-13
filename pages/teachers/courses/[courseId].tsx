@@ -1,28 +1,28 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
-import withAuth from "@/components/Molecules/WithAuth";
-import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
-import Button from "@/components/Atoms/Button";
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import withAuth from '@/components/Molecules/WithAuth';
+import TeachersWrapper from '@/components/Molecules/Layouts/Teacher.Layout';
+import Button from '@/components/Atoms/Button';
 import {
   TDepartment,
   TCourse,
   TFetchState,
   TResponse,
   TErrorStatus,
-} from "@/components/utils/types";
-import { useRouter } from "next/router";
-import CourseModal from "@/components/Molecules/Modal/CourseModal";
-import { useCourseContext } from "@/contexts/CourseContext";
-import Loader from "@/components/Atoms/Loader";
-import ErrorUI from "@/components/Atoms/ErrorComponent";
-import { AnimatePresence } from "framer";
-import { TopicDetails } from "@/components/Atoms/Course/CourseTopicDetails";
-import SideBar from "@/components/Atoms/Course/CourseSidebar";
-import MobileSideBar from "@/components/Atoms/Course/CourseMobileSideBar";
-import { TopicContextProvider } from "@/contexts/TopicContext";
-import axiosInstance from "@/components/utils/axiosInstance";
-import Cookies from "js-cookie";
-import toast from "react-hot-toast";
-import { BackButton } from "@/pages/students/lectures/[courseId]";
+} from '@/components/utils/types';
+import { useRouter } from 'next/router';
+import CourseModal from '@/components/Molecules/Modal/CourseModal';
+import { useCourseContext } from '@/contexts/CourseContext';
+import Loader from '@/components/Atoms/Loader';
+import ErrorUI from '@/components/Atoms/ErrorComponent';
+import { AnimatePresence } from 'framer';
+import { TopicDetails } from '@/components/Atoms/Course/CourseTopicDetails';
+import SideBar from '@/components/Atoms/Course/CourseSidebar';
+import MobileSideBar from '@/components/Atoms/Course/CourseMobileSideBar';
+import { TopicContextProvider } from '@/contexts/TopicContext';
+import axiosInstance from '@/components/utils/axiosInstance';
+import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
+import { BackButton } from '@/pages/students/lectures/[courseId]';
 
 const Subject: FC = () => {
   const router = useRouter();
@@ -59,7 +59,7 @@ const Subject: FC = () => {
       try {
         // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
         dispatch({
-          type: "FETCHING_COURSE",
+          type: 'FETCHING_COURSE',
         });
 
         // * Get the access token from the cookies
@@ -68,7 +68,7 @@ const Subject: FC = () => {
 
         // * Display the list of courses returned by the endpoint
         const responseData = response.data as TResponse<TCourse[]>;
-        dispatch({ type: "ADD_COURSE", payload: responseData.data });
+        dispatch({ type: 'ADD_COURSE', payload: responseData.data });
       } catch (error: any) {
         const data = error?.response?.data;
         console.log(data);
@@ -77,7 +77,7 @@ const Subject: FC = () => {
           toast.error(data.message);
 
           dispatch({
-            type: "ERROR_FETCHING_COURSE",
+            type: 'ERROR_FETCHING_COURSE',
             payload: { status: 404, message: data.message },
           });
           return;
@@ -86,11 +86,11 @@ const Subject: FC = () => {
         // // * If it's any other error code, display default error msg
         toast.error(data.message);
         dispatch({
-          type: "ERROR_FETCHING_COURSE",
+          type: 'ERROR_FETCHING_COURSE',
           payload: {
             status: data.status,
             message:
-              data.message || "An error occurred while retrieving this course",
+              data.message || 'An error occurred while retrieving this course',
           },
         });
         return;
@@ -111,19 +111,19 @@ const Subject: FC = () => {
       const request_data = new FormData();
 
       // * Append the course details to the request body
-      request_data.append("title", formState.title);
-      request_data.append("description", formState.description || "");
-      request_data.append("classId", formState.classId || "");
+      request_data.append('title', formState.title);
+      request_data.append('description', formState.description || '');
+      request_data.append('classId', formState.classId || '');
 
-      typeof formState.courseCover === "object" &&
-        request_data.append("courseCover", formState.courseCover);
-      !formState.courseCover && request_data.append("courseCover", "");
+      typeof formState.courseCover === 'object' &&
+        request_data.append('courseCover', formState.courseCover);
+      !formState.courseCover && request_data.append('courseCover', '');
 
       // * Make an API request to retrieve the list of courses created by this teacher
       const response = await axiosInstance.put(
         `/courses/${course.data?._id}`,
         request_data,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
 
       // * Update the existing data with that returned by the API request
@@ -134,7 +134,7 @@ const Subject: FC = () => {
         error: undefined,
       });
 
-      dispatch({ type: "EDIT_COURSE", payload: responseData.data });
+      dispatch({ type: 'EDIT_COURSE', payload: responseData.data });
 
       return true;
     } catch (error: any) {
@@ -144,7 +144,7 @@ const Subject: FC = () => {
         setModalRequestState({
           data: undefined,
           loading: false,
-          error: "Invalid form data passed",
+          error: 'Invalid form data passed',
         });
         return false;
       }
@@ -153,7 +153,7 @@ const Subject: FC = () => {
       setModalRequestState({
         data: undefined,
         loading: false,
-        error: "An error occurred while updating the course",
+        error: 'An error occurred while updating the course',
       });
 
       return false;
@@ -182,7 +182,7 @@ const Subject: FC = () => {
         error: undefined,
       });
 
-      router.push("/teachers/courses");
+      router.push('/teachers/courses');
 
       return true;
     } catch (error: any) {
@@ -191,9 +191,9 @@ const Subject: FC = () => {
         setModalRequestState({
           data: undefined,
           loading: false,
-          error: "Course not found",
+          error: 'Course not found',
         });
-        router.push("/teachers/courses");
+        router.push('/teachers/courses');
         return false;
       }
 
@@ -203,7 +203,7 @@ const Subject: FC = () => {
         setModalRequestState({
           data: undefined,
           loading: false,
-          error: "Error deleting course",
+          error: 'Error deleting course',
         });
         return false;
       }
@@ -212,7 +212,7 @@ const Subject: FC = () => {
       setModalRequestState({
         data: undefined,
         loading: false,
-        error: "An error occurred while updating the course",
+        error: 'An error occurred while updating the course',
       });
 
       return false;
@@ -226,13 +226,13 @@ const Subject: FC = () => {
     openModal({
       modalMetadata: {
         formData: {
-          title: course.data?.title || "",
-          department: (course.data?.department as any) || "",
-          description: course.data?.description || "",
-          courseCover: course.data?.courseCover || "",
+          title: course.data?.title || '',
+          department: (course.data?.department as any) || '',
+          description: course.data?.description || '',
+          courseCover: course.data?.courseCover || '',
         },
-        mode: "edit",
-        type: "course",
+        mode: 'edit',
+        type: 'course',
         handleAction: handleEditCourse,
         handleDelete: handleDeleteCourse,
       },
@@ -242,7 +242,7 @@ const Subject: FC = () => {
   /**
    * * Function responsible from retrieving the classes on the platform
    */
-  const geTClasses = async (filter?: { query: "title"; value: string }) => {
+  const geTClasses = async (filter?: { query: 'title'; value: string }) => {
     try {
       // * Set the loading state to true, error state to false, and data to an empty list, when the API request is about to be made
       seTClasses({
@@ -269,7 +269,7 @@ const Subject: FC = () => {
         seTClasses({
           data: [],
           loading: false,
-          error: "No class found",
+          error: 'No class found',
         });
         return;
       }
@@ -278,7 +278,7 @@ const Subject: FC = () => {
       seTClasses({
         data: [],
         loading: false,
-        error: "An error occurred while retrieving classes",
+        error: 'An error occurred while retrieving classes',
       });
 
       return;
@@ -293,12 +293,12 @@ const Subject: FC = () => {
   };
 
   useEffect(() => {
-    if (courseId) getCourse((courseId as string) || "nil");
+    if (courseId) getCourse((courseId as string) || 'nil');
     geTClasses();
   }, [getCourse, courseId]);
 
   useEffect(() => {
-    const role = Cookies.get("role");
+    const role = Cookies.get('role');
     setUserRole(role?.toLocaleLowerCase());
   }, []);
 
@@ -309,10 +309,10 @@ const Subject: FC = () => {
           <CourseModal
             formState={modalFormState || ({} as any)}
             setFormState={setModalFormState || ((() => {}) as any)}
-            type={type || "chapter"}
+            type={type || 'chapter'}
             handleModalClose={handleCloseModal}
             modalOpen={true}
-            mode={mode || "create"}
+            mode={mode || 'create'}
             handleAction={handleAction || ((() => {}) as any)}
             handleDelete={handleDelete || ((() => {}) as any)}
             requestState={modalRequestState}
@@ -327,8 +327,8 @@ const Subject: FC = () => {
       <TopicContextProvider course={course.data}>
         <TeachersWrapper
           isPublic={false}
-          title={`Olive Grove - ${course?.data?.title ?? "Course"}`}
-          metaTitle={`Olive Grove - ${course?.data?.title ?? "Course"}`}
+          title={`Olive Grove - ${course?.data?.title ?? 'Course'}`}
+          metaTitle={`Olive Grove - ${course?.data?.title ?? 'Course'}`}
         >
           <div className='space-y-5 h-full relative'>
             {course.loading ? (
@@ -337,7 +337,7 @@ const Subject: FC = () => {
               <div className='w-full h-full flex items-center justify-center'>
                 <BackButton />
 
-                {typeof course.error === "object" &&
+                {typeof course.error === 'object' &&
                   (course.error.status ? (
                     <ErrorUI
                       msg={course.error.message}
@@ -358,11 +358,11 @@ const Subject: FC = () => {
                       onClick={() =>
                         router.push(
                           `/${
-                            userRole === "teacher"
-                              ? "teachers"
-                              : userRole === "student"
-                              ? "students"
-                              : "admin"
+                            userRole === 'teacher'
+                              ? 'teachers'
+                              : userRole === 'student'
+                              ? 'students'
+                              : 'admin'
                           }/courses`
                         )
                       }
@@ -370,12 +370,19 @@ const Subject: FC = () => {
                       <i className='fas fa-arrow-left text-greyed hover:text-dark'></i>
                     </div>
                     <span className='text-2xl font-medium text-dark font-roboto'>
-                      {course.data?.title || "Loading..."}
+                      {course.data?.title || 'Loading...'}
+                    </span>
+                    <span className='absolute right-0 translate-y-1/2'>
+                      <span className='text-sm text-subtext'>Courses / </span>
+                      <span className='text-sm text-dark font-semibold'>
+                        {' '}
+                        {course.data?.title}
+                      </span>
                     </span>
                   </div>
-                  <div className='flex gap-4 items-center'>
-                    {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
-                    <div
+                  {/* <div className='flex gap-4 items-center'> */}
+                  {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
+                  {/* <div
                       className='rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110'
                       onClick={() => setShowSideBar((prev) => !prev)}
                     >
@@ -394,18 +401,18 @@ const Subject: FC = () => {
                     >
                       <i className='fas fa-pencil'></i> <span>Edit Course</span>
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
                 {/* <div className="flex items-stretch gap-4 relative"> */}
                 <div className='flex items-stretch gap-4'>
                   {/* SIDEBAR */}
                   <div className='flex-none hidden xl:block'>
-                    <SideBar courseId={(courseId as string) || ""} />
+                    <SideBar courseId={(courseId as string) || ''} />
                   </div>
                   {/* MOBILE SIDEBAR */}
                   <AnimatePresence>
                     {showSideBar && (
-                      <MobileSideBar courseId={(courseId as string) || ""} />
+                      <MobileSideBar courseId={(courseId as string) || ''} />
                     )}
                   </AnimatePresence>
                   {/* COURSE */}
@@ -424,4 +431,4 @@ const Subject: FC = () => {
   );
 };
 
-export default withAuth("Teacher", Subject);
+export default withAuth('Teacher', Subject);
