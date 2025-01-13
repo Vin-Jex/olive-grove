@@ -12,7 +12,6 @@ import withAuth from "@/components/Molecules/WithAuth";
 import { baseUrl } from "@/components/utils/baseURL";
 import axiosInstance from "@/components/utils/axiosInstance";
 import { AxiosError } from "axios";
-import { CircularProgress } from "@mui/material";
 import useUserVerify from "@/components/utils/hooks/useUserVerify";
 import { formatDate, handleInputChange } from "@/components/utils/utils";
 import { ProfilePhotoSection } from "../teachers/profile";
@@ -54,6 +53,8 @@ const Profile = () => {
     formattedTimer,
     verifyOTP,
     OTPTimer,
+    setOTPTimer,
+    setFormattedTimer,
     setMessage,
   } = useUserVerify();
 
@@ -411,11 +412,19 @@ const Profile = () => {
                     ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
                     : ""
                 }`}
-                onClick={() =>
+                onClick={() => {
+                  setFormState((prevState) => ({
+                    ...prevState,
+                    otp: "",
+                    newPassword: "",
+                    confirmPassword: "",
+                  }));
+                  setFormattedTimer("00:00");
+                  setOTPTimer(0);
                   setCurrentTab(
                     page as "Account" | "Security" | "account_verify"
-                  )
-                }
+                  );
+                }}
                 key={index}
               >
                 {page}
@@ -430,7 +439,17 @@ const Profile = () => {
                   ? "border-primary border-opacity-70  bg-[#32A8C41A] text-primary"
                   : ""
               }`}
-              onClick={() => setCurrentTab("account_verify")}
+              onClick={() => {
+                setFormState((prevState) => ({
+                  ...prevState,
+                  otp: "",
+                  newPassword: "",
+                  confirmPassword: "",
+                }));
+                setFormattedTimer("00:00");
+                setOTPTimer(0);
+                setCurrentTab("account_verify")
+              }}
             >
               Email Verification
             </div>
@@ -746,14 +765,10 @@ const Profile = () => {
               </div>
               <Button
                 size='xs'
-                disabled={formState.otp.length < 6 || isDisabled.verification}
+                disabled={formState.otp.length < 6}
                 type='submit'
               >
-                {isDisabled.verification ? (
-                  <CircularProgress size={20} color='inherit' />
-                ) : (
-                  "Verify"
-                )}
+                Verify
               </Button>
             </form>
           </div>

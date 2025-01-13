@@ -14,6 +14,7 @@ import Cookies from "js-cookie";
 import { useAuth } from "@/contexts/AuthContext";
 import { initDB } from "@/components/utils/indexDB";
 import toast from "react-hot-toast";
+import { useUser } from "@/contexts/UserContext";
 
 export type loginType = {
   teacherID: string;
@@ -33,6 +34,7 @@ const LoginPath = () => {
       },
     },
   });
+  const { setUser } = useUser();
   const [formState, setFormState] = useState<loginType>({
     teacherID: "",
     password: "",
@@ -153,7 +155,7 @@ const LoginPath = () => {
     toast.success(
       "Welcome back, Instructor! You're all set to make a difference today!"
     );
-
+    setUser(userDetails);
     resetForm();
     reCheckUser();
     router.push("/");
