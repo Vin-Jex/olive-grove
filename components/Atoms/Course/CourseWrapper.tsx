@@ -1,4 +1,5 @@
 import { TCourseModalFormData } from '@/components/utils/types';
+import { useRouter as useNavRouter } from 'next/navigation';
 import { editItem } from '@/components/utils/course';
 import { TChapter, TCourse, TLesson, TSection } from '@/components/utils/types';
 import { useCourseContext } from '@/contexts/CourseContext';
@@ -11,6 +12,7 @@ import SidebarEditModal from '@/components/Molecules/Modal/SidebarEditModal';
 import CourseDeleteModal from '@/components/Molecules/Modal/CourseDeleteModal';
 import { AnimatePresence, motion, Variants } from 'framer-motion';
 import { tooltip_variants } from './CourseTopic';
+import { useRouter } from 'next/router';
 
 const Wrapper: FC<{
   type: 'section' | 'add';
@@ -33,6 +35,8 @@ const Wrapper: FC<{
   sectionId,
   parentId,
 }) => {
+  const navRouter = useNavRouter();
+  const router = useRouter();
   const { dispatch, openModal, setModalRequestState } = useCourseContext();
   const { topicDetails } = useTopicContext();
   const [modalOpen, setModalOpen] = useState(false);
@@ -48,7 +52,6 @@ const Wrapper: FC<{
     isActive: existingDetails?.isActive || false,
     ...(sectionType === 'lesson' ? { chapterId: parentId || '' } : {}),
   };
-  console.log(existingDetails, 'existingDetails');
 
   const tooltipHover: (
     this: HTMLDivElement,
@@ -75,7 +78,6 @@ const Wrapper: FC<{
 
   const { user } = useAuth();
   const userRole = user?.role;
-  console.log(modalOpen, 'modalOpen');
 
   const handleDelete = (formState: TCourseModalFormData) =>
     editItem(
@@ -145,7 +147,20 @@ const Wrapper: FC<{
       <div
         className='flex  w-full justify-between items-center cursor-pointer'
         {...(type !== 'add'
-          ? { onClick: () => setHideChildren((prev) => !prev) }
+          ? {
+              onClick: () => {
+                navRouter.push(
+                  `/${
+                    user?.role === 'Student'
+                      ? 'students/lectures'
+                      : 'teachers/courses'
+                  }/${
+                    router.query.courseId ?? router.query.courseId
+                  }/?topic=${sectionId}`
+                );
+                setHideChildren((prev) => !prev);
+              },
+            }
           : {})}
       >
         <div
@@ -156,38 +171,42 @@ const Wrapper: FC<{
           {/* ADD ICON */}
           {type == 'add' && <AddItemSVG />}
           {/* EDIT ICON - CHAPTER, LESSON, OR TITLE */}
-          {type == 'section' && userRole === 'Teacher' && (
+          {type == 'section' && (
             <div className='relative flex gap-2 items-center'>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setModalOpen(!modalOpen);
-                  console.log('click detecetd');
-                }}
-                className='z-50 '
-              >
-                <svg
-                  width='4'
-                  height='15'
-                  viewBox='0 0 4 15'
-                  className=''
-                  fill='none'
-                  xmlns='http://www.w3.org/2000/svg'
-                >
-                  <path
-                    d='M1.99967 0C1.08301 0 0.333008 0.75 0.333008 1.66667C0.333008 2.58333 1.08301 3.33333 1.99967 3.33333C2.91634 3.33333 3.66634 2.58333 3.66634 1.66667C3.66634 0.75 2.91634 0 1.99967 0ZM1.99967 11.6667C1.08301 11.6667 0.333008 12.4167 0.333008 13.3333C0.333008 14.25 1.08301 15 1.99967 15C2.91634 15 3.66634 14.25 3.66634 13.3333C3.66634 12.4167 2.91634 11.6667 1.99967 11.6667ZM1.99967 5.83333C1.08301 5.83333 0.333008 6.58333 0.333008 7.5C0.333008 8.41667 1.08301 9.16667 1.99967 9.16667C2.91634 9.16667 3.66634 8.41667 3.66634 7.5C3.66634 6.58333 2.91634 5.83333 1.99967 5.83333Z'
-                    fill='#1E1E1E'
-                    fill-opacity='0.6'
+              {userRole === 'Teacher' && (
+                <>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setModalOpen(!modalOpen);
+                      console.log('click detecetd');
+                    }}
+                    className='z-50 '
+                  >
+                    <svg
+                      width='4'
+                      height='15'
+                      viewBox='0 0 4 15'
+                      className=''
+                      fill='none'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <path
+                        d='M1.99967 0C1.08301 0 0.333008 0.75 0.333008 1.66667C0.333008 2.58333 1.08301 3.33333 1.99967 3.33333C2.91634 3.33333 3.66634 2.58333 3.66634 1.66667C3.66634 0.75 2.91634 0 1.99967 0ZM1.99967 11.6667C1.08301 11.6667 0.333008 12.4167 0.333008 13.3333C0.333008 14.25 1.08301 15 1.99967 15C2.91634 15 3.66634 14.25 3.66634 13.3333C3.66634 12.4167 2.91634 11.6667 1.99967 11.6667ZM1.99967 5.83333C1.08301 5.83333 0.333008 6.58333 0.333008 7.5C0.333008 8.41667 1.08301 9.16667 1.99967 9.16667C2.91634 9.16667 3.66634 8.41667 3.66634 7.5C3.66634 6.58333 2.91634 5.83333 1.99967 5.83333Z'
+                        fill='#1E1E1E'
+                        fill-opacity='0.6'
+                      />
+                    </svg>
+                  </button>
+                  <SidebarEditModal
+                    openEditModal={handleOpenModal}
+                    deleteAction={() => handleDelete(initialFormData)}
+                    handleModalClose={() => setModalOpen(false)}
+                    modalOpen={modalOpen}
                   />
-                </svg>
-              </button>
-              <SidebarEditModal
-                openEditModal={handleOpenModal}
-                deleteAction={() => handleDelete(initialFormData)}
-                handleModalClose={() => setModalOpen(false)}
-                modalOpen={modalOpen}
-              />
+                </>
+              )}
               <span ref={title_ref} className='pt-1'>
                 {type == 'section' && title && title.length > 15
                   ? `${title.slice(0, 15)}...`
@@ -201,7 +220,7 @@ const Wrapper: FC<{
                       initial='initial'
                       animate='hover'
                       exit='initial'
-                      className='absolute left-[4rem] top-6 p-1 rounded text-white bg-primary text-xs w-fit text-nowrap'
+                      className='absolute z-50 left-[4rem] top-6 p-1 rounded text-white bg-primary text-xs w-fit text-nowrap'
                     >
                       {title}
                     </motion.span>

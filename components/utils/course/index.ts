@@ -129,6 +129,7 @@ export const editItem = async (
       payload: {
         title: responseData.data?.title,
         description: responseData.data?.description,
+        availableDate: responseData.data?.availableDate,
         topicNote: responseData.data?.topicNote,
         topicVideo: responseData.data?.topicVideo,
         _id: responseData.data?._id,
