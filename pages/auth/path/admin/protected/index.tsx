@@ -1,13 +1,18 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import logo from "@/public/image/logo.png";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
-import Input from "@/components/Atoms/Input";
-import { Info } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
-import { baseUrl } from "@/components/utils/baseURL";
+import AuthLayout from "../../students/layout";
+import InputField from "@/components/Atoms/InputField";
+import toast from "react-hot-toast";
+import useAjaxRequest, { TAxiosError, TAxiosSuccess } from "use-ajax-request";
+import { useAuth } from "@/contexts/AuthContext";
+import axiosInstance from "@/components/utils/axiosInstance";
+import { useUser } from "@/contexts/UserContext";
+import { TLoginResponse } from "@/components/utils/types";
+import { initDB } from "@/components/utils/indexDB";
+import Cookies from "js-cookie";
 
 export type loginType = {
   username: string;
@@ -19,208 +24,175 @@ const AdminAccess = () => {
     username: "",
     password: "",
   });
-  const [formError, setFormError] = useState({
-    internetError: "",
-    usernameError: "",
-    passwordError: "",
-    successError: "",
+  const { reCheckUser } = useAuth();
+  const { sendRequest: loginTeacher, loading: isLoading } = useAjaxRequest({
+    instance: axiosInstance,
+    config: {
+      url: `/admin-login`,
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(true);
+  const { setUser } = useUser();
   const router = useRouter();
+  const [isDisabled, setIsDisabled] = useState(true);
 
   useEffect(() => {
-    setIsDisabled(!formState.username || !formState.password);
-  }, [formState]);
+    if (formState.username === "" || formState.password.length < 6) {
+      setIsDisabled(true);
+    } else {
+      setIsDisabled(false);
+    }
+  }, [formState.password, formState.username]);
 
   const handleChange = ({
     target: { name, value },
-  }: ChangeEvent<HTMLInputElement>) => {
-    setFormState((prevState) => ({ ...prevState, [name]: value }));
+  }: ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >) => {
+    setFormState((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
   const resetForm = () => {
-    setFormState({ username: "", password: "" });
-    setFormError({
-      internetError: "",
-      usernameError: "",
-      passwordError: "",
-      successError: "",
+    setFormState({
+      username: "",
+      password: "",
     });
+    setIsDisabled(true);
   };
 
   const handleErrors = (data: any) => {
     if (!navigator.onLine) {
-      setFormError({
-        internetError: "No internet connection",
-        usernameError: "",
-        passwordError: "",
-        successError: "",
-      });
+      toast.error("No internet connection");
       return;
     }
 
     if (!formState.username.trim()) {
-      setFormError((prevState) => ({
-        ...prevState,
-        usernameError: "Username field cannot be empty",
-      }));
+      toast.error("Username field cannot be empty.");
       return;
     }
 
-    if (!formState.password.trim()) {
-      setFormError((prevState) => ({
-        ...prevState,
-        passwordError: "Password field cannot be empty",
-      }));
+    if (formState.password.length < 6) {
+      toast.error("Password must be at least 6 characters long.");
       return;
+    }
+
+    if (data.error) {
+      toast.error(data.error);
     }
 
     if (data.message.username) {
-      setFormError((prevState) => ({
-        ...prevState,
-        usernameError: data.message.username,
-      }));
+      toast.error(data.message.username);
     } else if (data.message.password) {
-      setFormError((prevState) => ({
-        ...prevState,
-        passwordError: data.message.password,
-      }));
+      toast.error(data.message.password);
     }
-
-    // Clear errors after 7 seconds
-    clearError();
   };
 
-  const clearError = () => {
-    setTimeout(() => {
-      setFormError({
-        internetError: "",
-        usernameError: "",
-        passwordError: "",
-        successError: "",
-      });
-    }, 7000);
+  const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"admin">> = async ({
+    data,
+  }) => {
+    const accessToken = data.token.accessToken;
+    const refreshToken = data.token.refreshToken;
+    const userId = data.details._id;
+    const userRole = data.details.role;
+
+    const userDetails = data.details;
+    await initDB(userDetails, userDetails._id);
+
+    accessToken !== undefined &&
+      Cookies.set("accessToken", accessToken, { expires: 1 });
+    refreshToken !== undefined &&
+      Cookies.set("refreshToken", refreshToken, { expires: 1 });
+    userId !== undefined && Cookies.set("userId", userId, { expires: 1 });
+    userRole !== undefined && Cookies.set("role", userRole, { expires: 1 });
+    Cookies.set("userDetails", JSON.stringify(data.details), { expires: 1 });
+
+    toast.success(
+      "Welcome back, Admin! You're all set to manage the platform and drive success today!"
+    );
+    setUser(userDetails);
+    resetForm();
+    reCheckUser();
+    router.push("/");
+  };
+
+  const handleErrorLogin: TAxiosError<any> = (res) => {
+    handleErrors(res.response.data);
+    return;
   };
 
   const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsLoading(true);
 
     if (!navigator.onLine) {
-      setFormError((prevState) => ({
-        ...prevState,
-        internetError: "No internet connection",
-      }));
-      setIsLoading(false);
-      clearError();
+      toast.error("No internet connection.");
       return;
     }
 
     try {
-      const response = await fetch(`${baseUrl}/admin-login`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formState),
+      await loginTeacher(handleSuccessLogin as any, handleErrorLogin, {
+        data: formState,
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        handleErrors(data);
-        return;
-      }
-
-      await response.json();
-      setFormError((prevState) => ({
-        ...prevState,
-        successError: "Successfully logged in!",
-      }));
-
-      resetForm();
-      setTimeout(() => router.push("/"), 500);
     } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setIsLoading(false);
-      clearError();
+      console.log("Error:", error);
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
+    if (isDisabled && event.key === "Enter") {
+      handleSignIn(event);
     }
   };
 
   return (
-    <div className='flex w-full h-screen justify-center items-center bg-gradient-to-r from-[#0078a8] to-[#32A8C4]'>
-      {/*<customcursor />*/}
-
-      <div className='bg-white rounded-lg shadow-lg px-6 py-8 w-full md:w-[480px] flex flex-col items-center gap-6'>
-        <div className='flex flex-col items-center mb-6'>
-          <Link href='/' className='w-[5rem] mb-2'>
-            <Image
-              src={logo}
-              alt='Olive Grove Logo'
-              width={80}
-              height={90}
-              className='rounded-full'
-            />
-          </Link>
-          <h5 className='text-dark text-[20px] md:text-[22px] lg:text-[26px] font-bold mb-1 text-center'>
+    <AuthLayout title='Olive Grove - Create New Account'>
+      <div className='w-full h-full flex flex-col items-center justify-center gap-y-8'>
+        <div className='flex flex-col items-center justify-center space-y-0.5 w-[90%] sm:w-[80%] md:w-[400px]'>
+          <h5 className='text-subtext text-sm font-semibold font-roboto'>
             Great to see you again,&nbsp;
             <span className='font-extrabold text-[#32A8C4]'>Admin!</span>
           </h5>
-
-          <p className='text-gray-500 text-xs md:text-sm text-center mx-2 md:mx-4'>
-            Kindly sign in to access and manage your administrative functions
-            seamlessly.
-          </p>
+          <span className='text-dark text-2xl font-semibold capitalize font-roboto leading-[30px]'>
+            Olive Grove School
+          </span>
+          <span className='text-subtext text-sm text-center font-medium font-roboto'>
+            Effortlessly manage users, monitor progress, and oversee the
+            platform with ease.
+          </span>
         </div>
 
-        {/* Error Messages */}
-        {formError.internetError && (
-          <span className='text-yellow-600 text-sm flex items-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} />
-            {formError.internetError}
-          </span>
-        )}
-        {formError.successError && (
-          <span className='text-green-600 text-sm flex items-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} />
-            {formError.successError}
-          </span>
-        )}
-        {formError.usernameError && (
-          <span className='text-red-600 text-sm flex items-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} />
-            {formError.usernameError}
-          </span>
-        )}
-        {formError.passwordError && (
-          <span className='text-red-600 text-sm flex items-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} />
-            {formError.passwordError}
-          </span>
-        )}
-
-        {/* Form Section */}
         <form
           onSubmit={handleSignIn}
-          className='flex flex-col w-full gap-4 space-y-1'
+          className='flex flex-col mx-auto space-y-4 w-[94%] sm:w-[87%] md:w-[470px]'
         >
-          <Input
+          <InputField
+            label='Username'
+            placeholder='Enter Username'
             type='text'
             name='username'
             value={formState.username}
             onChange={handleChange}
-            placeholder='Username'
             required
-            className='input rounded-lg p-3'
+            error={""}
+            disabled={isLoading}
           />
-          <Input
+
+          <InputField
+            label='Password'
+            placeholder='Enter Password'
             type='password'
             name='password'
             value={formState.password}
             onChange={handleChange}
-            placeholder='Password'
             required
-            className='input rounded-lg p-3'
+            error={""}
+            disabled={isLoading}
           />
 
           <Button size='sm' width='full' disabled={isDisabled || isLoading}>
@@ -230,18 +202,15 @@ const AdminAccess = () => {
               "Sign In"
             )}
           </Button>
+          <div className='flex items-center justify-center text-sm font-roboto gap-x-1 !mt-2'>
+            <span className='text-subtext'>Not a admin?&nbsp;</span>
+            <Link href='/auth/path/students/signin' className='text-primary'>
+              Sign in as a student
+            </Link>
+          </div>
         </form>
-        <p className='text-gray-500 text-sm'>
-          Not an admin?&nbsp;
-          <Link
-            href='/auth/path/students/signin'
-            className='text-[#32A8C4] font-semibold'
-          >
-            Sign in as a student
-          </Link>
-        </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

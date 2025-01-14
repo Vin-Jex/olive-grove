@@ -63,7 +63,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                 : role === 'Student'
                 ? '/students'
                 : role === 'Admin'
-                ? '/admins'
+                ? '/admin'
                 : ''
             }/dashboard`}
             activeClass={activeClass}
@@ -353,7 +353,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
 
           {isClient && role === 'Admin' && (
             <NavItem
-              href={`/admins/teachers`}
+              href={`/admin/teachers`}
               activeClass={activeClass}
               setActiveClass={setActiveClass}
               activeIcon={
@@ -396,7 +396,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                 isClient && role === 'Teacher'
                   ? '/teachers'
                   : role === 'Admin'
-                  ? '/admins'
+                  ? '/admin'
                   : ''
               }/courses`}
               activeClass={activeClass}
@@ -441,7 +441,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                 isClient && role === 'Teacher'
                   ? '/teachers'
                   : role === 'Admin'
-                  ? '/admins'
+                  ? '/admin'
                   : ''
               }/students`}
               activeClass={activeClass}
@@ -487,7 +487,7 @@ const SideNav: React.FC<{ isOpen: boolean; handleOpen: () => void }> = ({
                 : role === 'Student'
                 ? '/students'
                 : role === 'Admin'
-                ? '/admins'
+                ? '/admin'
                 : ''
             }/profile`}
             activeClass={activeClass}

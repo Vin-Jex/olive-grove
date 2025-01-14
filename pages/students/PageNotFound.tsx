@@ -32,7 +32,7 @@ export default function PageNotFound() {
               : role === "Student"
               ? "/students/dashboard"
               : role === "Admin"
-              ? "/admins/dashboard"
+              ? "/admin/dashboard"
               : "/"
           }`}
           className='mx-auto bg-primary text-white my-3 rounded-md px-4 py-2'

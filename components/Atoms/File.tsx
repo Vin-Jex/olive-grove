@@ -35,10 +35,10 @@ const File: React.FC<IImageUploadProps> = ({
         className='flex items-center gap-2 md:gap-4 cursor-pointer'
         onClick={handleDivClick}
       >
-        <div className='flex items-center justify-center w-[30px] h-[30px] sm:w-[45px] sm:h-[45px] border-[1.5px] border-[#1E1E1E60] rounded-md p-1.5'>
+        <div className='flex items-center justify-center w-[30px] h-[30px] sm:w-[45px] sm:h-[45px] border-[1.5px] border-[#1E1E1E60] rounded-md'>
           {previewImage ? (
             fileType === 'video' ? (
-              <video className='w-full h-full '>
+              <video className='w-full h-full'>
                 <source src={previewImage as string} type='video/mp4' />
               </video>
             ) : (
@@ -47,7 +47,7 @@ const File: React.FC<IImageUploadProps> = ({
                 alt='Preview'
                 width='10000'
                 height='10000'
-                className='w-full h-full object-scale-down rounded-xl'
+                className='w-full h-full object-scale-down bg-gray-300'
               />
             )
           ) : (
