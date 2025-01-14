@@ -45,7 +45,7 @@ const Button: React.FC<ButtonProps> = ({
   const colorClassName = {
     blue: "bg-primary text-[#fdfdfd] hover:bg-primary/90 transition duration-200 ease-in-out",
     outline:
-      "bg-transparent border border-primary disabled:!border-none hover:border-[transparent] text-primary hover:bg-primary hover:text-white transition duration-200 ease-in-out",
+      "bg-transparent border border-primary hover:border-[transparent] text-primary hover:bg-primary hover:text-white transition duration-200 ease-in-out",
     red: "bg-red-500 text-white hover:bg-red-600 transition duration-200 ease-in-out",
     yellow:
       "bg-yellow-500 text-white hover:bg-yellow-600 transition duration-200 ease-in-out",
