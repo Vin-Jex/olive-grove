@@ -1,112 +1,43 @@
-import React from "react";
-import { truncateAndElipses } from "../Card/TeacherSubjectCard";
+import React, { FC, ReactNode } from "react";
 
-interface TableProps<T> {
-  columns: Array<Column<T>>;
-  data: T[];
-  onRowClick?: (row: T) => void;
-  actions?: Array<Action<T>>;
-}
-
-interface Column<T> {
-  Header: string;
-  accessor: string;
-  Cell?: (props: { value: any }) => JSX.Element;
-}
-
-interface Action<T> {
-  title: string;
-  onClick: (data: T) => void;
-  icon?: JSX.Element;
-}
-
-const getValueFromPath = (obj: any, path: string) => {
-  return path.split(".").reduce((acc, part) => {
-    if (acc && typeof acc === "object" && part in acc) {
-      return acc[part];
-    }
-    const match = part.match(/^(\w+)\[(\d+)\]$/);
-    if (match) {
-      const [, key, index] = match;
-      return acc[key] ? acc[key][parseInt(index, 10)] : undefined;
-    }
-    return undefined;
-  }, obj);
-};
-
-export const Table = <T,>({
-  columns,
-  data,
-  onRowClick,
-  actions,
-}: TableProps<T>) => {
+export const Table: FC<{
+  head_columns: (string | { value: string; className: string })[];
+  data: Record<string, any>[];
+  children: (data: any, i: number) => ReactNode;
+}> = ({ head_columns, data, children }) => {
   return (
-    <div className='overflow-x-auto'>
-      <table className='min-w-full table-auto !shadow-md rounded-sm bg-white'>
+    <div className="w-full overflow-x-auto rounded-xl border-2">
+      <table className="w-full min-w-[640px] table-auto">
         <thead>
-          <tr className='bg-white text-dark'>
-            {columns.map((column, index) => (
-              <th key={index} className='px-5 py-4 border-b !text-start'>
-                {column.Header}
+          <tr>
+            {head_columns.map((col, index) => (
+              <th
+                key={index}
+                className={`text-left py-4 px-6 text-sm md:text-base whitespace-nowrap ${
+                  typeof col === "string" ? col : col.className
+                }`}
+              >
+                {typeof col === "string" ? col : col.value}
               </th>
             ))}
-            {actions && (
-              <th className='px-5 py-4 border-b !text-start'>Actions</th>
-            )}
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 ? (
+          {data.length > 0 ? (
+            data.map(children)
+          ) : (
             <tr>
-              <td
-                colSpan={columns.length + (actions ? 1 : 0)}
-                className='px-4 py-4 text-center text-gray-500'
-              >
-                No data available
+              <td className="border-t-[1.5px]" colSpan={head_columns.length}>
+                <div className="py-10 text-center">
+                  <h2 className="text-lg font-semibold text-gray-700">
+                    No Data Available
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    There are no records to display at the moment.
+                  </p>
+                </div>
               </td>
             </tr>
-          ) : (
-            data.map((row, index) => (
-              <tr
-                key={index}
-                onClick={() => onRowClick && onRowClick(row)}
-                className={`cursor-pointer hover:bg-gray-50 ${
-                  index === data.length - 1 ? "last:border-b-0 hover:last:border-b" : "border-b"
-                }`}
-              >
-                {columns.map((column, colIndex) => (
-                  <td key={colIndex} className={`px-4 py-2 `}>
-                    {column.Cell
-                      ? column.Cell({
-                          value: truncateAndElipses(
-                            getValueFromPath(row, column.accessor),
-                            30
-                          ),
-                        })
-                      : truncateAndElipses(
-                          getValueFromPath(row, column.accessor),
-                          30
-                        )}
-                  </td>
-                ))}
-                {actions && (
-                  <td className='px-4 py-3 flex space-x-2'>
-                    {actions.map((action, actionIndex) => (
-                      <button
-                        key={actionIndex}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          action.onClick(row);
-                        }}
-                        className='py-2 px-2 text-sm text-gray-800 hover:bg-gray-100 flex items-center justify-center'
-                      >
-                        {action.icon ? action.icon : action.title}
-                      </button>
-                    ))}
-                  </td>
-                )}
-              </tr>
-            ))
           )}
         </tbody>
       </table>
@@ -114,4 +45,21 @@ export const Table = <T,>({
   );
 };
 
-export default Table;
+export const TableRow: FC<{
+  children: ReactNode;
+}> = ({ children }) => {
+  return <tr className="w-full">{children}</tr>;
+};
+
+export const TableCol: FC<{
+  children: ReactNode;
+  className?: string;
+}> = ({ children, className }) => {
+  return (
+    <td
+      className={`w-full border-t-[1.5px] border-r-[1.5px] px-6 py-4 text-xs md:text-sm text-subtext font-roboto font-medium ${className}`}
+    >
+      {children}
+    </td>
+  );
+};
