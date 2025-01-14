@@ -8,6 +8,8 @@ import OTPInput from '../OTPInput';
 import { BarLoader } from 'react-spinners';
 import { useRouter } from 'next/router';
 import useUserVerify from '@/components/utils/hooks/useUserVerify';
+import toast from 'react-hot-toast';
+import { AxiosError } from 'axios';
 
 type WarningModalProps = {
   modalOpen: boolean;
@@ -46,10 +48,12 @@ export default function EmailVerifyModal({
         error: false,
         message: response.data.message,
       });
+      toast.success(response.data?.message || 'Email verified successfully');
       handleModalClose();
       router.replace(router.asPath);
-    } catch (err) {
+    } catch (err: AxiosError | any) {
       console.error('otp error', otp);
+      toast.error(err.response.data?.message || 'Error verifying email');
     } finally {
       setOTPVerifyLoading(false);
     }
@@ -103,7 +107,7 @@ export default function EmailVerifyModal({
           </div>
         </div>
       </Modal>
-      {(message.error || message.success) && (
+      {/* {(message.error || message.success) && (
         <Snackbar
           open={message.success || message.error}
           onClose={() =>
@@ -131,7 +135,7 @@ export default function EmailVerifyModal({
             {message.message}
           </Alert>
         </Snackbar>
-      )}
+      )} */}
     </div>
   );
 }

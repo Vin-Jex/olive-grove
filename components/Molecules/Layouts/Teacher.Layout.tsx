@@ -65,7 +65,7 @@ const TeachersWrapper = ({
   }, [shouldOpenModal]);
 
   return (
-    <div className='relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row'>
+    <div className='relative w-full h-[100dvh] teacherCourse-Wrapper container overflow-auto mx-auto flex flex-row'>
       <Meta title={metaTitle || 'Dashboard'} description={description} />
       <LogoutWarningModal
         handleModalClose={handleWarning}

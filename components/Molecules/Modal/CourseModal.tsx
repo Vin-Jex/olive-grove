@@ -27,7 +27,13 @@ export default function CourseModal({
   const [fileName, setFileName] = useState('');
   const [topicVideoType, setTopicVideoType] = useState<
     'topicVideo' | 'youtubeVideo' | 'embed'
-  >(formState.topicVideo ? 'topicVideo' : 'youtubeVideo');
+  >(
+    formState.topicVideo
+      ? 'topicVideo'
+      : formState.youtubeVideo
+      ? 'youtubeVideo'
+      : 'embed'
+  );
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [is_loading, setIsLoading] = useState({
     saving: false,
@@ -246,7 +252,7 @@ export default function CourseModal({
             onChange={handleChange}
             placeholder='Choose accessibility status'
             label='Accessibility Status'
-            value={formState.isActive as string}
+            value={String(formState.isActive) as string}
             error=''
             required
             type='select'

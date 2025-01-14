@@ -1,5 +1,5 @@
-import { TCourse, TTopicDetails } from "@/components/utils/types";
-import { useRouter } from "next/router";
+import { TCourse, TTopicDetails } from '@/components/utils/types';
+import { useRouter } from 'next/router';
 import {
   createContext,
   useContext,
@@ -7,7 +7,7 @@ import {
   ReactNode,
   useEffect,
   useCallback,
-} from "react";
+} from 'react';
 
 interface TopicContextType {
   topicDetails: TTopicDetails;
@@ -28,9 +28,9 @@ export const TopicContextProvider: React.FC<{
   const [topicDetails, setTopicDetails] = useState<TTopicDetails>({
     path: undefined,
     topic: undefined,
-    type: "section",
-    topicChapter: "",
-    topicLesson: "",
+    type: 'section',
+    topicChapter: '',
+    topicLesson: '',
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -50,13 +50,24 @@ export const TopicContextProvider: React.FC<{
           (section) => section._id === topic
         );
 
+        if (lesson._id === topic) {
+          foundTopic = true;
+          setTopicDetails({
+            path: [chapter.title, lesson.title, ''],
+            topicChapter: chapter._id!,
+            topicLesson: lesson._id!,
+            type: 'lesson',
+            topic: lesson,
+          });
+        }
+
         if (section) {
           foundTopic = true;
           setTopicDetails({
             path: [chapter.title, lesson.title, section?.title],
             topicChapter: chapter._id!,
             topicLesson: lesson._id!,
-            type: "section",
+            type: 'section',
             topic: section,
           });
           break;
@@ -77,7 +88,7 @@ export const TopicContextProvider: React.FC<{
             ],
             topicChapter: chapter._id!,
             topicLesson: lesson._id!,
-            type: "section",
+            type: 'section',
             topic: sectionWithCurrentTutorial,
           });
           break;
@@ -97,7 +108,7 @@ export const TopicContextProvider: React.FC<{
               path: [chapter.title, lesson.title, firstSection.title],
               topicChapter: chapter._id!,
               topicLesson: lesson._id!,
-              type: "section",
+              type: 'section',
               topic: firstSection,
             });
             foundTopic = true;
@@ -126,7 +137,7 @@ export const useTopicContext = (): TopicContextType => {
   const context = useContext(TopicContext);
   if (!context) {
     throw new Error(
-      "useTopicContext must be used within a TopicContextProvider"
+      'useTopicContext must be used within a TopicContextProvider'
     );
   }
   return context;

@@ -1,9 +1,9 @@
-import { useRouter } from "next/router";
-import StudentWrapper from "@/components/Molecules/Layouts/Student.Layout";
-import React, { FormEvent, useEffect, useState } from "react";
-import Link from "next/link";
-import Button from "@/components/Atoms/Button";
-import withAuth from "@/components/Molecules/WithAuth";
+import { useRouter } from 'next/router';
+import StudentWrapper from '@/components/Molecules/Layouts/Student.Layout';
+import React, { FormEvent, useEffect, useState } from 'react';
+import Link from 'next/link';
+import Button from '@/components/Atoms/Button';
+import withAuth from '@/components/Molecules/WithAuth';
 import {
   CircularProgress,
   FormControl,
@@ -11,15 +11,16 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
-} from "@mui/material";
-import { BackButton } from "../lectures/[courseId]";
-import axiosInstance from "@/components/utils/axiosInstance";
-import { baseUrl } from "@/components/utils/baseURL";
-import Input from "@/components/Atoms/Input";
-import Loader from "@/components/Atoms/Loader";
-import { TQuestionCard } from "@/components/utils/types";
-import { AxiosError } from "axios";
-import toast from "react-hot-toast";
+} from '@mui/material';
+import { BackButton } from '../lectures/[courseId]';
+import axiosInstance from '@/components/utils/axiosInstance';
+import { baseUrl } from '@/components/utils/baseURL';
+import Input from '@/components/Atoms/Input';
+import Loader from '@/components/Atoms/Loader';
+import { TQuestionCard } from '@/components/utils/types';
+import { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 const CustomWrongIcon = () => {
   return (
@@ -54,9 +55,9 @@ const CustomWrongIcon = () => {
 };
 
 enum QuestionType {
-  MULTIPLE_CHOICE = "multiple_choice",
-  PARAGRAGH = "paragraph",
-  FILE_UPLOAD = "file_upload",
+  MULTIPLE_CHOICE = 'multiple_choice',
+  PARAGRAGH = 'paragraph',
+  FILE_UPLOAD = 'file_upload',
 }
 
 const CustomRightIcon = (props: { className?: string }) => {
@@ -104,23 +105,27 @@ const AssessmentDetailsPage = () => {
 
   const [isQuizComplete, setIsQuizComplete] = useState(false);
   const [currentQxtIndex, setCurrentQxtIndex] = useState(() => {
-    const index = localStorage.getItem("currentQxtIndex");
-    return index ? index : "";
+    const index = localStorage.getItem('currentQxtIndex');
+    return index ? index : '';
   });
 
   const [answeredQxts, setAnsweredQxts] = useState<Record<string, string>>(
     () => {
-      const answeredQxts = localStorage.getItem("answeredQxts");
-      console.log(answeredQxts, "answeredQxts");
-      return answeredQxts !== "undefined" && answeredQxts
+      const answeredQxts = localStorage.getItem('answeredQxts');
+      console.log(answeredQxts, 'answeredQxts');
+      return answeredQxts !== 'undefined' && answeredQxts
         ? JSON.parse(answeredQxts)
         : {};
     }
   );
-  // const [fileUploadAnswers, setFileUploadAnswers] = useState<Record<
-  //   string,
-  //   Blob | File
-  // > | null>(null);
+  const [fileUploadLabels, setFileUploadLabels] = useState<
+    Record<string, string>
+  >(() => {
+    const fileUploadLabels = localStorage.getItem('fileUploadLabels');
+    return fileUploadLabels !== 'undefined' && fileUploadLabels
+      ? JSON.parse(fileUploadLabels)
+      : {};
+  });
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -143,18 +148,19 @@ const AssessmentDetailsPage = () => {
   // const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    localStorage.setItem("currentQxtIndex", currentQxtIndex.toString());
-    localStorage.setItem("answeredQxts", JSON.stringify(answeredQxts));
-  }, [currentQxtIndex, answeredQxts]);
+    localStorage.setItem('fileUploadLabels', JSON.stringify(fileUploadLabels));
+    localStorage.setItem('currentQxtIndex', currentQxtIndex.toString());
+    localStorage.setItem('answeredQxts', JSON.stringify(answeredQxts));
+  }, [currentQxtIndex, answeredQxts, fileUploadLabels]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = "The quiz duration is still ongoing";
+      e.returnValue = 'The quiz duration is still ongoing';
     };
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, []);
 
@@ -163,33 +169,22 @@ const AssessmentDetailsPage = () => {
     if (!router.query.assessmentId) return; //don't proceed if there is no assessmentId
     // const formData = new FormData();
     const formData = {
-      academicWeek: quizQuestions?.academicWeek._id,
+      // academicWeek: quizQuestions?.academicWeek._id,
       answers: [] as { questionId: string; answer: string }[],
     };
-    // Check if all questions are answered
-    // if (!fileUploadAnswers) {
-    //   alert('Please answer all questions before submitting');
-    //   return;
-    // }
+
     if (Object.keys(answeredQxts).length !== quizQuestions?.questions?.length) {
-      toast.error("Please answer all questions before submitting");
+      toast.error('Please answer all questions before submitting');
       return;
     }
 
     Object.entries(answeredQxts).forEach(([qxtId, answer]) => {
-      formData.answers.push({
-        questionId: qxtId,
-        answer,
-      });
+      if (quizQuestions.questions.some((q) => q._id === qxtId))
+        formData.answers.push({
+          questionId: qxtId,
+          answer,
+        });
     });
-
-    // if (fileUploadAnswers)
-    //   Object.entries(fileUploadAnswers).forEach(([qxtId, file]) => {
-    //     formData.answers.push({
-    //       questionId: qxtId,
-    //       answer, //image string
-    //     });
-    //   });
 
     //* Functionality to submit the answers to the server
 
@@ -197,19 +192,20 @@ const AssessmentDetailsPage = () => {
       setIsSubmitLoading(true);
       const res = await axiosInstance.post(
         `${baseUrl}/api/v2/assessments/${router.query.assessmentId}/submit`,
-        JSON.stringify(formData)
+        JSON.stringify(formData.answers)
       );
 
       toast.success(
-        res.data?.data?.message || "Assessment submitted successfully"
+        res.data?.data?.message || 'Assessment submitted successfully'
       );
       setIsQuizComplete(true);
       setAnsweredQxts({});
-      localStorage.setItem("answeredQxts", JSON.stringify({}));
+      setFileUploadLabels({});
+      localStorage.setItem('answeredQxts', JSON.stringify({}));
     } catch (error: AxiosError | any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to submit assessment"
+        error?.response?.data?.message || 'Failed to submit assessment'
       );
     } finally {
       setIsSubmitLoading(false);
@@ -244,11 +240,11 @@ const AssessmentDetailsPage = () => {
 
   const resetQuiz = () => {
     // Clear local storage and reset state
-    localStorage.removeItem("quizCurrentQuestion");
-    localStorage.removeItem("quizSelectedAnswers");
-    localStorage.removeItem("quizScore");
+    localStorage.removeItem('quizCurrentQuestion');
+    localStorage.removeItem('quizSelectedAnswers');
+    localStorage.removeItem('quizScore');
 
-    setCurrentQxtIndex("");
+    setCurrentQxtIndex('');
     setAnsweredQxts({});
     setIsQuizComplete(false);
   };
@@ -258,7 +254,7 @@ const AssessmentDetailsPage = () => {
       remark='Assessment'
       title='Olive Grove - Assessment'
       metaTitle={`Olive Grove - ${
-        quizQuestions?.course?.title ?? ""
+        quizQuestions?.course?.title ?? ''
       } assessment`}
     >
       {isLoading && <Loader />}
@@ -275,18 +271,18 @@ const AssessmentDetailsPage = () => {
                 <strong>Topic:</strong> {quizQuestions?.course?.title}
               </span>
               <span>
-                <strong>Due:</strong>{" "}
+                <strong>Due:</strong>{' '}
                 {new Date(quizQuestions?.dueDate)
                   .toLocaleDateString([], {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
                   })
-                  .replaceAll("/", "-")}
-                ,{" "}
+                  .replaceAll('/', '-')}
+                ,{' '}
                 {new Date(quizQuestions?.dueDate).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
               </span>
             </div>
@@ -324,7 +320,8 @@ const AssessmentDetailsPage = () => {
                   quizQuestions?.questions?.map((question, i) => (
                     <QuestionCard
                       answeredQxts={answeredQxts}
-                      // saveUpload={setFileUploadAnswers}
+                      fileUploadLabels={fileUploadLabels}
+                      setFileUploadLabels={setFileUploadLabels}
                       review={false}
                       value={answeredQxts[question._id.toString()] ?? null}
                       setCurrentQxtIndex={setCurrentQxtIndex}
@@ -340,7 +337,7 @@ const AssessmentDetailsPage = () => {
                   {isSubmitLoading ? (
                     <CircularProgress size={20} color='inherit' />
                   ) : (
-                    "Submit"
+                    'Submit'
                   )}
                 </Button>
               )}
@@ -359,52 +356,56 @@ function QuestionCard({
   i,
   value,
   review,
-  // ref,
+  fileUploadLabels,
+  setFileUploadLabels,
   answeredQxts,
-  // saveUpload,
   setCurrentQxtIndex,
   setAnsweredQxts,
 }: {
   // question: TQuestionCard;
-  question: TQuestionCard["questions"][0];
+  question: TQuestionCard['questions'][0];
   value: string;
+  fileUploadLabels?: Record<string, string>;
+  setFileUploadLabels?: React.Dispatch<
+    React.SetStateAction<Record<string, string>>
+  >;
   i: number;
-  // saveUpload: React.Dispatch<
-  //   React.SetStateAction<Record<string, Blob | File> | null>
-  // >;
   answeredQxts?: Record<string, string>;
   review: boolean;
   setCurrentQxtIndex: React.Dispatch<React.SetStateAction<string>>;
   setAnsweredQxts: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }) {
+  const [imageUploadingState, setImageUploadingState] = useState(false);
+  const [trackImages, setTrackImages] = useState<string[]>([]);
   return (
     <div className='bg-white p-10 rounded-2xl'>
-      <FormControl style={{ width: "100%" }}>
+      <FormControl style={{ width: '100%' }}>
         <FormLabel
           style={{
             fontSize: 18,
-            fontWeight: "normal",
-            width: "100%",
-            color: "black",
+            fontWeight: 'normal',
+            width: '100%',
+            color: 'black',
             marginBlockEnd: 24,
           }}
           id='demo-radio-buttons-group-label'
         >
           {i + 1}.
-          {/* {question.img && (
-            <div className='pb-2'>
-              <Image
-                src={question.img}
-                width={300}
-                height={300}
-                alt={question.question}
-              />
-            </div>
-          )} */}
+          {question.questionImages &&
+            question.questionImages.map((img, index) => (
+              <div className='pb-2' key={img + index}>
+                <Image
+                  src={img}
+                  width={300}
+                  height={300}
+                  alt={question.questionText + ' image' + index}
+                />
+              </div>
+            ))}
           {question.questionText}
         </FormLabel>
         <RadioGroup
-          style={{ width: "100%" }}
+          style={{ width: '100%' }}
           value={value}
           onChange={(e) => {
             const selected = { [question._id.toString()]: e.target.value };
@@ -428,12 +429,12 @@ function QuestionCard({
                     review
                       ? option === question.correctAnswer
                         ? {
-                            height: "32px",
-                            width: "50%",
+                            height: '32px',
+                            width: '50%',
                             paddingInlineEnd: 17,
-                            textOverflow: "ellipsis",
+                            textOverflow: 'ellipsis',
                             paddingBlock: 2,
-                            backgroundColor: "#cbf5ff",
+                            backgroundColor: '#cbf5ff',
                             marginLeft: -3,
                             fillOpacity: 0.6,
                             borderRadius: 5,
@@ -442,12 +443,12 @@ function QuestionCard({
                         : option === question.yourAnswer &&
                           option !== question.correctAnswer
                         ? {
-                            height: "32px",
-                            width: "50%",
+                            height: '32px',
+                            width: '50%',
                             paddingInlineEnd: 17,
                             paddingBlock: 2,
                             marginLeft: -3,
-                            backgroundColor: "#fdd9d9",
+                            backgroundColor: '#fdd9d9',
                             fillOpacity: 0.6,
                             borderRadius: 5,
                             marginBlock: 7,
@@ -501,7 +502,7 @@ function QuestionCard({
             type='text'
             disabled={review}
             value={
-              review ? question.yourAnswer : answeredQxts?.[question._id] ?? ""
+              review ? question.yourAnswer : answeredQxts?.[question._id] ?? ''
             }
             className='!border-b !border-l-0 !border-r-0 !border-t-0 rounded-none w-1/2 border-black bg-white py-1'
             onChange={(e) => {
@@ -518,32 +519,93 @@ function QuestionCard({
           <>
             <label
               htmlFor={question._id.toString()}
-              className='rounded-lg cursor-pointer border px-4 text-subtext w-fit py-2'
+              className='rounded-lg flex  cursor-pointer border px-4 text-subtext w-fit py-2'
             >
-              Choose a file
+              {!imageUploadingState &&
+                !!fileUploadLabels &&
+                (fileUploadLabels[question._id] ? (
+                  <span className='flex gap-2 items-center '>
+                    <svg
+                      width='20'
+                      height='20'
+                      viewBox='0 0 20 20'
+                      fill='none'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <path
+                        d='M7.50045 13.475L4.60878 10.5833C4.45297 10.4275 4.24164 10.34 4.02128 10.34C3.80092 10.34 3.58959 10.4275 3.43378 10.5833C3.27797 10.7391 3.19043 10.9505 3.19043 11.1708C3.19043 11.2799 3.21192 11.388 3.25367 11.4888C3.29543 11.5896 3.35663 11.6812 3.43378 11.7583L6.91711 15.2417C7.24211 15.5667 7.76711 15.5667 8.09211 15.2417L16.9088 6.425C17.0646 6.26918 17.1521 6.05785 17.1521 5.8375C17.1521 5.61714 17.0646 5.40581 16.9088 5.25C16.753 5.09418 16.5416 5.00665 16.3213 5.00665C16.1009 5.00665 15.8896 5.09418 15.7338 5.25L7.50045 13.475Z'
+                        fill='#1E1E1E'
+                        fill-opacity='0.6'
+                      />
+                    </svg>
+
+                    <span> {fileUploadLabels[question._id]}</span>
+                  </span>
+                ) : (
+                  'Choose a file'
+                ))}
+              {imageUploadingState && (
+                <span className='flex gap-2 items-center'>
+                  <CircularProgress size={10} color='inherit' />
+                  <span>Uploading File...</span>
+                </span>
+              )}
             </label>
             <Input
               type='file'
               id={question._id.toString()}
-              accept='image/*'
+              accept='image/png, image/jpg, image/jpeg'
               disabled={review}
               value={review ? question.yourAnswer : undefined}
               className=' w-1/2 border-black bg-white py-1 hidden'
               onChange={async (e) => {
                 const formData = new FormData();
-                formData.append("files", e.target.files?.[0]!);
-                formData.append("type", "image");
+
+                if (e.target.files?.[0] === undefined) return;
+
+                // setFileUploadLabel(e.target.files?.[0].name);
+                setFileUploadLabels &&
+                  setFileUploadLabels((prev) => ({
+                    ...prev,
+                    [question._id]: e.target.files?.[0].name!,
+                  }));
+                formData.append('files', e.target.files[0]);
+                formData.append('type', 'image');
                 //we want to firsr upload the file to the server and get the url
                 //then save the url in the state
                 try {
+                  setImageUploadingState(true);
                   const response = await axiosInstance.post(
                     `${baseUrl}/files/upload`,
-                    formData
+                    formData,
+                    {
+                      headers: {
+                        'Content-Type': 'multipart/form-data',
+                      },
+                    }
                   );
+                  toast.success('Image uploaded successfully');
+
+                  if (trackImages.length > 1) {
+                    try {
+                      await axiosInstance.delete(
+                        `/files/delete/${trackImages[0]}`
+                      );
+                    } catch (err) {
+                      toast.error('An error occurred when deleting the file'); //I am not sure of what to do if an error occurs whilst deleting the file oo
+                      console.error(err);
+                    }
+                  }
+
+                  setTrackImages((prev) => {
+                    if (prev.length > 1) prev.shift();
+                    return [...prev, response.data.data[0].fileUrl];
+                  });
+
                   const selected = {
-                    [question._id.toString()]: response.data.data.fileUrl,
+                    [question._id]: response.data.data[0].fileUrl,
                   };
-                  setCurrentQxtIndex(question._id.toString());
+                  setCurrentQxtIndex(question._id);
                   setAnsweredQxts((prev) => ({
                     ...prev,
                     ...selected,
@@ -555,8 +617,10 @@ function QuestionCard({
                 } catch (err: AxiosError | any) {
                   toast.error(
                     err.response?.data?.message ||
-                      "An error occurred when uploading the file, reupload the file"
+                      'An error occurred when uploading the file, reupload the file'
                   );
+                } finally {
+                  setImageUploadingState(false);
                 }
 
                 //get the url of the uploaded i
@@ -577,7 +641,7 @@ function SubmissionCard({
   return (
     <div className=''>
       <div className='mx-11'>
-        <BreadCrumb title={quizQuestions?.course?.title ?? ""} />
+        <BreadCrumb title={quizQuestions?.course?.title ?? ''} />
       </div>
       <div className=' py-7 px-6 mx-11 max-w-[60vw] space-y-4 rounded-lg bg-[#32A8C4] bg-opacity-10 w-full'>
         <div>
@@ -618,7 +682,7 @@ function BreadCrumb(props: { title: string }) {
       <div className='flex py-7 mt-4 items-center space-x-2'>
         <Link href='/students/assessments'>
           <span className='text-gray pr-2'>Assessments </span>
-        </Link>{" "}
+        </Link>{' '}
         / <span className='text-primary'>{props.title}</span>
       </div>
     </div>
@@ -762,4 +826,4 @@ const WrongCrossMark = () => {
 
 // export default AssessmentDetailsPage;
 
-export default withAuth("Student", AssessmentDetailsPage);
+export default withAuth('Student', AssessmentDetailsPage);

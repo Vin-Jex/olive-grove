@@ -1,10 +1,10 @@
-import React, { SetStateAction, useEffect } from "react";
-import Image, { StaticImageData } from "next/image";
-import Button from "@/components/Atoms/Button";
-import dummyImage from "@/public/image/tutor.png";
-import Link from "next/link";
-import { baseUrl } from "@/components/utils/baseURL";
-import axiosInstance from "@/components/utils/axiosInstance";
+import React, { SetStateAction, useEffect } from 'react';
+import Image, { StaticImageData } from 'next/image';
+import Button from '@/components/Atoms/Button';
+import dummyImage from '@/public/image/tutor.png';
+import Link from 'next/link';
+import { baseUrl } from '@/components/utils/baseURL';
+import axiosInstance from '@/components/utils/axiosInstance';
 
 interface SubjectProps {
   assessments?: boolean;
@@ -12,6 +12,8 @@ interface SubjectProps {
   role: string;
   img?: string | StaticImageData;
   // type: "lecture" | "assessment";
+  description?: string;
+  teacherImage?: string;
   category?: string;
   subject: string;
   topic: string;
@@ -22,12 +24,14 @@ interface SubjectProps {
 
 const SubjectCard: React.FC<SubjectProps> = ({
   assessments,
+  teacherImage,
   name,
   role,
   subject,
   category,
   topic,
   time,
+  description,
   img,
   toggleModal,
   btnLink2,
@@ -37,12 +41,12 @@ const SubjectCard: React.FC<SubjectProps> = ({
   return (
     <div
       className={`flex flex-col  justify-center gap-6 ${
-        !assessments && "max-w-full"
+        !assessments && 'max-w-full'
       } border-dark/30 rounded-2xl p-6 shadow-card-2 w-full`}
     >
       <div className='flex items-center gap-3'>
         <Image
-          src={img ?? dummyImage}
+          src={teacherImage ?? dummyImage}
           width={50}
           height={50}
           alt='Profile Pics'
@@ -60,26 +64,21 @@ const SubjectCard: React.FC<SubjectProps> = ({
           {subject}
         </span>
         <div className='flex pb-2 justify-between gap-5 items-start'>
-          <span
-            className={`flex  gap-1 text-base  text-subtext ${
-              topic.length >= 10 && assessments && "items-center" // "flex-col items-start"
-              // : "items-center"
-            }`}
-          >
+          <span className={`flex  gap-1 text-base  text-subtext items-center `}>
             <b className='font-roboto font-medium block text-dark'>Topic:</b>
             <span
-              className='sm:block hidden text-sm'
-              dangerouslySetInnerHTML={{ __html: topic.slice(0, 11) + "..." }}
+              className='sm:block pt-0.5 hidden text-sm'
+              dangerouslySetInnerHTML={{ __html: topic.slice(0, 11) + '...' }}
             />
             <span
               className='max-sm:block hidden'
-              dangerouslySetInnerHTML={{ __html: topic.slice(0, 7) + "..." }}
+              dangerouslySetInnerHTML={{ __html: topic.slice(0, 7) + '...' }}
             />
           </span>
           {assessments && (
             <span
               className={`flex  gap-1 text-base  text-subtext ${
-                topic.length >= 10 && assessments && "items-center" // "flex-col items-start"
+                topic.length >= 10 && assessments && 'items-center' // "flex-col items-start"
                 // : "items-center"
               }`}
             >
@@ -91,17 +90,17 @@ const SubjectCard: React.FC<SubjectProps> = ({
         {assessments && (
           <span
             className={`flex pb-3 gap-1 text-base  text-subtext ${
-              topic.length >= 10 && assessments && "items-center"
+              topic.length >= 10 && assessments && 'items-center'
             }`}
           >
             <b className='font-roboto font-medium block text-dark'>
-              Category:{" "}
+              Category:{' '}
             </b>
             <span className='block'>{category}</span>
           </span>
         )}
         <span className='flex gap-1  max-w-[88%] text-sm text-wrap text-subtext'>
-          little introduction into the course (sort of summary)
+          {description}
         </span>
       </div>
 
@@ -111,12 +110,12 @@ const SubjectCard: React.FC<SubjectProps> = ({
           href={btnLink2}
           passHref
         >
-          {assessments ? "View Assessment" : "View Lecture"}
+          {assessments ? 'View Assessment' : 'View Lecture'}
         </Link>
         <Label
           date=''
           upcoming={true}
-          type={assessments ? "assessments" : ""}
+          type={assessments ? 'assessments' : ''}
         />
       </div>
     </div>
@@ -138,8 +137,8 @@ function Label({
         <span className='px-3 py-2 flex items-center h-[28px] text-xs rounded-full text-[#1E1E1E] text-opacity-60 bg-[#B69302] bg-opacity-10'>
           <SVGDot className='mr-2 block' />
           <span className='pt-[2px]'>
-            {" "}
-            {type === "assessments" ? "New" : "Upcoming"}
+            {' '}
+            {type === 'assessments' ? 'New' : 'Upcoming'}
           </span>
         </span>
       ) : (
