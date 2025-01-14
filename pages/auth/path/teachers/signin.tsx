@@ -1,11 +1,7 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import logo from "@/public/image/logo.png";
 import Button from "@/components/Atoms/Button";
 import { useRouter } from "next/router";
-import Input from "@/components/Atoms/Input";
-import { Info } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
 import useAjaxRequest, { TAxiosError, TAxiosSuccess } from "use-ajax-request";
 import axiosInstance from "@/components/utils/axiosInstance";
@@ -15,6 +11,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { initDB } from "@/components/utils/indexDB";
 import toast from "react-hot-toast";
 import { useUser } from "@/contexts/UserContext";
+import AuthLayout from "../students/layout";
+import InputField from "@/components/Atoms/InputField";
 
 export type loginType = {
   teacherID: string;
@@ -39,13 +37,6 @@ const LoginPath = () => {
     teacherID: "",
     password: "",
   });
-  const [formError, setFormError] = useState({
-    internetError: "",
-    teacherIDError: "",
-    passwordError: "",
-    successError: "",
-    generalError: "",
-  });
   const router = useRouter();
   const [isDisabled, setIsDisabled] = useState(true);
 
@@ -59,7 +50,9 @@ const LoginPath = () => {
 
   const handleChange = ({
     target: { name, value },
-  }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  }: ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >) => {
     setFormState((prevState) => ({
       ...prevState,
       [name]: value,
@@ -76,61 +69,29 @@ const LoginPath = () => {
 
   const handleErrors = (data: any) => {
     if (!navigator.onLine) {
-      setFormError((prevState) => ({
-        ...prevState,
-        internetError: "No internet connection",
-      }));
+      toast.error("No internet connection");
       return;
     }
 
     if (!formState.teacherID.trim()) {
-      setFormError((prevState) => ({
-        ...prevState,
-        teacherIDError: "Teacher ID field cannot be empty",
-      }));
+      toast.error("Teacher ID field cannot be empty.");
       return;
     }
 
     if (formState.password.length < 6) {
-      setFormError((prevState) => ({
-        ...prevState,
-        passwordError: "Password must be at least 6 characters long",
-      }));
+      toast.error("Password must be at least 6 characters long.");
       return;
     }
 
     if (data.error) {
-      setFormError((prevState) => ({
-        ...prevState,
-        generalError: data.error,
-      }));
+      toast.error(data.error);
     }
 
     if (data.message.teacherID) {
-      setFormError((prevState) => ({
-        ...prevState,
-        teacherIDError: data.message.teacherID,
-      }));
+      toast.error(data.message.teacherID);
     } else if (data.message.password) {
-      setFormError((prevState) => ({
-        ...prevState,
-        passwordError: data.message.password,
-      }));
+      toast.error(data.message.password);
     }
-
-    clearError();
-  };
-
-  const clearError = () => {
-    setTimeout(() => {
-      setFormError({
-        internetError: "",
-        teacherIDError: "",
-        passwordError: "",
-        successError: "",
-        generalError: "",
-      });
-    }, 7000);
   };
 
   const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"teacher">> = async ({
@@ -170,11 +131,7 @@ const LoginPath = () => {
     event.preventDefault();
 
     if (!navigator.onLine) {
-      setFormError((prevState) => ({
-        ...prevState,
-        internetError: "No internet connection",
-      }));
-      clearError();
+      toast.error("No internet connection");
       return;
     }
 
@@ -184,8 +141,6 @@ const LoginPath = () => {
       });
     } catch (error) {
       console.log("Error:", error);
-    } finally {
-      clearError();
     }
   };
 
@@ -196,68 +151,49 @@ const LoginPath = () => {
   };
 
   return (
-    <div className='flex w-full h-screen justify-center items-center bg-gradient-to-r from-[#0078a8] to-[#32A8C4]'>
-      {/*<customcursor />*/}
-
-      <div className='bg-white rounded-lg shadow-lg px-6 py-8 w-full md:w-[480px] flex flex-col items-center gap-6'>
-        <div className='flex flex-col items-center mb-6'>
-          <Link href='/' className='w-[4.5rem]'>
-            <Image src={logo} alt='Olive Grove Logo' width={72} height={80} />
-          </Link>
-          <h5 className='text-dark text-[18px] md:text-[20px] lg:text-[24px] font-bold mb-1 text-center'>
-            Welcome back,&nbsp;
-            <span className='text-[#32A8C4]'>Instructor!</span>
+    <AuthLayout title='Olive Grove - Create New Account'>
+      <div className='w-full h-full flex flex-col items-center justify-center gap-y-8'>
+        <div className='flex flex-col items-center justify-center w-[90%] sm:w-[80%] md:w-[400px]'>
+          <h5 className='text-dark text-base font-semibold capitalize font-roboto'>
+            Teacher&apos;s Portal
           </h5>
-
-          <p className='text-gray-600 text-sm text-center mx-4'>
+          <span className='text-primary text-2xl font-semibold capitalize font-roboto leading-[30px]'>
+            Olive Grove School
+          </span>
+          <span className='text-subtext text-sm text-center font-medium capitalize font-roboto'>
             Easily access your teaching resources and manage your classes
             seamlessly.
-          </p>
+          </span>
         </div>
-
-        {/* Error Messages */}
-        {formError.internetError && (
-          <span className='text-yellow-600 text-sm flex items-center justify-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-            {formError.internetError}
-          </span>
-        )}
-        {formError.successError && (
-          <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-            {formError.successError}
-          </span>
-        )}
-        {formError.generalError && (
-          <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-            <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-            <span>{formError.generalError}</span>
-          </span>
-        )}
 
         {/* Form Section */}
         <form
           onKeyPress={handleKeyPress}
           onSubmit={handleSignIn}
-          className='flex flex-col w-full gap-4'
+          className='flex flex-col mx-auto space-y-4 w-[94%] sm:w-[87%] md:w-[470px]'
         >
-          <Input
+          <InputField
+            label='Teacher ID'
+            placeholder='Enter Teacher ID'
             type='text'
             name='teacherID'
             value={formState.teacherID}
             onChange={handleChange}
-            placeholder='Teacher ID'
-            className='input rounded-lg shadow-md p-3'
             required
+            error={""}
+            disabled={isLoading}
           />
-          <Input
+
+          <InputField
+            label='Password'
+            placeholder='Enter Password'
             type='password'
             name='password'
             value={formState.password}
             onChange={handleChange}
-            placeholder='Password'
-            className='input rounded-lg shadow-md p-3'
             required
+            error={""}
+            disabled={isLoading}
           />
 
           <Button size='sm' width='full' disabled={isDisabled || isLoading}>
@@ -267,19 +203,15 @@ const LoginPath = () => {
               "Sign In"
             )}
           </Button>
+          <div className='flex items-center justify-center text-sm font-roboto gap-x-1 !mt-2'>
+            <span className='text-subtext'>Not a teacher?&nbsp;</span>
+            <Link href='/auth/path/students/signin' className='text-primary'>
+              Sign in as a student
+            </Link>
+          </div>
         </form>
-
-        <p className='text-gray-500 text-sm'>
-          Not a teacher?&nbsp;
-          <Link
-            href='/auth/path/students/signin'
-            className='text-[#32A8C4] font-semibold'
-          >
-            Sign in as a student
-          </Link>
-        </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

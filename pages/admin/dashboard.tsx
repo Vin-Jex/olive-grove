@@ -1,18 +1,22 @@
 import React, { useState } from "react";
-import Img from "@/public/image/celebrate.png";
 import Image from "next/image";
-import ClassCard from "@/components/Molecules/Card/ClassCard";
+import Img from "@/public/image/welcome_img.svg";
+import disturbance1 from "@/public/image/disturbance1.png";
+import disturbance2 from "@/public/image/disturbance2.png";
+import disturbance3 from "@/public/image/disturbance3.png";
+import disturbance4 from "@/public/image/disturbance4.png";
+import disturbance5 from "@/public/image/disturbance5.png";
 import withAuth from "@/components/Molecules/WithAuth";
-import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
-import { ArrowBackIos } from "@mui/icons-material";
+import { KeyboardArrowDown } from "@mui/icons-material";
 import UpdateDepartmentModal from "@/components/Molecules/Modal/UpdateDepartmentModal";
+import Calendar from "@/components/Molecules/Calendar";
+import ClassCard from "@/components/Molecules/Card/ClassCard";
+import { useUser } from "@/contexts/UserContext";
 import AdminsWrapper from "@/components/Molecules/Layouts/Admin.Layout";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalAss, setOpenModalAss] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [formState, setFormState] = useState({
     department: "",
     description: "",
@@ -20,20 +24,25 @@ const Dashboard = () => {
     meetingLink: "",
     video: "",
   });
+  const [selectedOption, setSelectedOption] = useState<string>("");
+  const { user } = useUser();
+  const options = [
+    { value: "option1", label: "Option 1" },
+    { value: "option2", label: "Option 2" },
+    { value: "option3", label: "Option 3" },
+  ];
 
-  const options = ["Option 1", "Option 2", "Option 3"];
-
-  const handleOptionClick = (option: string) => {
-    setSelectedOption(option);
-    setIsOpen(false);
+  const handleChange = (value: string) => {
+    setSelectedOption(value);
   };
-
   const handleModal = () => {
     setOpenModal(!openModal);
   };
+
   const handleModalAssignment = () => {
     setOpenModalAss(!openModalAss);
   };
+
   return (
     <>
       <UpdateDepartmentModal
@@ -51,97 +60,156 @@ const Dashboard = () => {
         modalOpen={openModalAss}
       />
       <AdminsWrapper
-        isPublic={false}
         title='Dashboard'
-        metaTitle='Olive Grove ~ Dashboard'
-        // isPublic={false}
+        metaTitle='Olive Grove - Inspire, Guide, and Educate'
+        isPublic={false}
       >
-        <div className='max-w-4xl mx-auto w-full grid gap-8 p-12 space-y-5'>
-          <div className='max-w-md flex items-center justify-between bg-primary w-full rounded-3xl font-roboto relative'>
-            <div className='flex flex-col px-9 py-11'>
-              <h3 className='font-roboto font-medium text-[3.125rem] text-light leading-[3.75rem] mb-4'>
-                Welcome back, John
-              </h3>
-              <span className='text-base text-light/80 font-roboto'>
-                You have 3 classes and 2 assignments to attend to.
-              </span>
-              <span className='text-base text-light/80 font-roboto'>
-                &quot;To teacher is to learn twice over&quot; learning to become
-                the best!
-              </span>
-            </div>
-            <div className='w-[200px] absolute right-0 bottom-0'>
+        <div className='space-y-5 h-full mb-5'>
+          <div className='max-sm:space-y-5 xl:grid xl:grid-cols-[3fr_1fr] xl:gap-4'>
+            <div className='bg-primary max-sm:mt-4 max-sm:min-h-[170px] w-full rounded-3xl font-roboto relative overflow-hidden h-full'>
+              <div className='flex flex-col h-full justify-center my-auto px-4 sm:px-6 md:px-9 py-6 sm:py-8 md:py-11 w-full z-10'>
+                <h3 className='font-roboto font-medium text-xl md:text-2xl lg:text-3xl lg:text-[3.125rem] text-light leading-tight sm:leading-snug md:leading-[3.75rem] mb-2 sm:mb-4'>
+                  Welcome back, {user && "name" in user ? user?.name : "Guest"}
+                </h3>
+                <span className='text-base text-light/80 font-roboto'>
+                  You have 3 lectures and 2 assignments to attend to.
+                </span>
+                <span className='text-sm sm:text-base text-light/80 font-roboto mt-1'>
+                  “To teach is to learn twice over.”{" "}
+                  <strong>Joseph Joubert</strong>
+                </span>
+              </div>
+              <div className='w-[130px] md:w-[160px] lg:w-[400px]  absolute right-0 bottom-0'>
+                <Image
+                  src={Img}
+                  alt={`${Img} Pics`}
+                  className='w-full h-full object-contain sm:object-scale-down'
+                  width={400}
+                  height={300}
+                />
+              </div>
               <Image
-                src={Img}
-                alt={`${Img} Pics`}
-                className='w-full h-full object-scale-down'
+                src={disturbance1}
+                alt={`${disturbance1} Pics`}
+                className='absolute left-[25%] top-0 object-scale-down'
+              />
+              <Image
+                src={disturbance5}
+                alt={`${disturbance5} Pics`}
+                className='absolute left-[55%] top-0 object-scale-down'
+              />
+              <Image
+                src={disturbance2}
+                alt={`${disturbance2} Pics`}
+                className='absolute left-0 top-0 object-scale-down'
+              />
+              <Image
+                src={disturbance3}
+                alt={`${disturbance3} Pics`}
+                className='absolute left-0 bottom-0 object-scale-down'
+              />
+              <Image
+                src={disturbance4}
+                alt={`${disturbance4} Pics`}
+                className='absolute left-[35%] bottom-0 object-scale-down'
               />
             </div>
-          </div>
-          <div className='flex flex-col px-4 sm:px-6 md:px-8 lg:px-10 py-4 sm:py-5 md:py-6 lg:py-7 border-2 w-full rounded-3xl font-roboto gap-4 sm:gap-5 md:gap-6'>
-            {/* Title */}
-            <span className='font-semibold text-xl sm:text-2xl text-dark'>
-              Overview
-            </span>
-            {/* Section */}
-            {/* <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0'> */}
-            {/*<div className='flex flex-col w-full sm:w-auto'> */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
-              <div className='flex flex-col items-center'>
-                <h3 className='font-roboto font-medium text-sm sm:text-base text-secondary'>
-                  Current Session
-                </h3>
-                <span className='text-dark font-semibold text-2xl sm:text-3xl'>
-                  2022/2023
-                </span>
-              </div>
-
-              <div className='flex flex-col w-full sm:w-auto items-center'>
-                <h3 className='font-roboto font-medium text-sm sm:text-base text-secondary'>
-                  Grade
-                </h3>
-                <div
-                  className='flex items-center space-x-2 relative'
-                  onClick={() => setIsOpen(!isOpen)}
-                >
-                  <span className='text-dark font-semibold text-2xl sm:text-3xl'>
-                    {selectedOption ?? "Class"}
-                  </span>
-                  <ArrowBackIos className='-rotate-90 -translate-y-[30%] text-xl sm:text-2xl' />
-                  {isOpen && (
-                    <div className='absolute top-10 left-0 sm:-left-8 z-50 w-full sm:min-w-[200px] h-fit py-4 px-4 rounded-md shadow-lg bg-white border flex flex-col space-y-4'>
-                      {options.map((option) => (
-                        <span
-                          key={option}
-                          className='block w-full py-2 px-2 font-roboto text-start cursor-pointer text-sm sm:text-base'
-                          onClick={() => handleOptionClick(option)}
-                        >
-                          {option}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className='flex flex-col w-full sm:w-auto'>
-                <h3 className='text-sm sm:text-base font-roboto font-medium text-secondary'>
-                  No. of Classes
-                </h3>
-                <span className='text-dark font-semibold text-2xl sm:text-3xl'>
-                  8
-                </span>
-              </div>
+            <div className=' relative rounded-lg h-max'>
+              <Calendar />
             </div>
           </div>
 
-          <div className='flex h-fit w-full gap-8 !mt-8'>
-            <ClassCard handleEdit={handleModal} editable={true} title='class' />
-            <ClassCard
-              editable={true}
-              title='assignment'
-              handleEdit={handleModalAssignment}
-            />
+          <div className='flex items-center justify-center space-x-6 h-[10rem]'>
+            <div className='flex flex-col justify-between w-full h-full space-y-3 rounded-xl shadow-card py-4 px-5'>
+              <div className='flex items-center justify-between w-full'>
+                <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
+                  Grade
+                </h3>
+
+                <div className='max-w-[5rem] w-full'>
+                  <div className='relative w-full max-w-sm overflow-hidden border border-subtext/60 rounded-full shadow-sm px-2 py-0.5 bg-white flex items-center justify-between'>
+                    <select
+                      value={selectedOption}
+                      onChange={(e) => handleChange(e.target.value)}
+                      className='appearance-none w-full text-subtext/60 focus:outline-none outline-none text-sm'
+                    >
+                      <option value='' disabled>
+                        All
+                      </option>
+
+                      {options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+
+                    <div className='absolute inset-y-0 right-0 flex items-center pointer-events-none bg-white !text-subtext/60'>
+                      <KeyboardArrowDown className='!text-lg' />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <span className='text-dark font-semibold text-2xl md:text-3xl'>
+                SS2
+              </span>
+              <span className='text-sm text-gray-400'>
+                Keep impacting these young ones with your knowledge.
+              </span>
+            </div>
+
+            <div className='flex flex-col justify-between w-full h-full space-y-3 rounded-xl shadow-card py-4 px-5'>
+              <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
+                No. of Courses
+              </h3>
+              <span className='text-dark font-semibold text-2xl md:text-3xl'>
+                10
+              </span>
+              <span className='text-sm text-gray-400'>
+                Mathematics, English
+              </span>
+            </div>
+
+            <div className='flex flex-col justify-between w-full h-full space-y-3 rounded-xl shadow-card py-4 px-5'>
+              <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
+                No. of Assessments
+              </h3>
+              <span className='text-dark font-semibold text-2xl md:text-3xl'>
+                15
+              </span>
+              <span className='text-sm text-gray-400'>
+                Your total assessments for this academic session
+              </span>
+            </div>
+
+            <div className='flex flex-col justify-between w-full h-full space-y-3 rounded-xl shadow-card py-4 px-5'>
+              <h3 className='font-roboto font-medium text-sm sm:text-base w-full text-secondary'>
+                Current Session
+              </h3>
+              <span className='text-dark font-semibold text-2xl md:text-3xl'>
+                2024/2025
+              </span>
+              <span className='text-sm text-gray-400'>
+                Keep impacting these young ones with your knowledge.
+              </span>
+            </div>
+          </div>
+
+          <div className='flex flex-col md:flex-row w-full gap-2 md:gap-4 lg:gap-8 mt-4 sm:mt-6 md:mt-8'>
+            <div className='w-full md:w-1/2 shadow-card rounded-2xl'>
+              <ClassCard
+                handleEdit={handleModal}
+                editable={true}
+                title='class'
+              />
+            </div>
+            <div className='w-full md:w-1/2 mt-4 sm:mt-0 shadow-card rounded-2xl'>
+              <ClassCard
+                editable={true}
+                title='assignment'
+                handleEdit={handleModalAssignment}
+              />
+            </div>
           </div>
         </div>
       </AdminsWrapper>

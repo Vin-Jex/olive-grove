@@ -361,6 +361,7 @@ export type TTeacher = {
 
 export type TAdmin = {
   _id: string;
+  adminID: string;
   name: string;
   username: string;
   password: string;

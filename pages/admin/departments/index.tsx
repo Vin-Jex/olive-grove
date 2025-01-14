@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import withAuth from "@/components/Molecules/WithAuth";
 import Button from "@/components/Atoms/Button";
-import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
-import ServerError from "@/components/Atoms/ServerError";
 import Loader from "@/components/Atoms/Loader";
 import { Table } from "@/components/Molecules/Table/Table";
 import {
@@ -13,6 +11,7 @@ import EachClass from "@/components/Atoms/Class/EachClass";
 import { TDepartment, TFetchState } from "@/components/utils/types";
 import axiosInstance from "@/components/utils/axiosInstance";
 import ErrorUI from "@/components/Atoms/ErrorComponent";
+import AdminsWrapper from "@/components/Molecules/Layouts/Admin.Layout";
 
 const Departments = () => {
   const [openModalEdit, setOpenModalEdit] = useState(false);
@@ -182,7 +181,7 @@ const Departments = () => {
         delete formState._id;
 
         const response = await axiosInstance.post(
-          `/departments`,
+          `/department`,
           {
             ...formState,
           },
@@ -233,7 +232,7 @@ const Departments = () => {
         }));
 
         const response = await axiosInstance.put(
-          `/departments/${formState._id}`,
+          `/department/${formState._id}`,
           {
             ...formState,
           },
@@ -283,7 +282,7 @@ const Departments = () => {
         }));
 
         const response = await axiosInstance.delete(
-          `/departments/${formState._id}`,
+          `/department/${formState._id}`,
           {
             withCredentials: true,
           }
@@ -349,7 +348,7 @@ const Departments = () => {
         requestState={createDepartments}
         handleAction={deleteDepartment}
       />
-      <TeachersWrapper
+      <AdminsWrapper
         isPublic={true}
         title="Departments"
         metaTitle="Olive Grove ~ Departments"
@@ -416,9 +415,9 @@ const Departments = () => {
             </>
           )}
         </div>
-      </TeachersWrapper>
+      </AdminsWrapper>
     </>
   );
 };
 
-export default withAuth("Teacher", Departments);
+export default withAuth("Admin", Departments);

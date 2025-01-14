@@ -175,10 +175,10 @@ const SubjectDetailsPage: FC = () => {
           <CourseModal
             formState={modalFormState || ({} as any)}
             setFormState={setModalFormState || ((() => {}) as any)}
-            type={type || "chapter"}
+            type={type || 'chapter'}
             handleModalClose={handleCloseModal}
             modalOpen={true}
-            mode={mode || "create"}
+            mode={mode || 'create'}
             handleAction={handleAction || ((() => {}) as any)}
             handleDelete={handleDelete || ((() => {}) as any)}
             requestState={modalRequestState}
@@ -188,15 +188,15 @@ const SubjectDetailsPage: FC = () => {
       <TopicContextProvider course={course.data}>
         <StudentWrapper
           remark='Manage and get updates on your courses'
-          title={`Olive Grove - ${course?.data?.title ?? "Lecture"} `}
-          metaTitle={`Olive Grove - ${course?.data?.title ?? "Lecture"} `}
+          title={`Olive Grove - ${course?.data?.title ?? 'Lecture'} `}
+          metaTitle={`Olive Grove - ${course?.data?.title ?? 'Lecture'} `}
         >
           <div className='flex flex-col space-y-5'>
             {course.loading ? (
               <Loader />
             ) : course.error ? (
               <div className='w-full h-full flex items-center justify-center'>
-                {typeof course.error === "object" &&
+                {typeof course.error === 'object' &&
                 course.error.status === 404 ? (
                   <>
                     <ErrorUI msg={course.error.message} status={404} />
@@ -213,21 +213,21 @@ const SubjectDetailsPage: FC = () => {
                     <BackButton />
 
                     <span className='text-2xl max-sm:text-lg font-medium text-dark font-roboto'>
-                      {course.data?.title || "Loading..."}
+                      {course.data?.title || 'Loading...'}
                     </span>
                     {/* breadcrumb */}
                     <span className='absolute right-0 translate-y-1/2'>
                       <span className='text-sm text-subtext'>Courses / </span>
                       <span className='text-sm text-dark font-semibold'>
-                        {" "}
+                        {' '}
                         {course.data?.title}
                       </span>
                     </span>
                   </div>
-                  {userRole === "Teacher" && (
-                    <div className='flex gap-4 items-center'>
-                      {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
-                      <div
+                  {/* {userRole === "Teacher" && ( */}
+                  {/* <div className='flex gap-4 items-center'> */}
+                  {/* HAMBURGER ICON TO DISPLAY/HIDE SIDEBAR IN MOBILE VIEW */}
+                  {/* <div
                         className='rounded-full xl:hidden flex items-center justify-center p-2 border border-primary cursor-pointer transition hover:scale-110'
                         onClick={() => setShowSideBar((prev) => !prev)}
                       >
@@ -270,19 +270,19 @@ const SubjectDetailsPage: FC = () => {
                         <span>Share Course</span>
                       </Button>
                     </div>
-                  )}
+                  )} */}
                 </div>
                 <div className='flex items-stretch max-sm:flex-col min-h-screen pb-7 gap-4 relative'>
                   {/* SIDEBAR */}
                   <div className='max-md:space-y-6 relative'>
                     <div className='w-full flex gap-0 md:hidden'>
-                      {["Course Contents", "Q/A Section"].map((slug, i) => (
+                      {['Course Contents', 'Q/A Section'].map((slug, i) => (
                         <>
                           <div
                             className={`px-7 py-2 font-medium text-sm cursor-pointer transition ${
                               activeTab === slug
-                                ? "border-primary border-opacity-70 border-b-2 bg-[#32A8C41A] text-primary"
-                                : ""
+                                ? 'border-primary border-opacity-70 border-b-2 bg-[#32A8C41A] text-primary'
+                                : ''
                             }`}
                             onClick={() => setActiveTab(slug)}
                             key={i}
@@ -294,13 +294,13 @@ const SubjectDetailsPage: FC = () => {
                     </div>
                     <div className='sticky top-6'>
                       <div className='flex-none relative w-full block'>
-                        <SideBar courseId={(courseId as string) || ""} />
+                        <SideBar courseId={(courseId as string) || ''} />
                       </div>
                       {/* MOBILE SIDEBAR */}
                       <AnimatePresence>
                         {showSideBar && (
                           <MobileSideBar
-                            courseId={(courseId as string) || ""}
+                            courseId={(courseId as string) || ''}
                           />
                         )}
                       </AnimatePresence>
@@ -322,7 +322,7 @@ const SubjectDetailsPage: FC = () => {
               open={errorOccured}
               onClose={() => setErrorOccured(false)}
               autoHideDuration={6000}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               className='!z-[999]'
             >
               <Alert severity='info' onClose={() => setErrorOccured(false)}>

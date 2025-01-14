@@ -1,9 +1,9 @@
-import Meta from '@/components/Atoms/Meta';
-import Image from 'next/image';
-import React, { ReactNode } from 'react';
-import LayoutImage from '@/public/image/student7.png';
-import Link from 'next/link';
-import logo from '@/public/image/logo.png';
+import Meta from "@/components/Atoms/Meta";
+import Image from "next/image";
+import React, { ReactNode } from "react";
+import LayoutImage from "@/public/image/student7.png";
+import Link from "next/link";
+import logo from "@/public/image/logo.png";
 
 interface AuthLayoutProps {
   title: string;
@@ -19,9 +19,9 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
   return (
     <div className='relative overflow-hidden'>
       <Meta title={title} description={description} />
-      <main className='flex w-full h-screen relative overflow-hidden'>
+      <main className='flex w-full h-full relative'>
         {/* Fixed image on the left */}
-        <aside className='lg:w-[50vw] overflow-hidden h-screen fixed left-0 hidden lg:block'>
+        <aside className='lg:w-[50vw] overflow-hidden h-full fixed left-0 hidden lg:block'>
           <Image
             src={LayoutImage}
             alt='Layout content'
@@ -64,12 +64,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
             width='10000'
             height='10000'
             className='object-cover w-12 h-12 absolute top-4 left-5 cursor-pointer z-10'
-            onClick={() => window.location.replace('/')}
+            onClick={() => window.location.replace("/")}
           />
 
           <div className='absolute -right-[200px] -top-[200px] bg-primary/10 h-[490px] w-[490px] rounded-full blur-xl' />
           <div className='absolute -left-[200px] -bottom-[200px] bg-primary/10 h-[490px] w-[490px] rounded-full blur-xl' />
-          {children}
+          <div className='h-full overflow-y-auto'>{children}</div>
         </main>
       </main>
     </div>

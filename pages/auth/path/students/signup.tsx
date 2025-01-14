@@ -1,23 +1,27 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import Link from 'next/link';
-import Input from '@/components/Atoms/Input';
-import Button from '@/components/Atoms/Button';
-import { Info } from '@mui/icons-material';
-import File from '@/components/Atoms/File';
-import { baseUrl } from '@/components/utils/baseURL';
-import { useRouter } from 'next/router';
-import InputField from '@/components/Atoms/InputField';
-import { Alert, CircularProgress, Snackbar } from '@mui/material';
-import { fetchCourses } from '@/components/utils/course';
-import { InputType, TCourse } from '@/components/utils/types';
-import OTPInput from '@/components/Molecules/OTPInput';
-import useUserVerify from '@/components/utils/hooks/useUserVerify';
-import MultipleSelect from '@/components/Molecules/MaterialSelect';
-import FormPagination from '@/components/Molecules/FormPagination';
-import axios, { AxiosError } from 'axios';
-import AuthLayout from './layout';
-import Cookies from 'js-cookie';
-import toast from 'react-hot-toast';
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import Link from "next/link";
+import Button from "@/components/Atoms/Button";
+import File from "@/components/Atoms/File";
+import { baseUrl } from "@/components/utils/baseURL";
+import InputField from "@/components/Atoms/InputField";
+import { CircularProgress } from "@mui/material";
+import { fetchCourses } from "@/components/utils/course";
+import { InputType, TCourse } from "@/components/utils/types";
+import OTPInput from "@/components/Molecules/OTPInput";
+import useUserVerify from "@/components/utils/hooks/useUserVerify";
+import MultipleSelect from "@/components/Molecules/MaterialSelect";
+import FormPagination from "@/components/Molecules/FormPagination";
+import { AxiosError } from "axios";
+import AuthLayout from "./layout";
+import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import axiosInstance from "@/components/utils/axiosInstance";
 
 export type SignupType = {
   firstName: string;
@@ -29,114 +33,130 @@ export type SignupType = {
   enrolledSubjects: string[];
   username: string;
   password: string;
+  gender: "";
 };
 
 const StudentSignup = () => {
-  const router = useRouter();
   const { otpRequestLoading, handleRequestOTP, fetchedDept, OTPTimer } =
     useUserVerify();
   const [selectedImage, setSelectedImage] = useState<
     Blob | null | string | undefined
   >(null);
-  const [fileName, setFileName] = useState('');
+  const [fileName, setFileName] = useState("");
   const [previewImage, setPreviewImage] = useState<Blob | null | string>(null);
   const [availableCourse, setAvailableCourses] = useState<TCourse[]>([]);
   const [formState, setFormState] = useState<SignupType>({
-    firstName: '',
-    lastName: '',
-    middleName: '',
-    department: '',
-    email: '',
-    dob: '',
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    department: "",
+    email: "",
+    dob: "",
     enrolledSubjects: [],
-    username: '',
-    password: '',
-  });
-  const [formError, setFormError] = useState({
-    internetError: '',
-    firstNameError: '',
-    lastNameError: '',
-    enrolledSubjectsError: '',
-    dobError: '',
-    emailError: '',
-    departmentError: '',
-    usernameError: '',
-    passwordError: '',
-    profileImageError: '',
-    successError: '',
-    generalError: '',
+    username: "",
+    password: "",
+    gender: "",
   });
   const [isDisabled, setIsDisabled] = useState<boolean[]>(Array(3).fill(true));
-
   const [isLoading, setIsLoading] = useState(false);
   const [currentFormIndex, setCurrentFormIndex] = useState(0);
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const [emailVerifyLoading, setEmailVerifyLoading] = useState(false);
-  const [firstName, setFirstName] = useState('');
+  const [firstName, setFirstName] = useState("");
 
-  const inputFields: (
-    | {
-        label: string;
-        name: string;
-        type: InputType;
-        required: boolean;
-        error: string;
-      }
-    | {
-        label: string;
-        name: string;
-        type: InputType;
-        error: string;
-        required?: undefined;
-      }
-  )[] = [
-    {
-      label: 'Last Name *',
-      name: 'lastName',
-      type: 'text',
-      required: true,
-      error: formError.lastNameError,
-    },
-    {
-      label: 'Date of Birth *',
-      name: 'dob',
-      type: 'date',
-      required: true,
-      error: formError.dobError,
-    },
-
-    {
-      label: 'Username *',
-      name: 'username',
-      type: 'text',
-      required: true,
-      error: formError.usernameError,
-    },
-    {
-      label: 'Password *',
-      name: 'password',
-      type: 'password',
-      required: true,
-      error: formError.passwordError,
-    },
-  ];
+  const inputFields: {
+    label: string;
+    name: string;
+    type: InputType;
+    required?: boolean;
+    options?: { value: string; display_value: string }[];
+  }[] = useMemo(
+    () => [
+      {
+        label: "First Name",
+        name: "firstName",
+        type: "text",
+        required: true,
+        error: "",
+      },
+      {
+        label: "Last Name",
+        name: "lastName",
+        type: "text",
+        required: true,
+        error: "",
+      },
+      {
+        label: "Middle Name",
+        name: "middleName",
+        type: "text",
+        required: false,
+        error: "",
+      },
+      {
+        label: "Date of Birth",
+        name: "dob",
+        type: "date",
+        required: true,
+        error: "",
+      },
+      {
+        label: "Department",
+        name: "department",
+        type: "select",
+        required: true,
+        error: "",
+        options: fetchedDept?.map((dept) => ({
+          display_value: dept.name,
+          value: dept._id,
+        })),
+      },
+      {
+        label: "Gender",
+        name: "gender",
+        type: "select",
+        required: true,
+        options: [
+          { value: "male", display_value: "Male" },
+          { value: "female", display_value: "Female" },
+          { value: "undisclosed", display_value: "Prefer not to say" },
+        ],
+      },
+      {
+        label: "Username",
+        name: "username",
+        type: "text",
+        required: true,
+        error: "",
+      },
+      {
+        label: "Password",
+        name: "password",
+        type: "password",
+        required: true,
+        error: "",
+      },
+    ],
+    [fetchedDept]
+  );
 
   useEffect(() => {
     if (
-      formState.dob !== '' &&
-      formState.middleName !== '' &&
-      formState.username !== '' &&
-      formState.firstName !== '' &&
-      formState.lastName !== '' &&
-      formState.department !== '' &&
-      formState.password !== '' &&
+      formState.dob !== "" &&
+      formState.middleName !== "" &&
+      formState.username !== "" &&
+      formState.firstName !== "" &&
+      formState.lastName !== "" &&
+      formState.department !== "" &&
+      formState.password !== "" &&
+      formState.gender !== "" &&
       selectedImage !== null
     ) {
       setIsDisabled((c) => c.map((e, i) => (i === 0 ? false : e)));
     }
-    if (formState.email !== '' && formState.enrolledSubjects.length !== 0)
+    if (formState.email !== "" && formState.enrolledSubjects.length !== 0)
       setIsDisabled((c) => c.map((e, i) => (i === 1 ? false : e)));
-    if (otp !== '')
+    if (otp !== "")
       setIsDisabled((c) => c.map((e, i) => (i === 2 ? false : e)));
   }, [
     formState.dob,
@@ -150,15 +170,16 @@ const StudentSignup = () => {
     formState.department,
     formState.username,
     selectedImage,
+    formState.gender,
   ]);
 
   useEffect(() => {
     async function getCourses() {
       const courses = await fetchCourses({
-        query: 'department',
+        query: "department",
         value: formState.department,
       });
-      if (typeof courses === 'string') return;
+      if (typeof courses === "string") return;
       else setAvailableCourses(courses.data);
     }
     getCourses();
@@ -178,48 +199,38 @@ const StudentSignup = () => {
   const resetForm = () => {
     setFormState((prevState) => ({
       ...prevState,
-      firstName: '',
-      middleName: '',
-      lastName: '',
-      username: '',
-      department: '',
-      dob: '',
-      email: '',
-      password: '',
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      username: "",
+      department: "",
+      dob: "",
+      email: "",
+      password: "",
+      gender: "",
     }));
     setSelectedImage(null);
-    setFileName('');
+    setFileName("");
     setPreviewImage(null);
   };
 
   const resetImageField = () => {
     setSelectedImage(null);
-    setFileName('');
+    setFileName("");
     setPreviewImage(null);
   };
 
   async function handleEmailVerify(otp: string) {
-    const accessToken = Cookies.get('accessToken');
-    const refreshToken = Cookies.get('refreshToken');
     try {
       setEmailVerifyLoading(true);
       const request_body = JSON.stringify({ otp });
-      const response = await axios.post(
-        `${baseUrl}/email/verify`,
-        request_body,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer accessToken=${accessToken};refreshToken=${refreshToken}`,
-          },
-        }
-      );
+      const response = await axiosInstance.post(`/email/verify`, request_body);
 
       setCurrentFormIndex((c) => c + 1);
-      toast.success(response.data?.message || 'Email verified successfully');
+      toast.success(response.data?.message || "Email verified successfully");
     } catch (err: AxiosError | any) {
-      console.error('otp error', otp);
-      toast.error(err.response?.data?.message || 'An error occurred');
+      console.error("otp error", otp);
+      toast.error(err.response?.data?.message || "An error occurred");
     } finally {
       setEmailVerifyLoading(false);
     }
@@ -228,79 +239,44 @@ const StudentSignup = () => {
   const handleErrors = (data: any) => {
     // Check for internet connectivity
     if (!navigator.onLine) {
-      setFormError((prevState) => ({
-        ...prevState,
-        internetError: 'No internet connection',
-      }));
+      toast.error("No internet connection.");
       return;
     }
 
     // Validate email and password
     if (!formState.email.trim()) {
-      setFormError((prevState) => ({
-        ...prevState,
-        emailError: 'Email field cannot be empty',
-      }));
+      toast.error("Email field cannot be empty.");
       return;
     }
 
     if (!formState.password.trim()) {
-      setFormError((prevState) => ({
-        ...prevState,
-        passwordError: 'Password field cannot be empty',
-      }));
+      toast.error(data.message.username);
       return;
     }
 
     if (data.message.username) {
-      setFormError((prevState) => ({
-        ...prevState,
-        emailError: data.message.username,
-      }));
+      toast.error(data.message.username);
     } else if (data.message.password) {
-      setFormError((prevState) => ({
-        ...prevState,
-        passwordError: data.message.username,
-      }));
+      toast.error(data.message.password);
     } else if (data.message.firstName) {
-      setFormError((prevState) => ({
-        ...prevState,
-        firstNameError: data.message.firstName,
-      }));
+      toast.error(data.message.firstName);
     } else if (data.message.lastName) {
-      setFormError((prevState) => ({
-        ...prevState,
-        lastNameError: data.message.lastName,
-      }));
+      toast.error(data.message.lastName);
     } else if (data.message.dob) {
-      setFormError((prevState) => ({
-        ...prevState,
-        dobError: data.message.dob,
-      }));
+      toast.error(data.message.dob);
     } else if (data.message.dapartment) {
-      setFormError((prevState) => ({
-        ...prevState,
-        departmentError: data.message.department,
-      }));
+      toast.error(data.message.department);
     } else if (data.message.profileImage) {
-      setFormError((prevState) => ({
-        ...prevState,
-        profileImageError: data.message.profileImage,
-      }));
+      toast.error(data.message.profileImage);
+    } else if (data.message.gender) {
+      toast.error(data.message.gender);
     } else {
-      console.error('Error Message: ', data.error);
+      console.error("Error Message: ", data.error);
     }
 
     if (data.error) {
-      setFormError((prevState) => ({
-        ...prevState,
-        generalError: data.message || data.error,
-      }));
+      toast.error(data.message || data.error);
     }
-
-    // Clear errors after 7 seconds
-
-    clearError();
   };
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -319,53 +295,33 @@ const StudentSignup = () => {
     }
   };
 
-  const clearError = () => {
-    setTimeout(() => {
-      setFormError({
-        internetError: '',
-        firstNameError: '',
-        lastNameError: '',
-        enrolledSubjectsError: '',
-        departmentError: '',
-        dobError: '',
-        emailError: '',
-        usernameError: '',
-        passwordError: '',
-        profileImageError: '',
-        successError: '',
-        generalError: '',
-      });
-    }, 7000);
-  };
-
   const handleSignup = async (event: FormEvent<HTMLFormElement>) => {
     // Reset previous error messages
     event.preventDefault();
     setIsLoading(true);
 
     if (!navigator.onLine) {
-      setFormError((prevState) => ({
-        ...prevState,
-        internetError: 'No internet connection',
-      }));
+      if (!navigator.onLine) {
+        toast.error("No internet connection.");
+        return;
+      }
       setIsLoading(false);
-      clearError();
       return;
     }
 
     const formData = new FormData();
-    formData.append('profileImage', selectedImage as Blob);
+    formData.append("profileImage", selectedImage as Blob);
 
     // Append other form fields to the FormData object
     Object.entries(formState).forEach(([key, value]) => {
-      if (key === 'enrolledSubjects') {
+      if (key === "enrolledSubjects") {
         formData.append(key, JSON.stringify(value));
       } else formData.append(key, value as string);
     });
 
     try {
       const response = await fetch(`${baseUrl}/student-signup`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
 
@@ -385,27 +341,24 @@ const StudentSignup = () => {
       const userRole = data.details.role;
 
       accessToken !== undefined &&
-        Cookies.set('accessToken', accessToken, { expires: 1 });
+        Cookies.set("accessToken", accessToken, { expires: 1 });
       refreshToken !== undefined &&
-        Cookies.set('refreshToken', refreshToken, { expires: 1 });
-      userId !== undefined && Cookies.set('userId', userId, { expires: 1 });
-      userRole !== undefined && Cookies.set('role', userRole, { expires: 1 });
-      setFormError((prevState) => ({
-        ...prevState,
-        successError: 'Student account created successfully.',
-      }));
+        Cookies.set("refreshToken", refreshToken, { expires: 1 });
+      userId !== undefined && Cookies.set("userId", userId, { expires: 1 });
+      userRole !== undefined && Cookies.set("role", userRole, { expires: 1 });
+
+      toast.success(data?.message);
 
       resetForm();
     } catch (error) {
-      console.error('Error: ', error);
+      console.error("Error: ", error);
     } finally {
       setIsLoading(false);
-      clearError();
     }
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (isDisabled && event.key === 'Enter') {
+    if (isDisabled && event.key === "Enter") {
       handleSignup(event);
     }
   };
@@ -413,155 +366,152 @@ const StudentSignup = () => {
   return (
     <AuthLayout title='Olive Grove - Create New Account'>
       <div className='relative w-full h-full flex items-center justify-center'>
-        <div className=' flex flex-col w-full items-center justify-center gap-y-3'>
-          <div className='flex flex-col items-center justify-center'>
-            {currentFormIndex !== 4 && (
-              <>
-                <div className='w-[7rem] bg-[#1e1e1e] bg-opacity-5 h-1  my-2 relative'>
+        <div className='flex flex-col items-center justify-center w-[94%] sm:w-[87%] md:w-2/3'>
+          {currentFormIndex !== 4 && (
+            <div className='flex flex-col items-center justify-center w-[90%] sm:w-[80%]'>
+              <div className='flex flex-col items-center justify-center text-center'>
+                <div className='w-[7rem] bg-[#1e1e1e] bg-opacity-5 h-1 relative mb-3'>
                   <div
                     style={{
                       width: `${((currentFormIndex + 1) * 100) / 4}%`,
                     }}
                     className={`absolute h-full transition-all left-0 top-0 bg-primary`}
-                  ></div>
+                  />
                 </div>
-                <h5 className='text-dark text-[20px] font-semibold capitalize font-roboto leading-[25px]'>
-                  School Portal
+                <h5 className='text-dark text-base font-semibold capitalize font-roboto'>
+                  Student Portal
                 </h5>
-                <span className='text-primary text-[30px] font-semibold capitalize font-roboto leading-[30px]'>
+                <span className='text-primary text-2xl font-semibold capitalize font-roboto'>
                   Olive Grove School
                 </span>
-              </>
-            )}
-          </div>
+                <span className='text-subtext text-sm font-medium capitalize font-roboto'>
+                  {currentFormIndex === 0
+                    ? "Join now to access personalized learning resources and take control of your academic journey!"
+                    : currentFormIndex === 1
+                    ? "Fill your email and kindly select all your enrolled subjects below."
+                    : currentFormIndex === 2
+                    ? "Would you like to verify your account now?"
+                    : currentFormIndex === 3
+                    ? "An OTP was sent to the email you provided. Kindly enter it below."
+                    : ""}
+                </span>
+              </div>
+            </div>
+          )}
 
-          {/* {formError.usernameError ? (
-            <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: '1.1rem' }} />
-              {formError.usernameError}
-            </span>
-          ) : formError.passwordError ? (
-            <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: '1.1rem' }} />
-              {formError.passwordError}
-            </span>
-          ) : formError.internetError ? (
-            <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
-              {formError.internetError}
-            </span>
-          ) : formError.successError ? (
-            <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
-              {formError.successError}
-            </span>
-          ) : formError.departmentError ? (
-            <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
-              {formError.departmentError}
-            </span>
-          ) : formError.generalError ? (
-            <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: '1.1rem' }} className='mt-0.5' />
-              <span>{formError.generalError}</span>
-            </span>
-          ) : null}
-          {formError.profileImageError !== '' && (
-            <span className='flex items-center gap-x-1 text-sm font-roboto font-normal text-red-600'>
-              <Info sx={{ fontSize: '1.1rem' }} />
-              {formError.profileImageError}
-            </span>
-          )} */}
           <form
-            className='flex flex-col mx-auto gap-y-5 w-[94%] sm:w-[87%] md:w-[470px]'
+            className='flex flex-col mx-auto space-y-4 w-full mt-8'
             onKeyPress={handleKeyPress}
             onSubmit={handleSignup}
           >
             {/* first form step */}
             {currentFormIndex === 0 && (
-              <div className='flex flex-col w-full gap-y-5 '>
-                <span className='text-subtext text-[16px] text-center font-medium capitalize font-roboto leading-[28px]'>
-                  Create new account
-                </span>
-                <div className='flex items-end gap-3 w-full'>
-                  <InputField
-                    name='firstName'
-                    type='text'
-                    placeholder='First Name *'
-                    value={formState.firstName}
-                    onChange={handleChange}
-                    required
-                    error={formError.firstNameError}
-                  />
-
-                  <InputField
-                    name='middleName'
-                    type='text'
-                    placeholder='Middle Name'
-                    value={formState.middleName}
-                    onChange={handleChange}
-                    error={''}
-                  />
-                </div>
-                <div className='w-full '>
-                  <select
-                    onChange={handleChange}
-                    value={formState.department}
-                    id='department'
-                    name='department'
-                    required
-                    className='flex items-center h-12 px-2 sm:px-2.5 py-3 rounded-xl bg-transparent !border-[#D0D5DD] font-roboto font-normal w-full outline-none border-[1.5px] border-dark/20 text-xs sm:text-sm placeholder:text-xs sm:placeholder:text-sm placeholder:text-subtext first-letter:!uppercase text-subtext order-2'
-                  >
-                    <option value='' disabled selected>
-                      Select Department
-                    </option>
-                    {fetchedDept?.map((course) => (
-                      <option value={course._id} key={course._id}>
-                        {course.name}
-                      </option>
+              <div className='flex flex-col w-full space-y-3 overflow-y-auto'>
+                {/* Rendering input fields */}
+                <div className='flex space-x-3'>
+                  {inputFields
+                    .filter(
+                      (field) =>
+                        field.name === "firstName" || field.name === "lastName"
+                    )
+                    .map((field) => (
+                      <InputField
+                        placeholder={field.label}
+                        label={field.label}
+                        key={field.name}
+                        name={field.name}
+                        type={field.type}
+                        {...(field.options && { options: field.options })}
+                        pattern={
+                          field.name === "username"
+                            ? "[a-zA-Z0-9!@#$_%].{5,}$"
+                            : field.name === "password"
+                            ? "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$"
+                            : undefined
+                        }
+                        title={
+                          field.name === "email"
+                            ? "Please enter a valid email address"
+                            : field.name === "username"
+                            ? "Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)"
+                            : field.name === "password"
+                            ? "Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)"
+                            : ""
+                        }
+                        value={formState[field.name as keyof SignupType]}
+                        onChange={handleChange}
+                        required={field.required}
+                        error={""}
+                      />
                     ))}
-                  </select>
                 </div>
-                {inputFields.map((field) =>
-                  field.name !== 'password' ? (
+
+                {/* Department and gender side by side */}
+                <div className='flex space-x-3'>
+                  {inputFields
+                    .filter(
+                      (field) =>
+                        field.name === "department" || field.name === "gender"
+                    )
+                    .map((field) => (
+                      <InputField
+                        placeholder={field.label}
+                        label={field.label}
+                        key={field.name}
+                        name={field.name}
+                        type={field.type}
+                        {...(field.options && { options: field.options })}
+                        value={formState[field.name as keyof SignupType]}
+                        onChange={handleChange}
+                        required={field.required}
+                        error={""}
+                      />
+                    ))}
+                </div>
+
+                {/* Rendering remaining input fields */}
+                {inputFields
+                  .filter(
+                    (field) =>
+                      ![
+                        "firstName",
+                        "lastName",
+                        "department",
+                        "gender",
+                      ].includes(field.name)
+                  )
+                  .map((field) => (
                     <InputField
                       placeholder={field.label}
+                      label={field.label}
                       key={field.name}
                       name={field.name}
                       type={field.type}
+                      {...(field.options && { options: field.options })}
                       pattern={
-                        field.name === 'username'
-                          ? '[a-zA-Z0-9!@#$_%].{5,}$'
+                        field.name === "username"
+                          ? "[a-zA-Z0-9!@#$_%].{5,}$"
+                          : field.name === "password"
+                          ? "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,}$"
                           : undefined
                       }
                       title={
-                        field.name === 'email'
-                          ? 'Please enter a valid email address'
-                          : field.name === 'username'
-                          ? 'Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
-                          : ''
+                        field.name === "email"
+                          ? "Please enter a valid email address"
+                          : field.name === "username"
+                          ? "Username must be at least 5 characters containing uppercase, lowercase, and special characters(!@#$_%+-)"
+                          : field.name === "password"
+                          ? "Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)"
+                          : ""
                       }
                       value={formState[field.name as keyof SignupType]}
                       onChange={handleChange}
                       required={field.required}
-                      error={field.error}
+                      error={""}
                     />
-                  ) : (
-                    <Input
-                      key={field.name}
-                      pattern='^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$'
-                      title='Password must be at least 8 characters containing uppercase, lowercase, and special characters(!@#$_%+-)'
-                      type='password'
-                      name='password'
-                      value={formState[field.name as keyof SignupType]}
-                      onChange={handleChange}
-                      placeholder='Password'
-                      required={field.required}
-                      className='input rounded-lg p-3'
-                    />
-                  )
-                )}
+                  ))}
 
+                {/* File upload component */}
                 <div className='w-full flex flex-col gap-1 cursor-pointer'>
                   <File
                     selectedImage={selectedImage}
@@ -572,12 +522,14 @@ const StudentSignup = () => {
                     resetImageStates={resetImageField}
                     accept='image/jpeg, image/png, image/jpg'
                     placeholder={
-                      fileName === '' ? fileName : 'Upload Profile Picture'
+                      fileName === "" ? fileName : "Upload Profile Picture"
                     }
                     required
                     fileName={fileName}
                   />
                 </div>
+
+                {/* Continue Button */}
                 <Button
                   size='sm'
                   width='full'
@@ -587,13 +539,15 @@ const StudentSignup = () => {
                 >
                   Continue
                 </Button>
+
+                {/* Login link */}
                 <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
                   <span className='text-subtext'>Already have an account?</span>
                   <Link
                     href='/auth/path/students/signin'
                     className='text-primary'
                   >
-                    Login
+                    Sign In
                   </Link>
                 </div>
               </div>
@@ -601,9 +555,6 @@ const StudentSignup = () => {
 
             {currentFormIndex === 1 && (
               <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                <span className='text-center text-subtext'>
-                  Kindly select all your enrolled subjects below.
-                </span>
                 <InputField
                   type='email'
                   name='email'
@@ -612,7 +563,7 @@ const StudentSignup = () => {
                   onChange={handleChange}
                   placeholder='Enter your mail'
                   required
-                  error={formError.emailError}
+                  error=''
                 />
                 <div className='w-full'>
                   <MultipleSelect
@@ -628,12 +579,12 @@ const StudentSignup = () => {
                   disabled={isLoading || isDisabled[1]}
                   width='full'
                   type='submit'
-                  size='md'
+                  size='sm'
                 >
                   {isLoading ? (
                     <CircularProgress size={20} color='inherit' />
                   ) : (
-                    'Complete'
+                    "Complete"
                   )}
                 </Button>
               </div>
@@ -641,16 +592,13 @@ const StudentSignup = () => {
 
             {currentFormIndex === 2 && (
               <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                <span className='text-center text-subtext'>
-                  Would you like to verify your account now?
-                </span>
                 <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
                   <Button
-                    size='md'
+                    size='sm'
                     width='full'
                     onClick={(e) => {
                       e.preventDefault();
-                      handleRequestOTP('email_verification');
+                      handleRequestOTP("email_verification");
                       setCurrentFormIndex((c) => c + 1);
                     }}
                     className='mx-auto text-center'
@@ -658,7 +606,7 @@ const StudentSignup = () => {
                     {otpRequestLoading ? (
                       <CircularProgress size={20} color='inherit' />
                     ) : (
-                      'Verify Now'
+                      "Verify Now"
                     )}
                   </Button>
                   <Link
@@ -676,12 +624,9 @@ const StudentSignup = () => {
                 </div>
               </div>
             )}
+
             {currentFormIndex === 3 && (
               <div className='flex flex-col mx-auto gap-y-5 w-[490px]'>
-                <span className='text-center text-subtext'>
-                  An OTP was sent to the mail you provided below. Kindly it
-                  below.
-                </span>
                 <div className='flex justify-center'>
                   <OTPInput
                     className='!my-1'
@@ -699,12 +644,12 @@ const StudentSignup = () => {
                     await handleEmailVerify(otp);
                   }}
                   className='mx-auto'
-                  size='md'
+                  size='sm'
                 >
                   {emailVerifyLoading ? (
                     <CircularProgress size={20} color='inherit' />
                   ) : (
-                    'Verify'
+                    "Verify"
                   )}
                 </Button>
                 <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
@@ -712,8 +657,8 @@ const StudentSignup = () => {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      setOtp('');
-                      handleRequestOTP('email_verification');
+                      setOtp("");
+                      handleRequestOTP("email_verification");
                     }}
                     className='text-primary'
                   >
@@ -721,11 +666,11 @@ const StudentSignup = () => {
                   </button>
                   <span className='text-subtext ml-6'>
                     {String(Math.floor(OTPTimer / 60)).length < 2
-                      ? String(Math.floor(OTPTimer / 60)).padStart(2, '0')
+                      ? String(Math.floor(OTPTimer / 60)).padStart(2, "0")
                       : Math.floor(OTPTimer / 60)}
                     :
                     {String(OTPTimer % 60).length < 2
-                      ? String(OTPTimer % 60).padStart(2, '0')
+                      ? String(OTPTimer % 60).padStart(2, "0")
                       : OTPTimer % 60}
                   </span>
                 </div>

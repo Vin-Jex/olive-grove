@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Modal from './Modal';
 import Button from '@/components/Atoms/Button';
 import { TWarningModalProps } from '@/components/utils/types';
@@ -10,7 +11,7 @@ export default function CourseDeleteModal({
   loading,
   handleConfirm,
 }: TWarningModalProps) {
-  return (
+  return ReactDOM.createPortal(
     <div>
       <Modal
         isOpen={modalOpen}
@@ -25,7 +26,8 @@ export default function CourseDeleteModal({
             Are you sure you want to Delete
           </strong>
           <span className='text-center max-w-[300px] text-gray-400'>
-            You will be not be able to reverse this action once performed and all the data will be lost.
+            You will be not be able to reverse this action once performed and
+            all the data will be lost.
           </span>
           <div className='flex items-center justify-center gap-5 sm:gap-6 w-full'>
             <Button
@@ -52,7 +54,8 @@ export default function CourseDeleteModal({
           </div>
         </div>
       </Modal>
-    </div>
+    </div>,
+    document.body
   );
 }
 

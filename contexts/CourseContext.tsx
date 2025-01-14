@@ -103,10 +103,10 @@ const courseReducer: Reducer<
       newState.title = action.payload.title || '';
       newState.description = action.payload.description || '';
       newState.department = action.payload.classId || '';
-      // newState.department = action.payload.department || '';
-      // newState.startDate = action.payload.startDate || '';
-      // newState.endDate = action.payload.endDate || '';
-      // newState.isActive = action.payload.isActive || false;
+      newState.department = action.payload.department || '';
+      newState.startDate = action.payload.startDate || '';
+      newState.endDate = action.payload.endDate || '';
+      newState.isActive = action.payload.isActive || false;
       action.payload.courseCover &&
         (newState.courseCover = action.payload.courseCover);
 
@@ -170,10 +170,14 @@ const courseReducer: Reducer<
         title: action.payload.title || '',
         sections: [],
         chapterId: action.payload.chapterId || '',
-        topicNote: action.payload.topicNote || '',
         topicImage: action.payload.topicImage || null,
+        topicNote: action.payload.topicNote || '',
         topicVideo: action.payload.topicVideo || null,
         youtubeVideo: action.payload.youtubeVideo || null,
+        isActive: action.payload.isActive || false,
+        availableDate: action.payload.availableDate || '',
+        startDate: action.payload.startDate || '',
+        endDate: action.payload.endDate || '',
         embed: action.payload.embed || null,
       });
       console.log('Created lesson');

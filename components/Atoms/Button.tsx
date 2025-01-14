@@ -31,7 +31,7 @@ const Button: React.FC<ButtonProps> = ({
 
   const sizeClassName = {
     xs: "px-2 md:px-2.5 lg:px-3 py-2 lg:py-2.5 text-xs md:text-sm font-medium",
-    sm: "px-2 md:px-3 lg:px-4 py-2.5 lg:py-3 text-sm md:text-base font-medium",
+    sm: "px-2 md:px-3 lg:px-4 py-2.5 lg:py-2.5 text-sm md:text-base font-medium",
     md: "px-2 sm:px-3.5 md:px-5 py-2.5 lg:py-3 text-lg font-medium",
     lg: "px-3 md:px-4 lg:px-6 py-2.5 lg:py-3 text-lg",
   }[size];

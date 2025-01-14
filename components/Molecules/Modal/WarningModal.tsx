@@ -68,7 +68,7 @@ export default function WarningModal({
   );
 }
 
-const WarningSVG = () => {
+export const WarningSVG = () => {
   return (
     <div className='flex items-center justify-center bg-[#FF3B3B33] rounded-full p-4'>
       <svg

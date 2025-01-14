@@ -2,18 +2,15 @@ import { TCourseModalFormData } from '@/components/utils/types';
 import { editItem } from '@/components/utils/course';
 import { TChapter, TCourse, TLesson, TSection } from '@/components/utils/types';
 import { useCourseContext } from '@/contexts/CourseContext';
-import {
-  FC,
-  MouseEventHandler,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+
+import { FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import AddItemSVG from './AddItemSVG';
 import { useTopicContext } from '@/contexts/TopicContext';
 import { useAuth } from '@/contexts/AuthContext';
 import SidebarEditModal from '@/components/Molecules/Modal/SidebarEditModal';
+import CourseDeleteModal from '@/components/Molecules/Modal/CourseDeleteModal';
+import { AnimatePresence, motion, Variants } from 'framer-motion';
+import { tooltip_variants } from './CourseTopic';
 
 const Wrapper: FC<{
   type: 'section' | 'add';
@@ -40,15 +37,54 @@ const Wrapper: FC<{
   const { topicDetails } = useTopicContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [hideChildren, setHideChildren] = useState(true);
+  const [display_tooltip, setDisplayTooltip] = useState(false);
+  const title_ref = useRef<HTMLDivElement>(null);
   const initialFormData: TCourseModalFormData = {
     _id: existingDetails?._id || '',
     title: existingDetails?.title || '',
     description: existingDetails?.description || '',
+    availableDate: existingDetails?.availableDate || '',
+    topicNote: existingDetails?.topicNote || '',
+    isActive: existingDetails?.isActive || false,
     ...(sectionType === 'lesson' ? { chapterId: parentId || '' } : {}),
   };
+  console.log(existingDetails, 'existingDetails');
+
+  const tooltipHover: (
+    this: HTMLDivElement,
+    ev: HTMLElementEventMap['mouseover']
+  ) => any = () => {
+    setDisplayTooltip(true);
+  };
+  const tooltipHoverOut: (
+    this: HTMLDivElement,
+    ev: HTMLElementEventMap['mouseout']
+  ) => any = () => {
+    setDisplayTooltip(false);
+  };
+
+  useEffect(() => {
+    title_ref.current?.addEventListener('mouseover', tooltipHover);
+    title_ref.current?.addEventListener('mouseout', tooltipHoverOut);
+
+    return () => {
+      title_ref.current?.removeEventListener('mouseover', tooltipHover);
+      title_ref.current?.removeEventListener('mouseout', tooltipHoverOut);
+    };
+  }, []);
+
   const { user } = useAuth();
   const userRole = user?.role;
   console.log(modalOpen, 'modalOpen');
+
+  const handleDelete = (formState: TCourseModalFormData) =>
+    editItem(
+      sectionType || 'chapter',
+      setModalRequestState,
+      formState || { title: '' },
+      dispatch,
+      'DELETE'
+    );
 
   /**
    * * Function responsible for opening the modal
@@ -66,14 +102,6 @@ const Wrapper: FC<{
             formState,
             dispatch,
             'PUT'
-          ),
-        handleDelete: (formState) =>
-          editItem(
-            sectionType || 'chapter',
-            setModalRequestState,
-            formState || { title: '' },
-            dispatch,
-            'DELETE'
           ),
       },
     });
@@ -155,10 +183,31 @@ const Wrapper: FC<{
                 </svg>
               </button>
               <SidebarEditModal
+                openEditModal={handleOpenModal}
+                deleteAction={() => handleDelete(initialFormData)}
                 handleModalClose={() => setModalOpen(false)}
                 modalOpen={modalOpen}
               />
-              <span className='pt-1'>{type == 'section' && title}</span>
+              <span ref={title_ref} className='pt-1'>
+                {type == 'section' && title && title.length > 15
+                  ? `${title.slice(0, 15)}...`
+                  : title}
+              </span>
+              {title && title.length > 15 && (
+                <AnimatePresence>
+                  {display_tooltip && (
+                    <motion.span
+                      variants={tooltip_variants}
+                      initial='initial'
+                      animate='hover'
+                      exit='initial'
+                      className='absolute left-[4rem] top-6 p-1 rounded text-white bg-primary text-xs w-fit text-nowrap'
+                    >
+                      {title}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              )}
             </div>
 
             // <i className="fas fa-pencil"></i>
