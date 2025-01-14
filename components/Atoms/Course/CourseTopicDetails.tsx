@@ -42,7 +42,7 @@ export function collectLinearContentIds(data: TCourse): string[] {
     if (item.lessons) {
       // Traverse lessons
       item.lessons.forEach((lesson: TLesson) => {
-        // lesson._id && ids.push(lesson._id); // Add lesson ID
+        lesson._id && ids.push(lesson._id); // Add lesson ID
         lesson.sections.forEach((section: TSection) => {
           section._id && ids.push(section._id); // Add section ID
           section.subsections.forEach((subsection: TSubSection) => {
@@ -71,7 +71,7 @@ function getPreviousId(currentId: string, linearIds: string[]): string | null {
 
 function getNextId(currentId: string, linearIds: string[]): string | null {
   const currentIndex = linearIds.indexOf(currentId);
-  if (currentIndex >= 0) {
+  if (currentIndex >= 0 && linearIds[currentIndex + 1]) {
     return linearIds[currentIndex + 1]; // Return the ID of the next item
   }
   return null; // Return null if there's no previous item

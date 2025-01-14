@@ -41,18 +41,18 @@ function collectLinearContentIds(data: TCourse): TContentId {
       // Traverse lessons
       item.lessons.forEach((lesson: TLesson) => {
         lesson._id &&
-          // contentIds.push({ id: lesson._id, isViewed: lesson.viewed! }); // Add lesson ID
-          lesson.sections.forEach((section: TSection) => {
-            section._id &&
-              contentIds.push({ id: section._id, isViewed: section.viewed! }); // Add section ID
-            section.subsections.forEach((subsection: TSubSection) => {
-              subsection._id &&
-                contentIds.push({
-                  id: subsection._id,
-                  isViewed: subsection.viewed!,
-                }); // Add subsection ID
-            });
+          contentIds.push({ id: lesson._id, isViewed: lesson.viewed! }); // Add lesson ID
+        lesson.sections.forEach((section: TSection) => {
+          section._id &&
+            contentIds.push({ id: section._id, isViewed: section.viewed! }); // Add section ID
+          section.subsections.forEach((subsection: TSubSection) => {
+            subsection._id &&
+              contentIds.push({
+                id: subsection._id,
+                isViewed: subsection.viewed!,
+              }); // Add subsection ID
           });
+        });
       });
     }
   }
@@ -86,6 +86,7 @@ const SubjectDetailsPage: FC = () => {
   const [activeTab, setActiveTab] = useState('Course Contents');
 
   const { user } = useAuth();
+  console.log(course.data, 'THis is the course data');
   const userRole = user?.role;
 
   /**
@@ -272,7 +273,7 @@ const SubjectDetailsPage: FC = () => {
                     </div>
                   )} */}
                 </div>
-                <div className='flex items-stretch max-sm:flex-col min-h-screen pb-7 gap-4 relative'>
+                <div className='flex items-stretch max-sm:flex-col lectureContent-Wrapper min-h-screen pb-7 gap-4 relative'>
                   {/* SIDEBAR */}
                   <div className='max-md:space-y-6 relative'>
                     <div className='w-full flex gap-0 md:hidden'>

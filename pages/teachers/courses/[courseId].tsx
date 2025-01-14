@@ -49,6 +49,8 @@ const Subject: FC = () => {
     modalMetadata: { type, mode, handleAction, handleDelete },
   } = useCourseContext();
 
+  console.log(course.data, 'course data');
+
   /**
    * * Function responsible from retrieving the course with the ID passed
    * @param id The id of the course to be retrieved

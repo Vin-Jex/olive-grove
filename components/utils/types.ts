@@ -282,6 +282,7 @@ export type TQuestionCard = {
       maxSizeMB: number;
       allowedExtensions: string[];
     };
+    questionImages: string[];
     questionText: string;
     questionType: string;
     options: string[];
@@ -401,7 +402,7 @@ export type TTopicDetails = {
   topicChapter: string;
   topicLesson: string;
   type: 'section' | 'lesson';
-  topic: TSection | undefined;
+  topic: TSection | TLesson | undefined;
 };
 
 export type TLoginResponse<T extends 'student' | 'teacher' | 'admin'> = {

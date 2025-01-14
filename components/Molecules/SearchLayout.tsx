@@ -3,7 +3,7 @@ import Input from '../Atoms/Input';
 
 const SearchLayout: FC<{
   value: string;
-  onChange: Dispatch<SetStateAction<string | string[]>>;
+  onChange: Dispatch<SetStateAction<string>>;
 }> = ({ value, onChange }) => {
   return (
     <div className='relative overflow-hidden'>
@@ -36,6 +36,5 @@ const SearchLayout: FC<{
     </div>
   );
 };
-
 
 export default SearchLayout;
