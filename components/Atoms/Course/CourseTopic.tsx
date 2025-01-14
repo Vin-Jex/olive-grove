@@ -51,9 +51,11 @@ export const Topic: FC<{
     topicVideo: topic?.topicVideo,
     youtubeVideo: topic?.youtubeVideo,
     embed: topic?.embed || '',
+    availableDate: topic?.availableDate || '',
     topicImage: topic.topicImage,
     lessonId,
   };
+  console.log(initialFormData, 'initialFormDataaaaa');
   const { user } = useAuth();
   const userRole = user?.role;
   const title_ref = useRef<HTMLDivElement>(null);

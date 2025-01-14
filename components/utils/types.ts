@@ -71,7 +71,7 @@ export type TSection<T extends 'get' | 'post' = 'get'> = {
   subsections: TSubSection[];
   lessonId: string;
   viewed?: boolean;
-  availableDate?: Date;
+  availableDate?: Date | string; //this should ideally be a string
   isActive?: string | boolean; //note we are using string her as YES or NO
   endDate?: string;
   startDate?: string;
