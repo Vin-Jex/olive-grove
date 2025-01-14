@@ -1,4 +1,10 @@
-import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import SideNav from "../Navs/SideNav";
 import AdminNav from "../Navs/AdminNav";
 import Meta from "@/components/Atoms/Meta";
@@ -26,7 +32,8 @@ export const handleLogout = async (type: "students" | "admin" | "teachers") => {
     Cookies.remove("refreshToken");
     Cookies.remove("role");
     Cookies.remove("userId");
-    window.location.href = `/auth/path/${type}/signin`;
+    window.location.href =
+      type === "admin" ? "/auth/path" : `/auth/path/${type}/signin`;
   } catch (error) {
     console.error("Status: ", error);
   }
@@ -84,7 +91,7 @@ const AdminsWrapper = ({
   }, [shouldOpenModal]);
 
   return (
-    <div className='w-full h-[100dvh] container mx-auto flex flex-col items-center justify-center'>
+    <div className='relative w-full h-[100dvh] container overflow-auto mx-auto flex flex-row'>
       <Meta title={metaTitle || "Dashboard"} description={description} />
 
       <LogoutWarningModal
@@ -101,47 +108,25 @@ const AdminsWrapper = ({
       />
 
       <VerificationModal
-        redirectTo={
-          user?.role === "Admin"
-            ? "/admin/profile"
-            : user?.role === "Student"
-            ? "students/profile"
-            : "/teachers/profile"
-        }
+        redirectTo={"/admin/profile"}
         modalOpen={isOpen}
         handleModalClose={handleVerifyOpen}
       />
 
       <aside
-        className={`absolute left-0 top-0 h-screen w-fit z-30 !bg-white lg:block transition-transform transform ${
+        className={` left-0 top-0 h-screen max-md:hidden w-[16.5rem] overflow-auto z-30 !bg-white block transition-transform transform ${
           isSidenavOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0`}
+        } md:translate-x-0`}
       >
         <SideNav isOpen={isSidenavOpen} handleOpen={handleWarning} />
       </aside>
-      <div className='w-full'>
-        <div
-          className={`${
-            active ? "" : ""
-          } absolute right-0 top-0 w-full flex z-30 lg:z-20`}
-        >
-          <div
-            className={`${
-              active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
-            } transition-all ease-in-out duration-500`}
-          ></div>
-          <nav className={`w-full md:px-4 lg:px-12`}>
+      <div className='flex-1 w-full h-full overflow-y-auto relative flex flex-col'>
+        <div className='w-full flex-0 flex z-40 lg:z-20 sticky top-0 right-0 bg-milky mb-2'>
+          <nav className={`w-full mr-[2rem] ml-4`}>
             <AdminNav toggleSidenav={toggleSidenav} title={title} />
           </nav>
         </div>
-        <main className='w-full h-full max-h-[calc(100dvh-3.37rem)] overflow-auto flex mt-20'>
-          <div
-            className={`${
-              active ? "w-0 lg:w-[15rem]" : "w-0 lg:w-[98px]"
-            } transition-all ease-in-out duration-500`}
-          ></div>
-          <div className='min-h-screen w-full z-10'>{children}</div>
-        </main>
+        <main className='w-full overflow-x-hidden px-4 flex-1'>{children}</main>
       </div>
     </div>
   );

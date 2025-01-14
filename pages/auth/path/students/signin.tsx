@@ -14,6 +14,7 @@ import AuthLayout from "./layout";
 import { initDB } from "@/components/utils/indexDB";
 import toast from "react-hot-toast";
 import { useUser } from "@/contexts/UserContext";
+import InputField from "@/components/Atoms/InputField";
 
 export type loginType = {
   username: string;
@@ -38,13 +39,6 @@ const StudentLogin = () => {
     username: "",
     password: "",
   });
-  const [formError, setFormError] = useState({
-    internetError: "",
-    usernameError: "",
-    passwordError: "",
-    successError: "",
-    generalError: "",
-  });
 
   // const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -58,7 +52,9 @@ const StudentLogin = () => {
 
   const handleChange = ({
     target: { name, value },
-  }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  }: ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >) => {
     setFormState((prevState) => ({
       ...prevState,
       [name]: value,
@@ -79,74 +75,44 @@ const StudentLogin = () => {
   const handleErrors = (data: any) => {
     // Check for internet connectivity
     if (!navigator.onLine) {
-      setFormError((prevState) => ({
-        ...prevState,
-        internetError: "No internet connection",
-      }));
+      toast.error("No internet connection");
       return;
     }
 
     // Validate username and password
     if (!formState.username.trim()) {
-      setFormError((prevState) => ({
-        ...prevState,
-        usernameError: "Username field cannot be empty",
-      }));
+      toast.error("Username field cannot be empty");
       return;
     }
 
     if (!formState.password.trim()) {
-      setFormError((prevState) => ({
-        ...prevState,
-        passwordError: "Password field cannot be empty",
-      }));
+      toast.error("Password field cannot be empty");
       return;
     }
 
     if (data.error) {
-      setFormError((prevState) => ({
-        ...prevState,
-        generalError: data.error,
-      }));
+      toast.error(data.error);
+      return;
     }
 
     if (data.message.username) {
-      setFormError((prevState) => ({
-        ...prevState,
-        usernameError: data.message.username,
-      }));
+      toast.error(data.message.username);
+      return;
     }
 
     if (data.message.password) {
-      setFormError((prevState) => ({
-        ...prevState,
-        passwordError: data.message.password,
-      }));
+      toast.error(data.message.password);
+      return;
     }
 
     if (formState.username === "" || formState.password === "")
       setIsDisabled(true);
     else setIsDisabled(false);
-
-    clearError();
-  };
-
-  const clearError = () => {
-    setTimeout(() => {
-      setFormError({
-        internetError: "",
-        passwordError: "",
-        successError: "",
-        generalError: "",
-        usernameError: "",
-      });
-    }, 7000);
   };
 
   const handleSuccessLogin: TAxiosSuccess<TLoginResponse<"student">> = async ({
     data,
   }) => {
-    console.log(data, "why is the data not being initialized");
     const accessToken = data.token.accessToken;
     const refreshToken = data.token.refreshToken;
     const userId = data.details._id;
@@ -184,11 +150,7 @@ const StudentLogin = () => {
     event.preventDefault();
 
     if (!navigator.onLine) {
-      setFormError((prevState) => ({
-        ...prevState,
-        internetError: "No internet connection",
-      }));
-      clearError();
+      toast.error("No internet connection");
       return;
     }
 
@@ -196,11 +158,7 @@ const StudentLogin = () => {
       await loginStudent(handleSuccessLogin as any, handleErrorLogin, {
         data: formState,
       });
-    } catch (error) {
-      console.log("Error:", error);
-    } finally {
-      clearError();
-    }
+    } catch (error) {}
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
@@ -212,71 +170,45 @@ const StudentLogin = () => {
   return (
     <AuthLayout title='Olive Grove - Welcome Back'>
       <div className='w-full h-full flex flex-col items-center justify-center gap-y-8'>
-        <div className='flex flex-col items-center justify-center'>
-          <h5 className='text-subtext text-base font-semibold capitalize font-roboto'>
+        <div className='flex flex-col items-center justify-center w-[90%] sm:w-[80%] md:w-[400px] text-center'>
+          <h5 className='text-dark text-base font-semibold capitalize font-roboto'>
             Student Portal
           </h5>
-          <span className='text-dark text-2xl font-semibold capitalize font-roboto leading-[30px]'>
+          <span className='text-primary text-2xl font-semibold capitalize font-roboto leading-[30px]'>
             Olive Grove School
           </span>
-          <span className='text-subtext text-sm font-medium capitalize font-roboto leading-[28px]'>
-            Welcome Back!
+          <span className='text-subtext text-sm font-medium capitalize font-roboto'>
+            Easily access your learning resources and stay on top of your
+            classes effortlessly.
           </span>
         </div>
-
-        {/* Error Messages */}
-        {
-          formError.usernameError ? (
-            <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: "1.1rem" }} />
-              {formError.usernameError}
-            </span>
-          ) : formError.passwordError ? (
-            <span className='flex items-center gap-x-1 text-sm md:text-base font-roboto font-semibold text-red-600/70 capitalize -mb-3'>
-              <Info sx={{ fontSize: "1.1rem" }} />
-              {formError.passwordError}
-            </span>
-          ) : formError.internetError ? (
-            <span className='text-yellow-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-              {formError.internetError}
-            </span>
-          ) : formError.successError ? (
-            <span className='text-green-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-              {formError.successError}
-            </span>
-          ) : formError.generalError ? (
-            <span className='text-red-600 text-sm flex items-center justify-center gap-1'>
-              <Info sx={{ fontSize: "1.1rem" }} className='mt-0.5' />
-              <span>{formError.generalError}</span>
-            </span>
-          ) : null // Return null if no errors exist
-        }
 
         <form
           onKeyPress={handleKeyPress}
           onSubmit={handleSignIn}
           //Change
-          className='flex flex-col mx-auto space-y-5 w-[94%] sm:w-[87%] md:w-[470px]'
+          className='flex flex-col mx-auto space-y-4 w-[94%] sm:w-[87%] md:w-[470px]'
         >
-          <Input
+          <InputField
+            label={`Username`}
+            placeholder='Enter Username'
             type='text'
             name='username'
             value={formState.username}
             onChange={handleChange}
-            placeholder='Enter Username'
             required
-            className='input'
+            error={""}
           />
-          <Input
+
+          <InputField
+            label={`Password`}
+            placeholder='Enter Password'
             type='password'
             name='password'
             value={formState.password}
             onChange={handleChange}
-            placeholder='Enter Password'
             required
-            className='input'
+            error={""}
           />
 
           <span className='text-subtext text-sm font-medium font-roboto cursor-pointer ml-auto !mt-1 w-fit whitespace-nowrap'>
@@ -290,7 +222,7 @@ const StudentLogin = () => {
               "Sign In"
             )}
           </Button>
-          <div className='flex items-center justify-center text-md font-roboto gap-x-1 -mt-2'>
+          <div className='flex items-center justify-center text-sm font-roboto gap-x-1 !mt-2'>
             <span className='text-subtext'>Don&apos;t have an account?</span>
             <Link href='/auth/path/students/signup' className='text-primary'>
               Create an account

@@ -115,7 +115,7 @@ export default function Hero() {
                           : role === "Teacher"
                           ? "/teachers/dashboard"
                           : role === "Admin"
-                          ? "/admins/dashboard"
+                          ? "/admin/dashboard"
                           : "/auth/path"
                       );
                     }}

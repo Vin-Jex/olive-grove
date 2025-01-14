@@ -11,7 +11,6 @@ import TeachersWrapper from "@/components/Molecules/Layouts/Teacher.Layout";
 import { KeyboardArrowDown } from "@mui/icons-material";
 import UpdateDepartmentModal from "@/components/Molecules/Modal/UpdateDepartmentModal";
 import Calendar from "@/components/Molecules/Calendar";
-import { TUser } from "@/components/utils/types";
 import ClassCard from "@/components/Molecules/Card/ClassCard";
 import { useUser } from "@/contexts/UserContext";
 

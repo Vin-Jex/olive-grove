@@ -258,7 +258,7 @@ const Home: React.FC = () => {
                             : role === "Teacher"
                             ? "/teachers/dashboard"
                             : role === "Admin"
-                            ? "/admins/dashboard"
+                            ? "/admin/dashboard"
                             : "/auth/path"
                         )
                       : router.push("/auth/path");
