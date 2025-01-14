@@ -50,11 +50,11 @@ const Courses: FC = () => {
   const [openModalCreate, setOpenModalCreate] = useState(false);
   const [formState, setFormState] = useState<Omit<TCourse<"post">, "chapters">>(
     {
-      title: '',
-      description: '',
-      department: '',
-      startDate: '',
-      endDate: '',
+      title: "",
+      description: "",
+      department: "",
+      startDate: "",
+      endDate: "",
       isActive: false,
 
       courseCover: undefined,
@@ -146,7 +146,6 @@ const Courses: FC = () => {
         error: undefined,
       });
     } catch (error: any) {
-      console.error(error);
       // * If it's a 404 error, display message that departments couldn't be found
       if (error?.response?.status == 404) {
         setDepartments({
@@ -199,8 +198,6 @@ const Courses: FC = () => {
   const handleClassFilter: (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => void = ({ target: { value } }) => {
-    console.log("Filtered class value", value);
-
     if (!value || value.includes("Select class"))
       return setSearchResults(courses.data);
 
@@ -286,7 +283,6 @@ const Courses: FC = () => {
     } catch (error: any) {
       // * If it's a 400 error, display message that the input details are incomplete
       const data = error.response.data;
-      console.log("ERROR: ", data);
       toast.error(
         typeof data?.message === "string"
           ? data?.message
@@ -360,10 +356,9 @@ const Courses: FC = () => {
       {modal.open &&
         (mode === "delete" ? (
           <WarningModal
-            loading={isDeleting}
+            isLoading={isDeleting}
             modalOpen={true}
             handleModalClose={closeModal}
-            requestState={modalRequestState}
             handleConfirm={async () => {
               setIsDeleting(true);
               try {
