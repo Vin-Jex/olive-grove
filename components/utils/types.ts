@@ -181,7 +181,7 @@ export type TCourseModalProps = {
   handleModalClose: () => void;
   handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
   handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
-  type: 'course' | 'chapter' | 'lesson' | 'topic';
+  type: 'course' | 'chapter' | 'lesson' | 'topic' | 'subsection';
   mode: 'create' | 'edit' | 'delete';
   formState: TCourseModalFormData;
   setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
@@ -402,8 +402,8 @@ export type TTopicDetails = {
   path: [string, string, string] | undefined;
   topicChapter: string;
   topicLesson: string;
-  type: 'section' | 'lesson';
-  topic: TSection | TLesson | undefined;
+  type: 'section' | 'lesson' | 'subsection';
+  topic: TSection | TLesson | TSubSection | undefined;
 };
 
 export type TLoginResponse<T extends 'student' | 'teacher' | 'admin'> = {
@@ -420,13 +420,13 @@ export type TLoginResponse<T extends 'student' | 'teacher' | 'admin'> = {
 
 export type TAssessmnentQuestionProp = {};
 
-export type TAssessmnentQuestion<T extends "draft" | "preview" = "preview"> = {
+export type TAssessmnentQuestion<T extends 'draft' | 'preview' = 'preview'> = {
   _id: string;
   questionText: string;
   questionImages?: [string];
   questionType: TAssessmentQuestionType;
-  options?: T extends "draft" ? TAsseessmentQuestionOption[] : string[];
-  correctAnswer?: T extends "draft" ? TAsseessmentQuestionOption : string;
+  options?: T extends 'draft' ? TAsseessmentQuestionOption[] : string[];
+  correctAnswer?: T extends 'draft' ? TAsseessmentQuestionOption : string;
   fileRequirements?: {
     maxSizeMB: number;
     allowedExtensions: string[];
@@ -493,4 +493,4 @@ export type InputType =
 
 export type TErrorStatus = 404 | 500 | 403 | 401;
 
-export type TAsseessmentQuestionMode = "add" | "edit" | "preview";
+export type TAsseessmentQuestionMode = 'add' | 'edit' | 'preview';

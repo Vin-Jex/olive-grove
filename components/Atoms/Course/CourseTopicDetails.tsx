@@ -100,6 +100,7 @@ export const TopicDetails: FC<{
     topicDetails.topic?.viewed || false
   );
   const [contentIds, setContentIds] = useState<string[]>([]);
+  // console.log(topicDetails, 'topicDetails');
 
   const displayCompleted = () => {
     setTopicIsCompleted(true);
@@ -107,7 +108,7 @@ export const TopicDetails: FC<{
     setTimeout(() => setTopicIsCompleted(false), 6000);
   };
 
-  if (topicIsCompleted) toast.success('Topic completed!');
+  // if (topicIsCompleted) toast.success('Topic completed!'); //Find the best way to display topicIsCompleter
 
   const getContentIds = useMemo(() => collectLinearContentIds, []);
 
@@ -277,7 +278,7 @@ export const TopicDetails: FC<{
                       width='100%'
                       height='100%'
                       src={topicDetails.topic.embed}
-                      title='YouTube video player'
+                      title='Iframe Embed player'
                       frameBorder={0}
                       allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
                       allowFullScreen
@@ -407,7 +408,7 @@ export const TopicDetails: FC<{
           <ErrorUI msg={'No topic found'} status={404} />
         </div>
       )}
-      {topicIsCompleted && (
+      {/* {topicIsCompleted && (
         <Snackbar
           open={topicIsCompleted}
           onClose={() => setTopicIsCompleted(false)}
@@ -419,7 +420,7 @@ export const TopicDetails: FC<{
             Topic completed!
           </Alert>
         </Snackbar>
-      )}
+      )} */}
     </>
   );
 };

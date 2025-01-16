@@ -1,13 +1,13 @@
-import { TCourseModalFormData } from "@/components/utils/types";
-import { TCourse, TResponse } from "@/components/utils/types";
-import { useCourseContext } from "@/contexts/CourseContext";
-import { FC } from "react";
-import Wrapper from "./CourseWrapper";
-import { baseUrl } from "@/components/utils/baseURL";
-import axiosInstance from "@/components/utils/axiosInstance";
+import { TCourseModalFormData } from '@/components/utils/types';
+import { TCourse, TResponse } from '@/components/utils/types';
+import { useCourseContext } from '@/contexts/CourseContext';
+import { FC } from 'react';
+import Wrapper from './CourseWrapper';
+import { baseUrl } from '@/components/utils/baseURL';
+import axiosInstance from '@/components/utils/axiosInstance';
 
 const Add: FC<{
-  type: "chapter" | "lesson" | "topic";
+  type: 'chapter' | 'lesson' | 'topic' | 'subsection';
   parentId: string;
 }> = ({ type, parentId }) => {
   const { dispatch, openModal, setModalRequestState } = useCourseContext();
@@ -27,20 +27,23 @@ const Add: FC<{
 
       // * Get the access token from the cookies
       // * If the type is an object
-      const req_body = ["topic", "lesson"].includes(type)
+      const req_body = ['topic', 'lesson', 'subsection'].includes(type)
         ? new FormData()
         : JSON.stringify({
             ...formState,
             // availableDate: new Date().toISOString(),
           });
 
-      if (["topic", "lesson"].includes(type) && typeof req_body === "object") {
+      if (
+        ['topic', 'lesson', 'subsection'].includes(type) &&
+        typeof req_body === 'object'
+      ) {
         const entries = Object.entries(formState);
 
         for (const [key, value] of entries) {
           if (
-            key === "topicVideo" &&
-            (typeof formState[key] === "string" || !formState[key])
+            key === 'topicVideo' &&
+            (typeof formState[key] === 'string' || !formState[key])
           )
             continue;
 
@@ -60,20 +63,22 @@ const Add: FC<{
       // * Make an API request to create this item
       const response = await axiosInstance.post(
         `${baseUrl}/courses/${
-          type === "chapter"
-            ? "chapters"
-            : type === "lesson"
-            ? "lessons"
-            : type === "topic"
-            ? "section"
-            : ""
+          type === 'chapter'
+            ? 'chapters'
+            : type === 'lesson'
+            ? 'lessons'
+            : type === 'topic'
+            ? 'section'
+            : type === 'subsection'
+            ? 'subsection'
+            : ''
         }/${parentId}`,
         req_body,
         {
           headers: {
-            ...(["topic", "lesson"].includes(type)
-              ? { "Content-Type": "multipart/form-data" }
-              : { "Content-Type": "application/json" }),
+            ...(['topic', 'lesson', 'subsection'].includes(type)
+              ? { 'Content-Type': 'multipart/form-data' }
+              : { 'Content-Type': 'application/json' }),
           },
         }
       );
@@ -89,13 +94,15 @@ const Add: FC<{
       // * Add a new item (chapter/lesson/topic) with the details of the newly created item to the Course reducer
       dispatch({
         type:
-          type === "chapter"
-            ? "CREATE_CHAPTER"
-            : type === "lesson"
-            ? "CREATE_LESSON"
-            : type === "topic"
-            ? "CREATE_TOPIC"
-            : "CREATE_CHAPTER",
+          type === 'chapter'
+            ? 'CREATE_CHAPTER'
+            : type === 'lesson'
+            ? 'CREATE_LESSON'
+            : type === 'topic'
+            ? 'CREATE_TOPIC'
+            : type === 'subsection'
+            ? 'CREATE_SUBSECTION'
+            : 'CREATE_CHAPTER',
         payload: {
           parentId: parentId,
           title: responseData.data.title,
@@ -129,7 +136,7 @@ const Add: FC<{
         error: `An error occurred while creating the ${type}`,
       });
 
-      console.error("Returned false");
+      console.error('Returned false');
       return false;
     }
   };
@@ -141,32 +148,49 @@ const Add: FC<{
     openModal({
       modalMetadata: {
         formData: {
-          title: "",
-          description: "",
+          title: '',
+          description: '',
+          topicNote: '',
         },
-        mode: "create",
+        mode: 'create',
         type: type,
         handleAction: createNew,
       },
     });
   };
 
-  if (type === "topic") {
+  if (type === 'topic') {
     return (
       <span
-        className="text-greyed flex items-center gap-2 -ml-1 cursor-pointer transition hover:text-primary"
+        className='text-greyed flex items-center gap-2 -ml-1 cursor-pointer transition hover:text-primary'
         onClick={onAdd}
       >
-        <i className="fas fa-plus"></i>{" "}
-        <span className="underline ">Add new {type}</span>{" "}
+        <i className='fas fa-plus'></i>{' '}
+        <span className='underline '>Add new {type}</span>{' '}
       </span>
+    );
+  }
+
+  if (type === 'subsection') {
+    return (
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onAdd();
+          // openEditCourseModal();
+        }}
+        className='flex items-center gap-2  hover:bg-black/10  w-full py-2 pl-3 rounded-tr-lg rounded-tl-lg'
+      >
+        <i className='fas fa-plus'></i>{' '}
+        <div className='text-sm'>Add Subtopic</div>
+      </button>
     );
   }
 
   return (
     <>
-      <Wrapper type="add" onAdd={onAdd}>
-        <span className="text-greyed">Add new {type}</span>
+      <Wrapper type='add' onAdd={onAdd}>
+        <span className='text-greyed'>Add new {type}</span>
       </Wrapper>
     </>
   );

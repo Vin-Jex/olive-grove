@@ -1,12 +1,21 @@
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import CourseDeleteModal from './CourseDeleteModal';
+import { PlusOne } from '@mui/icons-material';
+import Add from '@/components/Atoms/Course/CourseAddButton';
 
 const SidebarEditModal: FC<{
   modalOpen: boolean;
+  chapterId?: string;
   openEditModal?: () => void;
   deleteAction?: () => Promise<boolean>;
   handleModalClose: () => void;
-}> = ({ modalOpen, handleModalClose, openEditModal, deleteAction }) => {
+}> = ({
+  modalOpen,
+  handleModalClose,
+  openEditModal,
+  chapterId,
+  deleteAction,
+}) => {
   const [loading, setLoading] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
@@ -30,13 +39,16 @@ const SidebarEditModal: FC<{
 
       <Modal handleClose={handleModalClose} isOpen={modalOpen}>
         <div className=''>
+          {chapterId && chapterId.length > 0 && (
+            <Add type='subsection' parentId={chapterId} />
+          )}
           <button
             onClick={(e) => {
               e.stopPropagation();
               openEditModal && openEditModal();
               // openEditCourseModal();
             }}
-            className='flex gap-2 hover:bg-black/10 pr-10 w-full py-2 pl-3 rounded-tr-lg rounded-tl-lg'
+            className='flex gap-2 hover:bg-black/10  pr-14 w-full py-2 pl-3 '
           >
             <svg
               width='16'
@@ -58,7 +70,7 @@ const SidebarEditModal: FC<{
               e.stopPropagation();
               setDeleteModalOpen(true);
             }}
-            className='flex gap-2 pr-10 hover:bg-black/10  rounded-bl-lg rounded-br-lg py-2 pl-3'
+            className='flex gap-2 pr-14 hover:bg-black/10  rounded-bl-lg rounded-br-lg py-2 pl-3'
           >
             <svg
               width='16'

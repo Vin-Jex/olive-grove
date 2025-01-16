@@ -41,14 +41,31 @@ export const TopicContextProvider: React.FC<{
     setIsLoading(true);
 
     let foundTopic = false;
+    // if (!topic) return;
 
     // * Loop through each chapter in the course
     for (const chapter of course?.chapters || []) {
       for (const lesson of chapter.lessons) {
-        // * Search for the topic with the id passed in the query
         const section = lesson.sections.find(
           (section) => section._id === topic
         );
+        for (const section of lesson.sections) {
+          // * Search for the topic with the id passed in the query
+          const subsection = section?.subsections.find(
+            (subsection) => subsection._id === topic
+          );
+          if (subsection) {
+            foundTopic = true;
+            setTopicDetails({
+              path: [chapter.title, lesson.title, subsection.title],
+              topicChapter: chapter._id!,
+              topicLesson: lesson._id!,
+              type: 'subsection',
+              topic: subsection,
+            });
+            break;
+          }
+        }
 
         if (lesson._id === topic) {
           foundTopic = true;
@@ -59,7 +76,7 @@ export const TopicContextProvider: React.FC<{
             type: 'lesson',
             topic: lesson,
           });
-        }
+        } 
 
         if (section) {
           foundTopic = true;
@@ -97,19 +114,18 @@ export const TopicContextProvider: React.FC<{
 
       if (foundTopic) break;
     }
-
-    // * Fallback: If no section matches the query or currentTutorial, set the first section
-    if (!foundTopic) {
+    // * Fallback: If no section matches the query or currentTutorial, set the first section(set the first lesson)
+    if (topic === undefined && !foundTopic) {
       for (const chapter of course?.chapters || []) {
         for (const lesson of chapter.lessons) {
           const firstSection = lesson.sections[0];
-          if (firstSection) {
+          if (lesson) {
             setTopicDetails({
-              path: [chapter.title, lesson.title, firstSection.title],
+              path: [chapter.title, lesson.title, ''],
               topicChapter: chapter._id!,
               topicLesson: lesson._id!,
-              type: 'section',
-              topic: firstSection,
+              type: 'lesson', // IN the case that a section is not found display the lesson content.
+              topic: lesson,
             });
             foundTopic = true;
             break;
