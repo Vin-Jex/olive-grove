@@ -181,7 +181,7 @@ export type TCourseModalProps = {
   handleModalClose: () => void;
   handleDelete?: (formData?: TCourseModalFormData) => Promise<boolean>;
   handleAction?: (formData?: TCourseModalFormData) => Promise<boolean>;
-  type: 'course' | 'chapter' | 'lesson' | 'topic';
+  type: 'course' | 'chapter' | 'lesson' | 'topic' | 'subsection';
   mode: 'create' | 'edit' | 'delete';
   formState: TCourseModalFormData;
   setFormState: React.Dispatch<React.SetStateAction<TCourseModalFormData>>;
