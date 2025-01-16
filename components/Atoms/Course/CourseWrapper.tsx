@@ -149,15 +149,16 @@ const Wrapper: FC<{
         {...(type !== 'add'
           ? {
               onClick: () => {
-                navRouter.push(
-                  `/${
-                    user?.role === 'Student'
-                      ? 'students/lectures'
-                      : 'teachers/courses'
-                  }/${
-                    router.query.courseId ?? router.query.courseId
-                  }/?topic=${sectionId}`
-                );
+                sectionType === 'lesson' &&
+                  navRouter.push(
+                    `/${
+                      user?.role === 'Student'
+                        ? 'students/lectures'
+                        : 'teachers/courses'
+                    }/${
+                      router.query.courseId ?? router.query.courseId
+                    }/?topic=${sectionId}`
+                  );
                 setHideChildren((prev) => !prev);
               },
             }
@@ -241,7 +242,7 @@ const Wrapper: FC<{
             height='16'
             viewBox='0 0 10 16'
             fill='none'
-            className={`transition ${
+            className={`transition h-4 ${
               hideChildren ? 'rotate-0' : 'rotate-90'
             } px-2 box-content`}
             xmlns='http://www.w3.org/2000/svg'

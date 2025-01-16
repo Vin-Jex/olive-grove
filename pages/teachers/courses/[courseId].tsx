@@ -49,7 +49,7 @@ const Subject: FC = () => {
     modalMetadata: { type, mode, handleAction, handleDelete },
   } = useCourseContext();
 
-  console.log(course.data, 'course data');
+  console.log(course, 'This is the course');
 
   /**
    * * Function responsible from retrieving the course with the ID passed

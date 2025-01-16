@@ -20,6 +20,7 @@ type TCourseReducerAction =
   | 'EDIT_COURSE'
   | 'CREATE_CHAPTER'
   | 'CREATE_LESSON'
+  | 'CREATE_SUBSECTION'
   | 'CREATE_TOPIC'
   | 'EDIT_CHAPTER'
   | 'EDIT_LESSON'
@@ -29,7 +30,7 @@ type TCourseReducerAction =
   | 'DELETE_TOPIC';
 
 type TModalMetadata = {
-  type: 'course' | 'chapter' | 'lesson' | 'topic' | undefined;
+  type: 'course' | 'chapter' | 'lesson' | 'topic' | 'subsection' | undefined;
   mode: 'create' | 'edit' | 'delete' | undefined;
   handleAction?: (
     formData: TCourseModalFormData
@@ -223,6 +224,54 @@ const courseReducer: Reducer<
           });
           console.log('Created topic');
           break;
+        }
+      }
+    }
+
+    return {
+      data: modifiedCourse,
+      loading: false,
+      error: undefined,
+    };
+  }
+
+  //omO i AM having to change whole context, omlll
+  if (action.type === 'CREATE_SUBSECTION') {
+    // * Create a new object from the the course details state
+    const modifiedCourse = { ...(state.data || {}) };
+
+    // * Loop through each chapter in the course
+    for (const chapter of modifiedCourse?.chapters || []) {
+      for (const lesson of chapter.lessons) {
+        // * Search for the topic which the subsection will be created in/added to
+
+        const topicToUpdate = lesson.sections.find(
+          (section) => section._id === action.payload.parentId
+        );
+
+        // * If the lesson which the topic will be added to exists
+        if (topicToUpdate) {
+          // * Check if this topic/section has been previously created
+          const sectionExists = topicToUpdate?.subsections?.find(
+            (subsection) => subsection._id === action.payload._id
+          );
+
+          // * If the topic with this id hasn't been created in this lesson yet, create it
+          if (!sectionExists) {
+            topicToUpdate?.subsections?.push({
+              _id: action.payload._id || '',
+              title: action.payload?.title || '',
+              topicNote: action.payload?.topicNote || '',
+              topicVideo: action.payload?.topicVideo || '',
+              youtubeVideo: action.payload?.youtubeVideo || '',
+              embed: action.payload?.embed || '',
+              topicImage: action.payload?.topicImage || null,
+              lessonId: action.payload.lessonId || '', // add a sectionId to the payload
+              // subsections: [],
+            });
+            console.log('Created subsection');
+            break;
+          }
         }
       }
     }

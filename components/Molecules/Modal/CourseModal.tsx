@@ -8,6 +8,7 @@ import { TCourse, TCourseModalProps } from '@/components/utils/types';
 import { CircularProgress } from '@mui/material';
 import InputField from '@/components/Atoms/InputField';
 import toast from 'react-hot-toast';
+import { AxiosError } from 'axios';
 
 export default function CourseModal({
   modalOpen,
@@ -43,7 +44,7 @@ export default function CourseModal({
     formState.youtubeVideo
   );
 
-  const textEditorValue = ['topic', 'lesson'].includes(type)
+  const textEditorValue = ['topic', 'lesson', 'subsection'].includes(type)
     ? 'topicNote'
     : type === 'course'
     ? 'description'
@@ -116,7 +117,12 @@ export default function CourseModal({
 
       // * Update the youtube video with the correct embed URL
       updateYTURL(ytEmbedURL);
-    } catch (error) {
+    } catch (error: AxiosError | any) {
+      toast.error(
+        error.response.data.error ||
+          error.response.data.message ||
+          'An error occured'
+      );
       console.log('Error', error);
     }
   };
@@ -136,6 +142,8 @@ export default function CourseModal({
         isActive: false,
       }));
     }
+
+    console.log(formState, 'formState');
 
     const result = handleAction && (await handleAction(formState));
     if (result) {
@@ -263,11 +271,11 @@ export default function CourseModal({
             ]}
           />
 
-          {['topic', 'lesson'].includes(type) && (
+          {['topic', 'lesson', 'subsection'].includes(type) && (
             <TextEditor
               value={(formState as any)[textEditorValue]}
               placeholder={`${capitalize(type)} ${
-                ['topic', 'lesson'].includes(type)
+                ['topic', 'lesson', 'subsection'].includes(type)
                   ? 'Notes'
                   : type === 'course'
                   ? 'Description'
@@ -318,7 +326,7 @@ export default function CourseModal({
             />
           )} */}
 
-          {['topic', 'lesson'].includes(type) && (
+          {['topic', 'lesson', 'subsection'].includes(type) && (
             <div className='flex flex-col gap-4'>
               <InputField
                 label={`${capitalize(type)} Available Date`}
