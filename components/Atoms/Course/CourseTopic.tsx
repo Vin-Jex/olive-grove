@@ -77,6 +77,15 @@ export const Topic: FC<{
       'DELETE'
     );
 
+  const handleDeleteSubsection = (formState: TCourseModalFormData) =>
+    editItem(
+      'subsection',
+      setModalRequestState,
+      formState || { title: '' },
+      dispatch,
+      'DELETE'
+    );
+
   const handleOpenModal = () => {
     openModal({
       modalMetadata: {
@@ -85,6 +94,24 @@ export const Topic: FC<{
         type: 'topic',
         handleAction: (formState) =>
           editItem('topic', setModalRequestState, formState, dispatch, 'PUT'),
+      },
+    });
+  };
+
+  const handleOpenModalSubsection = () => {
+    openModal({
+      modalMetadata: {
+        formData: initialFormData,
+        mode: 'edit',
+        type: 'subsection',
+        handleAction: (formState) =>
+          editItem(
+            'subsection',
+            setModalRequestState,
+            formState,
+            dispatch,
+            'PUT'
+          ),
       },
     });
   };
@@ -157,9 +184,17 @@ export const Topic: FC<{
                 </button>
                 <SidebarEditModal
                   chapterId={lessonId}
-                  openEditModal={handleOpenModal}
+                  openEditModal={
+                    type === 'subsection'
+                      ? handleOpenModalSubsection
+                      : handleOpenModal
+                  }
                   handleModalClose={() => setModalOpen(false)}
-                  deleteAction={() => handleDelete(initialFormData)}
+                  deleteAction={() =>
+                    type === 'subsection'
+                      ? handleDeleteSubsection(initialFormData)
+                      : handleDelete(initialFormData)
+                  }
                   modalOpen={modalOpen}
                 />
               </div>

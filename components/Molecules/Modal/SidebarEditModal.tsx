@@ -33,6 +33,7 @@ const SidebarEditModal: FC<{
             console.error(error);
           } finally {
             setLoading(false);
+            setDeleteModalOpen(false);
           }
         }}
       />

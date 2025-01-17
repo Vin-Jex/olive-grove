@@ -25,8 +25,10 @@ type TCourseReducerAction =
   | 'EDIT_CHAPTER'
   | 'EDIT_LESSON'
   | 'EDIT_TOPIC'
+  | "EDIT_SUBSECTION"
   | 'DELETE_CHAPTER'
   | 'DELETE_LESSON'
+  | 'DELETE_SUBSECTION'
   | 'DELETE_TOPIC';
 
 type TModalMetadata = {

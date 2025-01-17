@@ -87,6 +87,7 @@ export type TSubSection<T extends 'get' | 'post' = 'get'> = {
   _id?: string;
   title: string;
   description?: string;
+  sectionId?: string;
   lessonId: string;
   viewed?: boolean;
   availableDate?: Date;

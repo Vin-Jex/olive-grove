@@ -1,9 +1,9 @@
-import Cookies from "js-cookie";
-import { TCourseModalFormData } from "@/components/utils/types";
-import { TCourse, TFetchState, TResponse } from "../types";
-import { TCourseDispatch } from "@/contexts/CourseContext";
-import axiosInstance from "../axiosInstance";
-import toast from "react-hot-toast";
+import Cookies from 'js-cookie';
+import { TCourseModalFormData, TSubSection } from '@/components/utils/types';
+import { TCourse, TFetchState, TResponse } from '../types';
+import { TCourseDispatch } from '@/contexts/CourseContext';
+import axiosInstance from '../axiosInstance';
+import toast from 'react-hot-toast';
 
 /**
  * * Class responsible for creating a new course/subject object
@@ -23,16 +23,16 @@ export class CourseClass implements TCourse {
  * @returns void
  */
 export const editItem = async (
-  type: "chapter" | "lesson" | "topic",
+  type: 'chapter' | 'lesson' | 'topic' | 'subsection',
   setEditItemRes: React.Dispatch<
     React.SetStateAction<TFetchState<TCourseModalFormData | undefined>>
   >,
   reqData: TCourseModalFormData,
   dispatch: TCourseDispatch,
-  method: "PUT" | "DELETE"
+  method: 'PUT' | 'DELETE'
 ) => {
   try {
-    console.log("TYPE", type);
+    console.log('TYPE', type);
 
     // * Set the loading state to true, error state to false, and data to an undefined, when the API request is about to be made
     setEditItemRes({
@@ -43,22 +43,25 @@ export const editItem = async (
 
     // * Get the access token from the cookies
     // * If the type is an object
-    const req_body = ["topic", "lesson"].includes(type)
+    const req_body = ['subsection', 'topic', 'lesson'].includes(type)
       ? new FormData()
       : JSON.stringify({
           ...reqData,
           // availableDate: new Date().toISOString(),
         });
 
-    if (["topic", "lesson"].includes(type) && typeof req_body === "object") {
+    if (
+      ['subsection', 'topic', 'lesson'].includes(type) &&
+      typeof req_body === 'object'
+    ) {
       const entries = Object.entries(reqData);
 
       for (const [key, value] of entries) {
         if (!(reqData as any)[key]) continue;
 
         if (
-          key === "topicVideo" &&
-          (typeof reqData[key] === "string" || !reqData[key])
+          key === 'topicVideo' &&
+          (typeof reqData[key] === 'string' || !reqData[key])
         )
           continue;
 
@@ -74,58 +77,67 @@ export const editItem = async (
     // * Make an API request to create this item
     const response = await axiosInstance({
       url: `/courses/${
-        type === "chapter"
-          ? "chapters"
-          : type === "lesson"
-          ? "lessons"
-          : type === "topic"
-          ? "section"
-          : ""
+        type === 'chapter'
+          ? 'chapters'
+          : type === 'lesson'
+          ? 'lessons'
+          : type === 'topic'
+          ? 'section'
+          : type === 'subsection'
+          ? 'subsection'
+          : ''
       }/${reqData._id}`,
-      method: method || "PUT",
+      method: method || 'PUT',
       headers: {
-        "Content-Type": "multipart/form-data",
+        'Content-Type': 'multipart/form-data',
       },
       data: req_body,
     });
 
     // * Update the existing data with that returned by the API request
     const responseData =
-      method === "PUT"
+      method === 'PUT'
         ? (response.data as TResponse<TCourseModalFormData>)
-        : method === "DELETE"
+        : method === 'DELETE'
         ? { data: reqData }
         : { data: undefined };
+
     setEditItemRes({
       data: responseData.data,
       loading: false,
       error: undefined,
     });
 
-    toast.success(`Successfully ${method === "PUT" ? "edited" : "deleted"} ${type}`);
+    toast.success(
+      `Successfully ${method === 'PUT' ? 'edited' : 'deleted'} ${type}`
+    );
 
-    console.log("Edit data response", responseData, method);
+    console.log('Edit data response', responseData, method);
 
     // * Edit/Delete an existing item (chapter/lesson/topic) with the details of the updated/deleted item to the Course reducer
     dispatch({
       type:
-        method === "PUT"
-          ? type === "chapter"
-            ? "EDIT_CHAPTER"
-            : type === "lesson"
-            ? "EDIT_LESSON"
-            : type === "topic"
-            ? "EDIT_TOPIC"
-            : "EDIT_CHAPTER"
-          : method === "DELETE"
-          ? type === "chapter"
-            ? "DELETE_CHAPTER"
-            : type === "lesson"
-            ? "DELETE_LESSON"
-            : type === "topic"
-            ? "DELETE_TOPIC"
-            : "DELETE_CHAPTER"
-          : "EDIT_CHAPTER",
+        method === 'PUT'
+          ? type === 'chapter'
+            ? 'EDIT_CHAPTER'
+            : type === 'lesson'
+            ? 'EDIT_LESSON'
+            : type === 'topic'
+            ? 'EDIT_TOPIC'
+            : type === 'subsection'
+            ? 'EDIT_SUBSECTION'
+            : 'EDIT_CHAPTER'
+          : method === 'DELETE'
+          ? type === 'chapter'
+            ? 'DELETE_CHAPTER'
+            : type === 'lesson'
+            ? 'DELETE_LESSON'
+            : type === 'topic'
+            ? 'DELETE_TOPIC'
+            : type === 'subsection'
+            ? 'DELETE_SUBSECTION'
+            : 'DELETE_CHAPTER'
+          : 'EDIT_CHAPTER',
       payload: {
         title: responseData.data?.title,
         description: responseData.data?.description,
@@ -134,30 +146,38 @@ export const editItem = async (
         topicVideo: responseData.data?.topicVideo,
         _id: responseData.data?._id,
         parentId:
-          method === "PUT"
-            ? type === "lesson"
+          method === 'PUT'
+            ? type === 'lesson'
               ? responseData.data?.chapterId
-              : type === "topic"
+              : type === 'topic'
               ? responseData.data?.lessonId
-              : ""
-            : method === "DELETE"
-            ? type === "lesson"
+              : type === 'subsection'
+              ? (responseData as { data: TSubSection }).data?.sectionId
+              : ''
+            : method === 'DELETE'
+            ? type === 'lesson'
               ? reqData?.chapterId
-              : type === "topic"
+              : type === 'topic'
               ? reqData?.lessonId
-              : ""
-            : "",
+              : type === 'subsection'
+              ? (responseData as { data: TSubSection }).data?.sectionId
+              : ''
+            : '',
       },
     });
-    console.log("Adding " + type);
+    console.log('Adding ' + type);
 
     return true;
   } catch (error: any) {
     // * If it's a 400 error, display message that the input details are incomplete
-    toast.error(`An error occurred while ${method === "PUT" ? "editing" : "deleting"} ${type}`);
+    toast.error(
+      `An error occurred while ${
+        method === 'PUT' ? 'editing' : 'deleting'
+      } ${type}`
+    );
     if (error?.response?.status == 400) {
       const data =
-        method === "PUT"
+        method === 'PUT'
           ? (error?.response?.data as TResponse<TCourse>)
           : { message: undefined };
       setEditItemRes({
@@ -175,7 +195,7 @@ export const editItem = async (
       error: `An error occurred while editing the ${type}`,
     });
 
-    console.error("Returned false");
+    console.error('Returned false');
     return false;
   }
 };
@@ -205,13 +225,13 @@ export const editItem = async (
  * }
  */
 export const fetchCourses = async (filter?: {
-  query: "title" | string;
+  query: 'title' | string;
   value: string;
 }): Promise<{ data: TCourse[] } | string> => {
   try {
-    const userRole = Cookies.get("role");
+    const userRole = Cookies.get('role');
     // Construct the API URL with optional filter
-    const url = `/courses${filter ? `?${filter.query}=${filter.value}` : ""}`;
+    const url = `/courses${filter ? `?${filter.query}=${filter.value}` : ''}`;
 
     // Get the access token from the cookies
     // Make an API request to retrieve the list of courses
@@ -245,6 +265,6 @@ export const fetchCourses = async (filter?: {
   } catch (error: any) {
     console.error(error);
     // Return error message on exception
-    return error.response?.status?.toString() || "500";
+    return error.response?.status?.toString() || '500';
   }
 };
